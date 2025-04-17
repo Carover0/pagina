@@ -1,0 +1,20 @@
+# Bienvenidos! 
+==================================
+
+♦ Bienvenido al archivo de repositorio de **CaroPowerShell**  
+Aca, todo es posible y **el código nunca miente**.  
+No importa si usas Windows 95 o tu última distro de Linux, el estilo es único y retro, al igual que los viejos tiempos.
+
+-----------------------------------
+
+♦ Sencillez ante todo.
+
+Texto plano!
+Este proyecto fue creado con la idea de evocar ese ambiente oscuro, lleno de líneas de comando y códigos que desatan la magia digital. Una epoca donde se decia lo que se tenia que decir, sin adornos.
+
+-----------------------------------
+
+Proyecto: **CaroPowerShell**  
+Versión: 1.0  
+Fecha de Creación: 17-04-2025  
+Creado por: carover0  
