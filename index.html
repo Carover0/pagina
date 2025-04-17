@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>t_explorer_console</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #FFF;
+      font-family: "Lucida Console", monospace;
+      font-size: 15px;
+      line-height: 1.3;
+      padding: 20px;
+      white-space: pre;
+    }
+
+    pre {
+      color: #FFF;
+      font-size: 17px;
+      margin-bottom: 20px;
+    }
+
+    .section {
+      border: 1px dashed #000;
+      padding: 17px;
+      margin: 25px 0;
+    }
+
+    .header, .footer {
+      border-top: 2px solid #FFF;
+      border-bottom: 2px solid #FFF;
+      padding: 10px 0;
+      margin: 30px 0 20px 0;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    a {
+      color: #FFF;
+      text-decoration: underline;
+    }
+
+    .highlight {
+      color: #000;
+    }
+
+    .ascii {
+      margin: 0 auto;
+      max-width: 100%;
+      text-align: center;
+      font-family: "Lucida Console", monospace;
+      font-size: 15px;
+    }
+
+    .final-block {
+      border: 1px solid #888;
+      padding: 10px;
+      margin-top: 30px;
+      background-color: #111;
+    }
+
+    #input-line {
+      border: none;
+      background: none;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+    }
+
+    .page-break {
+      font-family: 'Lucida Console', monospace;
+      font-size: 16px;
+      color: #fff;
+      background-color: #000;
+      padding: 8px 0;
+      text-align: center;
+      width: 100%;
+      white-space: pre;
+    }
+
+    .spinner pre {
+      color: #FFFFFF;
+    }
+
+    .line {
+      margin-bottom: 10px;
+    }
+
+    .input-wrapper {
+      margin-top: 20px;
+    }
+
+    strong {
+      color: #FF0000;
+    }
+  </style>
+</head>
+<body>
+<pre align="center">
+ ██████╗ █████╗ ██████╗  ██████╗ ██╗   ██╗███████╗██████╗  ██████╗ 
+██╔════╝██╔══██╗██╔══██╗██╔═══██╗██║   ██║██╔════╝██╔══██╗██╔═████╗
+██║     ███████║██████╔╝██║   ██║██║   ██║█████╗  ██████╔╝██║██╔██║
+██║     ██╔══██║██╔══██╗██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗████╔╝██║
+╚██████╗██║  ██║██║  ██║╚██████╔╝ ╚████╔╝ ███████╗██║  ██║╚██████╔╝
+ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝ ╚═════╝ 
+                                                                   
+CaroPowerShell® 
+</pre>                                                                                                                       
+  <div id="output">
+carover0@DOS:~$
+<input type="text" id="input-line" placeholder="Escriba un comando..." autofocus />
+<br>
+--------------- MENU -------------------                         
+> F5             | Limpiar la página  
+> T_EXPLORER     | TRON Explorer (TG) 
+> Z_EXPLORER     | ZCASH Explorer (TG)      
+> WHOAMI         | Quien soy        
+> ABOUT / ACERCA | Sobre mí...      
+----------------------------------------</div>
+<script>
+  function startSpinner(callback) {
+    const spinnerChars = ['-', '|', '/', '_'];
+    let i = 0;
+
+    const spinnerDiv = document.createElement('div');
+    spinnerDiv.classList.add('spinner');
+    spinnerDiv.innerHTML = `<pre>> Cargando... ${spinnerChars[i]}</pre>`;
+    output.appendChild(spinnerDiv);
+
+    const interval = setInterval(() => {
+      spinnerDiv.innerHTML = `<pre>> Cargando... ${spinnerChars[i % spinnerChars.length]}</pre>`;
+      i++;
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      output.removeChild(spinnerDiv);
+      callback();
+    }, 1500);
+  }
+
+  function handleCommandInput(e) {
+    if (e.key === 'Enter') {
+      const command = e.target.value.trim().toLowerCase();
+      output.innerHTML = '';
+
+  
+
+      const div = document.createElement('div');
+      div.classList.add('line');
+      div.innerHTML = `> ${command}`;
+      output.appendChild(div);
+
+      let response = '';
+
+      if (command === 't_explorer') {
+        response = `
+<div class="ascii"><pre>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@*+*##%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@*...::::-==+*##%%@@@@@@@@@@@@@@@@@@@*===#@@@@@@@*===#@@@@@@
+@@=....=*+==-:::::-==+*%@@@@@@@@@@@#+:   =*%@@@**:   =*%@@@@
+@@%:.=-.-#@@@%%%##*:...:*%@@@@@@@%#: :-:.. +###: ....  +#%@@
+@@@*.=%*-.-*@@@@@#=.-+*-.-#@@@@%%- ::-=-:::.   ......... *%%
+@@@%-.+@%*-.-*%*-.:*%%#*-..=%@@=.::-=+*==-:................*
+@@@@#::#@@%*-.:...--:::::..-%@@- ::--=+--:.........  ..--. *
+@@@@@+.-%@@@@+.:=++*##%+.:+%@@@- .:::--::........      -=. *
+@@@@@%-.+@@@@=.+@@@@@%=.-#@@@@@+-. .:::..........    ::::--#
+@@@@@@#::#@@@-.#@@@@*:.=%@@@@@@@@=:............    .:--::#@@
+@@@@@@@+.-%@%::%@@%+.:*@@@@@@@@@@@@-...........  ..-=:.*@@@@
+@@@@@@@%-.+@#.-@@#-.-#@@@@@@@@@@@@@%%- ......  ..-=. *%%@@@@
+@@@@@@@@%:.#*.+@*:.+%@@@@@@@@@@@@@@@@%#: ......-=. +#%@@@@@@
+@@@@@@@@@*.--.+=.-#@@@@@@@@@@@@@@@@@@@@#*:  .....=*%@@@@@@@@
+@@@@@@@@@@=.....=%@@@@@@@@@@@@@@@@@@@@@@@*=.   -=#@@@@@@@@@@
+@@@@@@@@@@%-..:*@@@@@@@@@@@@@@@@@@@@@@@@@@@+---#@@@@@@@@@@@@
+@@@@@@@@@@@#:=%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+</pre></div>
+<div class="header">░░ T - E X P L O R E R ░░</div>
+<pre>
+T-Explorer/
+├── 📊 Estadísticas Generales/
+│   ├── 🌐 Red  
+│   ├── ⚡ Costo de Operación  
+│   └── 📈 Mercado  
+├── ⛓️ Blockchain/
+│   ├── 📦 Bloques Recientes  
+│   ├── ⏳ Mempool  
+│   └── 🔍 Acceso directo: /block <n> | /tx <hash>  
+├── 🧠 Validadores y Gobernanza/
+│   ├── 👑 Super Representantes  
+│   ├── 📜 Propuestas  
+│   └── 🎯 Detalle de Votaciones  
+├── 🪙 Economía/
+│   ├── 📉 Gráfico de Precio  
+│   └── 📦 Supply & Burn  
+├── 🔧 Herramientas/
+│   ├── 📬 Wallet Scanner  
+│   ├── 🧾 QR Generator  
+│   └── ⚙️ Utilidades  
+├── 🧾 Log y Actualizaciones/  
+└── 💾 Acerca del Proyecto/  
+</pre>
+<div class="final-block">
+💡 Notas<br>
+▸ Transparencia y trazabilidad para TRON<br>
+▸ Destinado a usuarios técnicos, auditores y entusiastas de la blockchain.<br>
+▸ Datos proporcionados directamente por la API de Trongrid para mayor fiabilidad.<br>
+▸ Herramientas avanzadas para monitorizar el rendimiento y el costo de operación.<br>
+▸ Soporte para la exploración de bloques recientes, transacciones y el estado de los validadores.<br>
+▸ https://t.me/texplorerbot<br> 
+</div>`;
+      } else if (command === 'z_explorer') {
+        response = `
+<div class="ascii"><pre>
+@@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@%*:              :*%@@@@@@@@@@@@*+++%@@@@@@@*+++%@@@@@@
+@@@@+.   .-+*####*+-.   .+@@@@@@@@@#*-...+*%@@@#*-...+*%@@@@
+@@%-   :*%@@@%---#@@%*:   -%@@@@@%#-.---::.+###-.::::..+#%@@
+@%.  .*@@@%%%#   +###@@*.  .%@@%%=.--=+=---:...:::::::::.*%%
+%:  .#@@@@-          *@@#.  :%@=:--==**+=--::::::::::::::::*
++   #@@@@@-.....     *@@@#   +@=.:---=+=--:::::::::..::-=:.* 
+.  -@@@@@@%%%%%+    +%@@@@-  :@=.:----=-:::::::::......=+:.* 
+   +@@@@@@@@@#:   :#@@@@@@+   %*=:.:---::::::::::....:---==#
+   +@@@@@@@@+    =%@@@@@@@+   %@@+-::::::::::::....::-=--#@@
+.  -@@@@@@%-   :#@@@@@@@@@-  :%@@@@=:::::::::::..::-=-:#@@@@
++   #@@@@%.    ------#@@@#   +@@@@@%%=.::::::..::-=:.*%%@@@@
+%:  .#@@@#           #@@#.  :%@@@@@@@%#-.::::::-=:.*#%@@@@@@
+@%.  .*@@%+++=   -+++%@*.  .%@@@@@@@@@@#*-..:::::+*%@@@@@@@@
+@@%-   :*%@@@%...*@@%*:   -%@@@@@@@@@@@@@*+:...=+%@@@@@@@@@@
+@@@@+.   .-+*###**+-.   .+@@@@@@@@@@@@@@@@@+-=-#@@@@@@@@@@@@
+@@@@@%*:              :*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  
+</pre></div>
+<div class="header">░░ Z - E X P L O R E R ░░</div>
+> Análisis técnico de la red ZCASH en Telegram
+<pre>
+Z-Explorer/
+├── 📊 Estado de la Red/
+│   ├── 🌐 Red   
+│   ├── ⛏️ Bloques Recientes  
+│   └── 📈 Mercado  
+├── 🔎 Exploración de Bloques/
+│   ├── 📦 Bloques Recientes  
+│   ├── ⏳ Mempool  
+│   └── 🔍 Acceso directo: /block <n> | /tx <hash>  
+├── ⚖️ Economía y Emisión/
+│   ├── 💸 Suministro  
+│   ├── 📈 Cotización de Mercado (price feed live)  
+│   └── 🧨 Balance de Pools  
+├── 🧰 Herramientas Técnicas/
+│   ├── 🧪 Wallet   
+│   └── 🧾 Generador de QR
+├── 🧾 Bitácora Técnica/  
+└── 💾 Sobre el Proyecto y Contacto Técnico  
+</pre>
+<div class="final-block">
+💡 Notas<br>
+▸ No depende de API cerradas<br>
+▸ Ideal para foros, análisis offline y terminales<br>
+▸ Acceso directo a bloques y transacciones sin intermediarios<br>
+▸ Soporte para direcciones blindadas (Z-addresses)<br>
+▸ Transparencia de las tarifas de transacción y uso de la red<br>
+▸ Sin dependencias de terceros: totalmente independiente<br>
+▸ Funciones Open-Source, permitiendo auditoría en funciones que lo requieren<br>
+▸ https://t.me/zcashexplorer_bot<br>
+</div>
+`;
+      } else if (command === 'whoami') {
+        response = `<pre>
+INFORMACION DE USUARIO
+-----------------------
+
+NOMBRE DE USUARIO    BIN	  
+==================   =======================================================
+carover0	     0110001101100001011100100110111101110110011001010111001000110000
+
+[*] Sesión activa desde: 1995-02-14
+[*] Shell: /bin/nostalgia
+--------------------------------------------------
+</pre>`;
+      } else if (command === 'about' || command === 'acerca') {
+        response = `<pre>
+SOBRE MI
+===================
+[*] Nombre: carover0 (99 97 114 111 118 101 114 48)
+[*] Stack: Python | Blockchain | Excel
+[*] Estilo: Fuente Monospace o muerte
+
+FILOSOFIA
+===================
+[*] "Cada byte cuenta. Cada transacción habla. El código es la verdad."
+
+LINKS
+===================
+[*] Telegram: @Cvg_1995
+[*] Free2z: free2z.cash/carover0
+
+----------------------------------------------------
+</pre>`;
+      } else {
+        response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
+      }
+
+      startSpinner(() => {
+        const resDiv = document.createElement('div');
+        resDiv.innerHTML = response;
+        output.appendChild(resDiv);
+
+        const inputWrapper = document.createElement('div');
+        inputWrapper.classList.add('input-wrapper');
+        inputWrapper.innerHTML = `
+<div class="line"><br>
+<input type="text" id="input-line" placeholder="Escriba un comando..." />
+<br>
+-------------- MENU --------------------                         
+ F5             | Limpiar la página  
+ T_EXPLORER     | TRON Explorer (TG) 
+ Z_EXPLORER     | ZCASH Explorer (TG)      
+ WHOAMI         | Quien soy        
+ ABOUT / ACERCA | Sobre mí...      
+----------------------------------------</div>`;
+        output.appendChild(inputWrapper);
+
+        const newInput = document.getElementById('input-line');
+        //newInput.focus();
+        newInput.addEventListener('keydown', handleCommandInput);
+      });
+
+      e.target.value = '';
+    }
+  }
+
+  const input = document.getElementById('input-line');
+  const output = document.getElementById('output');
+  input.addEventListener('keydown', handleCommandInput);
+
+</script>
+
+</body>
+</html>
