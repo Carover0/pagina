@@ -14,6 +14,13 @@ Este proyecto fue creado con la idea de evocar ese ambiente oscuro, lleno de lí
 
 -----------------------------------
 
+No hay frameworks.  
+No hay librerías modernas.  
+No hay scroll infinito ni diseño responsive.
+
+Solo **HTML**, **JavaScript**, y una **idea clara**:  
+emular la experiencia de cuando lo digital era más honesto.
+
 Proyecto: **CaroPowerShell**  
 Versión: 1.0  
 Fecha de Creación: 17-04-2025  
