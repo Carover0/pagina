@@ -137,9 +137,9 @@ carover0@DOS:~$
 --------------------------------------------------</div>
 
 <script>
-    // Mensajes que queremos mostrar
+    
     const bootMessages = [
-      "Starting BIOS...",
+     "Starting BIOS...",
       "Initializing system components...",
       "Searching for boot device...",
       "Boot device found: HDD",
@@ -157,25 +157,24 @@ carover0@DOS:~$
         if (currentChar < message.length) {
           bootMsgElement.textContent += message.charAt(currentChar);
           currentChar++;
-          setTimeout(typeMessage, 7); // Tiempo entre cada carácter (100 ms)
+          setTimeout(typeMessage, 7); // Tiempo entre cada carácter (7 ms)
         } else {
           currentMessage++;
           currentChar = 0;
-          bootMsgElement.textContent += "\n"; // Espacio entre mensajes
-          setTimeout(typeMessage, 500); // Tiempo entre mensajes (500 ms)
+          bootMsgElement.textContent += "\n"; 
+          setTimeout(typeMessage, 400); 
         }
       } else {
-        // Cuando todos los mensajes de arranque han sido escritos, ocultamos y mostramos la siguiente parte
+        
         setTimeout(function() {
           document.getElementById("boot-msg").style.display = "none";
           document.getElementById("output").style.display = "block";
           document.getElementById("output-t").style.display = "block";
-        }, 1000); // Espera 1 segundo después de terminar el último mensaje
+        }, 1000); // Esperar 1 segundo despurs de terminar el ultimo mensaje
       }
     }
 
-    // Iniciar el proceso de escritura
-    typeMessage();
+  typeMessage();
   </script>
 
 
@@ -183,16 +182,15 @@ carover0@DOS:~$
 
 
  <script>
-    // Esperar 4 segundos (simulando la carga del sistema)
+    
     setTimeout(function() {
-      // Ocultar los mensajes de inicio
       document.getElementById("boot-msg").style.display = "none";
-      // Mostrar el resto de la página
+    
       document.getElementById("output").style.display = "block";
       document.getElementById("output-t").style.display = "block";
      
 
-    }, 7000);  // 7000 milisegundos = 4 segundos
+    }, 6000);  // 6000 milisegundos = 6 segundos
   </script>
 
   
