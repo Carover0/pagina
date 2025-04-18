@@ -492,7 +492,48 @@ LINKS
 	  [debug]         Volcado de memoria
 	  [format]        Borrar disco (¡CUIDADO!)
 	  [secret.sys]    ????
-	  </div>`;      
+	  </div>`;   
+	  } else if (command === 'help') {
+		  const outputEl = document.getElementById('output');
+		  const helpMessage = `
+		    <div class="line">Comandos disponibles:<br><br>
+		    cd zexplorer     - Explora datos en la red ZCASH (Telegram)<br>
+		    cd texplorer     - Explora datos en la red TRON (Telegram)<br>
+		    cd tperiodica    - Tabla periódica interactiva<br>
+		    whoami           - Muestra información del usuario<br>
+		    about            - Info del sistema<br>
+		    format           - Borra el disco (¡Cuidado!)<br>
+		    debug            - Simula volcado de memoria hexadecimal<br>
+		    F5               - Limpia la pantalla<br><br>
+		    <strong>Comandos especiales:</strong><br>
+		    dir              - Lista contenido oculto<br>
+		    help             - Muestra esta ayuda</div>
+
+      		    Hay más de lo que ves a simple vista...
+	    	    ¿Sos curioso? Probá con:
+	            > dir	
+
+		  `;
+		
+		  const resDiv = document.createElement('div');
+		  resDiv.innerHTML = helpMessage;
+		  output.appendChild(resDiv);
+		
+		  const inputWrapper = document.createElement('div');
+		  inputWrapper.classList.add('input-wrapper');
+		  inputWrapper.innerHTML = `
+		    <div class="line"><br>
+		    carover0@DOS:~$
+		    <input type="text" id="input-line" placeholder="Escriba un comando..." />
+		    <br>----------------------------------------------------------</div>`;
+		  output.appendChild(inputWrapper);
+
+		  const newInput = document.getElementById('input-line');
+		  newInput.addEventListener('keydown', handleCommandInput);
+		  newInput.focus();
+		  return;
+		}
+
       } else {
         response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
       }
