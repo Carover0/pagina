@@ -133,6 +133,7 @@ carover0@DOS:~$
  cd tperiodica   | Tabla periódica con imágenes
  whoami          | Quién soy
  about           | Sobre mí...
+ format          | Formatear disco (borrar todo)
  F5              | Limpiar pantalla
 ----------------------------------------------------------</div>
 
@@ -451,6 +452,11 @@ LINKS
 
 ----------------------------------------------------
 </pre>`;
+      
+      } else if (command === 'format') {
+        	simulateFormat();
+	    
+  
       } else {
         response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
       }
@@ -473,6 +479,7 @@ carover0@DOS:~$
  cd tperiodica   | Tabla periódica con imágenes
  whoami          | Quién soy
  about           | Sobre mí...
+ format          | Formatear disco (borrar todo)
  F5              | Limpiar pantalla
 ----------------------------------------------------------</div>`;
         output.appendChild(inputWrapper);
@@ -490,6 +497,61 @@ carover0@DOS:~$
   const output = document.getElementById('output');
   input.addEventListener('keydown', handleCommandInput);
 
+
+
+function simulateFormat() {
+  output.innerHTML = '';
+  const pre = document.createElement('pre');
+  output.appendChild(pre);
+
+  const pasos = [
+    "Formateando unidad C: con sistema de archivos FAT16...",
+    "Montando volumen...",
+    "Verificando sectores defectuosos...",
+    "Asignando tabla de asignación de archivos (FAT)...",
+    "Creando estructura de directorios raíz...",
+    "Aplicando formato de bajo nivel...",
+    "Finalizando...",
+  ];
+
+  let currentStep = 0;
+  let progress = 0;
+  const total = 40;
+
+  function updateFormatStep() {
+    if (currentStep < pasos.length) {
+      pre.innerHTML += pasos[currentStep] + '\n';
+      currentStep++;
+      setTimeout(updateFormatStep, 800);
+    } else {
+      const interval = setInterval(() => {
+        const percent = Math.floor((progress / total) * 100);
+        const bar = '[' + '#'.repeat(progress) + ' '.repeat(total - progress) + `] ${percent}%`;
+        pre.innerHTML = pasos.join('\n') + `\n\nProgreso: ${bar}`;
+        progress++;
+        if (progress > total) {
+          clearInterval(interval);
+          pre.innerHTML += `\n\nFormateo completo. Todos los datos han sido eliminados.\n\nAsi habrias vivido un formateo en los 80/90\ncarover0@DOS:~$\n<input type="text" id="input-line" placeholder="Escriba un comando..." /><br>
+-------------- MENU --------------------------------------
+ cd zexplorer    | ZCASH Explorer (TG)
+ cd texplorer    | TRON Explorer (TG)
+ cd tperiodica   | Tabla periódica con imágenes
+ whoami          | Quién soy
+ about           | Sobre mí...
+ format          | Formatear disco (borrar todo)
+ F5              | Limpiar pantalla
+----------------------------------------------------------`;
+          const newInput = document.getElementById('input-line');
+          newInput.addEventListener('keydown', handleCommandInput);
+          newInput.focus();
+        }
+      }, 150);
+    }
+  }
+
+  updateFormatStep();
+}
+  
 </script>
 
 </body>
