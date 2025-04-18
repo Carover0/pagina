@@ -529,8 +529,13 @@ carover0@DOS:~$
   const newInput = document.getElementById('input-line');
   newInput.addEventListener('keydown', handleCommandInput);
   return;
-
-      } else {
+      } else if (command === 'ls') {
+	  response = `
+	  <div class="line">
+	    ls: no se reconoce como un comando interno o externo, programa o archivo por lotes...<br>
+	    <i>(¿Quisiste decir <b>dir</b>?)</i><br>
+	  </div>`;
+	} else {
         response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
       }
 
