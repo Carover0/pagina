@@ -477,6 +477,20 @@ LINKS
 	  // Simulación de la escritura del volcado hexadecimal
 	  simulateTextWriting(dump, pre, 5, () => {
 	  });
+	} else if (command === 'dir') {
+	  response = `
+	  <div class="line">Volumen en unidad C no tiene etiqueta.<br>
+	  Número de serie del volumen: 37F4-AC91<br><br>
+	  Directorio de C:\\<br><br>
+	  [.]             .<br>
+	  [..]            ..<br>
+	  [zexplorer]     ZCASH Explorer<br>
+	  [texplorer]     TRON Explorer<br>
+	  [tperiodica]    Tabla periódica<br>
+	  [debug]         Volcado de memoria<br>
+	  [format]        Borrar disco (¡CUIDADO!)<br>
+	  [secret.sys]    ????<br>
+	  </div>`;      
       } else {
         response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
       }
