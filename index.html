@@ -493,48 +493,43 @@ LINKS
 	  [format]        Borrar disco (¡CUIDADO!)
 	  [secret.sys]    ????
 	  </div>`;   
-	  } else if (command === 'help') {
-	  const outputEl = document.getElementById('output');
-	  const helpMessage = `
-	  <div class="line">Comandos disponibles:
+} else if (command === 'help') {
+  const outputEl = document.getElementById('output');
+  const helpMessage = `
+<div class="line">
+Comandos disponibles:<br><br>
+cd zexplorer     - Explora datos en la red ZCASH (Telegram)<br>
+cd texplorer     - Explora datos en la red TRON (Telegram)<br>
+cd tperiodica    - Tabla periódica interactiva<br>
+whoami           - Muestra información del usuario<br>
+about            - Info del sistema<br>
+format           - Borra el disco (¡Cuidado!)<br>
+debug            - Simula volcado de memoria hexadecimal<br>
+F5               - Limpia la pantalla<br><br>
+<b>Comandos especiales:</b><br><br>
+dir              - Lista contenido oculto<br>
+help             - Muestra esta ayuda<br><br>
+Hay más de lo que ves a simple vista...<br>
+¿Sos curioso? Probá con:<br>
+&gt; dir
+</div>`;
 
-	  cd zexplorer     - Explora datos en la red ZCASH (Telegram)
-	  cd texplorer     - Explora datos en la red TRON (Telegram)
-	  cd tperiodica    - Tabla periódica interactiva
-	  whoami           - Muestra información del usuario
-	  about            - Info del sistema
-	  format           - Borra el disco (¡Cuidado!)
-	  debug            - Simula volcado de memoria hexadecimal
-	  F5               - Limpia la pantalla
+  const resDiv = document.createElement('div');
+  resDiv.innerHTML = helpMessage;
+  output.appendChild(resDiv);
 
-	  <b>Comandos especiales:</b>
+  const inputWrapper = document.createElement('div');
+  inputWrapper.classList.add('ascii-l');
+  inputWrapper.innerHTML = `
+<div class="line"><br>
+carover0@DOS:~$
+<input type="text" id="input-line" placeholder="Escriba un comando..." />
+<br>----------------------------------------------------------</div>`;
+  output.appendChild(inputWrapper);
 
-	  dir              - Lista contenido oculto
-	  help             - Muestra esta ayuda</div>
-
-	  Hay más de lo que ves a simple vista...
-	  ¿Sos curioso? Probá con:
-	  > dir	
-
-		  `;
-	  const resDiv = document.createElement('div');
-	  resDiv.innerHTML = helpMessage;
-	  output.appendChild(resDiv);
-	
-	  const inputWrapper = document.createElement('div');
-	  inputWrapper.classList.add('ascii-l');
-	  inputWrapper.innerHTML = `
-	    <div class="line"><br>
-	  carover0@DOS:~$
-	  <input type="text" id="input-line" placeholder="Escriba un comando..." />
-      
-		    <br>----------------------------------------------------------</div>`;
-		  output.appendChild(inputWrapper);
-
-		  const newInput = document.getElementById('input-line');
-		  newInput.addEventListener('keydown', handleCommandInput);
-		  //return;
-		
+  const newInput = document.getElementById('input-line');
+  newInput.addEventListener('keydown', handleCommandInput);
+  return;
 
       } else {
         response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
