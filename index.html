@@ -455,8 +455,43 @@ LINKS
       
       } else if (command === 'format') {
         	simulateFormat();
-	    
-  
+      } else if (command === 'debug') {
+	  const outputEl = document.getElementById('output');
+	  outputEl.innerHTML = ''; // Limpiar el contenido previo
+	
+	  const wrapper = document.createElement('div');
+	  wrapper.className = 'ascii-l';
+	  const pre = document.createElement('pre');
+	  wrapper.appendChild(pre);
+	  outputEl.appendChild(wrapper);
+	
+	  const dump = generateFakeHexDump(20); // Generar más líneas del dump
+	
+	  // Simulación de la escritura del volcado hexadecimal
+	  simulateTextWriting(dump, pre, 5, () => {
+	    // Callback: cuando termina de escribir, volvemos a mostrar el input
+	    const inputWrapper = document.createElement('div');
+	    inputWrapper.classList.add('input-wrapper');
+	    inputWrapper.innerHTML = `
+	      <div class="line"><br>
+	      carover0@DOS:~$
+	      <input type="text" id="input-line" placeholder="Escriba un comando..." />
+	      <br>
+	      -------------- MENU --------------------------------------
+	      cd zexplorer    | ZCASH Explorer (TG)
+	      cd texplorer    | TRON Explorer (TG)
+	      cd tperiodica   | Tabla periódica con imágenes
+	      whoami          | Quién soy
+	      about           | Sobre mí...
+	      format          | Formatear disco (borrar todo)
+	      F5              | Limpiar pantalla
+	      ----------------------------------------------------------</div>`;
+	    output.appendChild(inputWrapper);
+	
+	    const newInput = document.getElementById('input-line');
+	    newInput.addEventListener('keydown', handleCommandInput); // Añadir el evento para los comandos
+	  });
+	  return; 
       } else {
         response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
       }
@@ -559,6 +594,75 @@ function simulateFormat() {
   updateFormatStep();
 }
 
+
+// Esta es la función que simula el volcado hexadecimal
+function generateFakeHexDump(lines = 10, startAddr = 0x00F4A0) {
+  let result = '';
+  for (let i = 0; i < lines; i++) {
+    const addr = (startAddr + i * 16).toString(16).padStart(6, '0');
+    const hex = Array.from({ length: 16 }, () =>
+      Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase()
+    ).join(' ');
+    const ascii = hex.match(/.{2}/g).map(h => {
+      const c = String.fromCharCode(parseInt(h, 16));
+      return /[ -~]/.test(c) ? c : '.';
+    }).join('');
+    result += `0x${addr}  ${hex}  ${ascii}\n`;
+  }
+  return result;
+}
+
+// Simulación de escritura letra a letra
+function simulateTextWriting(text, element, speed, callback) {
+  let index = 0;
+  const interval = setInterval(() => {
+    element.innerText += text[index++];
+    if (index === text.length) {
+      clearInterval(interval);
+      if (callback) callback();
+    }
+  }, speed);
+}
+
+// Función principal del comando "debug"
+function handleDebugCommand() {
+  const outputEl = document.getElementById('output');
+  outputEl.innerHTML = ''; // Limpiar el contenido previo
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'ascii';
+  const pre = document.createElement('pre');
+  wrapper.appendChild(pre);
+  outputEl.appendChild(wrapper);
+
+  const dump = generateFakeHexDump(20); // Generar más líneas del dump
+
+  // Simulación de la escritura del volcado hexadecimal
+  simulateTextWriting(dump, pre, 50, () => {
+    // Callback: cuando termina de escribir, volvemos a mostrar el input
+    const inputWrapper = document.createElement('div');
+    inputWrapper.classList.add('input-wrapper');
+    inputWrapper.innerHTML = `
+      <div class="line"><br>
+      carover0@DOS:~$
+      <input type="text" id="input-line" placeholder="Escriba un comando..." />
+      <br>
+      -------------- MENU --------------------------------------
+      cd zexplorer    | ZCASH Explorer (TG)
+      cd texplorer    | TRON Explorer (TG)
+      cd tperiodica   | Tabla periódica con imágenes
+      whoami          | Quién soy
+      about           | Sobre mí...
+      format          | Formatear disco (borrar todo)
+      F5              | Limpiar pantalla
+      ----------------------------------------------------------</div>`;
+    outputEl.appendChild(inputWrapper);
+
+    const newInput = document.getElementById('input-line');
+    newInput.addEventListener('keydown', handleCommandInput); // Añadir el evento para los comandos
+    newInput.focus(); // Enfocar el input
+  });
+}
 
 
   
