@@ -514,6 +514,20 @@ function simulateFormat() {
     "Finalizando...",
   ];
 
+  const glitches = [
+    "[INFO] Wiping sector 0x0000...",
+    "[INFO] Sector 0x0000 clean.",
+    "[WARN] Sector 0x0012 delayed response. Retrying...",
+    "[INFO] FAT16 signature written at offset 0x1BE.",
+    "[ERROR] Bad block detected at 0x001F. Recovery initiated.",
+    "[INFO] MBR overwritten successfully.",
+    "[SYS] DMA controller synced.",
+    "[IO] Controller response OK.",
+    "[MEM] Hex dump: 0x0000: FF FF FF 00 00 3F F8 00...",
+    "[KERNEL] Flushing write cache...",
+    "[DEBUG] INT 13h handler returned 00h (OK).",
+  ];
+
   let currentStep = 0;
   let progress = 0;
   const total = 40;
@@ -527,11 +541,15 @@ function simulateFormat() {
       const interval = setInterval(() => {
         const percent = Math.floor((progress / total) * 100);
         const bar = '[' + '#'.repeat(progress) + ' '.repeat(total - progress) + `] ${percent}%`;
-        pre.innerHTML = pasos.join('\n') + `\n\nProgreso: ${bar}`;
+
+        // Glitch técnico aleatorio
+        const randomLog = glitches[Math.floor(Math.random() * glitches.length)];
+
+        pre.innerHTML = pasos.join('\n') + `\n\n${randomLog}\nProgreso: ${bar}`;
         progress++;
         if (progress > total) {
           clearInterval(interval);
-          pre.innerHTML += `\n\nFormateo completo. Todos los datos han sido eliminados.\n\nAsi habrias vivido un formateo en los 80/90\n\n\ncarover0@DOS:~$\n<input type="text" id="input-line" placeholder="Escriba un comando..." /><br>
+          pre.innerHTML += `\n\nFormateo completo. Todos los datos han sido eliminados.\n\nAsí habrías vivido un formateo en los 80/90.\n\n\ncarover0@DOS:~$\n<input type="text" id="input-line" placeholder="Escriba un comando..." /><br>
 -------------- MENU --------------------------------------
  cd zexplorer    | ZCASH Explorer (TG)
  cd texplorer    | TRON Explorer (TG)
@@ -551,6 +569,8 @@ function simulateFormat() {
 
   updateFormatStep();
 }
+
+
   
 </script>
 
