@@ -496,17 +496,20 @@ LINKS
 	  } else if (command === 'help') {
 		  const outputEl = document.getElementById('output');
 		  const helpMessage = `
-		    <div class="line">Comandos disponibles:<br><br>
-		    cd zexplorer     - Explora datos en la red ZCASH (Telegram)<br>
-		    cd texplorer     - Explora datos en la red TRON (Telegram)<br>
-		    cd tperiodica    - Tabla periódica interactiva<br>
-		    whoami           - Muestra información del usuario<br>
-		    about            - Info del sistema<br>
-		    format           - Borra el disco (¡Cuidado!)<br>
-		    debug            - Simula volcado de memoria hexadecimal<br>
-		    F5               - Limpia la pantalla<br><br>
-		    <strong>Comandos especiales:</strong><br>
-		    dir              - Lista contenido oculto<br>
+		    <div class="line">Comandos disponibles:
+      
+		    cd zexplorer     - Explora datos en la red ZCASH (Telegram)
+		    cd texplorer     - Explora datos en la red TRON (Telegram)
+		    cd tperiodica    - Tabla periódica interactiva
+		    whoami           - Muestra información del usuario
+		    about            - Info del sistema
+		    format           - Borra el disco (¡Cuidado!)
+		    debug            - Simula volcado de memoria hexadecimal
+		    F5               - Limpia la pantalla
+      
+		    <strong>Comandos especiales:</strong>
+
+		    dir              - Lista contenido oculto
 		    help             - Muestra esta ayuda</div>
 
       		    Hay más de lo que ves a simple vista...
@@ -514,7 +517,6 @@ LINKS
 	            > dir	
 
 		  `;
-		
 		  const resDiv = document.createElement('div');
 		  resDiv.innerHTML = helpMessage;
 		  output.appendChild(resDiv);
@@ -525,6 +527,7 @@ LINKS
 		    <div class="line"><br>
 		    carover0@DOS:~$
 		    <input type="text" id="input-line" placeholder="Escriba un comando..." />
+      
 		    <br>----------------------------------------------------------</div>`;
 		  output.appendChild(inputWrapper);
 
