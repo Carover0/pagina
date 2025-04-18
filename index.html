@@ -517,14 +517,14 @@ LINKS
 	  > dir	
 
 		  `;
-		  const resDiv = document.createElement('div');
-		  resDiv.innerHTML = helpMessage;
-		  output.appendChild(resDiv);
-		
-		  const inputWrapper = document.createElement('div');
-		  inputWrapper.classList.add('input-wrapper');
-		  inputWrapper.innerHTML = `
-		    <div class="line"><br>
+	  const resDiv = document.createElement('div');
+	  resDiv.innerHTML = helpMessage;
+	  output.appendChild(resDiv);
+	
+	  const inputWrapper = document.createElement('div');
+	  inputWrapper.classList.add('ascii-l');
+	  inputWrapper.innerHTML = `
+	    <div class="line"><br>
 	  carover0@DOS:~$
 	  <input type="text" id="input-line" placeholder="Escriba un comando..." />
       
