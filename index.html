@@ -542,26 +542,15 @@ function simulateFormat() {
         const percent = Math.floor((progress / total) * 100);
         const bar = '[' + '#'.repeat(progress) + ' '.repeat(total - progress) + `] ${percent}%`;
 
-        // Glitch técnico aleatorio
         const randomLog = glitches[Math.floor(Math.random() * glitches.length)];
 
         pre.innerHTML = pasos.join('\n') + `\n\n${randomLog}\nProgreso: ${bar}`;
         progress++;
         if (progress > total) {
           clearInterval(interval);
-          pre.innerHTML += `\n\nFormateo completo. Todos los datos han sido eliminados.\n\nAsí habrías vivido un formateo en los 80/90.\n\n\ncarover0@DOS:~$\n<input type="text" id="input-line" placeholder="Escriba un comando..." /><br>
--------------- MENU --------------------------------------
- cd zexplorer    | ZCASH Explorer (TG)
- cd texplorer    | TRON Explorer (TG)
- cd tperiodica   | Tabla periódica con imágenes
- whoami          | Quién soy
- about           | Sobre mí...
- format          | Formatear disco (borrar todo)
- F5              | Limpiar pantalla
-----------------------------------------------------------`;
-          const newInput = document.getElementById('input-line');
-          newInput.addEventListener('keydown', handleCommandInput);
-          newInput.focus();
+          pre.innerHTML += `\n\nFormateo completo. Todos los datos han sido eliminados.\n\nAsí habrías vivido un formateo en los 80/90.\n\n\n`;
+
+ 
         }
       }, 150);
     }
@@ -569,6 +558,7 @@ function simulateFormat() {
 
   updateFormatStep();
 }
+
 
 
   
