@@ -494,27 +494,27 @@ LINKS
 	  [secret.sys]    ????
 	  </div>`;   
 	  } else if (command === 'help') {
-		  const outputEl = document.getElementById('output');
-		  const helpMessage = `
-		    <div class="line">Comandos disponibles:
-      
-		    cd zexplorer     - Explora datos en la red ZCASH (Telegram)
-		    cd texplorer     - Explora datos en la red TRON (Telegram)
-		    cd tperiodica    - Tabla periódica interactiva
-		    whoami           - Muestra información del usuario
-		    about            - Info del sistema
-		    format           - Borra el disco (¡Cuidado!)
-		    debug            - Simula volcado de memoria hexadecimal
-		    F5               - Limpia la pantalla
-      
-		    <b>Comandos especiales:</b>
+	  const outputEl = document.getElementById('output');
+	  const helpMessage = `
+	  <div class="line">Comandos disponibles:
 
-		    dir              - Lista contenido oculto
-		    help             - Muestra esta ayuda</div>
+	  cd zexplorer     - Explora datos en la red ZCASH (Telegram)
+	  cd texplorer     - Explora datos en la red TRON (Telegram)
+	  cd tperiodica    - Tabla periódica interactiva
+	  whoami           - Muestra información del usuario
+	  about            - Info del sistema
+	  format           - Borra el disco (¡Cuidado!)
+	  debug            - Simula volcado de memoria hexadecimal
+	  F5               - Limpia la pantalla
 
-      		    Hay más de lo que ves a simple vista...
-	    	    ¿Sos curioso? Probá con:
-	            > dir	
+	  <b>Comandos especiales:</b>
+
+	  dir              - Lista contenido oculto
+	  help             - Muestra esta ayuda</div>
+
+	  Hay más de lo que ves a simple vista...
+	  ¿Sos curioso? Probá con:
+	  > dir	
 
 		  `;
 		  const resDiv = document.createElement('div');
@@ -525,15 +525,14 @@ LINKS
 		  inputWrapper.classList.add('input-wrapper');
 		  inputWrapper.innerHTML = `
 		    <div class="line"><br>
-		    carover0@DOS:~$
-		    <input type="text" id="input-line" placeholder="Escriba un comando..." />
+	  carover0@DOS:~$
+	  <input type="text" id="input-line" placeholder="Escriba un comando..." />
       
 		    <br>----------------------------------------------------------</div>`;
 		  output.appendChild(inputWrapper);
 
 		  const newInput = document.getElementById('input-line');
 		  newInput.addEventListener('keydown', handleCommandInput);
-		  newInput.focus();
 		  return;
 		
 
