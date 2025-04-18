@@ -126,11 +126,12 @@ carover0@DOS:~$
 <input type="text" id="input-line" placeholder="Escriba un comando..." autofocus />
 <br>
 --------------- MENU -------------------                         
-> F5             | Limpiar la página  
-> T_EXPLORER     | TRON Explorer (TG) 
-> Z_EXPLORER     | ZCASH Explorer (TG)      
-> WHOAMI         | Quien soy        
-> ABOUT / ACERCA | Sobre mí...      
+ F5             | Limpiar la página  
+ T_EXPLORER     | TRON Explorer (TG) 
+ Z_EXPLORER     | ZCASH Explorer (TG) 
+ TPE            | Tabla periodica con imagenes.
+ WHOAMI         | Quien soy        
+ ABOUT / ACERCA | Sobre mí...      
 ----------------------------------------</div>
 <script>
   function startSpinner(callback) {
@@ -283,7 +284,52 @@ Z-Explorer/
 ▸ https://t.me/zcashexplorer_bot<br>
 </div>
 `;
-      } else if (command === 'whoami') {
+      } else if (command === 'tpe') {
+        response = `
+<div class="ascii"><pre>
+               ..:--=====--:.                
+           .-=+*##%%%####%%%#*+=:.           
+        .-=+##%%%#%##%%%%##%%#%%%#+-.        
+      :-+**+=-=##%%%%%#%%%%%%#=:-+#%*=:.     
+    .-+#*=::..:-#%%%%%%%%%%%%=.  ..-*%*=:    
+   :=**=:.     .:+##%%%%%%%#-.     ..-##+-.  
+  :=#*:..       ..+%@%%%%%*:.         .*%*-. 
+ .=*#:..         ..==---==:            .***- 
+ :+#=..             .:-:.               :#%=.
+.:*#-.::.........  -*%%%#=. .::::::::::..#%*.
+ :=*=*+=********=. -%%%%%+. -*#*********+*%*.
+ .+*+#**%%%#####*-. :=++- .-+#%#######*#*#%=.
+  =***#########%%#+:     :=***######*#%#*%#: 
+  .+#***######%%%=:.      .=###%#%##%%#*##:  
+   .=***#####%%#-.         .:*%%%%#%%##%#:   
+     :+**####%+:.            .=**####%%+.    
+       :*##**=.:             :.-*####+:      
+         -+**++=--:::::::::--=+*#%#=.        
+            -=*###********####*+=.           
+                :-==++++++=-:.                
+</pre></div>
+<div class="header">░░ TPE ░░</div>
+> Tabla periodica de los elementos con imágenes.
+<pre>
+T-Periodica/
+├──📕 Informacion/
+│   ├── 💎 /tpe <elemento> Muestra informacion del elemento con una imagen del mismo.
+│   ├── 📜 Lista por elementos  (categorias)
+│   └── ⚡ /ion <simbolo> ionizazion en ev
+├──📃 Graficos/
+│   └── ⚛️ Diagrama de Bohr  
+└──💾 Acerca del Proyecto/  
+    └── ℹ️ Info de contacto del desarrollador, canales de feedback y donaciones.
+</pre>
+<div class="final-block">
+💡 Notas
+▸ Tabla periodica de los elementos con imagenes
+▸ Destinado a alumnos, profesores y entusiastas de la química 
+▸ Base de datos e imágenes recopiladas de la red en bases propias.
+▸ https://t.me/tablaperiodica_bot
+</div>
+`;
+    } else if (command === 'whoami') {
         response = `<pre>
 INFORMACION DE USUARIO
 -----------------------
@@ -339,13 +385,14 @@ LINKS
 <div class="line"><br>
 <input type="text" id="input-line" placeholder="Escriba un comando..." />
 <br>
--------------- MENU --------------------                         
+-------------- MENU ----------------------------                         
  F5             | Limpiar la página  
  T_EXPLORER     | TRON Explorer (TG) 
- Z_EXPLORER     | ZCASH Explorer (TG)      
+ Z_EXPLORER     | ZCASH Explorer (TG) 
+ TPE            | Tabla periodica con imagenes.
  WHOAMI         | Quien soy        
  ABOUT / ACERCA | Sobre mí...      
-----------------------------------------</div>`;
+--------------------------------------------------</div>`;
         output.appendChild(inputWrapper);
 
         const newInput = document.getElementById('input-line');
