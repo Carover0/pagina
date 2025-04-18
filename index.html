@@ -653,28 +653,6 @@ function handleDebugCommand() {
 
   // Simulación de la escritura del volcado hexadecimal
   simulateTextWriting(dump, pre, 50, () => {
-    // Callback: cuando termina de escribir, volvemos a mostrar el input
-    const inputWrapper = document.createElement('div');
-    inputWrapper.classList.add('input-wrapper');
-    inputWrapper.innerHTML = `
-      <div class="line"><br>
-      carover0@DOS:~$
-      <input type="text" id="input-line" placeholder="Escriba un comando..." />
-      <br>
-      -------------- MENU --------------------------------------
-      cd zexplorer    | ZCASH Explorer (TG)
-      cd texplorer    | TRON Explorer (TG)
-      cd tperiodica   | Tabla periódica con imágenes
-      whoami          | Quién soy
-      about           | Sobre mí...
-      format          | Formatear disco (borrar todo)
-      F5              | Limpiar pantalla
-      ----------------------------------------------------------</div>`;
-    outputEl.appendChild(inputWrapper);
-
-    const newInput = document.getElementById('input-line');
-    newInput.addEventListener('keydown', handleCommandInput); // Añadir el evento para los comandos
-    newInput.focus(); // Enfocar el input
   });
 }
 
