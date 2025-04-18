@@ -109,7 +109,9 @@ carover0
   </style>
 </head>
 <body>
-<pre align="center">
+<pre id="boot-msg">
+  </pre>
+<pre align="center" id="output-t" style="display:none;">
  ██████╗ █████╗ ██████╗  ██████╗ ██╗   ██╗███████╗██████╗  ██████╗ 
 ██╔════╝██╔══██╗██╔══██╗██╔═══██╗██║   ██║██╔════╝██╔══██╗██╔═████╗
 ██║     ███████║██████╔╝██║   ██║██║   ██║█████╗  ██████╔╝██║██╔██║
@@ -121,7 +123,7 @@ CaroPowerShell®
 No hay frameworks. No hay librerías modernas. No hay scroll infinito ni diseño responsive.
 Solo HTML, JavaScript, y una idea clara: emular la experiencia de cuando lo digital era más honesto.  
 </pre>                                                                                                                       
-  <div id="output">
+  <div id="output" style="display:none;">
 carover0@DOS:~$
 <input type="text" id="input-line" placeholder="Escriba un comando..." autofocus />
 <br>
@@ -133,6 +135,67 @@ carover0@DOS:~$
  WHOAMI         | Quien soy        
  ABOUT / ACERCA | Sobre mí...      
 --------------------------------------------------</div>
+
+<script>
+    // Mensajes que queremos mostrar
+    const bootMessages = [
+      "Starting BIOS...",
+      "Initializing system components...",
+      "Searching for boot device...",
+      "Boot device found: HDD",
+      "Loading boot sector...",
+      "Loading kernel..."
+    ];
+
+    let currentMessage = 0;
+    let currentChar = 0;
+    let bootMsgElement = document.getElementById("boot-msg");
+
+    function typeMessage() {
+      if (currentMessage < bootMessages.length) {
+        let message = bootMessages[currentMessage];
+        if (currentChar < message.length) {
+          bootMsgElement.textContent += message.charAt(currentChar);
+          currentChar++;
+          setTimeout(typeMessage, 7); // Tiempo entre cada carácter (100 ms)
+        } else {
+          currentMessage++;
+          currentChar = 0;
+          bootMsgElement.textContent += "\n"; // Espacio entre mensajes
+          setTimeout(typeMessage, 500); // Tiempo entre mensajes (500 ms)
+        }
+      } else {
+        // Cuando todos los mensajes de arranque han sido escritos, ocultamos y mostramos la siguiente parte
+        setTimeout(function() {
+          document.getElementById("boot-msg").style.display = "none";
+          document.getElementById("output").style.display = "block";
+          document.getElementById("output-t").style.display = "block";
+        }, 1000); // Espera 1 segundo después de terminar el último mensaje
+      }
+    }
+
+    // Iniciar el proceso de escritura
+    typeMessage();
+  </script>
+
+
+
+
+
+ <script>
+    // Esperar 4 segundos (simulando la carga del sistema)
+    setTimeout(function() {
+      // Ocultar los mensajes de inicio
+      document.getElementById("boot-msg").style.display = "none";
+      // Mostrar el resto de la página
+      document.getElementById("output").style.display = "block";
+      document.getElementById("output-t").style.display = "block";
+     
+
+    }, 7000);  // 7000 milisegundos = 4 segundos
+  </script>
+
+  
 <script>
   function startSpinner(callback) {
     const spinnerChars = ['-', '|', '/', '_'];
