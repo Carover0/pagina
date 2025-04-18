@@ -529,13 +529,11 @@ carover0@DOS:~$
   const newInput = document.getElementById('input-line');
   newInput.addEventListener('keydown', handleCommandInput);
   return;
-      } else if (command === 'ls') {
-	  response = `
-	 <div class="ascii-l">
-<b>'ls'</b> no se reconoce como un comando interno o externo.<br>
-(Este no es Linux... pero nice try) 
-¿Quizás querías escribir: <b>dir</b>?
-	  </div>`;
+      } else if (['ls', 'pwd', 'sudo', 'rm', 'clear', 'touch', 'cat', 'nano', 'bash', 'man', 'exit'].includes(command)) {
+  response = `<div class="line"><b>'${command}'</b> no se reconoce como comando interno o externo.<br>
+  Este no es Linux... pero nice try 🐧<br>
+  ¿Quizás querías escribir: <b>dir</b>?</div>`;
+
 	} else {
         response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
       }
