@@ -127,14 +127,14 @@ Solo HTML, JavaScript, y una idea clara: emular la experiencia de cuando lo digi
 carover0@DOS:~$
 <input type="text" id="input-line" placeholder="Escriba un comando..." autofocus />
 <br>
---------------- MENU -----------------------------                         
- F5             | Limpiar la página  
- T_EXPLORER     | TRON Explorer (TG) 
- Z_EXPLORER     | ZCASH Explorer (TG) 
- TPE            | Tabla periodica con imagenes.
- WHOAMI         | Quien soy        
- ABOUT / ACERCA | Sobre mí...      
---------------------------------------------------</div>
+-------------- MENU --------------------------------------
+ cd zexplorer    | ZCASH Explorer (TG)
+ cd texplorer    | TRON Explorer (TG)
+ cd tperiodica   | Tabla periódica con imágenes
+ whoami          | Quién soy
+ about           | Sobre mí...
+ F5              | Limpiar pantalla
+----------------------------------------------------------</div>
 
 <script>
     
@@ -230,7 +230,7 @@ carover0@DOS:~$
 
       let response = '';
 
-      if (command === 't_explorer') {
+      if (command === "cd texplorer" || command === "cd texplorer && ls") {
         response = `
 <div class="ascii"><pre>
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -288,7 +288,7 @@ Notas:
 - Contacto técnico: https://t.me/texplorerbot
 </pre>
 </div>`;
-      } else if (command === 'z_explorer') {
+      } else if (command === "cd zexplorer" || command === "cd zexplorer && ls") {
         response = `
 <div class="ascii"><pre>
 @@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -467,14 +467,14 @@ LINKS
 carover0@DOS:~$
 <input type="text" id="input-line" placeholder="Escriba un comando..." />
 <br>
--------------- MENU --------------------------------------                         
- F5             | Limpiar la página  
- T_EXPLORER     | TRON Explorer (TG) 
- Z_EXPLORER     | ZCASH Explorer (TG) 
- TPE            | Tabla periodica con imagenes.
- WHOAMI         | Quien soy        
- ABOUT / ACERCA | Sobre mí...      
-------------------------------------------------------------</div>`;
+-------------- MENU --------------------------------------
+ cd zexplorer    | ZCASH Explorer (TG)
+ cd texplorer    | TRON Explorer (TG)
+ cd tperiodica   | Tabla periódica con imágenes
+ whoami          | Quién soy
+ about           | Sobre mí...
+ F5              | Limpiar pantalla
+----------------------------------------------------------</div>`;
         output.appendChild(inputWrapper);
 
         const newInput = document.getElementById('input-line');
