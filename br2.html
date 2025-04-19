@@ -48,9 +48,11 @@
         const response = await fetch(`https://caropowershell-proxy.onrender.com/duck?q=${encodeURIComponent(term)}`);
         const data = await response.json();
 
+        console.log(data); // Esto muestra los resultados de la API
+
         if (data && data.length > 0) {
           let output = `Resultados de DuckDuckGo para "${term}":\n\n`;
-          data.slice(0, 5).forEach((item, i) => {
+          data.forEach((item, i) => {
             output += `[${i + 1}] ${item.title || 'Sin título'}\n    ${item.url || 'Sin URL'}\n    ${item.snippet || 'Sin descripción'}\n\n`;
           });
           resultadosEl.innerText = output;
@@ -59,11 +61,13 @@
         }
       } catch (err) {
         resultadosEl.innerText = `Error al buscar "${term}".\n`;
+        console.error(err);  // Esto muestra el error en la consola si ocurre
       }
     }
   </script>
 </body>
 </html>
+
 
 </body>
 </html>
