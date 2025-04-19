@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RetroSearch v1.0</title>
+  <title>RetroSearch v1.0 - Buscando en Wiby.me</title>
   <style>
     body {
       background: black;
@@ -20,10 +20,15 @@
       padding: 5px;
       width: 80%;
     }
+    #resultados {
+      white-space: pre-wrap;
+      font-family: 'Courier New', Courier, monospace;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
-  <div class="line">RetroSearch v1.0 - Buscando con Wiby.me</div>
+  <div class="line">RetroSearch v1.0 - Buscando en Wiby.me</div>
   <div class="line">Ingrese su búsqueda:</div>
   <input type="text" id="search" placeholder="Escriba un término..." />
   <button onclick="buscar()">Buscar</button>
@@ -38,15 +43,30 @@
         return;
       }
 
-      // Crear la URL de búsqueda para Wiby.me
-      const wibyUrl = `https://wiby.me/?q=${encodeURIComponent(term)}`;
+      // Mostrar el mensaje de búsqueda retro
+      let output = `Buscando "${term}"...\n\n`;
+      output += "Por favor espere...\n\n";
+      output += "Resultados simulados:\n\n";
 
-      // Redirigir al usuario a Wiby.me con la búsqueda
-      window.location.href = wibyUrl;
+      // Simulamos los resultados
+      for (let i = 1; i <= 5; i++) {
+        output += `[${i}] Título del Resultado ${i}\n`;
+        output += `    URL: https://wiby.me/?q=${encodeURIComponent(term)}\n`;
+        output += `    Descripción: Resultado simulado ${i} para el término "${term}".\n\n`;
+      }
+
+      // Mostrar los resultados simulados en la página
+      document.getElementById('resultados').innerText = output;
+
+      // Redirigir a la página de Wiby con la búsqueda real después de unos segundos
+      setTimeout(() => {
+        window.location.href = `https://wiby.me/?q=${encodeURIComponent(term)}`;
+      }, 3000); // Espera 3 segundos antes de redirigir
     }
   </script>
 </body>
 </html>
+
 
 
 
