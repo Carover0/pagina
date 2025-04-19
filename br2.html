@@ -4,8 +4,8 @@
   <meta charset="UTF-8"/>
   <title>RetroSearch v1.0 (test) 9</title>
   <style>
-    body { background: black; color: white; font-family:'Lucida Console',monospace; padding:20px; }
-    .line { margin-bottom:10px; }
+    body { background: black; color: white; font-family:'Lucida Console', padding:20px; }
+    .line { margin-bottom:12px; }
     input {
       background: black;
       border: none;
@@ -20,7 +20,7 @@
 </head>
 <body>
   <div class="line">RetroSearch v1.0 (test 9)</div>
-  <div class="line">C:\search&gt; <input id="search" placeholder="Término..." /></div>
+  <div class="line">Buscar&gt; <input id="search" placeholder="Término o direccion" /></div>
   <pre id="resultados" class="line"></pre>
 
   <script>
@@ -57,7 +57,7 @@
 
         if (data && data.length) {
           let out = `Resultados para "${term}":\n\n`;
-          data.slice(0,9).forEach((item, i) => {
+          data.slice(0,15).forEach((item, i) => {
             out += `[${i+1}] ${item.title}\n`;
             out += `    URL: ${item.url}\n`;
             out += `    ${item.snippet}\n\n`;
