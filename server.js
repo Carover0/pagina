@@ -2,7 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 const cors = require('cors');            // ①
 const app = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT;
 
 app.use(cors());                         // ②
 app.use(express.static('public'));
@@ -25,10 +25,6 @@ app.get('/duck', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Error buscando en DuckDuckGo' });
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en puerto ${PORT}`);
 });
 
 app.listen(PORT, () => {
