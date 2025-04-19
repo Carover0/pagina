@@ -160,7 +160,13 @@ carover0@DOS:~$
  HELP	         | Hay mas de lo que ves...
  F5              | Limpiar pantalla
 ----------------------------------------------------------</div>
+
+	
 <script>
+window.onload = function() {
+  const inputField = document.getElementById('input-line');
+  inputField.focus(); // Esto pone el foco en el input cuando se carga la página
+};
     
     const bootMessages = [
      "Starting BIOS...",
@@ -694,10 +700,6 @@ function handleDebugCommand() {
   });
 }
 
-window.onload = function() {
-  const inputField = document.getElementById('input-line');
-  inputField.focus(); // Esto pone el foco en el input cuando se carga la página
-};
 
   
 </script>
