@@ -53,19 +53,20 @@
       // Mostrar el mensaje de búsqueda retro
       let output = `Buscando "${term}"...\n\n`;
       output += "Por favor espere...\n\n";
-      output += "Resultados reales de Wiby.me:\n\n";
+      output += "Resultados de Wiby.me:\n\n";
 
       // Crear la URL de búsqueda en Wiby
       const wibyUrl = `https://wiby.me/?q=${encodeURIComponent(term)}`;
 
-      // Resultados simulados de Wiby
-      const simulatedResults = [
-        { title: "Resultado 1", url: wibyUrl, description: "Haga clic para ver los resultados reales en Wiby." },
-        { title: "Resultado 2", url: wibyUrl, description: "Haga clic para ver los resultados reales en Wiby." },
-        { title: "Resultado 3", url: wibyUrl, description: "Haga clic para ver los resultados reales en Wiby." },
-        { title: "Resultado 4", url: wibyUrl, description: "Haga clic para ver los resultados reales en Wiby." },
-        { title: "Resultado 5", url: wibyUrl, description: "Haga clic para ver los resultados reales en Wiby." }
-      ];
+      // Crear resultados dinámicos con enlaces a Wiby
+      let simulatedResults = [];
+      for (let i = 1; i <= 5; i++) {
+        simulatedResults.push({
+          title: `Resultado ${i}`,
+          url: wibyUrl,
+          description: `Haga clic para ver los resultados reales en Wiby para el término "${term}".`
+        });
+      }
 
       // Mostrar los resultados de forma más detallada
       simulatedResults.forEach((res, i) => {
@@ -74,7 +75,7 @@
         output += `    Descripción: ${res.description}\n\n`;
       });
 
-      // Mostrar los resultados simulados en la página
+      // Mostrar los resultados en la página
       document.getElementById('resultados').innerText = output;
 
       // También agregar enlaces para simular más interacción
@@ -88,3 +89,4 @@
   </script>
 </body>
 </html>
+
