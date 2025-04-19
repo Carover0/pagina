@@ -374,15 +374,25 @@ Notas:
 </pre>
 `;
     } else if (command === 'whoami') {
-        response = `<pre>
-INFORMACION DE USUARIO
+  // 1) Definimos el usuario
+  const username = 'carover0';
+  // 2) Convertimos cada carácter a su binario de 8 bits
+  const binary = username
+    .split('')
+    .map(c => c.charCodeAt(0).toString(2).padStart(8, '0'))
+    .join(' ');
+  // 3) Fecha actual en YYYY‑MM‑DD
+  const today = new Date().toISOString().slice(0, 10);
+
+  response = `<pre>
+INFORMACIÓN DE USUARIO
 -----------------------
 
-NOMBRE DE USUARIO    BIN	  
+NOMBRE DE USUARIO    BIN  
 ==================   =======================================================
-carover0	     0110001101100001011100100110111101110110011001010111001000110000
+${username}    ${binary}
 
-[*] Sesión activa desde: 1995-02-14
+[*] Sesión activa desde: ${today}
 [*] Shell: /bin/nostalgia
 --------------------------------------------------
 </pre>`;
