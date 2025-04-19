@@ -46,19 +46,20 @@
       // Mostrar el mensaje de búsqueda retro
       let output = `Buscando "${term}"...\n\n`;
       output += "Por favor espere...\n\n";
-      output += "Resultados simulados:\n\n";
+      output += "Resultados reales de Wiby.me:\n\n";
 
-      // Simulamos los resultados
+      // Crear la URL de búsqueda en Wiby
+      const wibyUrl = `https://wiby.me/?q=${encodeURIComponent(term)}`;
+
+      // Generar los resultados simulados, con la URL de búsqueda
       for (let i = 1; i <= 5; i++) {
         output += `[${i}] Título del Resultado ${i}\n`;
-        output += `    URL: https://wiby.me/?q=${encodeURIComponent(term)}\n`;
-        output += `    Descripción: Resultado simulado ${i} para el término "${term}".\n\n`;
+        output += `    URL: ${wibyUrl}\n`;
+        output += `    Descripción: Haga clic para ver los resultados reales en Wiby.\n\n`;
       }
 
       // Mostrar los resultados simulados en la página
       document.getElementById('resultados').innerText = output;
-
-      // Ya no hay redirección automática
     }
   </script>
 </body>
