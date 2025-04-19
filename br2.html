@@ -2,17 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
-  <title>RetroSearch Test</title>
+  <title>RetroSearch v1.0 (test) 8</title>
   <style>
-    body {
-      background: black;
-      color: lime;
-      font-family: 'Lucida Console', monospace;
-      padding: 20px;
-    }
-    .line {
-      margin-bottom: 10px;
-    }
+    body { background: black; color: lime; font-family:'Lucida Console',monospace; padding:20px; }
+    .line { margin-bottom:10px; }
     input {
       background: black;
       border: none;
@@ -22,21 +15,23 @@
       width: 80%;
       outline: none;
     }
-    pre {
-      white-space: pre-wrap;
-    }
+    pre { white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <div class="line">RetroSearch v1.0 (test 7)</div>
+  <div class="line">RetroSearch v1.0 (test) 8</div>
   <div class="line">C:\search&gt; <input id="search" placeholder="Término..." /></div>
   <pre id="resultados" class="line"></pre>
 
   <script>
-    // Definimos buscar() en el scope global
-    window.buscar = async function() {
+    // === 1) Arrancamos con un log para confirmar que este script SE CARGA ===
+    console.log('🚀 pr2.html script inicializado');
+
+    // === 2) Declaramos buscar() COMO FUNCIÓN GLOBAL ===
+    async function buscar() {
       const term = document.getElementById('search').value.trim();
       const resultadosEl = document.getElementById('resultados');
+
       if (!term) {
         resultadosEl.innerText = "Error: ingrese un término.";
         return;
@@ -54,7 +49,7 @@
 
         if (data && data.length) {
           let out = `Resultados para "${term}":\n\n`;
-          data.slice(0, 5).forEach((item, i) => {
+          data.slice(0,5).forEach((item,i) => {
             out += `[${i+1}] ${item.title}\n`;
             out += `    URL: ${item.url}\n`;
             out += `    ${item.snippet}\n\n`;
@@ -67,17 +62,17 @@
         console.error('Error de fetch:', e);
         resultadosEl.innerText = `Error al buscar "${term}".`;
       }
-    };
+    }
 
-    // Enlazamos el listener al input una vez cargado el DOM
+    // === 3) Al cargar el DOM, asignamos el listener y comprobamos que buscar existe ===
     window.addEventListener('DOMContentLoaded', () => {
+      console.log('Listener asignado, buscar() disponible:', typeof buscar);
       const input = document.getElementById('search');
       input.focus();
-      console.log('Listener asignado, buscar() disponible:', typeof window.buscar);
       input.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
           console.log('Enter detectado — llamando a buscar()');
-          window.buscar();
+          buscar();
         }
       });
     });
@@ -85,9 +80,5 @@
 </body>
 </html>
 
-
-
-</body>
-</html>
 
 
