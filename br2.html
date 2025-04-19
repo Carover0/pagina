@@ -29,7 +29,7 @@
 </head>
 <body>
   <div class="line">RetroSearch v1.0</div>
-  <div class="line">Escriba su búsqueda y presione [Enter] 5:</div>
+  <div class="line">Escriba su búsqueda y presione [Enter] 6:</div>
   <div class="line">C:\search&gt; <input type="text" id="search" onkeydown="if(event.key==='Enter') buscar();" autofocus /></div>
   <pre id="resultados" class="line"></pre>
 
@@ -49,8 +49,8 @@ async function buscar() {
     const response = await fetch(`https://caropowershell-proxy.onrender.com/duck?q=${encodeURIComponent(term)}`);
     const data = await response.json();
     
-    // Agregar este console.log para ver la respuesta de la API
-    console.log(data); // Aquí verás si la API está enviando lo que esperas.
+    // Verificación de la respuesta de la API en la consola
+    console.log(data); // Esto muestra los datos que la API devuelve
 
     if (data && data.length > 0) {
       let output = `Resultados de DuckDuckGo para "${term}":\n\n`;
@@ -68,6 +68,7 @@ async function buscar() {
     console.error(err);  // Imprime el error en la consola para más detalles.
   }
 }
+
   </script>
 </body>
 </html>
