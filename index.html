@@ -641,15 +641,19 @@ function handleDebugCommand() {
 }
 
 
+
+
+
+	
 async function buscar(term) {
   const resultadosEl = document.getElementById('resultados');
-
+	
   if (!term) {
     resultadosEl.innerText = "Error: ingrese un término.";
     console.log("No se ingresó término de búsqueda");
     return;
   }
-
+  console.log('Término a buscar:', term); // Justo al entrar en buscar(term)
   resultadosEl.innerText = `Buscando "${term}"...\n\nPor favor espere...\n`;
 
   try {
@@ -657,7 +661,7 @@ async function buscar(term) {
       `https://caropowershell-proxy.onrender.com/duck?q=${encodeURIComponent(term)}`
     );
     console.log('Fetch status:', res.status);
-
+	console.log('Fetch status:', res.status); // Después del fetch	
     if (res.status !== 200) {
       console.error("Hubo un error con la API");
       resultadosEl.innerText = `Error de la API, status: ${res.status}`;
@@ -666,7 +670,7 @@ async function buscar(term) {
 
     const data = await res.json();
     console.log('Datos recibidos:', data);
-
+	console.log('Datos recibidos:', data); // Luego de parsear JSON
     if (data && data.length) {
       let out = `Resultados para "${term}":\n\n`;
       data.slice(0, 5).forEach((item, i) => {
