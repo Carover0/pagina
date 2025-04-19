@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RetroSearch v1.0 - Buscando con Wiby.me</title>
+  <title>RetroSearch v1.0</title>
   <style>
     body {
       background: black;
@@ -39,31 +39,32 @@
       }
 
       // Mostrar un mensaje simulando la búsqueda
-      document.getElementById('resultados').innerText = `Buscando "${term}" en Wiby.me...`;
+      document.getElementById('resultados').innerText = `Buscando "${term}" en DuckDuckGo...`;
 
       try {
-        // Realizamos la búsqueda en Wiby.me
-        const response = await fetch(`https://wiby.me/search?q=${encodeURIComponent(term)}`);
+        // Realizamos la búsqueda en DuckDuckGo (sin API Key)
+        const response = await fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(term)}&type=json`);
         const data = await response.json();
 
-        if (data && data.results && data.results.length > 0) {
+        if (data && data.length > 0) {
           let output = `Resultados encontrados para "${term}":\n\n`;
           // Mostramos los primeros 10 resultados
-          data.results.slice(0, 10).forEach((result, i) => {
-            output += `[${i + 1}] ${result.title || 'Sin título'}\n`;
+          data.slice(0, 10).forEach((result, i) => {
+            output += `[${i + 1}] ${result.phrase || 'Sin título'}\n`;
             output += `    ${result.url || 'Sin URL'}\n`;
-            output += `    Descripción: ${result.description || 'No disponible.'}\n\n`;
+            output += `    Descripción: ${result.text || 'No disponible.'}\n\n`;
           });
           document.getElementById('resultados').innerText = output;
         } else {
           document.getElementById('resultados').innerText = `No se encontraron resultados para "${term}".`;
         }
       } catch (error) {
-        document.getElementById('resultados').innerText = `Error al realizar la búsqueda en Wiby.me.`;
+        document.getElementById('resultados').innerText = `Error al realizar la búsqueda en DuckDuckGo.`;
         console.error(error);
       }
     }
   </script>
 </body>
 </html>
+
 
