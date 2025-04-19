@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RetroSearch v1.0</title>
+  <title>RetroSearch con Wiby.me</title>
   <style>
     body {
       background: black;
@@ -20,21 +20,61 @@
       padding: 5px;
       width: 80%;
     }
+    iframe {
+      border: 1px solid lime;
+      width: 100%;
+      height: 600px;
+      background: black;
+    }
   </style>
 </head>
+<body>
+  <div class="line">RetroSearch v1.0 - Buscando con Wiby.me</div>
+  <div class="line">Ingrese su búsqueda:</div>
+  <form id="retro-search-form">
+    <input type="text" id="search" placeholder="Escriba un término..." />
+    <button type="submit">Buscar</button>
+  </form>
 
-<input id="url" placeholder="https://example.com">
-<button onclick="navegar()">Ver</button>
-<pre id="resultado">Esperando URL...</pre>
+  <div id="resultados" class="line"></div>
 
-<script>
-  async function navegar() {
-    const url = document.getElementById("url").value;
-    const res = await fetch(`https://caropowershell-proxy.onrender.com/textmode?url=${encodeURIComponent(url)}`);
-    const txt = await res.text();
-    document.getElementById("resultado").innerText = txt;
-  }
-</script>
+  <iframe id="retro-iframe"></iframe>
 
+  <script>
+    document.getElementById('retro-search-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const term = document.getElementById('search').value;
+      if (!term) {
+        alert("Por favor ingrese un término de búsqueda.");
+        return;
+      }
+
+      // Mostrar un mensaje simulando la búsqueda
+      document.getElementById('resultados').innerText = `Buscando "${term}" en Wiby.me...`;
+
+      // Realizar la búsqueda en Wiby.me
+      fetch(`https://wiby.me/api/v1/search?q=${encodeURIComponent(term)}&count=10`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.results && data.results.length > 0) {
+            let output = `Resultados encontrados para "${term}":\n\n`;
+            // Mostrar los primeros 10 resultados
+            data.results.forEach((result, i) => {
+              output += `[${i + 1}] ${result.title || 'Sin título'}\n`;
+              output += `    ${result.url || 'Sin URL'}\n`;
+              output += `    Descripción: ${result.snippet || 'No disponible.'}\n\n`;
+            });
+            document.getElementById('resultados').innerText = output;
+          } else {
+            document.getElementById('resultados').innerText = `No se encontraron resultados para "${term}".`;
+          }
+        })
+        .catch(error => {
+          document.getElementById('resultados').innerText = `Error al realizar la búsqueda en Wiby.me.`;
+          console.error(error);
+        });
+    });
+  </script>
 </body>
 </html>
+
