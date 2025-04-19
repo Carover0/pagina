@@ -647,46 +647,43 @@ function handleDebugCommand() {
 	
 async function buscar(term) {
   const resultadosEl = document.getElementById('resultados');
-	
+  resultadosEl.innerText = `DEBUG: buscando "${term}"...`;
+
   if (!term) {
     resultadosEl.innerText = "Error: ingrese un término.";
     console.log("No se ingresó término de búsqueda");
     return;
   }
-  console.log('Término a buscar:', term); // Justo al entrar en buscar(term)
-  resultadosEl.innerText = `Buscando "${term}"...\n\nPor favor espere...\n`;
 
   try {
-    const res = await fetch(
-      `https://caropowershell-proxy.onrender.com/duck?q=${encodeURIComponent(term)}`
-    );
-    console.log('Fetch status:', res.status);
-	console.log('Fetch status:', res.status); // Después del fetch	
-    if (res.status !== 200) {
-      console.error("Hubo un error con la API");
-      resultadosEl.innerText = `Error de la API, status: ${res.status}`;
+    const url = `https://caropowershell-proxy.onrender.com/duck?q=${encodeURIComponent(term)}`;
+    console.log("URL de búsqueda:", url);
+
+    const res = await fetch(url);
+    console.log("Fetch ejecutado. Status:", res.status);
+
+    if (!res.ok) {
+      resultadosEl.innerText = `Error de API. Status: ${res.status}`;
       return;
     }
 
     const data = await res.json();
-    console.log('Datos recibidos:', data);
-	console.log('Datos recibidos:', data); // Luego de parsear JSON
-    if (data && data.length) {
-      let out = `Resultados para "${term}":\n\n`;
-      data.slice(0, 5).forEach((item, i) => {
-        out += `[${i + 1}] ${item.title}\n`;
-        out += `    URL: ${item.url}\n`;
-        out += `    ${item.snippet}\n\n`;
-      });
-      resultadosEl.innerText = out;
+    console.log("JSON recibido:", data);
+
+    if (data && data.length > 0) {
+      resultadosEl.innerText = data
+        .slice(0, 3)
+        .map((item, i) => `[${i + 1}] ${item.title}\n  ${item.url}\n  ${item.snippet}\n`)
+        .join("\n");
     } else {
       resultadosEl.innerText = "No se encontraron resultados.";
     }
-  } catch (e) {
-    console.error('Error de fetch:', e);
-    resultadosEl.innerText = `Error al buscar "${term}". Detalles: ${e.message}`;
+  } catch (err) {
+    console.error("Error en fetch:", err);
+    resultadosEl.innerText = `Error de conexión: ${err.message}`;
   }
 }
+
 
 	
 </script>
