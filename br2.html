@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RetroSearch v1.0 - Buscando en Wiby.me</title>
+  <title>RetroSearch v1.0</title>
   <style>
     body {
       background: black;
@@ -20,73 +19,50 @@
       padding: 5px;
       width: 80%;
     }
-    #resultados {
-      white-space: pre-wrap;
-      font-family: 'Courier New', Courier, monospace;
-      margin-top: 20px;
-    }
-    a {
-      color: lime;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
-  <div class="line">RetroSearch v1.0 - Buscando en Wiby.me</div>
+  <div class="line">RetroSearch v1.0</div>
   <div class="line">Ingrese su búsqueda:</div>
   <input type="text" id="search" placeholder="Escriba un término..." />
   <button onclick="buscar()">Buscar</button>
 
-  <div id="resultados" class="line"></div>
+  <pre id="resultados" class="line"></pre>
 
   <script>
-    function buscar() {
-      const term = document.getElementById('search').value;
+    async function buscar() {
+      const term = document.getElementById('search').value.trim();
+      const resultados = document.getElementById('resultados');
+
       if (!term) {
-        alert("Por favor ingrese un término de búsqueda.");
+        resultados.innerText = "Por favor, ingrese un término válido.";
         return;
       }
 
-      // Mostrar el mensaje de búsqueda retro
-      let output = `Buscando "${term}"...\n\n`;
-      output += "Por favor espere...\n\n";
-      output += "Resultados de Wiby.me:\n\n";
+      resultados.innerText = `Buscando "${term}"...\n\nPor favor espere...\n`;
 
-      // Crear la URL de búsqueda en Wiby
-      const wibyUrl = `https://wiby.me/?q=${encodeURIComponent(term)}`;
+      try {
+        const res = await fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(term)}`);
+        const data = await res.json();
 
-      // Crear resultados dinámicos con enlaces a Wiby
-      let simulatedResults = [];
-      for (let i = 1; i <= 5; i++) {
-        simulatedResults.push({
-          title: `Resultado ${i}`,
-          url: wibyUrl,
-          description: `Haga clic para ver los resultados reales en Wiby para el término "${term}".`
+        if (data.length === 0) {
+          resultados.innerText = `No se encontraron resultados para "${term}".`;
+          return;
+        }
+
+        let salida = `Resultados sugeridos para "${term}":\n\n`;
+        data.slice(0, 10).forEach((item, i) => {
+          salida += `[${i + 1}] ${item.phrase}\n    URL simulada: https://duckduckgo.com/?q=${encodeURIComponent(item.phrase)}\n\n`;
         });
+
+        resultados.innerText = salida;
+      } catch (err) {
+        resultados.innerText = "Error al buscar en DuckDuckGo.";
+        console.error(err);
       }
-
-      // Mostrar los resultados de forma más detallada
-      simulatedResults.forEach((res, i) => {
-        output += `[${i + 1}] ${res.title}\n`;
-        output += `    URL: ${res.url}\n`;
-        output += `    Descripción: ${res.description}\n\n`;
-      });
-
-      // Mostrar los resultados en la página
-      document.getElementById('resultados').innerText = output;
-
-      // También agregar enlaces para simular más interacción
-      let resultsHtml = "<ul>";
-      simulatedResults.forEach(res => {
-        resultsHtml += `<li><a href="${res.url}" target="_blank">${res.title}</a>: ${res.description}</li>`;
-      });
-      resultsHtml += "</ul>";
-      document.getElementById('resultados').innerHTML += resultsHtml;
     }
   </script>
 </body>
 </html>
+
 
