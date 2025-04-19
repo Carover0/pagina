@@ -447,11 +447,7 @@ LINKS
 	  simulateTextWriting(dump, pre, 5, () => {
 	  });
 
-          } else if (comando.startsWith('search')) {
-    		const term = comando.slice(6).trim(); // 'search' son 6 caracteres
-    		buscar(term);
-	      
-	} else if (command === 'dir') {
+          }  else if (command === 'dir') {
 	  response = `
 	  <div class="ascii-l">
 dir *.*<br>	
@@ -640,52 +636,6 @@ function handleDebugCommand() {
   });
 }
 
-
-
-
-
-	
-async function buscar(term) {
-  const resultadosEl = document.getElementById('resultados');
-  resultadosEl.innerText = `DEBUG: buscando "${term}"...`;
-
-  if (!term) {
-    resultadosEl.innerText = "Error: ingrese un término.";
-    console.log("No se ingresó término de búsqueda");
-    return;
-  }
-
-  try {
-    const url = `https://caropowershell-proxy.onrender.com/duck?q=${encodeURIComponent(term)}`;
-    console.log("URL de búsqueda:", url);
-
-    const res = await fetch(url);
-    console.log("Fetch ejecutado. Status:", res.status);
-
-    if (!res.ok) {
-      resultadosEl.innerText = `Error de API. Status: ${res.status}`;
-      return;
-    }
-
-    const data = await res.json();
-    console.log("JSON recibido:", data);
-
-    if (data && data.length > 0) {
-      resultadosEl.innerText = data
-        .slice(0, 3)
-        .map((item, i) => `[${i + 1}] ${item.title}\n  ${item.url}\n  ${item.snippet}\n`)
-        .join("\n");
-    } else {
-      resultadosEl.innerText = "No se encontraron resultados.";
-    }
-  } catch (err) {
-    console.error("Error en fetch:", err);
-    resultadosEl.innerText = `Error de conexión: ${err.message}`;
-  }
-}
-
-
-	
 </script>
 </body>
 </html>
