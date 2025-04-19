@@ -23,7 +23,7 @@
   </style>
 </head>
 <body>
-  <div class="line">RetroSearch v1.0</div>
+  <div class="line">RetroSearch v1.0 - Buscando con Wiby.me</div>
   <div class="line">Ingrese su búsqueda:</div>
   <input type="text" id="search" placeholder="Escriba un término..." />
   <button onclick="buscar()">Buscar</button>
@@ -31,40 +31,22 @@
   <div id="resultados" class="line"></div>
 
   <script>
-    async function buscar() {
+    function buscar() {
       const term = document.getElementById('search').value;
       if (!term) {
         alert("Por favor ingrese un término de búsqueda.");
         return;
       }
 
-      // Mostrar un mensaje simulando la búsqueda
-      document.getElementById('resultados').innerText = `Buscando "${term}" en DuckDuckGo...`;
+      // Crear la URL de búsqueda para Wiby.me
+      const wibyUrl = `https://wiby.me/?q=${encodeURIComponent(term)}`;
 
-      try {
-        // Realizamos la búsqueda en DuckDuckGo (sin API Key)
-        const response = await fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(term)}&type=json`);
-        const data = await response.json();
-
-        if (data && data.length > 0) {
-          let output = `Resultados encontrados para "${term}":\n\n`;
-          // Mostramos los primeros 10 resultados
-          data.slice(0, 10).forEach((result, i) => {
-            output += `[${i + 1}] ${result.phrase || 'Sin título'}\n`;
-            output += `    ${result.url || 'Sin URL'}\n`;
-            output += `    Descripción: ${result.text || 'No disponible.'}\n\n`;
-          });
-          document.getElementById('resultados').innerText = output;
-        } else {
-          document.getElementById('resultados').innerText = `No se encontraron resultados para "${term}".`;
-        }
-      } catch (error) {
-        document.getElementById('resultados').innerText = `Error al realizar la búsqueda en DuckDuckGo.`;
-        console.error(error);
-      }
+      // Redirigir al usuario a Wiby.me con la búsqueda
+      window.location.href = wibyUrl;
     }
   </script>
 </body>
 </html>
+
 
 
