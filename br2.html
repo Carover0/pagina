@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
-  <title>RetroSearch v1.0 (test) 8</title>
+  <title>RetroSearch v1.0 (test)</title>
   <style>
     body { background: black; color: lime; font-family:'Lucida Console',monospace; padding:20px; }
     .line { margin-bottom:10px; }
@@ -19,7 +19,7 @@
   </style>
 </head>
 <body>
-  <div class="line">RetroSearch v1.0 (test) 8</div>
+  <div class="line">RetroSearch v1.0 (test)</div>
   <div class="line">C:\search&gt; <input id="search" placeholder="Término..." /></div>
   <pre id="resultados" class="line"></pre>
 
@@ -34,6 +34,7 @@
 
       if (!term) {
         resultadosEl.innerText = "Error: ingrese un término.";
+        console.log("No se ingresó término de búsqueda");
         return;
       }
 
@@ -44,12 +45,19 @@
           `https://caropowershell-proxy.onrender.com/duck?q=${encodeURIComponent(term)}`
         );
         console.log('Fetch status:', res.status);
+
+        if (res.status !== 200) {
+          console.error("Hubo un error con la API");
+          resultadosEl.innerText = `Error de la API, status: ${res.status}`;
+          return;
+        }
+
         const data = await res.json();
-        console.log('Fetch data:', data);
+        console.log('Datos recibidos:', data);
 
         if (data && data.length) {
           let out = `Resultados para "${term}":\n\n`;
-          data.slice(0,5).forEach((item,i) => {
+          data.slice(0,5).forEach((item, i) => {
             out += `[${i+1}] ${item.title}\n`;
             out += `    URL: ${item.url}\n`;
             out += `    ${item.snippet}\n\n`;
@@ -60,7 +68,7 @@
         }
       } catch (e) {
         console.error('Error de fetch:', e);
-        resultadosEl.innerText = `Error al buscar "${term}".`;
+        resultadosEl.innerText = `Error al buscar "${term}". Detalles: ${e.message}`;
       }
     }
 
