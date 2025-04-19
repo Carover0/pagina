@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RetroSearch v1.0</title>
   <style>
     body {
@@ -26,38 +27,38 @@
   <div class="line">Ingrese su búsqueda:</div>
   <input type="text" id="search" placeholder="Escriba un término..." />
   <button onclick="buscar()">Buscar</button>
-
   <pre id="resultados" class="line"></pre>
 
   <script>
     async function buscar() {
       const term = document.getElementById('search').value.trim();
-      const resultados = document.getElementById('resultados');
-
+      const output = document.getElementById('resultados');
       if (!term) {
-        resultados.innerText = "Por favor, ingrese un término válido.";
+        output.innerText = 'Por favor ingrese un término.';
         return;
       }
 
-      resultados.innerText = `Buscando "${term}"...\n\nPor favor espere...\n`;
+      output.innerText = `Buscando "${term}"...\n\nPor favor espere...`;
 
       try {
-        const res = await fetch(`https://duckduckgo.com/ac/?q=${encodeURIComponent(term)}`);
+        const proxyUrl = `https://caropowershell-proxy.onrender.com/proxy?url=${encodeURIComponent('https://duckduckgo.com/ac/?q=' + term)}`;
+        const res = await fetch(proxyUrl);
         const data = await res.json();
 
-        if (data.length === 0) {
-          resultados.innerText = `No se encontraron resultados para "${term}".`;
+        if (!data.length) {
+          output.innerText = `No se encontraron resultados para "${term}".`;
           return;
         }
 
-        let salida = `Resultados sugeridos para "${term}":\n\n`;
+        let resultado = `Resultados de DuckDuckGo para "${term}":\n\n`;
         data.slice(0, 10).forEach((item, i) => {
-          salida += `[${i + 1}] ${item.phrase}\n    URL simulada: https://duckduckgo.com/?q=${encodeURIComponent(item.phrase)}\n\n`;
+          resultado += `[${i + 1}] ${item.phrase || 'Sin título'}\n`;
+          resultado += `    Descripción: ${item.snippet || 'No disponible'}\n`;
+          resultado += `    URL: https://duckduckgo.com/?q=${encodeURIComponent(item.phrase)}\n\n`;
         });
-
-        resultados.innerText = salida;
+        output.innerText = resultado;
       } catch (err) {
-        resultados.innerText = "Error al buscar en DuckDuckGo.";
+        output.innerText = 'Error al buscar en DuckDuckGo.';
         console.error(err);
       }
     }
