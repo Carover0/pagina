@@ -542,6 +542,7 @@ carover0@DOS:~$
   output.appendChild(inputWrapper);
 
   const newInput = document.getElementById('input-line');
+  newInput.focus();	      
   newInput.addEventListener('keydown', handleCommandInput);
   return;
       } else if (['ls', 'pwd', 'sudo', 'rm', 'clear', 'touch', 'cat', 'nano', 'bash', 'man', 'exit'].includes(command)) {
