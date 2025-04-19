@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetroSearch v1.0</title>
+  <style>
+    body {
+      background: black;
+      color: lime;
+      font-family: 'Lucida Console', monospace;
+      padding: 20px;
+    }
+    .line { margin-bottom: 10px; }
+    input, button {
+      background: black;
+      border: 1px solid lime;
+      color: lime;
+      font-family: inherit;
+      padding: 5px;
+      width: 80%;
+    }
+  </style>
+</head>
+
+<input id="url" placeholder="https://example.com">
+<button onclick="navegar()">Ver</button>
+<pre id="resultado">Esperando URL...</pre>
+
+<script>
+  async function navegar() {
+    const url = document.getElementById("url").value;
+    const res = await fetch(`https://caropowershell-proxy.onrender.com/textmode?url=${encodeURIComponent(url)}`);
+    const txt = await res.text();
+    document.getElementById("resultado").innerText = txt;
+  }
+</script>
+
+</body>
+</html>
