@@ -31,13 +31,11 @@ carover0
       font-size: 17px;
       margin-bottom: 20px;
     }
-
     .section {
       border: 1px dashed #000;
       padding: 17px;
       margin: 25px 0;
     }
-
     .header, .footer {
       border-top: 2px solid #FFF;
       border-bottom: 2px solid #FFF;
@@ -47,16 +45,13 @@ carover0
       font-weight: bold;
       font-size: 16px;
     }
-
     a {
       color: #FFF;
       text-decoration: underline;
     }
-
     .highlight {
       color: #000;
     }
-
     .ascii {
       margin: 0 auto;
       max-width: 100%;
@@ -71,14 +66,12 @@ carover0
       font-family: "Lucida Console", monospace;
       font-size: 15px;
     }
-
     .final-block {
       border: 1px solid #888;
       padding: 10px;
       margin-top: 30px;
       background-color: #111;
     }
-
     #input-line {
       border: none;
       background: none;
@@ -90,7 +83,6 @@ carover0
       text-align: left; 
       display: block;   
     }
-
     .page-break {
       font-family: 'Lucida Console', monospace;
       font-size: 16px;
@@ -101,22 +93,18 @@ carover0
       width: 100%;
       white-space: pre;
     }
-
     .spinner pre {
       color: #FFFFFF;
     }
-
     .line {
       margin-bottom: 10px;
     }
-
     .input-wrapper {
       margin-top: 20px;
       text-align: left; 
       display: block;   
       width: 100%;      
     }
-
     strong {
       color: #FF0000;
     }
@@ -134,18 +122,10 @@ carover0
  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝ ╚═════╝ 
                                                                    
 CaroPowerShell®  
-Sin frameworks. Sin librerías modernas.
-Sin adornos. Sin scroll infinito.
-Solo código puro.
-
 Este es mi sitio web personal,	
 y no es un sitio web convencional.  
 Es un homenaje a la era de las terminales,  
 donde cada comando contaba y cada línea tenía un propósito.  
-
-Sin distracciones, 
-Segui el flujo, segui el comando.
-
 </pre>                                                                                                                       
 <div id="output" style="display:none;">
 carover0@DOS:~$
@@ -160,14 +140,7 @@ carover0@DOS:~$
  HELP	         | Hay mas de lo que ves...
  F5              | Limpiar pantalla
 ----------------------------------------------------------</div>
-
-	
 <script>
-window.onload = function() {
-  const inputField = document.getElementById('input-line');
-  inputField.focus(); // Esto pone el foco en el input cuando se carga la página
-};
-    
     const bootMessages = [
      "Starting BIOS...",
       "Initializing system components...",
@@ -176,12 +149,11 @@ window.onload = function() {
       "Loading boot sector...",
       "Loading kernel..."
     ];
-
     let currentMessage = 0;
     let currentChar = 0;
     let bootMsgElement = document.getElementById("boot-msg");
 
-    function typeMessage() {
+function typeMessage() {
       if (currentMessage < bootMessages.length) {
         let message = bootMessages[currentMessage];
         if (currentChar < message.length) {
@@ -195,7 +167,6 @@ window.onload = function() {
           setTimeout(typeMessage, 180); 
         }
       } else {
-        
         setTimeout(function() {
           document.getElementById("boot-msg").style.display = "none";
           document.getElementById("output").style.display = "block";
@@ -203,7 +174,6 @@ window.onload = function() {
         }, 1000); // Esperar 1 segundo despurs de terminar el ultimo mensaje
       }
     }
-
   typeMessage();
   </script>
 
@@ -214,44 +184,34 @@ window.onload = function() {
       document.getElementById("output-t").style.display = "block";
     }, 3000);  // 6000 milisegundos = 6 segundos
   </script>
-
   
 <script>
   function startSpinner(callback) {
     const spinnerChars = ['|', '/', '-', '\\'];
     let i = 0;
-
     const spinnerDiv = document.createElement('div');
     spinnerDiv.classList.add('spinner');
     spinnerDiv.innerHTML = `<pre>> Cargando... ${spinnerChars[i]}</pre>`;
     output.appendChild(spinnerDiv);
-
     const interval = setInterval(() => {
       spinnerDiv.innerHTML = `<pre>> Cargando... ${spinnerChars[i % spinnerChars.length]}</pre>`;
       i++;
     }, 100);
-
     setTimeout(() => {
       clearInterval(interval);
       output.removeChild(spinnerDiv);
       callback();
     }, 1500);
   }
-
   function handleCommandInput(e) {
     if (e.key === 'Enter') {
       const command = e.target.value.trim().toLowerCase();
       output.innerHTML = '';
-
-  
-
       const div = document.createElement('div');
       div.classList.add('line');
       div.innerHTML = `> ${command}`;
       output.appendChild(div);
-
       let response = '';
-
       if (command === "cd texplorer" || command === "cd texplorer && ls") {
         response = `
 <div class="ascii"><pre>
@@ -473,22 +433,17 @@ LINKS
 
 ----------------------------------------------------
 </pre>`;
-      
       } else if (command === 'format') {
         	simulateFormat();
       } else if (command === 'debug') {
 	  const outputEl = document.getElementById('output');
 	  outputEl.innerHTML = ''; // Limpiar el contenido previo
-	
 	  const wrapper = document.createElement('div');
 	  wrapper.className = 'ascii-l';
 	  const pre = document.createElement('pre');
 	  wrapper.appendChild(pre);
 	  outputEl.appendChild(wrapper);
-	
 	  const dump = generateFakeHexDump(20); // Generar más líneas del dump
-	
-	  // Simulación de la escritura del volcado hexadecimal
 	  simulateTextWriting(dump, pre, 5, () => {
 	  });
 	} else if (command === 'dir') {
@@ -527,11 +482,9 @@ HELP            Muestra esta ayuda<br>
 ¿Sos curioso? Proba con el comando <b>FORMAT</b>
 
 </div>`;
-
   const resDiv = document.createElement('div');
   resDiv.innerHTML = helpMessage;
   output.appendChild(resDiv);
-
   const inputWrapper = document.createElement('div');
   inputWrapper.classList.add('ascii-l');
   inputWrapper.innerHTML = `
@@ -540,7 +493,6 @@ carover0@DOS:~$
 <input type="text" id="input-line" placeholder="Escriba un comando..." />
 <br>----------------------------------------------------------</div>`;
   output.appendChild(inputWrapper);
-
   const newInput = document.getElementById('input-line');
   //newInput.focus();	      
   newInput.addEventListener('keydown', handleCommandInput);
@@ -550,16 +502,13 @@ carover0@DOS:~$
 <b>'${command}'</b> no se reconoce como comando interno o externo.<br>
 Este no es Linux...<br>
 ¿Quizás querías escribir: <b>dir</b>?</div>`;
-
 	} else {
         response = `<div class="line">Comando no reconocido: <strong>${command}</strong></div>`;
       }
-
       startSpinner(() => {
         const resDiv = document.createElement('div');
         resDiv.innerHTML = response;
         output.appendChild(resDiv);
-
         const inputWrapper = document.createElement('div');
         inputWrapper.classList.add('input-wrapper');
         inputWrapper.innerHTML = `
@@ -577,21 +526,16 @@ carover0@DOS:~$
  F5              | Limpiar pantalla
 ----------------------------------------------------------</div>`;
         output.appendChild(inputWrapper);
-
         const newInput = document.getElementById('input-line');
         //newInput.focus();
         newInput.addEventListener('keydown', handleCommandInput);
       });
-
       e.target.value = '';
     }
   }
-
   const input = document.getElementById('input-line');
   const output = document.getElementById('output');
   input.addEventListener('keydown', handleCommandInput);
-
-
 
 function simulateFormat() {
   output.innerHTML = '';
@@ -643,18 +587,13 @@ function simulateFormat() {
         if (progress > total) {
           clearInterval(interval);
           pre.innerHTML += `\n\nFormateo completo. Todos los datos han sido eliminados.\n\nAsí habrías vivido un formateo en los 80/90.\n\n\n`;
-
- 
         }
       }, 150);
     }
   }
-
   updateFormatStep();
 }
 
-
-// Esta es la función que simula el volcado hexadecimal
 function generateFakeHexDump(lines = 10, startAddr = 0x00F4A0) {
   let result = '';
   for (let i = 0; i < lines; i++) {
@@ -671,7 +610,6 @@ function generateFakeHexDump(lines = 10, startAddr = 0x00F4A0) {
   return result;
 }
 
-// Simulación de escritura letra a letra
 function simulateTextWriting(text, element, speed, callback) {
   let index = 0;
   const interval = setInterval(() => {
@@ -683,7 +621,6 @@ function simulateTextWriting(text, element, speed, callback) {
   }, speed);
 }
 
-// Función principal del comando "debug"
 function handleDebugCommand() {
   const outputEl = document.getElementById('output');
   outputEl.innerHTML = ''; // Limpiar el contenido previo
@@ -693,17 +630,10 @@ function handleDebugCommand() {
   const pre = document.createElement('pre');
   wrapper.appendChild(pre);
   outputEl.appendChild(wrapper);
-
   const dump = generateFakeHexDump(20); // Generar más líneas del dump
-
-  // Simulación de la escritura del volcado hexadecimal
   simulateTextWriting(dump, pre, 50, () => {
   });
 }
-
-
-  
 </script>
-
 </body>
 </html>
