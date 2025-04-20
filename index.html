@@ -188,6 +188,8 @@ function typeMessage() {
   </script>
   
 <script>
+  const version = '1.0.6';
+
   function startSpinner(callback) {
     const spinnerChars = ['|', '/', '-', '\\'];
     let i = 0;
@@ -269,7 +271,7 @@ Notas:
 - Datos tomados directamente desde la API pública de Trongrid
 - Herramientas para monitorear rendimiento y costos operativos
 - Soporte para exploración de bloques, transacciones y validadores
-- Contacto técnico: https://t.me/texplorerbot
+- Telegram: https://t.me/texplorerbot
 </pre>
 </div>`;
       } else if (command === "cd zexplorer" || command === "cd zexplorer && ls") {
@@ -327,7 +329,7 @@ Notas:
 - Transparencia en tarifas de transacción y uso de la red
 - Sin dependencias de terceros: totalmente independiente
 - Código Open-Source: auditable en funciones que lo requieren
-- Contacto técnico: https://t.me/zcashexplorer_bot
+- Telegram: https://t.me/zcashexplorer_bot
 </pre>
 `;
       } else if (command === 'tpe') {
@@ -374,6 +376,7 @@ Notas:
 - Compatible con enlaces directos a elementos específicos vía comandos
 - Basado en datos públicos y visualizaciones simples
 - Proyecto independiente y de código abierto
+- Telegram: https://t.me/tablaperiodica_bot
 </pre>
 `;
     } else if (command === 'cd precios') {
@@ -402,19 +405,17 @@ Notas:
 - Precios de criptomonedas en Telegram
 <pre>
 C-preciobot/
-├── [cex]
-│   ├── Precios en BINANCE, KUCOIN, POLONIEX 
-│   ├── Compara precios de venta y compra
-│   └── Precios por comandos separados
-└── [dex]
-    ├── precios de activos en diferentes cadenas
-    └── eth, arb, opt, bsc, ava, pol, ftm, sol, aur, era, celo
+├── [cex] Binance | Kucoin | Poloniex
+│   ├── /cex [simbolo] → mejor precio
+│   └── /kucoin [simbolo], etc.
+└── [dex] Precios DEX por cadena:
+    └── eth, arb, opt, bsc, ava, pol, ftm, sol, aur, era, celo...
 
 Notas:
 - Diseño sencillo.
 - Para usuarios técnicos y entusiastas de blockchain
 - Datos tomados directamente desde APIs públicas
-- Operar: https://t.me/c_preciosbot
+- Telegram: https://t.me/c_preciosbot
 </pre>
 </div>
 `;
@@ -497,7 +498,7 @@ LINKS
 	  const hora = now.toLocaleTimeString('es-AR');
 	  response = `La hora actual es: ${hora}\nEscriba la nueva hora: __`;
 	} else if (command === 'ver') {
-	  response = `CaroPowerShell 1.0.5`;
+	  response = `CaroPowerShell ${version}`;
 	} else if (command === 'debug') {
 	  const outputEl = document.getElementById('output');
 	  outputEl.innerHTML = ''; // Limpiar el contenido previo
