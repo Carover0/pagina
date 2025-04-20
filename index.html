@@ -443,6 +443,17 @@ LINKS
 	  } catch {
 	    response = 'Expresión inválida';
 	  }
+	} 
+       else if (command === 'date') {
+	  const today = new Date();
+	  const fecha = today.toLocaleDateString('es-AR');
+	  response = `La fecha actual es: ${fecha}\nEscriba la nueva fecha: __`;
+	} else if (command === 'time') {
+	  const now = new Date();
+	  const hora = now.toLocaleTimeString('es-AR');
+	  response = `La hora actual es: ${hora}\nEscriba la nueva hora: __`;
+	} else if (command === 'ver') {
+	  response = `CaroPowerShell 1.0.5`;
 	} else if (command === 'debug') {
 	  const outputEl = document.getElementById('output');
 	  outputEl.innerHTML = ''; // Limpiar el contenido previo
