@@ -449,20 +449,21 @@ LINKS
           }  else if (command === 'dir') {
 	  response = `
 	  <div class="ascii-l">
-dir *.*
+A:\>DIR *.*
 
-Volumen en unidad C no tiene etiqueta.
-Número de serie del volumen: E-2-7CB
-Directorio: C:\\
+ Volumen en unidad C no tiene etiqueta.
+ Número de serie del volumen: E-2-7CB
 
-[.]             .
-[..]            ..
-[zexplorer]     ZCASH Explorer
-[texplorer]     TRON Explorer
-[tperiodica]    Tabla periódica
-[debug]         Volcado de memoria
-[format]        Borrar disco (¡CUIDADO!)
-[secret.sys]    ????
+ Directorio de A:\
+
+ [.]             .
+ [..]            ..
+ [zexplorer]     ZCASH Explorer
+ [texplorer]     TRON Explorer
+ [tperiodica]    Tabla periódica
+ [debug]         Volcado de memoria
+ [format]        Borrar disco (¡CUIDADO!)
+ [secret.sys]    ????
 	  </div>`;   
 } else if (command === 'help') {
   const outputEl = document.getElementById('output');
