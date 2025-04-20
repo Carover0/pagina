@@ -418,7 +418,33 @@ Notas:
 </pre>
 </div>
 `;
-   } else if (command === 'whoami') {
+   } else if (command === 'asm') {
+response = `<pre>
+
+; Este programa imprime un mensaje en pantalla.
+; Con ensamblador se crearon lenguajes como:
+; - C: Influenciado por ensamblador, más fácil de usar.
+; - C++: Basado en C, con soporte para OOP.
+; - Java y Python: Derivados de C, más abstractos y fáciles de usar.
+; Estos lenguajes simplifican la programación sin perder eficiencia.
+
+.MODEL SMALL        ; Definir modelo de memoria (SMALL: único segmento para código y datos)
+.STACK 100h         ; Reservar 256 bytes para la pila
+.DATA               ; Sección de datos
+msg db 'Hola sot carover0 y esto es CaroPowerShell en lenguaje ensamblador$', ; Definir el mensaje a mostrar
+
+.CODE               ; Sección de código
+; Mostrar mensaje
+MOV AH, 09h         ; Cargar la función 09h de DOS (mostrar cadena)
+INT 21h             ; Llamar a la interrupción 21h para ejecutar la función
+
+; Finalizar el programa
+MOV AH, 4Ch         ; Cargar la función 4Ch de DOS (terminar el programa)
+INT 21h             ; Llamar a la interrupción 21h para finalizar el programa
+
+; solo un poquito de historia...
+</pre> `;
+} else if (command === 'whoami') {
         response = `<pre>
 INFORMACIÓN DE USUARIO
 ----------------------
@@ -554,6 +580,7 @@ DATE		Fecha del sistema.
 TIME		Hora del sistema.
 VER		Version de CaroPowerShell®
 WHOAMI		Info del usuario.
+ASM		Lenguaje ensamblador.
 HELP            Muestra esta ayuda<br>
 
 ¿Sos curioso? Proba con el comando FORMAT
