@@ -390,10 +390,10 @@ carover0             01100011 01100001 01110010 01101111 01110110 01100101 01110
       } else if (command === 'about' || command === 'acerca') {
         response = `<pre>
 SOBRE MI
-===================
-[*] Nombre: carover0 (99 97 114 111 118 101 114 48)
-[*] Stack: Python | Blockchain | Excel | HTML | JavaScript
-[*] Estilo: Fuente Monospace o muerte
+========
+[*] Nombre : carover0
+[*] Stack  : Python | Blockchain | Excel | HTML | JavaScript
+[*] Estilo : Monospace o muerte
 
 FILOSOFIA
 =========
@@ -432,7 +432,6 @@ LINKS
 [*] Free2z: free2z.cash/carover0
 [*] GitHub: https://github.com/Carover0
 
-----------------------------------------------------
 </pre>`;
       } else if (command === 'format') {
         	simulateFormat();
@@ -451,10 +450,12 @@ LINKS
           }  else if (command === 'dir') {
 	  response = `
 	  <div class="ascii-l">
-dir *.*<br>	
+dir *.*
+
 Volumen en unidad C no tiene etiqueta.
-Número de serie del volumen: E-2-7CB<br>
-Directorio: C:\\<br>
+Número de serie del volumen: E-2-7CB
+Directorio: C:\\
+
 [.]             .
 [..]            ..
 [zexplorer]     ZCASH Explorer
@@ -468,20 +469,25 @@ Directorio: C:\\<br>
   const outputEl = document.getElementById('output');
   const helpMessage = `
 <div class="ascii-l">
-Comandos disponibles:<br>
+COMANDOS DISPONIBLES
+====================
+
 CD ZEXPLORER	Explora datos en la red ZCASH (Telegram).
 CD TEXPLORER	Explora datos en la red TRON (Telegram).
 CD TPERIODICA	Tabla periódica interactiva.
 WHOAMI		Muestra quien soy.
 ABOUT		Sobre mi..
-F5		Limpia la pantalla<br>
-<b>Comandos especiales:</b><br>
+F5		Limpia la pantalla
+
+COMANDOS ESPECIALES
+===================
+
 DIR		Lista contenido oculto.
 FORMAT		Borra el disco (¡Cuidado!).
 DEBUG		Simula volcado de memoria hexadecimal.
 HELP            Muestra esta ayuda<br>
 
-¿Sos curioso? Proba con el comando <b>FORMAT</b>
+¿Sos curioso? Proba con el comando FORMAT
 
 </div>`;
   const resDiv = document.createElement('div');
