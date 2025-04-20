@@ -435,7 +435,15 @@ LINKS
 </pre>`;
       } else if (command === 'format') {
         	simulateFormat();
-      } else if (command === 'debug') {
+      }  else if (command.startsWith('calc ')) {
+	  try {
+	    const expr = command.slice(5);
+	    const result = Function(`"use strict";return (${expr})`)();
+	    response = `Resultado: ${result}`;
+	  } catch {
+	    response = 'Expresión inválida';
+	  }
+	} else if (command === 'debug') {
 	  const outputEl = document.getElementById('output');
 	  outputEl.innerHTML = ''; // Limpiar el contenido previo
 	  const wrapper = document.createElement('div');
