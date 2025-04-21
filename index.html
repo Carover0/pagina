@@ -606,7 +606,35 @@ no hace falta explicar más.
 </pre>`;
       } else if (command === 'format') {
         	simulateFormat();
-      }  else if (command.startsWith('calc ')) {
+      } else if (command === 'call zexplorer') {
+response = `<pre>
+> CALL ZEXPLORER
+  => Ejecutando ZEXPLORER...
+  => Abriendo bot en Telegram...
+</pre>`;
+	window.open("https://t.me/zcashexplorer_bot", "_blank");
+	} else if (command === 'call tperiodica') {
+response = `<pre>
+> CALL TPERIODICA
+  => Ejecutando TPERIODICA...
+  => Abriendo bot en Telegram...
+</pre>`;
+	window.open("https://t.me/tablaperiodica_bot", "_blank");
+      }  else if (command === 'call texplorer') {
+response = `<pre>
+> CALL TEXPLORER
+  => Ejecutando TEXPLORER...
+  => Abriendo bot en Telegram...
+</pre>`;
+	window.open("https://t.me/texplorerbot", "_blank");
+      } else if (command === 'call cprecios') {
+response = `<pre>
+> CALL CPRECIOS
+  => Ejecutando CPRECIOS...
+  => Abriendo bot en Telegram...
+</pre>`;
+	window.open("https://t.me/c_preciosbot", "_blank");
+    } else if (command.startsWith('calc ')) {
 	  try {
 	    const expr = command.slice(5);
 	    const result = Function(`"use strict";return (${expr})`)();
