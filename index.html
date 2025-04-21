@@ -142,6 +142,7 @@ carover0@DOS:~$
  HELP	         | Hay mas de lo que ves...
  FAQ		 | Preguntas?
  F5              | Limpiar pantalla
+ EXIT	    	 | Salir
 -----------------------------------------------
 
 
@@ -610,7 +611,9 @@ no hace falta explicar más.
 </pre>`;
       } else if (command === 'format') {
         	simulateFormat();
-      } else if (command === 'call zexplorer') {
+      } else if (command === 'exit') {
+		exitSequence();
+      }	else if (command === 'call zexplorer') {
 response = `<pre>
 > CALL ZEXPLORER
   => Ejecutando ZEXPLORER...
@@ -701,6 +704,7 @@ CD TPERIODICA	Tabla periódica interactiva.
 CD CPRECIOS	Precios cripto.
 ABOUT		Sobre mi..
 F5		Limpia la pantalla
+EXIT	    	Salir
 
 COMANDOS ESPECIALES
 ===================
@@ -763,6 +767,7 @@ carover0@DOS:~$
  HELP	         | Hay mas de lo que ves...
  FAQ		 | Preguntas?
  F5              | Limpiar pantalla
+ EXIT	    	 | Salir
 -----------------------------------------------
 
 
@@ -881,5 +886,49 @@ function handleDebugCommand() {
 }
 
 </script>
+
+<div id="screen">
+  <pre id="exit-msg"></pre>
+</div>
+<script>
+  function exitSequence() {
+    document.body.innerHTML = '<div id="screen"><pre id="exit-msg"></pre></div>';
+    const exitMessages = [
+      "Terminando sesion... ",
+      "Guardando estado...",
+      "Desconectando de CaroPowerShell®...",
+      "Conexion cerrada.",
+      "Adios..."
+    ];
+    let currentLine = 0;
+    let currentChar = 0;
+    const exitElement = document.getElementById("exit-msg");
+
+    function typeExitLine() {
+      if (currentLine < exitMessages.length) {
+        let line = exitMessages[currentLine];
+        if (currentChar < line.length) {
+          exitElement.textContent += line.charAt(currentChar);
+          currentChar++;
+          setTimeout(typeExitLine, 25); // Velocidad por carácter
+        } else {
+          exitElement.textContent += "\n";
+          currentLine++;
+          currentChar = 0;
+          setTimeout(typeExitLine, 400); // Tiempo entre líneas
+        }
+      } else {
+        // Redirigir después de terminar
+        setTimeout(() => {
+          window.location.href = "https://free2z.cash/carover0";l
+        }, 1000); // Espera antes de redirigir
+      }
+    }
+
+    typeExitLine();
+  }
+
+</script>
+	
 </body>
 </html>
