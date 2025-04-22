@@ -12,7 +12,7 @@ carover0
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>CaroPowerShell</title>
+  <title>Void.BBS</title>
   <style>
     body {
       background-color: #000;
@@ -79,7 +79,7 @@ carover0
       color: #FFFFFF;
       font-family: 'Lucida Console', monospace;
       font-size: 16px;
-      width: 100%;
+      width: auto;
       outline: none;
       text-align: left; 
       display: block;   
@@ -115,24 +115,25 @@ carover0
 <pre id="boot-msg">
 </pre>
 <pre align="left" id="output-t" style="display:none;">
- ██████╗ █████╗ ██████╗  ██████╗ ██╗   ██╗███████╗██████╗  ██████╗ 
-██╔════╝██╔══██╗██╔══██╗██╔═══██╗██║   ██║██╔════╝██╔══██╗██╔═████╗
-██║     ███████║██████╔╝██║   ██║██║   ██║█████╗  ██████╔╝██║██╔██║
-██║     ██╔══██║██╔══██╗██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗████╔╝██║
-╚██████╗██║  ██║██║  ██║╚██████╔╝ ╚████╔╝ ███████╗██║  ██║╚██████╔╝
- ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝ ╚═════╝ 
-                                                                   
-CaroPowerShell®
+
+██╗   ██╗ ██████╗ ██╗██████╗    ██████╗ ██████╗ ███████╗
+██║   ██║██╔═══██╗██║██╔══██╗   ██╔══██╗██╔══██╗██╔════╝
+██║   ██║██║   ██║██║██║  ██║   ██████╔╝██████╔╝███████╗
+╚██╗ ██╔╝██║   ██║██║██║  ██║   ██╔══██╗██╔══██╗╚════██║
+ ╚████╔╝ ╚██████╔╝██║██████╔╝██╗██████╔╝██████╔╝███████║
+  ╚═══╝   ╚═════╝ ╚═╝╚═════╝ ╚═╝╚═════╝ ╚═════╝ ╚══════╝
+                                                        
+                                                                  
+Void.BBS®
 Este es mi sitio web personal,
 y no es un sitio web convencional.
 Es un BBS disfrazado de HTML,
 donde cada comando cuenta
 y cada línea tiene un propósito.
 </pre>                                                                                                                       
-<div id="output" style="display:none;">
-carover0@DOS:~$
-<input type="text" id="input-line" placeholder="Escriba un comando..." autofocus />
-<br>
+<div id="output" style="display: none;">
+C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando...">
+	
 -------------- MENU ---------------------------
  CD ZEXPLORER    | ZCASH Explorer (TG)
  CD TEXPLORER    | TRON Explorer (TG)
@@ -145,7 +146,6 @@ carover0@DOS:~$
  EXIT	    	 | Salir
 -----------------------------------------------
 
-
 	
 	
 	
@@ -154,13 +154,14 @@ carover0@DOS:~$
 <script>
     const bootMessages = [
 	"█████████████████████████████████████",
-	"█  Bienvenido a CaroPowerShell®BBS  █",
+	"█       Bienvenido a Void.BBS®      █",
 	"█         (SysOp: carover0)         █",
 	"█         [2400 Baud | ANSI]        █",
 	"█████████████████████████████████████",
-	"\n\nLogin: Invitado",
-	"Password: ***************",
-	"\n* Bienvenido Invitado!"
+	"\n\nConectando a void.bbs...",
+	"\nHandshake OK ✓",
+	"\nEstableciendo sesión segura...",
+	"Autenticado como: INVITADO\n\n* Bienvenido Invitado!",
     ];
     let currentMessage = 0;
     let currentChar = 0;
@@ -172,7 +173,7 @@ function typeMessage() {
         if (currentChar < message.length) {
           bootMsgElement.textContent += message.charAt(currentChar);
           currentChar++;
-          setTimeout(typeMessage, 2); // Tiempo entre cada carácter (7 ms)
+          setTimeout(typeMessage, 6); // Tiempo entre cada carácter (7 ms)
         } else {
           currentMessage++;
           currentChar = 0;
@@ -195,11 +196,11 @@ function typeMessage() {
       document.getElementById("boot-msg").style.display = "none";
       document.getElementById("output").style.display = "block";
       document.getElementById("output-t").style.display = "block";
-    }, 3500);  // 6000 milisegundos = 6 segundos
+    }, 5000);  // 6000 milisegundos = 6 segundos
   </script>
   
 <script>
-  const version = '1.0.7';
+  const version = '1.1.2';
 
   function startSpinner(callback) {
     const spinnerChars = ['|', '/', '-', '\\'];
@@ -538,7 +539,7 @@ response = `<pre>
 .MODEL SMALL        ; Definir modelo de memoria (SMALL: único segmento para código y datos)
 .STACK 100h         ; Reservar 256 bytes para la pila
 .DATA               ; Sección de datos
-msg db 'Hola soy carover0 y esto es CaroPowerShell en lenguaje ensamblador$', ; Definir el mensaje a mostrar
+msg db 'Hola soy carover0 y esto es Void.BBS en lenguaje ensamblador$', ; Definir el mensaje a mostrar
 
 .CODE               ; Sección de código
 ; Mostrar mensaje
@@ -595,7 +596,7 @@ Sin anuncios, sin rastreo, sin notificaciones.
 Aca no hay dark mode. No hay auto-save.  
 Cada línea, cada glitch, cada comando… es intencional.
 
-CaroPowerShell® no pretende ser moderno.  
+Void.BBS® no pretende ser moderno.  
 Pretende ser real.  
 Un tributo a los terminales, a los BBS,  
 a cuando conectarse era un ritual y no una rutina.
@@ -608,7 +609,7 @@ Esto es un homenaje.
 Y si lo entendés,  
 no hace falta explicar más.
 
->>> carover0 ~ CaroPowerShell®
+>>> carover0 ~ Void.BBS®
 
 </pre>`;
       } else if (command === 'format') {
@@ -661,7 +662,7 @@ response = `<pre>
 	  const hora = now.toLocaleTimeString('es-AR');
 	  response = `La hora actual es: ${hora}\nEscriba la nueva hora: __`;
 	} else if (command === 'ver') {
-	  response = `CaroPowerShell® ${version}`;
+	  response = `Void.BBS® ${version}`;
 	} else if (command === 'debug') {
 	  const outputEl = document.getElementById('output');
 	  outputEl.innerHTML = ''; // Limpiar el contenido previo
@@ -717,7 +718,7 @@ DEBUG		Simula volcado de memoria hexadecimal.
 CALC            Calculadora.
 DATE		Fecha del sistema.
 TIME		Hora del sistema.
-VER		Version de CaroPowerShell®
+VER		Version de Void.BBS®
 WHOAMI		Info del usuario.
 ASM		Lenguaje ensamblador.
 HELP            Muestra esta ayuda<br>
@@ -732,8 +733,7 @@ HELP            Muestra esta ayuda<br>
   inputWrapper.classList.add('ascii-l');
   inputWrapper.innerHTML = `
 <div class="line"><br>
-carover0@DOS:~$
-<input type="text" id="input-line" placeholder="Escriba un comando..." />
+C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando..." />
 <br>----------------------------------------------------------</div>`;
   output.appendChild(inputWrapper);
   const newInput = document.getElementById('input-line');
@@ -757,8 +757,7 @@ Proba con: <b>HELP</b></div>`;
         inputWrapper.classList.add('input-wrapper');
         inputWrapper.innerHTML = `
 <div class="line"><br>
-carover0@DOS:~$
-<input type="text" id="input-line" placeholder="Escriba un comando..." />
+C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando..." />
 <br>
 -------------- MENU ---------------------------
  CD ZEXPLORER    | ZCASH Explorer (TG)
@@ -894,23 +893,22 @@ function handleDebugCommand() {
   function exitSequence() {
     document.body.innerHTML = '<div id="screen"><pre id="exit-msg"></pre></div>';
     const exitMessages = [
-	  "Saving user settings...",
-	  "Logging off user: Invitado",
-	  "Updating message counters...\n",
-	 
-	  "Saving download/upload stats...\n\n# # # # # # # # # # # # # # # # # # # # \n\n",
-	
-	"██████████████████████████████████████████",
-	"█                   ☺                    █",
-	"█    Gracias por usar CaroPowerShell®    █",
-	"█ ¡El sysop está orgulloso de recibirte! █",
-	"█ ¡Volve pronto, siempre sos bienvenido! █",
-	"█                                        █",
-	"██████████████████████████████████████████",
-	  "\n\nCarrier lost.",
-	  "Connection closed by remote host.",
-	  "NO CARRIER\n",
+  "Saving user settings...",
+  "Logging off user: Invitado",
+  "Updating message counters...\n",
+ 
+  "Saving download/upload stats...\n\n# # # # # # # # # # # # # # # # # # # # \n\n",
 
+"██████████████████████████████████████████",
+"█                   ☺                    █",
+"█       Gracias por usar Void.BBS®       █",
+"█ ¡El sysop está orgulloso de recibirte! █",
+"█ ¡Volve pronto, siempre sos bienvenido! █",
+"█                                        █",
+"██████████████████████████████████████████",
+  "\n\nCarrier lost.",
+  "Connection closed by remote host.",
+  "NO CARRIER\n",
   ];
 
     let currentLine = 0;
