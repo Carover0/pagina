@@ -891,21 +891,26 @@ function handleDebugCommand() {
   });
 }
 
-</script>
-
-<div id="screen">
-  <pre id="exit-msg"></pre>
-</div>
 <script>
   function exitSequence() {
     document.body.innerHTML = '<div id="screen"><pre id="exit-msg"></pre></div>';
     const exitMessages = [
-      "Terminando sesion... ",
-      "Guardando estado...",
-      "Desconectando de CaroPowerShell®...",
-      "Conexion cerrada.",
-      "Adios..."
-    ];
+  "Saving user settings...",
+  "Logging off user: Invitado",
+  "Updating message counters...",
+  "       ",
+  "Saving download/upload stats...",
+  "       ",
+  "█████████████████████████████████████",
+  "█  Gracias por usar CaroPowerShell  █",
+  "█    ¡Volve pronto, sysop te ama!   █",
+  "█████████████████████████████████████",
+  "     ",
+  "Carrier lost.",
+  "Connection closed by remote host.",
+  "NO CARRIER",
+  ];
+
     let currentLine = 0;
     let currentChar = 0;
     const exitElement = document.getElementById("exit-msg");
@@ -916,7 +921,7 @@ function handleDebugCommand() {
         if (currentChar < line.length) {
           exitElement.textContent += line.charAt(currentChar);
           currentChar++;
-          setTimeout(typeExitLine, 25); // Velocidad por carácter
+          setTimeout(typeExitLine, 7); // Velocidad por carácter
         } else {
           exitElement.textContent += "\n";
           currentLine++;
@@ -935,6 +940,7 @@ function handleDebugCommand() {
   }
 
 </script>
+
 	
 </body>
 </html>
