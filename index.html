@@ -153,12 +153,18 @@ carover0@DOS:~$
 </div>
 <script>
     const bootMessages = [
-     "Starting BIOS...",
-      "Initializing system components...",
-      "Searching for boot device...",
-      "Boot device found: HDD",
-      "Loading boot sector...",
-      "Loading kernel..."
+	"█████████████████████████████████████",
+	"█  Bienvenido a CaroPowerShell®BBS  █",
+	"█         (SysOp: carover0)         █",
+	"█         [2400 Baud | ANSI]        █",
+	"█████████████████████████████████████",
+	"     ",
+	"     ",
+	"Login: Invitado",
+	"Password: ***************",
+	"     ",
+	"     ",
+	"* Bienvenido Invitado!"
     ];
     let currentMessage = 0;
     let currentChar = 0;
@@ -170,7 +176,7 @@ function typeMessage() {
         if (currentChar < message.length) {
           bootMsgElement.textContent += message.charAt(currentChar);
           currentChar++;
-          setTimeout(typeMessage, 7); // Tiempo entre cada carácter (7 ms)
+          setTimeout(typeMessage, 6); // Tiempo entre cada carácter (7 ms)
         } else {
           currentMessage++;
           currentChar = 0;
@@ -193,7 +199,7 @@ function typeMessage() {
       document.getElementById("boot-msg").style.display = "none";
       document.getElementById("output").style.display = "block";
       document.getElementById("output-t").style.display = "block";
-    }, 3000);  // 6000 milisegundos = 6 segundos
+    }, 5000);  // 6000 milisegundos = 6 segundos
   </script>
   
 <script>
