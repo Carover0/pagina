@@ -158,13 +158,9 @@ carover0@DOS:~$
 	"█         (SysOp: carover0)         █",
 	"█         [2400 Baud | ANSI]        █",
 	"█████████████████████████████████████",
-	"     ",
-	"     ",
-	"Login: Invitado",
+	"\n\nLogin: Invitado",
 	"Password: ***************",
-	"     ",
-	"     ",
-	"* Bienvenido Invitado!"
+	"\n* Bienvenido Invitado!"
     ];
     let currentMessage = 0;
     let currentChar = 0;
@@ -176,7 +172,7 @@ function typeMessage() {
         if (currentChar < message.length) {
           bootMsgElement.textContent += message.charAt(currentChar);
           currentChar++;
-          setTimeout(typeMessage, 6); // Tiempo entre cada carácter (7 ms)
+          setTimeout(typeMessage, 2); // Tiempo entre cada carácter (7 ms)
         } else {
           currentMessage++;
           currentChar = 0;
@@ -199,7 +195,7 @@ function typeMessage() {
       document.getElementById("boot-msg").style.display = "none";
       document.getElementById("output").style.display = "block";
       document.getElementById("output-t").style.display = "block";
-    }, 5000);  // 6000 milisegundos = 6 segundos
+    }, 3500);  // 6000 milisegundos = 6 segundos
   </script>
   
 <script>
@@ -898,20 +894,23 @@ function handleDebugCommand() {
   function exitSequence() {
     document.body.innerHTML = '<div id="screen"><pre id="exit-msg"></pre></div>';
     const exitMessages = [
-  "Saving user settings...",
-  "Logging off user: Invitado",
-  "Updating message counters...",
-  "       ",
-  "Saving download/upload stats...",
-  "       ",
-  "█████████████████████████████████████",
-  "█  Gracias por usar CaroPowerShell  █",
-  "█    ¡Volve pronto, sysop te ama!   █",
-  "█████████████████████████████████████",
-  "     ",
-  "Carrier lost.",
-  "Connection closed by remote host.",
-  "NO CARRIER",
+	  "Saving user settings...",
+	  "Logging off user: Invitado",
+	  "Updating message counters...\n",
+	 
+	  "Saving download/upload stats...\n\n# # # # # # # # # # # # # # # # # # # # \n\n",
+	
+	"██████████████████████████████████████████",
+	"█                   ☺                    █",
+	"█    Gracias por usar CaroPowerShell®    █",
+	"█ ¡El sysop está orgulloso de recibirte! █",
+	"█ ¡Volve pronto, siempre sos bienvenido! █",
+	"█                                        █",
+	"██████████████████████████████████████████",
+	  "\n\nCarrier lost.",
+	  "Connection closed by remote host.",
+	  "NO CARRIER\n",
+
   ];
 
     let currentLine = 0;
