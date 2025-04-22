@@ -890,7 +890,9 @@ function handleDebugCommand() {
   simulateTextWriting(dump, pre, 50, () => {
   });
 }
-
+<div id="screen">
+  <pre id="exit-msg"></pre>
+</div>
 <script>
   function exitSequence() {
     document.body.innerHTML = '<div id="screen"><pre id="exit-msg"></pre></div>';
