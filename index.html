@@ -12,7 +12,7 @@ carover0
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Void.BBS</title>
+  <title>The Void.BBS</title>
   <style>
     body {
       background-color: #000;
@@ -82,7 +82,7 @@ carover0
       width: auto;
       outline: none;
       text-align: left; 
-      display: block;   
+      display: inline-block;   
     }
     .page-break {
       font-family: 'Lucida Console', monospace;
@@ -111,27 +111,30 @@ carover0
     }
   </style>
 </head>
-<body>
-<pre id="boot-msg">
-</pre>
-<pre align="left" id="output-t" style="display:none;">
+<body><pre id="boot-msg">
+</pre><pre align="left" id="output-t" style="display:none;">
+████████╗██╗  ██╗███████╗                               
+╚══██╔══╝██║  ██║██╔════╝                               
+   ██║   ███████║█████╗                                 
+   ██║   ██╔══██║██╔══╝                                 
+   ██║   ██║  ██║███████╗                               
+   ╚═╝   ╚═╝  ╚═╝╚══════╝                               
 ██╗   ██╗ ██████╗ ██╗██████╗    ██████╗ ██████╗ ███████╗
 ██║   ██║██╔═══██╗██║██╔══██╗   ██╔══██╗██╔══██╗██╔════╝
 ██║   ██║██║   ██║██║██║  ██║   ██████╔╝██████╔╝███████╗
 ╚██╗ ██╔╝██║   ██║██║██║  ██║   ██╔══██╗██╔══██╗╚════██║
  ╚████╔╝ ╚██████╔╝██║██████╔╝██╗██████╔╝██████╔╝███████║
   ╚═══╝   ╚═════╝ ╚═╝╚═════╝ ╚═╝╚═════╝ ╚═════╝ ╚══════╝
-                                                        
-Void.BBS®
+                                                       
+The Void.BBS®
 Este es mi sitio web personal,
 y no es un sitio web convencional.
 Es un BBS disfrazado de HTML,
 donde cada comando cuenta
-y cada línea tiene un propósito.
-</pre>                                                                                                                       
+y cada línea tiene un propósito.</pre>                                                                                                                       
 <div id="output" style="display: none;">
 C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando...">
-	
+
 -------------- MENU ---------------------------
  CD ZEXPLORER    | ZCASH Explorer (TG)
  CD TEXPLORER    | TRON Explorer (TG)
@@ -146,20 +149,22 @@ C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando...">
 
 	
 	
-	
-[↑] ScrollBack   |   [↓] ScrollFwd   |   [Tab] Cambiar Foco   |   [Enter] Ejecutar
-</div>
+[↑] Historial   |   [↓] Siguiente   |   [Tab] Foco   |   [Enter] Ejecutar</div>
 <script>
     const bootMessages = [
 	"█████████████████████████████████████",
-	"█       Bienvenido a Void.BBS®      █",
+	"█      Bienvenido a The Void.BBS®   █",
 	"█         (SysOp: carover0)         █",
 	"█         [2400 Baud | ANSI]        █",
 	"█████████████████████████████████████",
-	"\n\nConectando a void.bbs...",
-	"\nHandshake OK ✓",
-	"\nEstableciendo sesión segura...",
-	"Autenticado como: INVITADO\n\n* Bienvenido Invitado!",
+	"",
+	"Conectando a The Void.bbs...",
+	"Handshake OK ✓",
+	"Estableciendo sesión segura...",
+	"Autenticado como: INVITADO",
+	"",
+	"",
+	"* Bienvenido Invitado!",
     ];
     let currentMessage = 0;
     let currentChar = 0;
@@ -171,7 +176,7 @@ function typeMessage() {
         if (currentChar < message.length) {
           bootMsgElement.textContent += message.charAt(currentChar);
           currentChar++;
-          setTimeout(typeMessage, 1); // Tiempo entre cada carácter (7 ms)
+          setTimeout(typeMessage, 1); // Tiempo entre cada carácter (1 ms)
         } else {
           currentMessage++;
           currentChar = 0;
@@ -194,7 +199,7 @@ function typeMessage() {
       document.getElementById("boot-msg").style.display = "none";
       document.getElementById("output").style.display = "block";
       document.getElementById("output-t").style.display = "block";
-    }, 3700);  // 6000 milisegundos = 6 segundos
+    }, 4700);  // 3700 milisegundos = 3.7 segundos
   </script>
   
 <script>
@@ -538,7 +543,7 @@ response = `<pre>
 .MODEL SMALL        ; Definir modelo de memoria (SMALL: único segmento para código y datos)
 .STACK 100h         ; Reservar 256 bytes para la pila
 .DATA               ; Sección de datos
-msg db 'Hola soy carover0 y esto es Void.BBS en lenguaje ensamblador$', ; Definir el mensaje a mostrar
+msg db 'Hola soy carover0 y esto es The Void.BBS en lenguaje ensamblador$', ; Definir el mensaje a mostrar
 
 .CODE               ; Sección de código
 ; Mostrar mensaje
@@ -595,7 +600,7 @@ Sin anuncios, sin rastreo, sin notificaciones.
 Aca no hay dark mode. No hay auto-save.  
 Cada línea, cada glitch, cada comando… es intencional.
 
-Void.BBS® no pretende ser moderno.  
+The Void.BBS® no pretende ser moderno.  
 Pretende ser real.  
 Un tributo a los terminales, a los BBS,  
 a cuando conectarse era un ritual y no una rutina.
@@ -608,7 +613,7 @@ Esto es un homenaje.
 Y si lo entendés,  
 no hace falta explicar más.
 
->>> carover0 ~ Void.BBS®
+>>> carover0 ~ The Void.BBS®
 
 </pre>`;
       } else if (command === 'format') {
@@ -661,7 +666,7 @@ response = `<pre>
 	  const hora = now.toLocaleTimeString('es-AR');
 	  response = `La hora actual es: ${hora}\nEscriba la nueva hora: __`;
 	} else if (command === 'ver') {
-	  response = `Void.BBS® ${version}`;
+	  response = `The Void.BBS® ${version}`;
 	} else if (command === 'debug') {
 	  const outputEl = document.getElementById('output');
 	  outputEl.innerHTML = ''; // Limpiar el contenido previo
@@ -717,7 +722,7 @@ DEBUG		Simula volcado de memoria hexadecimal.
 CALC            Calculadora.
 DATE		Fecha del sistema.
 TIME		Hora del sistema.
-VER		Version de Void.BBS®
+VER		Version de The Void.BBS®
 WHOAMI		Info del usuario.
 ASM		Lenguaje ensamblador.
 HELP            Muestra esta ayuda<br>
@@ -732,7 +737,7 @@ HELP            Muestra esta ayuda<br>
   inputWrapper.classList.add('ascii-l');
   inputWrapper.innerHTML = `
 <div class="line"><br>
-C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando..." />
+C:\\VOID\\><input type="text" id="input-line" placeholder="Escriba un comando..." />
 <br>----------------------------------------------------------</div>`;
   output.appendChild(inputWrapper);
   const newInput = document.getElementById('input-line');
@@ -756,7 +761,7 @@ Proba con: <b>HELP</b></div>`;
         inputWrapper.classList.add('input-wrapper');
         inputWrapper.innerHTML = `
 <div class="line"><br>
-C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando..." />
+C:\\VOID\\><input type="text" id="input-line" placeholder="Escriba un comando..." />
 <br>
 -------------- MENU ---------------------------
  CD ZEXPLORER    | ZCASH Explorer (TG)
@@ -774,7 +779,7 @@ C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando..." 
 	
 	
 	
-[↑] ScrollBack   |   [↓] ScrollFwd   |   [Tab] Cambiar Foco   |   [Enter] Ejecutar</div>`;
+[PgUp] ↑  |  [PgDn] ↓  |  [Tab] Foco  |  [Enter] Ejecutar</div>`;
         output.appendChild(inputWrapper);
         const newInput = document.getElementById('input-line');
         //newInput.focus();
@@ -894,20 +899,24 @@ function handleDebugCommand() {
     const exitMessages = [
   "Saving user settings...",
   "Logging off user: Invitado",
-  "Updating message counters...\n",
- 
-  "Saving download/upload stats...\n\n# # # # # # # # # # # # # # # # # # # # \n\n",
-
+  "Updating message counters...",
+  "",
+  "",
+  "Saving download/upload stats...",
+  "",
+  "",
 "██████████████████████████████████████████",
-"█                   ☺                    █",
-"█       Gracias por usar Void.BBS®       █",
+"█                   :)                   █",
+"█     Gracias por usar The Void.BBS®     █",
 "█ ¡El sysop está orgulloso de recibirte! █",
 "█ ¡Volve pronto, siempre sos bienvenido! █",
 "█                                        █",
 "██████████████████████████████████████████",
-  "\n\nCarrier lost.",
+  "",
+  "",
+  "Carrier lost.",
   "Connection closed by remote host.",
-  "NO CARRIER\n",
+  "NO CARRIER",
   ];
 
     let currentLine = 0;
@@ -920,7 +929,7 @@ function handleDebugCommand() {
         if (currentChar < line.length) {
           exitElement.textContent += line.charAt(currentChar);
           currentChar++;
-          setTimeout(typeExitLine, 7); // Velocidad por carácter
+          setTimeout(typeExitLine, 4); // Velocidad por carácter
         } else {
           exitElement.textContent += "\n";
           currentLine++;
