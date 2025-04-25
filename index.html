@@ -230,7 +230,52 @@ function typeMessage() {
       div.innerHTML = `> ${command}`;
       output.appendChild(div);
       let response = '';
-      if (command === "cd texplorer" || command === "cd texplorer && ls") {
+      if (command === 'cd bots') {
+	const helpMessage = `
+<div class="ascii-l">
+@@@@@@@@@@@@@@@* -#+         *@@@@@@@@@@@@@@@
+@@@@@@@@@@@@%%%*:---::.      *%%%%@@@@@@@@@@@
+@@@@@@@@@#=-::::::::::.      *#***#%@@@@@@@@@
+@@@@@@@@#.                   *#*****%@@@@@@@@
+@@@@@@@@=       ..:::::::.:-*#******#@@@@@@@@
+@@@@@@@@=      =#########*##********#@@@@@@@@
+@@@@@@@@#.    :%#*****************+*%@@@@@@@@
+@@@@@@@@@#-...-%******************#%@@@@@@@@@
+@@@@@@@@@@@%%%%%*******####**%%%%@@@@@@@@@@@@
+@@@@@@@@@@@@@@@%*********#%*+%@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@%%#**********#%@@@@@@@@@@@@@@@
+
+
+- Esta es una lista de mis bots en telegram.
+- El desarrollo completo en Python.
+
+C:\\VOID\\BOTS\\><input type="text" id="input-line" placeholder="Escriba un comando..." />
+
+-------------- MENU ---------------------------
+ CD ZEXPLORER    | ZCASH Explorer (TG)
+ CD TEXPLORER    | TRON Explorer (TG)
+ CD TPERIODICA   | Tabla periódica con imágenes
+ CD CPRECIOS     | Precios cripto.
+ CD..            | Limpiar pantalla
+-----------------------------------------------
+
+
+
+
+
+[↑] Historial   |   [↓] Siguiente   |   [Tab] Foco   |   [Enter] Ejecutar
+</div>`;
+
+  const resDiv = document.createElement('div');
+  resDiv.innerHTML = helpMessage;
+  output.appendChild(resDiv);
+
+
+  const newInput = document.getElementById('input-line');
+  newInput.addEventListener('keydown', handleCommandInput);
+
+  return; 
+} else if (command === "cd texplorer" || command === "cd texplorer && ls") {
         response = `
 <div class="ascii"><pre>
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
