@@ -136,7 +136,10 @@ En constante construcción y optimización.</pre>
 C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando...">
 
 -------------- MENU --------------------------------
- CD BOTS 	 | Lista de bots para telegram.	
+ CD ZEXPLORER    | ZCASH Explorer (TG)
+ CD TEXPLORER    | TRON Explorer (TG)
+ CD TPERIODICA   | Tabla periódica con imágenes (TG)
+ CD CPRECIOS 	 | Precios cripto (TG)	
  ABOUT           | Sobre mí...
  HELP	         | Hay mas de lo que ves...
  README		 | Preguntas?
@@ -227,29 +230,7 @@ function typeMessage() {
       div.innerHTML = `> ${command}`;
       output.appendChild(div);
       let response = '';
-      if (command === 'cd bots') {
-        response = `
-<div class="ascii"><pre>
-C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando...">
-
-
--------------- MENU ---------------------------
- CD ZEXPLORER    | ZCASH Explorer (TG)
- CD TEXPLORER    | TRON Explorer (TG)
- CD TPERIODICA   | Tabla periódica con imágenes
- CD CPRECIOS 	 | Precios cripto.	
- CD..            | Limpiar pantalla
------------------------------------------------
-
-	
-
-
-[↑] Historial   |   [↓] Siguiente   |   [Tab] Foco   |   [Enter] Ejecutar
-	
-</pre>
-</div>
-`;
-    } else if (command === "cd texplorer" || command === "cd texplorer && ls") {
+      if (command === "cd texplorer" || command === "cd texplorer && ls") {
         response = `
 <div class="ascii"><pre>
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -728,7 +709,6 @@ A:\>DIR *.*
 
  COMANDOS DISPONIBLES
  ───────────────────────────────────────────────
- CD BOTS	  → Lista de bots para Telegram	
  CD ZEXPLORER     → Explorador ZCASH (Telegram)
  CD TEXPLORER     → Explorador TRON (Telegram)
  CD TPERIODICA    → Tabla periódica interactiva
@@ -789,7 +769,10 @@ Proba con: <b>HELP</b></div>`;
 C:\\VOID\\><input type="text" id="input-line" placeholder="Escriba un comando..." />
 <br>
 -------------- MENU --------------------------------
- CD BOTS 	 | Lista de bots para Telegram	
+ CD ZEXPLORER    | ZCASH Explorer (TG)
+ CD TEXPLORER    | TRON Explorer (TG)
+ CD TPERIODICA   | Tabla periódica con imágenes (TG)
+ CD CPRECIOS 	 | Precios cripto (TG)	
  ABOUT           | Sobre mí...
  HELP	         | Hay mas de lo que ves...
  README		 | Preguntas?
