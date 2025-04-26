@@ -22,3 +22,6 @@ Proyecto: **The void.bbs**
 Versión: 1.0  
 Fecha de Creación: 17-04-2025  
 Creado por: carover0  
+
+
+https://carover0.github.io/pagina/
