@@ -191,12 +191,17 @@ function typeMessage() {
   </script>
 
  <script>
-    setTimeout(function() {
-      document.getElementById("boot-msg").style.display = "none";
-      document.getElementById("output").style.display = "block";
-      document.getElementById("output-t").style.display = "block";
-    }, 6000);  // 3700 milisegundos = 3.7 segundos
-  </script>
+  var navegador = navigator.appName;
+  var tiempo = 5000; 
+  if (navegador === 'Netscape') { 
+    tiempo = 11000; 
+  }
+  setTimeout(function() {
+    document.getElementById("boot-msg").style.display = "none";
+    document.getElementById("output").style.display = "block";
+    document.getElementById("output-t").style.display = "block";
+  }, tiempo);  
+</script>
   
 <script>
   const version = '1.1.2';
