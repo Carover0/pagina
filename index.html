@@ -807,6 +807,7 @@ no hace falta explicar más.
 </pre>`;
       } else if (command === 'format') {
         	simulateFormat();
+	        window.scrollTo(0, 0);
       } else if (command === 'cd..') {
   	response = `<div class="ascii-l""</div>`;
 	window.scrollTo(0, 0);      
@@ -852,13 +853,16 @@ response = `<pre>
        else if (command === 'date') {
 	  const today = new Date();
 	  const fecha = today.toLocaleDateString('es-AR');
+	  window.scrollTo(0, 0);     
 	  response = `La fecha actual es: ${fecha}\nEscriba la nueva fecha: __`;
 	} else if (command === 'time') {
 	  const now = new Date();
 	  const hora = now.toLocaleTimeString('es-AR');
 	  response = `La hora actual es: ${hora}\nEscriba la nueva hora: __`;
+	  window.scrollTo(0, 0);     
 	} else if (command === 'ver') {
 	  response = `The Void.BBS® ${version}`;
+	  window.scrollTo(0, 0);     
 	} else if (command === 'debug') {
 	  const outputEl = document.getElementById('output');
 	  outputEl.innerHTML = ''; // Limpiar el contenido previo
@@ -867,10 +871,12 @@ response = `<pre>
 	  const pre = document.createElement('pre');
 	  wrapper.appendChild(pre);
 	  outputEl.appendChild(wrapper);
+	  window.scrollTo(0, 0);          
 	  const dump = generateFakeHexDump(20); // Generar más líneas del dump
 	  simulateTextWriting(dump, pre, 5, () => {
 	  });
           }  else if (command === 'dir') {
+	  window.scrollTo(0, 0);          
 	  response = `
 	  <div class="ascii-l">
 A:\>DIR *.*
@@ -988,6 +994,7 @@ C:\\VOID\\><input type="text" id="input-line" placeholder="Escriba un comando...
   input.addEventListener('keydown', handleCommandInput);
 
 function simulateFormat() {
+  window.scrollTo(0, 0);     	
   output.innerHTML = '';
   const pre = document.createElement('pre');
   output.appendChild(pre);
@@ -1021,6 +1028,7 @@ function simulateFormat() {
   const total = 40;
 
   function updateFormatStep() {
+    window.scrollTo(0, 0);     	  
     if (currentStep < pasos.length) {
       pre.innerHTML += pasos[currentStep] + '\n';
       currentStep++;
