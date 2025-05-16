@@ -726,6 +726,7 @@ Si te resulta raro...
 es porque ya nos desacostumbramos a lo simple.
 </pre> `;
 } else if (command === 'asm') {
+window.scrollTo(0, 0);     	      
 response = `<pre>
 
 ; Este programa imprimiria un mensaje en pantalla.
@@ -752,6 +753,7 @@ INT 21h             ; Llamar a la interrupción 21h para finalizar el programa
 ; solo un poquito de historia...
 </pre> `;
 } else if (command === 'whoami') {
+	window.scrollTo(0, 0);           
         response = `<pre>
 INFORMACIÓN DE USUARIO
 ----------------------
@@ -849,6 +851,7 @@ response = `<pre>
 </pre>`;
 	window.open("https://t.me/c_preciosbot", "_blank");
     } else if (command.startsWith('calc ')) {
+	  window.scrollTo(0, 0);         
 	  try {
 	    const expr = command.slice(5);
 	    const result = Function(`"use strict";return (${expr})`)();
