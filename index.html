@@ -297,6 +297,7 @@ C:\\VOID\\BOTS\\><input type="text" id="input-line" placeholder="Escriba un coma
 
   return; 
 } else if (command === 'degoogle') {
+window.scrollTo(0, 0);     	      
 response = `<pre>
 @@@@@@@@@@@@@@@@@@@@%#+#%@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@%%#*+-.   .-+*#%%@@@@@@@@@@@@@@
@@ -764,6 +765,7 @@ Invitado             01100011 01100001 01110010 01101111 01110110 01100101 01110
 
 </pre>`;
       } else if (command === 'about' || command === 'acerca') {
+	window.scrollTo(0, 0);           
         response = `<pre>
 # ========================================================== #
 # 0x01 >>> SOBRE MI                                          #
@@ -902,6 +904,7 @@ A:\>DIR *.*
  [secret.sys]    ????
 	  </div>`;   
 } else if (command === 'help') {
+  window.scrollTo(0, 0);     	       
   const outputEl = document.getElementById('output');
   const helpMessage = `
 <div class="ascii-l">
