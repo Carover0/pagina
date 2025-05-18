@@ -23,240 +23,169 @@ carover0
       padding: 20px;
       white-space: pre;
       cursor: none;
-    }
-    .input-wrapper .menu {
-       text-align: left;  
-    }
-    pre {
-      color: #FFF;
-      font-size: 17px;
-      margin-bottom: 20px;
-    }
-    .section {
-      border: 1px dashed #000;
-      padding: 17px;
-      margin: 25px 0;
-    }
-    .header, .footer {
-      border-top: 2px solid #FFF;
-      border-bottom: 2px solid #FFF;
-      padding: 10px 0;
-      margin: 30px 0 20px 0;
-      /*text-align: center;*/
-      font-weight: bold;
-      font-size: 16px;
-    }
-    a {
-      color: #FFF;
-      text-decoration: underline;
-    }
-    .highlight {
-      color: #000;
-    }
-    .ascii {
-      margin: 0 auto;
-      max-width: 100%;
-      /*text-align: center;*/
-      font-family: "Lucida Console", monospace;
-      font-size: 16px;
-    }
-   .ascii-l {
-      text-align: left;   
-      margin: 0 auto;
-      max-width: 100%;
-      font-family: "Lucida Console", monospace;
-      font-size: 16px;
-    }
-    .final-block {
-      border: 1px solid #888;
-      padding: 10px;
-      margin-top: 30px;
-      background-color: #111;
-    }
-    #input-line {
-      border: none;
-      background: none;
-      color: #FFFFFF;
-      font-family: 'Lucida Console', monospace;
-      font-size: 16px;
-      width: auto;
       outline: none;
-      text-align: left; 
-      display: inline-block;   
+      
     }
-    .page-break {
+    #boot-msg {
       font-family: 'Lucida Console', monospace;
       font-size: 16px;
-      color: #fff;
-      background-color: #000;
-      padding: 8px 0;
-      /*text-align: center;*/
-      width: 100%;
+      color: #ffffff;
+      background-color: black;
       white-space: pre;
+      line-height: 1.2;
     }
-    .spinner pre {
-      color: #FFFFFF;
+     .boot-msg {
+      font-family: 'Lucida Console', monospace;
+      font-size: 18px;
+      color: #ffffff;
+      background-color: black;
+      white-space: pre;
+      line-height: 1.2;
     }
-    .line {
-      margin-bottom: 10px;
-    }
-    .input-wrapper {
-      margin-top: 20px;
-      text-align: left; 
-      display: block;   
-      width: 100%;      
-    }
-    strong {
-      color: #FF0000;
-    }
+    .ascii-l { text-align: left; }
+    .col-rojo     { color: #f85149; }  /* rojo VSCode para errores / alerts */
+    .col-rojo-f   { color: #da3633; }  /* rojo fuerte, para énfasis crítico */
+    .col-verde    { color: #56d364; }  /* verde correcto / OK */
+    .col-verde-f  { color: #2ea043; }  /* verde fuerte */
+    .col-amarillo { color: #e3b341; }  /* amarillo cálido */
+    .col-naranja  { color: #f0883e; }  /* naranja suave */
+    .col-azul     { color: #58a6ff; }  /* azul clásico de links */
+    .col-purple   { color: #bc8cff; }  /* púrpura claro para funciones o UI */
+    .col-violeta  { color: #a371f7; }  /* violeta sutil, para encabezados */
+    .col-magenta  { color: #d14;     }  /* magenta (tu color de identidad) */
+    .col-cyan     { color: #76e3ea; }  /* cian suave, para sistemas o redes */
+    .col-gris     { color: #8b949e; }  /* gris medio para descripciones */
+    .col-blanco   { color: #c9d1d9; }  /* blanco de VSCode (texto base) */
+    .col-negro    { color: #0d1117; }  /* fondo oscuro base */
+    ::-webkit-scrollbar {
+    display: none;
+   }
+   html {
+    scrollbar-width: none; 
+    overflow: auto;        
+   }
+   html {
+    -ms-overflow-style: none;
+   }
+   body {
+    overflow: auto;
+   }
   </style>
 </head>
-<body><pre id="boot-msg">
-</pre><pre align="left" id="output-t" style="display:none;">
-████████╗██╗  ██╗███████╗                               
-╚══██╔══╝██║  ██║██╔════╝                               
-   ██║   ███████║█████╗                                 
-   ██║   ██╔══██║██╔══╝                                 
-   ██║   ██║  ██║███████╗                               
-   ╚═╝   ╚═╝  ╚═╝╚══════╝                               
-██╗   ██╗ ██████╗ ██╗██████╗    ██████╗ ██████╗ ███████╗
-██║   ██║██╔═══██╗██║██╔══██╗   ██╔══██╗██╔══██╗██╔════╝
-██║   ██║██║   ██║██║██║  ██║   ██████╔╝██████╔╝███████╗
-╚██╗ ██╔╝██║   ██║██║██║  ██║   ██╔══██╗██╔══██╗╚════██║
- ╚████╔╝ ╚██████╔╝██║██████╔╝██╗██████╔╝██████╔╝███████║
-  ╚═══╝   ╚═════╝ ╚═╝╚═════╝ ╚═╝╚═════╝ ╚═════╝ ╚══════╝
-                                                       
-Este es mi espacio personal. ¿Convencional? Para nada...
-Es un BBS camuflado en HTML, una web de un solo archivo
-más liviana que el logo de Facebook en su página principal
-donde cada comando importa y cada línea tiene un propósito.
-En constante construcción y optimización.</pre>                                                                                                                       
-<div id="output" style="display: none;">
-C:\VOID\><input type="text" id="input-line" placeholder="Escriba un comando...">
+<body tabindex="0"><pre id="boot-msg"></pre>
+<div id="output" style="display:none;"></div>
+  <script>
+  const bootMessages = [
+    "████████████████████████████████████████",
+    "█      Conectando a The Void.BBS®      █",
+    "█         (SysOp: carover0)            █",
+    "█         [2400 Baud | ANSI]           █",
+    "████████████████████████████████████████",
+    "",
+    "[*] Discando línea segura [###############################] 100%",
+    "[*] Handshake establecido [###############################] 100%",
+    "[*] Negociando protocolo [████████████████████████████████] 100%",
+    "[✓] Autenticado como: INVITADO",
+    "",
+    "Entrando al sistema.",
+    "Conectarse es un privilegio.",
+    "Cargar herramientas... [██████████████████████████████████] 100%",
+  ];
+  let cm = 0, cc = 0;
+  const bootEl = document.getElementById("boot-msg");
 
--------------- MENU --------------------------------
- CD BOTS 	 | Bots para Telegram.	
- DEGOOGLE	 | Desintoxicate de Big Tech	
- ABOUT           | Sobre mí...
- HELP	         | Hay mas de lo que ves...
- README		 | Preguntas?
- CD..            | Limpiar pantalla
- EXIT	    	 | Salir
+  function typeNext() {
+    if (cm < bootMessages.length) {
+      const msg = bootMessages[cm];
+      if (cc < msg.length) {
+        bootEl.textContent += msg[cc++];
+        setTimeout(typeNext, 1);
+      } else {
+        bootEl.textContent += "\n";
+        cc = 0; cm++;
+        setTimeout(typeNext, 180);
+      }
+    } else {
+      setTimeout(showUI, 1000);
+    }
+  }
+
+ function actualizarFechaHora() {
+    const ahora = new Date();
+    const fecha = ahora.toLocaleDateString('es-AR'); // Formato DD/MM/AAAA
+    const hora = ahora.toLocaleTimeString('es-AR',  { hour12: false });  // Formato HH:MM:SS
+    document.getElementById("fecha").textContent = fecha;
+    document.getElementById("hora").textContent = hora;
+  }
+
+function showUI() {
+  bootEl.style.display = "none";
+  document.getElementById("output").style.display = "block";
+  window.focus();
+  document.body.focus();
+  pintar(mainMenu);
+  actualizarFechaHora(); 
+  document.body.addEventListener("keydown", handleKey);
+}
+
+setInterval(actualizarFechaHora, 1000);
+
+window.onload = actualizarFechaHora;
+
+typeNext();  // Inicia la animación de arranque
+const mainMenu = `
+Fecha y hora actual: <span class="col-rojo"><span id="fecha"></span> <span id="hora"></span></span>
+
+Identificador del sistema: <span class="col-blanco">CP BBS (#00311)</span>, ejecutando <span class="col-azul">BEBS/NT v4.10 Dada-1</span>  
+Ubicación: <span class="col-gris">Buenos Aires, Argentina.</span> <span class="col-azul">("You can still survive in Argentina. :)")</span>  
+Conexión establecida: <span class="col-verde">"ATX3D CONNECT 2400 - OK"</span>  
+Sistema operativo: <span class="col-cyan">MS-DOS 5.0 + CP/M 3.0 (modo dual)</span>  
+Protocolos activos: <span class="col-cyan">ZMODEM, YMODEM, XMODEM</span>  
+Shell activo: <span class="col-amarillo">VOIDShell v1.8 experimental</span>  
+Identificación CID: <span class="col-azul">10300200215</span> <span class="col-gris">(Caller ID detectado)</span>  
+Usuario: <span class="col-magenta">Invitado</span> <span class="col-gris">(permisos limitados)</span>  
+<span class="col-gris">Tema visual:</span> <span style="color:#58a6ff;">GitHub VSCode Dark</span> — <span class="col-cyan">Paleta personalizada para Void.BBS</span>
+
+╔══════════════════════════════════════════════════════════════════════════════╗  
+║                              Bienvenidos a                                   ║  
+║              <span class="col-cyan">.</span><span class="col-azul">:</span><span class="col-magenta">:</span> The Void.BBS - Sistema Experimental <span class="col-magenta">:</span><span class="col-azul">:</span><span class="col-cyan">.</span>                     ║  
+║                              Versión 1.2.5                                   ║  
+╚══════════════════════════════════════════════════════════════════════════════╝  
+
+Este es mi espacio personal. ¿Convencional? Para nada...  
+Es un BBS camuflado en HTML, una web de un solo archivo  
+más liviana que el logo de Facebook en su página principal  
+donde cada comando importa y cada línea tiene un propósito.  
+En constante construcción y optimización.  
+
+-------------- MENU --------------------------------  
+<span class="col-magenta">[B]</span> BOTS       | Bots para Telegram  
+<span class="col-magenta">[E]</span> ZCASH      | Conoce Zcash  
+<span class="col-magenta">[D]</span> DEGOOGLE   | Desintoxicate de big tech  
+<span class="col-cyan">[L]</span> LEEME      | Preguntas?  
+<span class="col-cyan">[H]</span> HELP       | Hay más de lo que ves...  
+<span class="col-cyan">[A]</span> ACERCA     | Sobre mí...  
+<span class="col-rojo">[X]</span> SALIR      | Cierra sesión  
 ----------------------------------------------------
 
-	
-	
-[↑] Historial   |   [↓] Siguiente   |   [Tab] Foco   |   [Enter] Ejecutar</div>
-<script>
-    const bootMessages = [
-	"████████████████████████████████████████",
-	"█      Bienvenido a The Void.BBS®      █",
-	"█         (SysOp: carover0)            █",
-	"█         [2400 Baud | ANSI]           █",
-	"████████████████████████████████████████",
-	"",
-	"[25 %] Conectando a The Void.bbs...",
-	"[50 %] Handshake OK...",
-	"[75 %] Estableciendo sesión segura...",
-	"[100 %] Autenticado como: INVITADO...",
-	"",
-	"[✓] Bienvenido Invitado!",
-    ];
-    let currentMessage = 0;
-    let currentChar = 0;
-    let bootMsgElement = document.getElementById("boot-msg");
+Contraseña: <span class="col-rojo">******</span>  
+Sesiones iniciadas: <span class="col-azul">82</span> <span class="col-gris">(Logons: 82)</span>  
+Nivel de acceso: Invitado | Usuario | SysOp | <span class="col-magenta">Fundador</span>
 
-function typeMessage() {
-      if (currentMessage < bootMessages.length) {
-        let message = bootMessages[currentMessage];
-        if (currentChar < message.length) {
-          bootMsgElement.textContent += message.charAt(currentChar);
-          currentChar++;
-          setTimeout(typeMessage, 0); // Tiempo entre cada carácter (1 ms)
-        } else {
-          currentMessage++;
-          currentChar = 0;
-          bootMsgElement.textContent += "\n"; 
-          setTimeout(typeMessage, 180); 
-        }
-      } else {
-        setTimeout(function() {
-          document.getElementById("boot-msg").style.display = "none";
-          document.getElementById("output").style.display = "block";
-          document.getElementById("output-t").style.display = "block";
-        }, 1000); // Esperar 1 segundo despurs de terminar el ultimo mensaje
-      }
-    }
-  typeMessage();
-  </script>
+`;
 
- <script>
-  var navegador = navigator.appName;
-  var tiempo = 5000; 
-  if (navegador === 'Netscape') { 
-    tiempo = 11000; 
-  }
-  setTimeout(function() {
-    document.getElementById("boot-msg").style.display = "none";
-    document.getElementById("output").style.display = "block";
-    document.getElementById("output-t").style.display = "block";
-  }, tiempo);  
-</script>
-  
-<script>
-  const version = '1.1.5';
 
-  function startSpinner(callback) {
-    const spinnerChars = ['|', '/', '-', '\\'];
-    let i = 0;
-    const spinnerDiv = document.createElement('div');
-    spinnerDiv.classList.add('spinner');
-    spinnerDiv.innerHTML = `<pre>> Cargando... ${spinnerChars[i]}</pre>`;
-    output.appendChild(spinnerDiv);
-    const interval = setInterval(() => {
-      spinnerDiv.innerHTML = `<pre>> Cargando... ${spinnerChars[i % spinnerChars.length]}</pre>`;
-      i++;
-    }, 100);
-    setTimeout(() => {
-      clearInterval(interval);
-      output.removeChild(spinnerDiv);
-      callback();
-    }, 1500);
-  }
-  function handleCommandInput(e) {
-    if (e.key === 'Enter') {
-      const command = e.target.value.trim().toLowerCase();
-      output.innerHTML = '';
-      const div = document.createElement('div');
-      div.classList.add('line');
-      div.innerHTML = `> ${command}`;
-      output.appendChild(div);
-      let response = '';
-      if (command === 'cd bots') {
-	window.scrollTo(0, 0);           
-	const helpMessage = `
-<div class="ascii-l">
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%#+=-::.....:::-+#%%%%%%%%%%%%%%%
-%%%%%%%%%%%%*  #%#            +%%%%%%%%%%%%%%
-%%%%%%%%%%%%-  -=-            .%%%%%%%%%%%%%%
-%%%%%%%%%%%%#*******#=        .%%%%%%%%%%%%%%
-%%%%%#+==============-        .%%%%%%%%%%%%%%
-%%%#-                         .%%#******#%%%%
-%%%:                          :%%#+++++++#%%%
-%%*                          :*%%*+++++++*%%%
-%%=          .-=+++++++++++*#%%%*+++++++++#%%
-%%+         +%%%%############**+++++++++++#%%
-%%%.       +@%#*++++++++++++++++++++++++++#%%
-%%%*.      *%%*++++++++++++++++++++++++++*%%%
-%%%%#=-::::*%%*+++++++++++++++++++++++++*%%%%
-%%%%%%%%%%%%%%*++++++++*###############%%%%%%
-%%%%%%%%%%%%%%*++++++++#########%%%%%%%%%%%%%
-%%%%%%%%%%%%%%*+++++++++++*##+++#%%%%%%%%%%%%
-%%%%%%%%%%%%%%#*++++++++++#%%*+*%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%##**********##%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function pintar(html) {
+  document.getElementById("output").innerHTML = html;
+  window.scrollTo(0,0);
+}
 
+
+function cdbots_menu() {
+window.scrollTo(0, 0); 
+return `
+<span class="col-purple">[*] BOTS PARA TELEGRAM</span>
+</div>
 - Desarrollados desde cero en Python, sin frameworks prehechos.
 - Integrados con APIs en tiempo real y actualizaciones vía Git hooks.
 - Optimizados para respuesta rápida, bajo consumo y logging persistente.
@@ -265,97 +194,406 @@ function typeMessage() {
 - Multiplataforma, simples, potentes y siempre disponibles.
 - Minimalistas, efectivos y sin vender humo.
 
-> No son bots comunes... son míos.
+<span class="col-rojo">> No son bots comunes... son míos.</span>
 
-
-
-
-C:\\VOID\\BOTS\\><input type="text" id="input-line" placeholder="Escriba un comando..." />
 
 -------------- MENU ---------------------------
- CD ZEXPLORER    | ZCASH Explorer (TG)
- CD TEXPLORER    | TRON Explorer (TG)
- CD TPERIODICA   | Tabla periódica con imágenes
- CD CPRECIOS     | Precios cripto.
- CD..            | Limpiar pantalla
------------------------------------------------
+<span class="col-magenta">[Z]</span> ZEXPLORER   | ZCASH Explorer (TG)  
+<span class="col-magenta">[T]</span> TEXPLORER   | TRON Explorer (TG)  
+<span class="col-magenta">[P]</span> TPERIODICA  | Tabla periódica con imágenes  
+<span class="col-magenta">[C]</span> CPRECIOS    | Precios cripto  
+<span class="col-purple">[V]</span> VOLVER      | Volver al menú principal  
+------------------------------------------------
+
+`;
+  }
+
+  function handleKey(e) {
+    const k = e.key.toLowerCase();
+    if (k === "b") {
+      pintar(cdbots_menu());
+      e.preventDefault();
+    }
+    else if (k === "v") {
+      pintar(mainMenu);
+      e.preventDefault();
+    }
+    else if (k === "x") {
+      exitSequence();
+      e.preventDefault();
+    }
+    else if (k === "z") {
+      cdzexplorer();
+      e.preventDefault();
+    }
+    else if (k === "1") {
+      callZExplorer();
+      e.preventDefault();
+    }
+    else if (k === "t") {
+      cdtexplorer();
+      e.preventDefault();
+    }
+    else if (k === "2") {
+      callTExplorer();
+      e.preventDefault();
+    }
+    else if (k === "p") {
+      cdtperiodica();
+      e.preventDefault();
+    }
+    else if (k === "3") {
+      callTperiodica();
+      e.preventDefault();
+    }
+    else if (k === "c") {
+      cdprecios()
+      e.preventDefault();
+    }
+    else if (k === "4") {
+      callCPrecios();
+      e.preventDefault();
+    }
+     else if (k === "d") {
+      opcionDegoogle();
+      e.preventDefault();
+    }
+     else if (k === "l") {
+      cdreadme();
+      e.preventDefault();
+    }
+     else if (k === "a") {
+      cdabout();
+      e.preventDefault();
+    }
+     else if (k === "h") {
+      cdHelp();
+      e.preventDefault();
+    }
+     else if (k === "i") {
+      cdDir();
+      e.preventDefault();
+    }
+     else if (k === "f") {
+      simulateFormat();
+      e.preventDefault();
+    }
+     else if (k === "g") {
+      cdDebug();
+      e.preventDefault();
+    }
+     else if (k === "r") {
+      cdasmblr();
+      e.preventDefault();
+    }    
+     else if (k === "w") {
+      cdwhoami();
+      e.preventDefault();
+    }    
+     else if (k === "5") {
+      openZcashEsp();
+      e.preventDefault();
+    }   
+     else if (k === "e") {
+      cdZCash();
+      e.preventDefault();
+    }   
+     else if (k === 'y') {
+      mostrarBarraProgreso();
+      e.preventDefault();
+    } else if (k === 'n') {
+      pintar(mainMenu);
+      e.preventDefault();
+    } 
+  }
+
+function cdzexplorer() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-amarillo">[*] ZEXPLORER (Análisis técnico de la red ZCASH en Telegram)</span>
+
+Z-Explorer/
+├── [Estado de la Red]
+│   ├── Red
+│   ├── Bloques Recientes
+│   └── Mercado
+├── [Exploración de Bloques]
+│   ├── Bloques Recientes
+│   ├── Mempool
+│   └── Acceso directo: /block <n> | /tx <hash>
+├── [Economía y Emisión]
+│   ├── Suministro
+│   ├── Cotización de Mercado
+│   └── Balance de Pools
+├── [Herramientas Técnicas]
+│   ├── Wallet
+│   └── Generador de QR
+├── [Bitácora Técnica]
+└── [Sobre el Proyecto y Contacto Técnico]
+
+
+<span class="col-rojo">Notas:</span>
+- No depende de API cerradas
+- Ideal para foros, análisis offline y terminales
+- Acceso directo a bloques y transacciones sin intermediarios
+- Soporte para direcciones blindadas (Z-addresses)
+- Transparencia en tarifas de transacción y uso de la red
+- Sin dependencias de terceros: totalmente independiente
+- Código Open-Source: auditable en funciones que lo requieren
+
+
+<strong class="col-purple">[V]</strong> Volver | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[1]</strong> Ejecutar  
+`);
+}
+
+function cdZCash() {
+window.scrollTo(0, 0);           
+pintar(`<span class="col-amarillo">[*] Zcash.</span>
+
+@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@%*:              :*%@@@@@@@@@@@@*+++%@@@@@@@*+++%@@@@@@
+@@@@+.   .-+*####*+-.   .+@@@@@@@@@#*-...+*%@@@#*-...+*%@@@@
+@@%-   :*%@@@%---#@@%*:   -%@@@@@%#-.---::.+###-.::::..+#%@@
+@%.  .*@@@%%%#   +###@@*.  .%@@%%=.--=+=---:...:::::::::.*%%
+%:  .#@@@@-          *@@#.  :%@=:--==**+=--::::::::::::::::*
++   #@@@@@-.....     *@@@#   +@=.:---=+=--:::::::::..::-=:.*
+.  -@@@@@@%%%%%+    +%@@@@-  :@=.:----=-:::::::::......=+:.*
+   +@@@@@@@@@#:   :#@@@@@@+   %*=:.:---::::::::::....:---==#
+   +@@@@@@@@+    =%@@@@@@@+   %@@+-::::::::::::....::-=--#@@
+.  -@@@@@@%-   :#@@@@@@@@@-  :%@@@@=:::::::::::..::-=-:#@@@@
++   #@@@@%.    ------#@@@#   +@@@@@%%=.::::::..::-=:.*%%@@@@
+%:  .#@@@#           #@@#.  :%@@@@@@@%#-.::::::-=:.*#%@@@@@@
+@%.  .*@@%+++=   -+++%@*.  .%@@@@@@@@@@#*-..:::::+*%@@@@@@@@
+@@%-   :*%@@@%...*@@%*:   -%@@@@@@@@@@@@@*+:...=+%@@@@@@@@@@
+@@@@+.   .-+*###**+-.   .+@@@@@@@@@@@@@@@@@+-=-#@@@@@@@@@@@@
+@@@@@%*:              :*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Zcash es una criptomoneda de código abierto enfocada en la privacidad y seguridad
+financiera. A diferencia de Bitcoin, Zcash permite transacciones totalmente anonima­
+s gracias a los “zk‑SNARKs” (Zero‑Knowledge Succinct Non‑Interactive Argument of
+Knowledge), una técnica de prueba de conocimiento cero que oculta remitente,
+destinatario y monto cuando se usa su modo blindado.
+
+Lanzada en octubre de 2016, Zcash ofrece tres tipos de direcciones:
+
+  • t-addresses (transparentes): idénticas a las de Bitcoin. Todas las transaccio­
+    nes quedan registradas públicamente en la blockchain y pueden auditarse.
+
+  • z-addresses (blindadas): basadas en zk‑SNARKs. Ofrecen privacidad total: ni
+    el remitente, ni el receptor, ni el importe aparecen en el libro mayor público.
+
+  • u-addresses (unified addresses): introducidas con ZIP‑316 y la actualización
+    “Nu5”. Unifican bajo un único string los métodos transparentes y blindados;
+    al recibir fondos, el monedero elegirá automáticamente la mejor dirección
+    soportada por el remitente (t o z) y garantizará compatibilidad futura.
+
+<span class="col-amarillo">Características clave:</span>
+====================== 
+
+- Privacidad selectiva: el usuario decide por transacción si utiliza un modo
+  transparente (t) o blindado (z/u).  
+- Unificación de direcciones: las u-addresses facilitan la interoperabilidad
+  entre monederos y simplifican la recepción de pagos.  
+- Red descentralizada: su consenso es Proof‑of‑Work Equihash y mantiene un
+  suministro limitado de 21 M ZEC.  
+- Mejoras constantes: con actualizaciones periódicas (Overwinter, Sapling,
+  Blossom, Heartwood, Canopy, NU5) optimiza privacidad, rendimiento y tarifas.  
+- Compatibilidad: funciona con monederos oficiales (Zecwallet, Zec‑QT, CLI),
+  intercambios y exploradores como Z‑Explorer o Zeblock.  
+- Comunidad y auditoría: todo es open‑source, permitiendo revisiones externas
+  y auditorías de código.
+
+Zcash es ideal para quienes valoran el control absoluto de sus finanzas y defienden
+la privacidad como un derecho digital fundamental; sus direcciones unificadas (UA)
+llevan esa experiencia un paso más allá, simplificando la vida del usuario sin
+renunciar a la confidencialidad.
 
 
 
+<strong class="col-purple">[V]</strong> Volver | <strong class="col-purple">[Z]</strong> ZExplorer | <strong class="col-purple">[5]</strong> ZcashEsp  
+`);
+}
+
+function openZcashEsp() {
+pintar(` 
+- Estas saliendo de TheVoid.BBS para visitar https://zcashesp.com
+
+<span class="col-naranja">[?] Queres continuar? [Y/N]</span>
+`);
+}
+
+function mostrarBarraProgreso() {
+  let progreso = 0;
+  const total = 20;
+
+  const interval = setInterval(() => {
+    progreso++;
+    const llenos = '#'.repeat(progreso);
+    const vacíos = ' '.repeat(total - progreso);
+    const porcentaje = progreso * 5;
+    pintar(`<pre>
+Dirigiendose...
+[${llenos}${vacíos}] ${porcentaje}%
+</pre>`);
+    if (progreso >= total) {
+      clearInterval(interval);
+      window.open("https://zcashesp.com/", "_blank"); 
+      pintar(mainMenu);
+      if (callback) callback(); 
+    }
+  }, 200); 
+}
+
+function callZExplorer() {
+	window.open("https://t.me/zcashexplorer_bot", "_blank"); 
+}
+
+function cdtexplorer() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-rojo">[*] TEXPLORER (Análisis técnico de la red TRON en Telegram)</span>
+
+T-Explorer/
+├── [Estadísticas Generales]
+│   ├── Red
+│   ├── Costo de Operación
+│   └── Mercado
+├── [Blockchain]
+│   ├── Bloques Recientes
+│   ├── Mempool
+│   └── Acceso directo: /block <n> | /tx <hash>
+├── [Validadores y Gobernanza]
+│   ├── Super Representantes
+│   ├── Propuestas
+│   └── Detalle de Votaciones
+├── [Economía]
+│   ├── Gráfico de Precio
+│   └── Supply & Burn
+├── [Herramientas]
+│   ├── Wallet Scanner
+│   ├── QR Generator
+│   └── Utilidades
+├── [Log y Actualizaciones]
+└── [Acerca del Proyecto]
+
+<span class="col-rojo">Notas:</span>
+- Transparencia y trazabilidad para la red TRON
+- Destinado a usuarios técnicos, auditores y entusiastas de blockchain
+- Datos tomados directamente desde la API pública de Trongrid
+- Herramientas para monitorear rendimiento y costos operativos
+- Soporte para exploración de bloques, transacciones y validadores
 
 
-[↑] Historial   |   [↓] Siguiente   |   [Tab] Foco   |   [Enter] Ejecutar
-</div>`;
+<strong class="col-purple">[V]</strong> Inicio | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[2]</strong> Ejecutar  
+`);
+}
 
-  const resDiv = document.createElement('div');
-  resDiv.innerHTML = helpMessage;
-  output.appendChild(resDiv);
+function callTExplorer() {
+	window.open("https://t.me/texplorerbot", "_blank"); 
+}
+
+function cdtperiodica() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-naranja">[*] Tabla periodica con imagenes.</span>
+
+T-Periodica/
+├── [Información]
+│   ├── /tpe <elemento>  
+│       Muestra información del elemento con imagen representativa
+│   ├── Lista por elementos (ordenados por categoría)
+│   └── /ion <símbolo>  
+│       Muestra el valor de ionización en electronvoltios (eV)
+├── [Gráficos]
+│   └── Diagrama de Bohr
+└── [Acerca del Proyecto]
+    └── Información de contacto del desarrollador, feedback y donaciones
 
 
-  const newInput = document.getElementById('input-line');
-  newInput.addEventListener('keydown', handleCommandInput);
+<span class="col-rojo"><strong>Notas:</strong></span>
+- Visualizador de elementos químicos en formato texto + imagen
+- Pensado para uso educativo, técnico y consulta rápida desde terminal
+- Compatible con enlaces directos a elementos específicos vía comandos
+- Basado en datos públicos y visualizaciones simples
+- Proyecto independiente y de código abierto
 
-  return; 
-} else if (command === 'degoogle') {
+<strong class="col-purple">[V]</strong> Inicio | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[3]</strong> Ejecutar  
+`);
+}
+
+function callTperiodica() {
+	window.open("https://t.me/tablaperiodica_bot", "_blank");
+}
+
+function cdprecios() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-azul">[*] CPRECIOS - Precios de criptomonedas en Telegram.</span> 
+
+C-preciobot/
+├── [cex] Binance | Kucoin | Poloniex
+│   ├── /cex [simbolo] → mejor precio
+│   └── /kucoin [simbolo], etc.
+└── [dex] Precios DEX por cadena:
+    └── eth, arb, opt, bsc, ava, pol, ftm, sol, aur, era, celo...
+
+<span class="col-rojo"><strong>Notas:</strong></span>
+- Diseño sencillo.
+- Para usuarios técnicos y entusiastas de blockchain
+- Datos tomados directamente desde APIs públicas
+
+<strong class="col-purple">[V]</strong> Inicio | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[4]</strong> Ejecutar  
+`);
+}
+
+function callCPrecios() {
+	window.open("https://t.me/c_preciosbot", "_blank"); 
+}
+
+function opcionDegoogle() {
 window.scrollTo(0, 0);     	      
-response = `<pre>
-@@@@@@@@@@@@@@@@@@@@%#+#%@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@%%#*+-.   .-+*#%%@@@@@@@@@@@@@@
-@@@@@@*----:::.....:=*%*=:.....:::----*@@@@@@
-@@@@@@=  -===++*#%%*+=-=+*%%#*++===-  =@@@@@@
-@@@@@@+  *@@@@@@%+..-+++-..+%@@@@@@*  +@@@@@@
-@@@@@@+  +@@@@@@= :%@@@@@%: =@@@@@@+  +@@@@@@
-@@@@@@#  =@@@@@@: +@@@@@@@+ :@@@@@@=  #@@@@@@
-@@@@@@%. :%@@@%#-:=#######=:-#%@@@%: .%@@@@@@
-@@@@@@@-  #@@@*===============*@@@#  -@@@@@@@
-@@@@@@@#  -@@@*======-.-======*@@@-  #@@@@@@@
-@@@@@@@@-  *@@*======- -======*@@*  -@@@@@@@@
-@@@@@@@@%: .#@*=======-=======*@#. :%@@@@@@@@
-@@@@@@@@@#: .#%+++++++++++++++%#. :#@@@@@@@@@
-@@@@@@@@@@%-  +%@@@@@@@@@@@@@%+  -%@@@@@@@@@@
-@@@@@@@@@@@%+. .+%@@@@@@@@@%+. .+%@@@@@@@@@@@
-@@@@@@@@@@@@@%+: .-+#%%%#+-. :+%@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@%#=:. ... .:=#%@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@%#*+*#%@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+pintar(`
+<span class="col-magenta">[!] DEGOOGLEATE y toma el control.</span>
+<span class="col-gris">=================================</span>
 
-+----------------------------------------------------------------------------+
-|                              [ DEGOOGLEATE ]                               |
-|                          >>> TOMA EL CONTROL <<<                           |
-+----------------------------------------------------------------------------+
+Quita o limita a Google de tu dispositivo siguendo estos pasos sencillos:
 
-[1] ELIMINA APLICACIONES DE GOOGLE Y META
-───────────────────────────────────────────
+[1] ELIMINÁ APLICACIONES DE GOOGLE Y META
+──────────────────────────────────────────
  ▸ Google: Teléfono, Galería, Gmail, SMS, Launcher, Files, Calculadora,
-           Cámara, Contactos, Teclado, Chrome, Youtube.
+           Cámara, Contactos, Teclado, Chrome, YouTube.
  ▸ Meta: Instagram, Facebook, Meta Services, Installer, Manager.
- ▸ X: X (antes twitter y mejor cuando solo tenia 128 caracteres)
+ ▸ X: X (antes Twitter y mejor cuando solo tenía 128 caracteres)
 
 [2] ALTERNATIVAS: APPS FOSS (Código Abierto)
 ────────────────────────────────────────────
  ▸ Reemplazo por apps como: Fossify, Proton Mail, Brave.
  ▸ Todas desde F-Droid o Aurora Store.
 
-[3] USA SERVICIOS PRIVADOS
-────────────────────────────────────────────
+[3] USÁ SERVICIOS PRIVADOS
+──────────────────────────
  ▸ Mail: Proton Mail (enmascarado vía DuckDuckGo).
  ▸ Navegador: Brave + Brave Search.
  ▸ Social: WebApps aisladas (Instagram, X, CoinMarketCap).
 
 [4] SEGURIDAD Y PRIVACIDAD
-────────────────────────────────────────────
+──────────────────────────
  ▸ Contraseñas: Proton Pass en lugar de Google Cloud Key.
  ▸ Rastreadores: Bloqueo web y de apps (DuckDuckGo).
  ▸ Protección contra rastreo por correo y pop-ups.
 
-[5] DESACTIVA GOOGLE
-────────────────────────────────────────────
- ▸ Desactiva: Copia de seguridad, autocompletar,
-   encontrar dispositivo, compartir número de teléfono.
+[5] DESACTIVÁ GOOGLE
+────────────────────
+ ▸ Desactivá: Copia de seguridad, autocompletar,
+              encontrar dispositivo, compartir número de teléfono.
 
-+---------------------------------------------------------------------------+
-|                   ¿POR QUÉ NO USAR GOOGLE SEARCH?                         |
-+---------------------------------------------------------------------------+
+
+<span class="col-magenta">¿POR QUÉ NO USAR GOOGLE SEARCH?</span>
+<span class="col-gris">===============================</span>
+
 Google Search/
 ├── [Privacidad]
 │   ├── Recolección de datos personales
@@ -384,9 +622,10 @@ no toda la información disponible.
 Depender de un solo actor concentra poder  
 y debilita la diversidad del ecosistema web.  
 
-+---------------------------------------------------------------------------+
-|                      ¿QUÉ HACEN FACEBOOK Y X?                             |
-+---------------------------------------------------------------------------+
+
+<span class="col-magenta">¿QUÉ HACEN FACEBOOK Y X?</span>
+<span class="col-gris">========================</span>
+
 [Datos Personales]  
 Recolectan ubicación, contactos, historial, comportamiento y más.  
 Toda tu actividad queda registrada para construir un perfil detallado.  
@@ -399,247 +638,40 @@ El contenido que ves está optimizado para maximizar tiempo y reacción.
 Viven de tu atención: cuanto más mirás, más ganan.  
 Venden publicidad hipersegmentada basada en tus datos.  
 
-+---------------------------------------------------------------------------+
-|                          ¿POR QUÉ DESGOOGLEARSE?                          |
-|---------------------------------------------------------------------------|
-| Las grandes tecnológicas (Google, Meta, X, etc) recolectan tus datos:     |
-| ubicación, contactos, búsquedas, hábitos, contenido y más.                |
-|                                                                           |
-| Usan esta información para:                                               |
-|  - Perfilarte y manipular decisiones.                                     |
-|  - Mostrarte publicidad dirigida.                                         |
-|  - Compartir o vender tus datos a terceros.                               |
-|                                                                           |
-| No es paranoia. Es el modelo de negocio.                                  |
-|                                                                           |
-| >>> DESGOOGLEARSE es romper con la vigilancia.                            |
-| >>> Es tomar el control de tu vida digital.                               |
-| >>> Queres saber algo mas de mi? 				            |
-|  └── Mi camara frontal esta tapada con cinta de papel.		    |
-+---------------------------------------------------------------------------+
 
-+----------------------------------------------------------------------------+
-|        ✘ Dejá de ser el producto. Empezá a ser el usuario. ✘              |
-+----------------------------------------------------------------------------+<pre>
-`;
-} else if (command === "cd texplorer" || command === "cd texplorer && ls") {
-	window.scrollTo(0, 0);           
-        response = `
-<div class="ascii"><pre>
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@*+*##%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@*...::::-==+*##%%@@@@@@@@@@@@@@@@@@@*===#@@@@@@@*===#@@@@@@
-@@=....=*+==-:::::-==+*%@@@@@@@@@@@#+:   =*%@@@**:   =*%@@@@
-@@%:.=-.-#@@@%%%##*:...:*%@@@@@@@%#: :-:.. +###: ....  +#%@@
-@@@*.=%*-.-*@@@@@#=.-+*-.-#@@@@%%- ::-=-:::.   ......... *%%
-@@@%-.+@%*-.-*%*-.:*%%#*-..=%@@=.::-=+*==-:................*
-@@@@#::#@@%*-.:...--:::::..-%@@- ::--=+--:.........  ..--. *
-@@@@@+.-%@@@@+.:=++*##%+.:+%@@@- .:::--::........      -=. *
-@@@@@%-.+@@@@=.+@@@@@%=.-#@@@@@+-. .:::..........    ::::--#
-@@@@@@#::#@@@-.#@@@@*:.=%@@@@@@@@=:............    .:--::#@@
-@@@@@@@+.-%@%::%@@%+.:*@@@@@@@@@@@@-...........  ..-=:.*@@@@
-@@@@@@@%-.+@#.-@@#-.-#@@@@@@@@@@@@@%%- ......  ..-=. *%%@@@@
-@@@@@@@@%:.#*.+@*:.+%@@@@@@@@@@@@@@@@%#: ......-=. +#%@@@@@@
-@@@@@@@@@*.--.+=.-#@@@@@@@@@@@@@@@@@@@@#*:  .....=*%@@@@@@@@
-@@@@@@@@@@=.....=%@@@@@@@@@@@@@@@@@@@@@@@*=.   -=#@@@@@@@@@@
-@@@@@@@@@@%-..:*@@@@@@@@@@@@@@@@@@@@@@@@@@@+---#@@@@@@@@@@@@
-@@@@@@@@@@@#:=%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-</pre></div>
-- Analisis técnico de la red TRON en Telegram
-<pre>
-T-Explorer/
-├── [Estadísticas Generales]
-│   ├── Red
-│   ├── Costo de Operación
-│   └── Mercado
-├── [Blockchain]
-│   ├── Bloques Recientes
-│   ├── Mempool
-│   └── Acceso directo: /block <n> | /tx <hash>
-├── [Validadores y Gobernanza]
-│   ├── Super Representantes
-│   ├── Propuestas
-│   └── Detalle de Votaciones
-├── [Economía]
-│   ├── Gráfico de Precio
-│   └── Supply & Burn
-├── [Herramientas]
-│   ├── Wallet Scanner
-│   ├── QR Generator
-│   └── Utilidades
-├── [Log y Actualizaciones]
-└── [Acerca del Proyecto]
+<span class="col-magenta">¿POR QUÉ DESGOOGLEARSE?</span>
+<span class="col-gris">=======================</span>
 
-Notas:
-- Transparencia y trazabilidad para la red TRON
-- Destinado a usuarios técnicos, auditores y entusiastas de blockchain
-- Datos tomados directamente desde la API pública de Trongrid
-- Herramientas para monitorear rendimiento y costos operativos
-- Soporte para exploración de bloques, transacciones y validadores
-
-> Ejecutar: CALL TEXPLORER
-</pre>
-</div>`;
-      } else if (command === "cd zexplorer" || command === "cd zexplorer && ls") {
-	window.scrollTo(0, 0);           
-        response = `
-<div class="ascii"><pre>
-@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@%*:              :*%@@@@@@@@@@@@*+++%@@@@@@@*+++%@@@@@@
-@@@@+.   .-+*####*+-.   .+@@@@@@@@@#*-...+*%@@@#*-...+*%@@@@
-@@%-   :*%@@@%---#@@%*:   -%@@@@@%#-.---::.+###-.::::..+#%@@
-@%.  .*@@@%%%#   +###@@*.  .%@@%%=.--=+=---:...:::::::::.*%%
-%:  .#@@@@-          *@@#.  :%@=:--==**+=--::::::::::::::::*
-+   #@@@@@-.....     *@@@#   +@=.:---=+=--:::::::::..::-=:.*
-.  -@@@@@@%%%%%+    +%@@@@-  :@=.:----=-:::::::::......=+:.*
-   +@@@@@@@@@#:   :#@@@@@@+   %*=:.:---::::::::::....:---==#
-   +@@@@@@@@+    =%@@@@@@@+   %@@+-::::::::::::....::-=--#@@
-.  -@@@@@@%-   :#@@@@@@@@@-  :%@@@@=:::::::::::..::-=-:#@@@@
-+   #@@@@%.    ------#@@@#   +@@@@@%%=.::::::..::-=:.*%%@@@@
-%:  .#@@@#           #@@#.  :%@@@@@@@%#-.::::::-=:.*#%@@@@@@
-@%.  .*@@%+++=   -+++%@*.  .%@@@@@@@@@@#*-..:::::+*%@@@@@@@@
-@@%-   :*%@@@%...*@@%*:   -%@@@@@@@@@@@@@*+:...=+%@@@@@@@@@@
-@@@@+.   .-+*###**+-.   .+@@@@@@@@@@@@@@@@@+-=-#@@@@@@@@@@@@
-@@@@@%*:              :*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-</pre></div>
-- Análisis técnico de la red ZCASH en Telegram
-
-<pre>
-Z-Explorer/
-├── [Estado de la Red]
-│   ├── Red
-│   ├── Bloques Recientes
-│   └── Mercado
-├── [Exploración de Bloques]
-│   ├── Bloques Recientes
-│   ├── Mempool
-│   └── Acceso directo: /block <n> | /tx <hash>
-├── [Economía y Emisión]
-│   ├── Suministro
-│   ├── Cotización de Mercado
-│   └── Balance de Pools
-├── [Herramientas Técnicas]
-│   ├── Wallet
-│   └── Generador de QR
-├── [Bitácora Técnica]
-└── [Sobre el Proyecto y Contacto Técnico]
+Las grandes tecnológicas (Google, Meta, X, etc) recolectan tus datos:     
+ubicación, contactos, búsquedas, hábitos, contenido y más.           
+                                                                
+Usan esta información para:                                 
+ - Perfilarte y manipular decisiones.                       
+ - Mostrarte publicidad dirigida.                           
+ - Compartir o vender tus datos a terceros.                 
+                                                            
+No es paranoia. Es el modelo de negocio.                    
+                                                            
+>>> DESGOOGLEARSE es romper con la vigilancia.              
+>>> Es tomar el control de tu vida digital.                 
+>>> ¿Querés saber algo más de mí? 				            
+ └── Mi cámara frontal está tapada con cinta de papel.		    
 
 
-Notas:
-- No depende de API cerradas
-- Ideal para foros, análisis offline y terminales
-- Acceso directo a bloques y transacciones sin intermediarios
-- Soporte para direcciones blindadas (Z-addresses)
-- Transparencia en tarifas de transacción y uso de la red
-- Sin dependencias de terceros: totalmente independiente
-- Código Open-Source: auditable en funciones que lo requieren
-
-> Ejecutar: CALL ZEXPLORER 
-</pre>
-`;
-      } else if (command === 'cd tperiodica') {
-	window.scrollTo(0, 0);           
-        response = `
-<div class="ascii"><pre>
-@@@@@@@@@@@@@@@@@%%%%%#%%%%%@@@@@@@@@@@@@%%@@
-@@@@@@@@@@@@%#*+====+++++====+*#%@@@@@@@@@@@@
-@@@@@@@@@%*===+#%%@@@@@@@@@%%#+===*%@@@@@@@@@
-@@@@@@@#=-==-..*@@@@@@@@@@@@@*..-==-=#@@@@@@@
-@@@@@%=-+=.     +@@@@@@@@@@@+     .=+-=%@@@@@
-@@@@*:++.        =@@@@@@@@@=        .++:*@@@@
-@@@*.*-           -%@@@@@%-           -*.*@@@
-@@%.*=            .*#***#*.            =*.%@@
-@@=:#            ++.     .++            #:=@@
-@@:++           ++         ++           ++:@@
-@@:+%%%%%%%%%%%%%=         =%%%%%%%%%%%%%+:@@
-@@=:@@@@@@@@@@@@@%+:     :+%@@@@@@@@@@@@@:=@@
-@@%.*@@@@@@@@@@@@@@*=====*@@@@@@@@@@@@@@*.%@@
-@@@*.*@@@@@@@@@@@@=       =@@@@@@@@@@@@*.*@@@
-@@@@#:+%@@@@@@@@%=         =%@@@@@@@@%+:#@@@@
-@@@@@%=-*%@@@@@%-           -%@@@@@%*-=%@@@@@
-@@@@@@@#=-+#%@%:             :%@%#+-=#@@@@@@@
-@@@@@@@@@%*===+--::... ...::--+===*%@@@@@@@@@
-@@@@@@@@@@@@%#*++===========++*#%@@@@@%%%%%@@
-@@@@@@@@@@@@@@@@@%%%%%#%%%%%@@@@@@@@@@@@@%%@@
-</pre></div>
-<pre>
-T-Periodica/
-├── [Información]
-│   ├── /tpe <elemento>  
-│       Muestra información del elemento con imagen representativa
-│   ├── Lista por elementos (ordenados por categoría)
-│   └── /ion <símbolo>  
-│       Muestra el valor de ionización en electronvoltios (eV)
-├── [Gráficos]
-│   └── Diagrama de Bohr
-└── [Acerca del Proyecto]
-    └── Información de contacto del desarrollador, feedback y donaciones
+<span class="col-verde">✘ Dejá de ser el producto. Empezá a ser el usuario. ✘</span>
 
 
-Notas:
-- Visualizador de elementos químicos en formato texto + imagen
-- Pensado para uso educativo, técnico y consulta rápida desde terminal
-- Compatible con enlaces directos a elementos específicos vía comandos
-- Basado en datos públicos y visualizaciones simples
-- Proyecto independiente y de código abierto
 
-> Ejecutar: CALL TPERIODICA
-</pre>
-`;
-    } else if (command === 'cd cprecios') {
-	window.scrollTo(0, 0);           
-        response = `
-<div class="ascii"><pre>
-%%%%%%%%%%%%%%%@%%%%#####%%%%@%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%#+=-:.........:-=+#%%%%%%%%%%%%%
-%%%%%%%%%%*-.                   .-*%%%%%%%%%%
-%%%%%%%#=.     :------:            .=#%%%%%%%
-%%%%%#-      -=-..-=::-=-             -#%%%%%
-%%%%*.      =+  .#%+=   +=    .===**:  .*%%%%
-%%%*        #.  .=+##:  .#     .-**@=    *%%%
-%%#.        =+  .=**=.  +=    -*+- *-    .#%%
-%%=          -=: .-: .-=-   -*+=*#        =%%
-%%:           :++++++=-.  -*+=*%@#        :%%
-%%:       .:=++-+*#*+-++=*+::%@@@#        :%%
-%%=     :++++++.%@@@%.+*++*-:@@@@#        =%%
-%%#.    :-*#%@#.%@@@%.*@@@@-:@@@@#       .#%%
-%%%*     -@@@@#.%@@@%.*@@@@-:@@@@#       *%%%
-%%%%*.   -@@@@#.%@@@%.#@@@@-:@@@@#     .*%%%%
-%%%%%#-  .*###= +###+ =###*..*###=    -#%%%%%
-%%%%%%%#=.                         .=#%%%%%%%
-%%%%%%%%%%*-.                   .-*%%%%%%%%%%
-%%%%%%%%%%%%%#*=-::.......::-=*#%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%@%%%%#####%%%%@%%%%%%%%%%%%%%%
-</pre></div>
-- Precios de criptomonedas en Telegram
-<pre>
-C-preciobot/
-├── [cex] Binance | Kucoin | Poloniex
-│   ├── /cex [simbolo] → mejor precio
-│   └── /kucoin [simbolo], etc.
-└── [dex] Precios DEX por cadena:
-    └── eth, arb, opt, bsc, ava, pol, ftm, sol, aur, era, celo...
+<strong class="col-purple">[V]</strong> Inicio
+</div>`);
 
-Notas:
-- Diseño sencillo.
-- Para usuarios técnicos y entusiastas de blockchain
-- Datos tomados directamente desde APIs públicas
+}
 
-> Ejecutar: CALL CPRECIOS
-</pre>
-</div>
-`;
-   } else if (command === 'readme') {
+function cdreadme() {
+pintar(`
+<span class="col-magenta">[*] CONTEXTUALIZACION</span>
+<span class="col-gris">======================</span>
 
-response = `<pre>
-
-CONTEXTUALIZACION
-=================
 
 ¿Por qué todo alineado a la izquierda?  
 Porque así eran las terminales.  
@@ -694,8 +726,8 @@ Y si te sentís incómodo navegando así…
 bienvenido. Así se sentía aprender a usar una computadora en 1994.
 
 
-Año 1994
-========
+<span class="col-magenta">[*] AÑO 1994</span> 
+<span class="col-gris">============</span>
 
 Internet ya existía, pero era muy limitada.
 La mayoría de la gente usaba BBS (Bulletin Board Systems),
@@ -724,51 +756,16 @@ Se usaban ANSI art, marcos con caracteres, navegación por teclado.
 HTML 1.0 acababa de salir. Las webs eran 100% texto, sin imágenes, ni CSS, ni JS.
 Si te resulta raro...  
 es porque ya nos desacostumbramos a lo simple.
-</pre> `;
-} else if (command === 'asm') {
-window.scrollTo(0, 0);     	      
-response = `<pre>
 
-; Este programa imprimiria un mensaje en pantalla.
-; Lenguajes creados directamente con ensamblador:
-; - FORTRAN (en sus primeras versiones).
-; - COBOL (en sus primeras versiones).
-; - Lisp (en sus primeras implementaciones).
-; Estos lenguajes fueron implementados inicialmente en ensamblador para mejorar el rendimiento y la eficiencia.
 
-.MODEL SMALL        ; Definir modelo de memoria (SMALL: único segmento para código y datos)
-.STACK 100h         ; Reservar 256 bytes para la pila
-.DATA               ; Sección de datos
-msg db 'Hola soy carover0 y esto es The Void.BBS en lenguaje ensamblador$', ; Definir el mensaje a mostrar
 
-.CODE               ; Sección de código
-; Mostrar mensaje
-MOV AH, 09h         ; Cargar la función 09h de DOS (mostrar cadena)
-INT 21h             ; Llamar a la interrupción 21h para ejecutar la función
+<strong class="col-purple">[V]</strong> Volver
+`);
+}
 
-; Finalizar el programa
-MOV AH, 4Ch         ; Cargar la función 4Ch de DOS (terminar el programa)
-INT 21h             ; Llamar a la interrupción 21h para finalizar el programa
-
-; solo un poquito de historia...
-</pre> `;
-} else if (command === 'whoami') {
-	window.scrollTo(0, 0);           
-        response = `<pre>
-INFORMACIÓN DE USUARIO
-----------------------
-
-NOMBRE DE USUARIO    BIN
-=================    =======================================================================
-Invitado             01100011 01100001 01110010 01101111 01110110 01100101 01110010 00110000
-
-[*] Sesión activa desde: 1995-02-14
-[*] Shell: /bin/nostalgia
-
-</pre>`;
-      } else if (command === 'about' || command === 'acerca') {
-	window.scrollTo(0, 0);           
-        response = `<pre>
+function cdabout() {
+window.scrollTo(0, 0);           
+pintar(`
 # ========================================================== #
 # 0x01 >>> SOBRE MI                                          #
 # 0x02 >>> Nombre : carover0                                 #
@@ -780,8 +777,8 @@ Invitado             01100011 01100001 01110010 01101111 01110110 01100101 01110
 #       [*] GitHub   : github.com/Carover0                   #
 # ========================================================== #
 
-FILOSOFIA
-=========
+<span class="col-magenta">[*] FILOSOFIA</span> 
+<span class="col-gris">=============</span>
 
 No hay frameworks.  
 No hay librerías modernas.  
@@ -813,202 +810,118 @@ no hace falta explicar más.
 
 >>> carover0 ~ The Void.BBS®
 
-</pre>`;
-      } else if (command === 'format') {
-        	simulateFormat();
-	        window.scrollTo(0, 0);
-      } else if (command === 'cd..') {
-  	response = `<div class="ascii-l""</div>`;
-	window.scrollTo(0, 0);      
-      } else if (command === 'exit') {
-		exitSequence();
-      }	else if (command === 'call zexplorer') {
-response = `<pre>
-> CALL ZEXPLORER
-  => Ejecutando ZEXPLORER...
-  => Abriendo bot en Telegram...
-</pre>`;
-	window.open("https://t.me/zcashexplorer_bot", "_blank");
-	} else if (command === 'call tperiodica') {
-response = `<pre>
-> CALL TPERIODICA
-  => Ejecutando TPERIODICA...
-  => Abriendo bot en Telegram...
-</pre>`;
-	window.open("https://t.me/tablaperiodica_bot", "_blank");
-      }  else if (command === 'call texplorer') {
-response = `<pre>
-> CALL TEXPLORER
-  => Ejecutando TEXPLORER...
-  => Abriendo bot en Telegram...
-</pre>`;
-	window.open("https://t.me/texplorerbot", "_blank");
-      } else if (command === 'call cprecios') {
-response = `<pre>
-> CALL CPRECIOS
-  => Ejecutando CPRECIOS...
-  => Abriendo bot en Telegram...
-</pre>`;
-	window.open("https://t.me/c_preciosbot", "_blank");
-    } else if (command.startsWith('calc ')) {
-	  window.scrollTo(0, 0);         
-	  try {
-	    const expr = command.slice(5);
-	    const result = Function(`"use strict";return (${expr})`)();
-	    response = `Resultado: ${result}`;
-	  } catch {
-	    response = 'Expresión inválida';
-	  }
-	} 
-       else if (command === 'date') {
-	  const today = new Date();
-	  const fecha = today.toLocaleDateString('es-AR');
-	  window.scrollTo(0, 0);     
-	  response = `La fecha actual es: ${fecha}\nEscriba la nueva fecha: __`;
-	} else if (command === 'time') {
-	  const now = new Date();
-	  const hora = now.toLocaleTimeString('es-AR');
-	  response = `La hora actual es: ${hora}\nEscriba la nueva hora: __`;
-	  window.scrollTo(0, 0);     
-	} else if (command === 'ver') {
-	  response = `The Void.BBS® ${version}`;
-	  window.scrollTo(0, 0);     
-	} else if (command === 'debug') {
-	  const outputEl = document.getElementById('output');
-	  outputEl.innerHTML = ''; // Limpiar el contenido previo
-	  const wrapper = document.createElement('div');
-	  wrapper.className = 'ascii-l';
-	  const pre = document.createElement('pre');
-	  wrapper.appendChild(pre);
-	  outputEl.appendChild(wrapper);
-	  window.scrollTo(0, 0);          
-	  const dump = generateFakeHexDump(20); // Generar más líneas del dump
-	  simulateTextWriting(dump, pre, 5, () => {
-	  });
-          }  else if (command === 'dir') {
-	  window.scrollTo(0, 0);          
-	  response = `
-	  <div class="ascii-l">
-A:\>DIR *.*
+
+
+<strong class="col-purple">[V]</strong> Volver
+`);
+
+}
+
+function cdHelp() {
+window.scrollTo(0, 0);     	       
+pintar(`
+<span class="col-magenta">[!] AYUDA DEL SISTEMA</span>
+<span class="col-gris">=====================</span>
+
+ COMANDOS DISPONIBLES
+ <span class="col-gris">────────────────────</span>
+ [Z] ZEXPLORER        → Explorador ZCASH (Telegram)
+ [T] TEXPLORER        → Explorador TRON (Telegram)
+ [P] TPERIODICA       → Tabla periódica interactiva
+ [C] CPRECIOS         → Precios cripto en tiempo real
+ [D] DEGOOGLE         → Desintoxicate de Big Tech
+ [A] ABOUT            → Sobre el sistema
+ [V] VOLVER           → Limpia la pantalla
+ [X] EXIT             → Salir
+
+<span class="col-magenta">FUNCIONES ESPECIALES</span>
+<span class="col-gris">────────────────────</span>
+ [I] DIR              → Lista contenido oculto
+ [F] FORMAT           → Borra el disco ¡Cuidado! ;)
+ [G] DEBUG            → Simula volcado de memoria
+ [W] WHOAMI           → Información del usuario
+ [R] ASM              → Lenguaje ensamblador
+ [H] HELP             → Muestra esta ayuda
+
+<span class="col-magenta">TIPS</span>
+<span class="col-gris">====</span>
+ ¿Sos curioso? Proba con: [F]
+
+
+<span class="col-magenta">TECLAS ACTIVAS</span>
+<span class="col-gris">──────────────</span>
+┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
+│ 1* │ 2* │ 3* │ 4* │ 5* │ 6  │ 7  │ 8  │ 9  │ 0  │
+├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
+│ Q  │ W* │ E* │ R* │ T* │ Y* │ U  │ I* │ O  │ P  │
+├────┬────┬────┬────┬────┬────┬────┬────┬────┬────┤
+│ A* │ S  │ D* │ F* │ G* │ H* │ J  │ K  │ L* │ Ñ  │
+├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
+│ Z* │ X* │ C* │ V* │ B* │ N  │ M  │    │    │    │
+└─────────────────────────────────────────────────┘
+
+
+<span class="col-purple">[V]</span> Volver
+
+
+
+`);
+}
+
+function cdDir() {
+  window.scrollTo(0, 0);
+  const spinnerChars = ['|', '/', '-', '\\'];
+  let i = 0;
+  const spinnerDiv = document.createElement('div');
+  spinnerDiv.classList.add('spinner');
+  spinnerDiv.innerHTML = `> Cargando... ${spinnerChars[i % spinnerChars.length]}`;
+  output.appendChild(spinnerDiv);
+  const interval = setInterval(() => {
+    spinnerDiv.innerHTML = `> Cargando... ${spinnerChars[i % spinnerChars.length]}`;
+    i++;
+  }, 100);
+  setTimeout(() => {
+    clearInterval(interval);
+    output.removeChild(spinnerDiv);
+pintar(`
+A:\\>DIR *.*
 
  Volumen en unidad C no tiene etiqueta.
  Número de serie del volumen: E-2-7CB
 
- Directorio de A:\
+ Directorio de A:\\
 
  [.]             .
  [..]            ..
  [zexplorer]     ZCASH Explorer
  [texplorer]     TRON Explorer
  [tperiodica]    Tabla periódica
- [cprecios]	 Precios cripto 
+ [cprecios]      Precios cripto 
  [debug]         Volcado de memoria
  [format]        Borrar disco (¡CUIDADO!)
  [secret.sys]    ????
-	  </div>`;   
-} else if (command === 'help') {
-  window.scrollTo(0, 0);     	       
-  const outputEl = document.getElementById('output');
-  const helpMessage = `
-<div class="ascii-l">
-# ============================================= #
-#               AYUDA DEL SISTEMA               #
-# ============================================= #
-
- COMANDOS DISPONIBLES
- ───────────────────────────────────────────────
- CD ZEXPLORER     → Explorador ZCASH (Telegram)
- CD TEXPLORER     → Explorador TRON (Telegram)
- CD TPERIODICA    → Tabla periódica interactiva
- CD CPRECIOS      → Precios cripto en tiempo real
- DEGOOGLE	  → Desintoxicate de Big Tech  
- ABOUT            → Sobre el sistema
- CD..             → Limpia la pantalla
- EXIT             → Salir
-
- COMANDOS ESPECIALES
- ───────────────────────────────────────────────
- DIR              → Lista contenido oculto
- FORMAT           → Borra el disco ¡Cuidado! ;)
- DEBUG            → Simula volcado de memoria
- CALC             → Calculadora
- DATE             → Muestra la fecha del sistema
- TIME             → Muestra la hora del sistema
- VER              → Versión del sistema
- WHOAMI           → Información del usuario
- ASM              → Lenguaje ensamblador
- HELP             → Muestra esta ayuda
-
- TIPS
- ───────────────────────────────────────────────
- ▌¿Sos curioso? Probá con: FORMAT
-
-</div>`;
-  const resDiv = document.createElement('div');
-  resDiv.innerHTML = helpMessage;
-  output.appendChild(resDiv);
-  const inputWrapper = document.createElement('div');
-  inputWrapper.classList.add('ascii-l');
-  inputWrapper.innerHTML = `
-<div class="line"><br>
-C:\\VOID\\><input type="text" id="input-line" placeholder="Escriba un comando..." />
-<br>----------------------------------------------------------</div>`;
-  output.appendChild(inputWrapper);
-  const newInput = document.getElementById('input-line');
-  //newInput.focus();	      
-  newInput.addEventListener('keydown', handleCommandInput);
-  return;
-      } else if (['ls', 'pwd', 'sudo', 'rm', 'clear', 'touch', 'cat', 'nano', 'bash', 'man', 'exit'].includes(command)) {
-  response = `<div class="line">
-<b>'${command}'</b> no se reconoce como comando interno o externo.<br>
-Este no es Linux...<br>
-Proba con: <b>HELP</b></div>`;
-	} else {
-        response = `<div class="ascii-l">Comando o nombre de archivo incorrecto - <span class="error">${command}</span></div>`;
-
-      }
-      startSpinner(() => {
-        const resDiv = document.createElement('div');
-        resDiv.innerHTML = response;
-        output.appendChild(resDiv);
-        const inputWrapper = document.createElement('div');
-        inputWrapper.classList.add('input-wrapper');
-        inputWrapper.innerHTML = `
-<div class="line"><br>
-C:\\VOID\\><input type="text" id="input-line" placeholder="Escriba un comando..." />
-<br>
--------------- MENU --------------------------------
- CD BOTS 	 | Bots para Telegram.
- DEGOOGLE	 | Desintoxicate de Big Tech	
- ABOUT           | Sobre mí...
- HELP	         | Hay mas de lo que ves...
- README		 | Preguntas?
- CD..            | Limpiar pantalla
- EXIT	    	 | Salir
-----------------------------------------------------
 
 
-	
-	
-	
-[↑] Historial   |   [↓] Siguiente   |   [Tab] Foco   |   [Enter] Ejecutar</div>`;
-        output.appendChild(inputWrapper);
-        const newInput = document.getElementById('input-line');
-        //newInput.focus();
-        newInput.addEventListener('keydown', handleCommandInput);
-      });
-      e.target.value = '';
-    }
-  }
-  const input = document.getElementById('input-line');
-  const output = document.getElementById('output');
-  input.addEventListener('keydown', handleCommandInput);
+
+ <strong class="col-purple">[V]</strong> Volver
+
+`);
+
+
+}, 1500);
+
+}
+
 
 function simulateFormat() {
-  window.scrollTo(0, 0);     	
+  window.scrollTo(0, 0);
   output.innerHTML = '';
+
+  const container = document.createElement('div');
+  container.classList.add('boot-msg'); // Usa el estilo de fuente retro
   const pre = document.createElement('pre');
-  output.appendChild(pre);
+  container.appendChild(pre);
+  output.appendChild(container);
 
   const pasos = [
     "Formateando unidad C: con sistema de archivos FAT16...",
@@ -1039,27 +952,31 @@ function simulateFormat() {
   const total = 40;
 
   function updateFormatStep() {
-    window.scrollTo(0, 0);     	  
+    window.scrollTo(0, 0);
     if (currentStep < pasos.length) {
-      pre.innerHTML += pasos[currentStep] + '\n';
+      pre.textContent += pasos[currentStep] + '\n';
       currentStep++;
       setTimeout(updateFormatStep, 800);
     } else {
       const interval = setInterval(() => {
         const percent = Math.floor((progress / total) * 100);
         const bar = '[' + '#'.repeat(progress) + ' '.repeat(total - progress) + `] ${percent}%`;
-
         const randomLog = glitches[Math.floor(Math.random() * glitches.length)];
 
-        pre.innerHTML = pasos.join('\n') + `\n\n${randomLog}\nProgreso: ${bar}`;
+        pre.innerHTML = pasos.join('<br>') +
+                        `<br><br>${randomLog}<br>Progreso: ${bar}`;
         progress++;
         if (progress > total) {
           clearInterval(interval);
-          pre.innerHTML += `\n\nFormateo completo. Todos los datos han sido eliminados.\n\nAsí habrías vivido un formateo en los 80/90.\n\n\n`;
+          pre.innerHTML += `<br><br>Formateo completo. Todos los datos han sido eliminados.` +
+                           `<br><br>Así habrías vivido un formateo en los 80/90.` +
+                           `<br><br><span class="col-purple">[V]</span> Volver`;
+          document.body.addEventListener("keydown", volverConV);
         }
       }, 150);
     }
   }
+
   updateFormatStep();
 }
 
@@ -1090,79 +1007,135 @@ function simulateTextWriting(text, element, speed, callback) {
   }, speed);
 }
 
-function handleDebugCommand() {
+function cdDebug() {
   const outputEl = document.getElementById('output');
-  outputEl.innerHTML = ''; // Limpiar el contenido previo
-
+  outputEl.innerHTML = ''; 
   const wrapper = document.createElement('div');
   wrapper.className = 'ascii-l';
   const pre = document.createElement('pre');
   wrapper.appendChild(pre);
   outputEl.appendChild(wrapper);
-  const dump = generateFakeHexDump(20); // Generar más líneas del dump
-  simulateTextWriting(dump, pre, 50, () => {
+  window.scrollTo(0, 0);          
+  const dump = generateFakeHexDump(30); 
+  simulateTextWriting(dump, pre, 5, () => {
+    const volverDiv = document.createElement('div');
+    volverDiv.innerHTML = `<strong class="col-purple">[V]</strong> Volver`;
+    wrapper.appendChild(volverDiv);
   });
 }
-</script>
-<div id="screen">
-  <pre id="exit-msg"></pre>
-</div>
-<script>
-  function exitSequence() {
-    document.body.innerHTML = '<div id="screen"><pre id="exit-msg"></pre></div>';
-    const exitMessages = [
-  "Saving user settings...",
-  "Logging off user: Invitado",
-  "Updating message counters...",
-  "",
-  "",
-  "Saving download/upload stats...",
-  "",
-  "",
-"██████████████████████████████████████████",
-"█                   :)                   █",
-"█     Gracias por usar The Void.BBS®     █",
-"█ ¡El sysop está orgulloso de recibirte! █",
-"█ ¡Volve pronto, siempre sos bienvenido! █",
-"█                                        █",
-"██████████████████████████████████████████",
-  "",
-  "",
-  "Carrier lost.",
-  "Connection closed by remote host.",
-  "NO CARRIER",
+
+function exitSequence() {
+  document.body.innerHTML = `<div id="screen">
+      <div class="boot-msg"><pre id="exit-msg"></pre></div>
+    </div> `;
+  const exitMessages = [
+    "Saving user settings...",
+    "Logging off user: Invitado",
+    "Updating message counters...",
+    "",
+    "",
+    "Saving download/upload stats",
+    "",
+    "",
+    "██████████████████████████████████████████",
+    "█                   :)                   █",
+    "█     Gracias por usar The Void.BBS®     █",
+    "█ ¡El sysop está orgulloso de recibirte! █",
+    "█ ¡Volve pronto, siempre sos bienvenido! █",
+    "█                                        █",
+    "██████████████████████████████████████████",
+    "",
+    "",
+    "Carrier lost.",
+    "Connection closed by remote host.",
+    "NO CARRIER"
   ];
 
-    let currentLine = 0;
-    let currentChar = 0;
-    const exitElement = document.getElementById("exit-msg");
+  let currentLine = 0;
+  let currentChar = 0;
+  const exitElement = document.getElementById("exit-msg");
 
-    function typeExitLine() {
-      if (currentLine < exitMessages.length) {
-        let line = exitMessages[currentLine];
-        if (currentChar < line.length) {
-          exitElement.textContent += line.charAt(currentChar);
-          currentChar++;
-          setTimeout(typeExitLine, 4); // Velocidad por carácter
-        } else {
-          exitElement.textContent += "\n";
-          currentLine++;
-          currentChar = 0;
-          setTimeout(typeExitLine, 400); // Tiempo entre líneas
-        }
-      } else {
-        // Redirigir después de terminar
-        setTimeout(() => {
-          window.location.href = "https://free2z.cash/carover0";l
-        }, 1000); // Espera antes de redirigir
+  function typeExitLine() {
+    if (currentLine < exitMessages.length) {
+      let line = exitMessages[currentLine];
+      if (line === "NO CARRIER") {
+        const coloredLine = '<span class="col-rojo">NO CARRIER</span>';
+        exitElement.innerHTML += coloredLine + "\n";
+        currentLine++;
+        currentChar = 0;
+        setTimeout(typeExitLine, 400);
+        return;
       }
+      if (currentChar < line.length) {
+        exitElement.textContent += line.charAt(currentChar);
+        currentChar++;
+        setTimeout(typeExitLine, 4);
+      } else {
+        exitElement.textContent += "\n";
+        currentLine++;
+        currentChar = 0;
+        setTimeout(typeExitLine, 400);
+      }
+    } else {
+      setTimeout(() => {
+        window.location.href = "https://free2z.cash/carover0";
+      }, 1000);
     }
-
-    typeExitLine();
   }
+  typeExitLine();
+}
+
+function cdasmblr() {
+window.scrollTo(0, 0);     	      
+pintar(`
+
+; Este programa imprimiria un mensaje en pantalla.
+; Lenguajes creados directamente con ensamblador:
+; - FORTRAN (en sus primeras versiones).
+; - COBOL (en sus primeras versiones).
+; - Lisp (en sus primeras implementaciones).
+; Estos lenguajes fueron implementados inicialmente en ensamblador para mejorar el rendimiento y la eficiencia.
+
+.MODEL SMALL        ; Definir modelo de memoria (SMALL: único segmento para código y datos)
+.STACK 100h         ; Reservar 256 bytes para la pila
+.DATA               ; Sección de datos
+msg db 'Hola soy carover0 y esto es The Void.BBS en lenguaje ensamblador$', ; Definir el mensaje a mostrar
+
+.CODE               ; Sección de código
+; Mostrar mensaje
+MOV AH, 09h         ; Cargar la función 09h de DOS (mostrar cadena)
+INT 21h             ; Llamar a la interrupción 21h para ejecutar la función
+
+; Finalizar el programa
+MOV AH, 4Ch         ; Cargar la función 4Ch de DOS (terminar el programa)
+INT 21h             ; Llamar a la interrupción 21h para finalizar el programa
+
+; solo un poquito de historia...
+
+<strong class="col-purple">[V]</strong> Volver
+ `);
+}
+
+function cdwhoami() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-verde">INFORMACIÓN DE USUARIO</span>
+======================
+
+NOMBRE DE USUARIO    BIN
+=================    =======================================================================
+Invitado             01100011 01100001 01110010 01101111 01110110 01100101 01110010 00110000
+
+[*] Sesión activa desde: 1995-02-14
+[*] Shell: /bin/nostalgia
+
+
+<strong class="col-purple">[V]</strong> Volver
+
+`); 
+}
 
 </script>
 
-	
 </body>
 </html>
