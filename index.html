@@ -75,41 +75,67 @@ carover0
 <body tabindex="0"><pre id="boot-msg"></pre>
 <div id="output" style="display:none;"></div>
   <script>
-  const bootMessages = [
-    "████████████████████████████████████████",
-    "█      Conectando a The Void.BBS®      █",
-    "█         (SysOp: carover0)            █",
-    "█         [2400 Baud | ANSI]           █",
-    "████████████████████████████████████████",
-    "",
-    "[*] Discando línea segura [###############################] 100%",
-    "[*] Handshake establecido [###############################] 100%",
-    "[*] Negociando protocolo [████████████████████████████████] 100%",
-    "",	  
-    "[*] Cargar herramientas  [████████████████████████████████] 100%",
-    "[✓] Autenticado como: INVITADO",
-    "",
-    "> La privacidad es un derecho!.",
-    "> Conectarse es un privilegio.",
-  ];
-  let cm = 0, cc = 0;
-  const bootEl = document.getElementById("boot-msg");
+const bootMessages = [
+  "████████████████████████████████████████",
+  "█      Conectando a The Void.BBS®      █",
+  "█         (SysOp: carover0)            █",
+  "█         [2400 Baud | ANSI]           █",
+  "████████████████████████████████████████",
+  "",
+  "[*] Discando línea segura [loading]",
+  "[*] Handshake establecido [loading]",
+  "[*] Negociando protocolo [loading]",
+  "[*] Cargar herramientas  [loading]",
+  "[✓] Autenticado como: INVITADO",
+  "",
+  "> La privacidad es un derecho!.",
+  "> Conectarse es un privilegio.",
+];
 
-  function typeNext() {
-    if (cm < bootMessages.length) {
-      const msg = bootMessages[cm];
-      if (cc < msg.length) {
-        bootEl.textContent += msg[cc++];
-        setTimeout(typeNext, 1);
-      } else {
-        bootEl.textContent += "\n";
-        cc = 0; cm++;
-        setTimeout(typeNext, 180);
-      }
+let cm = 0;
+const bootEl = document.getElementById("boot-msg");
+
+const SPINNER_FRAMES = ["|", "/", "-", "\\"];
+let spinnerIntervals = [];
+
+function startSpinner(lineId) {
+  let index = 0;
+  spinnerIntervals[lineId] = setInterval(() => {
+    const el = document.getElementById("spinner-" + lineId);
+    if (el) el.textContent = SPINNER_FRAMES[index++ % SPINNER_FRAMES.length];
+  }, 120);
+}
+
+function stopSpinner(lineId) {
+  clearInterval(spinnerIntervals[lineId]);
+  const el = document.getElementById("spinner-" + lineId);
+  if (el) el.outerHTML = '<span class="col-verde">OK</span>';
+}
+
+function typeNext() {
+  if (cm < bootMessages.length) {
+    let rawLine = bootMessages[cm];
+
+    if (rawLine.includes("[loading]")) {
+      const id = cm; // usar índice de línea como id
+      const textOnly = rawLine.replace("[loading]", "");
+      bootEl.innerHTML += `${textOnly}[<span id="spinner-${id}">|</span>]\n`;
+      startSpinner(id);
+
+      setTimeout(() => {
+        stopSpinner(id);
+        cm++;
+        setTimeout(typeNext, 300);
+      }, 1500); // tiempo del spinner
     } else {
-      setTimeout(showUI, 1000);
+      bootEl.innerHTML += rawLine + "\n";
+      cm++;
+      setTimeout(typeNext, 180);
     }
+  } else {
+    setTimeout(showUI, 1000);
   }
+}
 
  function actualizarFechaHora() {
     const ahora = new Date();
