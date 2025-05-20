@@ -19,7 +19,7 @@ carover0
       color: #FFF;
       font-family: "Lucida Console", monospace;
       font-size: 16px;
-      line-height: 1.3;
+      /*line-height: 1.3;*/
       padding: 20px;
       white-space: pre;
       cursor: none;
@@ -32,7 +32,7 @@ carover0
       color: #ffffff;
       background-color: black;
       white-space: pre;
-      line-height: 1.2;
+      /*line-height: 1.2;*/
     }
      .boot-msg {
       font-family: 'Lucida Console', monospace;
@@ -40,7 +40,7 @@ carover0
       color: #ffffff;
       background-color: black;
       white-space: pre;
-      line-height: 1.2;
+      /*line-height: 1.2;*/
     }
     .ascii-l { text-align: left; }
     .col-rojo     { color: #f85149; }  /* rojo VSCode para errores / alerts */
@@ -161,6 +161,15 @@ window.onload = actualizarFechaHora;
 
 typeNext();  // Inicia la animación de arranque
 const mainMenu = `
+<pre class="col-amarillo">
+         _______ _                       _     _   ____  ____   _____ 
+        |__   __| |                     (_)   | | |  _ \\|  _ \\ / ____|
+           | |  | |__   ___  __   _____  _  __| | | |_) | |_) | (___  
+           | |  |  _ \\ / _ \\ \\ \\ / / _ \\| |/ _\` | |  _ <|  _ < \\___ \\ 
+           | |  | | | |  __/  \\ V / (_) | | (_| |_| |_) | |_) |____) |
+           |_|  |_| |_|\\___|   \\_/ \\___/|_|\\__,_(_)____/|____/|_____/ 
+</pre>
+<div>
 Fecha y hora actual: <span class="col-rojo"><span id="fecha"></span> <span id="hora"></span></span>
 
 Identificador del sistema: <span class="col-blanco">CP BBS (#00311)</span>, ejecutando <span class="col-azul">BEBS/NT v4.10 Dada-1</span>  
@@ -174,10 +183,6 @@ Usuario: <span class="col-magenta">Invitado</span> <span class="col-gris">(permi
 <span class="col-gris">Tema visual:</span> <span style="color:#58a6ff;">GitHub VSCode Dark</span> — <span class="col-cyan">Paleta personalizada para Void.BBS</span>
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                              Bienvenidos a                                   ║
-║              <span class="col-cyan">.</span><span class="col-azul">:</span><span class="col-magenta">:</span> The Void.BBS - Sistema Experimental <span class="col-magenta">:</span><span class="col-azul">:</span><span class="col-cyan">.</span>                     ║
-║                              Versión 1.2.6                                   ║
-╠══════════════════════════════════════════════════════════════════════════════╣
 ║ Este es mi espacio personal. ¿Convencional? Para nada...                     ║
 ║ Es un BBS camuflado en HTML, una web de un solo archivo                      ║
 ║ más liviana que el logo de Facebook en su página principal                   ║
@@ -197,8 +202,7 @@ Usuario: <span class="col-magenta">Invitado</span> <span class="col-gris">(permi
 
 Contraseña: <span class="col-rojo">******</span>
 Sesiones iniciadas: <span class="col-azul">82</span> <span class="col-gris">(Logons: 82)</span>
-Nivel de acceso: Invitado | Usuario | SysOp | <span class="col-magenta">Fundador</span>`;
-
+Nivel de acceso: Invitado | Usuario | SysOp | <span class="col-magenta">Fundador</span></div>`;
 function pintar(html) {
   document.getElementById("output").innerHTML = html;
   window.scrollTo(0,0);
