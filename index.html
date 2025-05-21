@@ -321,7 +321,7 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       cdasmblr();
       e.preventDefault();
     }    
-     else if (k === "w") {
+     else if (k === "s") {
       cdwhoami();
       e.preventDefault();
     }    
@@ -340,6 +340,10 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       pintar(mainMenu);
       e.preventDefault();
     } 
+   else if (k === "w") {
+      cdtWtX();
+      e.preventDefault();
+    }     
   }
 
 function cdzexplorer() {
@@ -862,6 +866,7 @@ pintar(`
  [P] TPERIODICA       → Tabla periódica interactiva
  [C] CPRECIOS         → Precios cripto en tiempo real
  [D] DEGOOGLE         → Desintoxicate de Big Tech
+ [W] TWTXT            → Microblogging
  [A] ABOUT            → Sobre el sistema
  [V] VOLVER           → Limpia la pantalla
  [X] EXIT             → Salir
@@ -871,7 +876,7 @@ pintar(`
  [I] DIR              → Lista contenido oculto
  [F] FORMAT           → Borra el disco ¡Cuidado! ;)
  [G] DEBUG            → Simula volcado de memoria
- [W] WHOAMI           → Información del usuario
+ [S] WHOAMI           → Información del usuario
  [R] ASM              → Lenguaje ensamblador
  [H] HELP             → Muestra esta ayuda
 
@@ -887,16 +892,13 @@ pintar(`
 ├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
 │ Q  │ W* │ E* │ R* │ T* │ Y* │ U  │ I* │ O  │ P  │
 ├────┬────┬────┬────┬────┬────┬────┬────┬────┬────┤
-│ A* │ S  │ D* │ F* │ G* │ H* │ J  │ K  │ L* │ Ñ  │
+│ A* │ S* │ D* │ F* │ G* │ H* │ J  │ K  │ L* │ Ñ  │
 ├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
 │ Z* │ X* │ C* │ V* │ B* │ N  │ M  │    │    │    │
 └─────────────────────────────────────────────────┘
 
 
 <span class="col-purple">[V]</span> Volver
-
-
-
 `);
 }
 
@@ -1167,6 +1169,24 @@ Invitado             01100011 01100001 01110010 01101111 01110110 01100101 01110
 `); 
 }
 
+function cdtWtX() {
+window.scrollTo(0, 0);           
+pintar(`
+╔════════════════════════════════════════════════════════════╗
+║                     <span class="col-magenta">[ LOG DEL VOID.BBS ] </span>                  ║
+╚════════════════════════════════════════════════════════════╝
+[2024-12-15 14:01] :: Google escucha más que tu micrófono.
+[2024-12-15 15:10] :: Libre no es gratis. Libre es libre.
+[2024-12-16 09:00] :: No confundas gratis con soberanía digital.
+[2024-12-17 17:33] :: Cada clic que das entrena a tu carcelero.
+
+
+
+
+
+<strong class="col-purple">[V]</strong> Volver  
+`);
+	  
 </script>
 
 </body>
