@@ -1,27 +1,27 @@
-# Bienvenidos! 
+# ▒▒ WELCOME TO THE VOID.BBS ▒▒
 
-Bienvenido al archivo de repositorio de **The void.bbs**
+**The code never lies.**  
+No importa si usás Windows 95 o la última distro de Linux:  
+acá manda el texto plano, la estética cruda, y la nostalgia digital.
 
-Aca, todo es posible y **el código nunca miente**.  
-No importa si usas Windows 95 o tu última distro de Linux, el estilo es único y retro, al igual que los viejos tiempos.
+---
 
+▌**Sin frameworks.**  
+▌**Sin librerías modernas.**  
+▌**Sin scroll infinito ni diseño responsive.**  
 
-Sencillez ante todo.
+Solo **HTML**, **JavaScript** y una idea muy clara:  
+> Emular la experiencia de cuando lo digital era más honesto.
 
-Texto plano!
-Este proyecto fue creado con la idea de evocar ese ambiente oscuro, lleno de líneas de comando y códigos que desatan la magia digital. Una epoca donde se decia lo que se tenia que decir, sin adornos.
+---
 
-No hay frameworks.  
-No hay librerías modernas.  
-No hay scroll infinito ni diseño responsive.
+> Proyecto: `The void.bbs`  
+> Versión: `1.0`  
+> Creado por: `carover0`  
+> Fecha: `17-04-2025`  
+🌀 Sitio: [carover0.github.io/pagina](https://carover0.github.io/pagina/)
 
-Solo **HTML**, **JavaScript**, y una **idea clara**:  
-emular la experiencia de cuando lo digital era más honesto.
+---
 
-Proyecto: **The void.bbs**  
-Versión: 1.0  
-Fecha de Creación: 17-04-2025  
-Creado por: carover0  
-
-
-https://carover0.github.io/pagina/
+**Texto plano. Retro real. Web brutalista.**  
+Bienvenidos al pasado, escrito en presente.
