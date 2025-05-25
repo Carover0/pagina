@@ -343,7 +343,11 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
    else if (k === "w") {
       cdtWtX();
       e.preventDefault();
-    }     
+    }  
+   else if (k === "ñ") {
+      ONode();
+      e.preventDefault();  
+    }    	  
   }
 
 function cdzexplorer() {
@@ -1171,6 +1175,60 @@ Invitado             01100011 01100001 01110010 01101111 01110110 01100101 01110
 `); 
 }
 
+function ONode() {
+window.scrollTo(0, 0);           
+pintar(`  
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                         NODO OCULTO ▒▒ VOID.BBS /33X                           ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+[ACCESO NO INDEXADO]
+Este nodo no aparece en el índice público. Si estás leyendo esto, sabés por qué.
+
+[SYSLOG::PULSE]
+▌ 2025-05-22 04:12 UTC :: SYN desde IP .onion (5 nodos)
+▌ 2025-05-23 01:33 UTC :: Entrada reconocida → fingerprint válido
+▌ 2025-05-23 02:05 UTC :: flag: 'manifesto_cypherpunk.txt' consultado
+
+[ARCHIVO ABIERTO: manifesto_cypherpunk.txt]
+────────────────────────────────────────────────────────────────────────────────
+Cypherpunks write code.
+
+Nosotros defendemos la privacidad con criptografía, con sistemas de anonimato de
+reenvío de mensajes, con firmas digitales y dinero electrónico.
+
+La privacidad es necesaria para una sociedad abierta en la era electrónica. La
+privacidad no es secreto. Un asunto privado es algo que uno no quiere que todo
+el mundo sepa. Un asunto secreto es algo que uno no quiere que nadie sepa. La
+privacidad es el poder de revelarse selectivamente al mundo.
+
+Cuando decimos que queremos privacidad, no es porque tengamos algo que ocultar.
+No tenemos nada que ocultar; tenemos algo que proteger: la libertad.
+
+Cypherpunks escriben código. Sabemos que alguien tiene que escribir software
+para defender la privacidad, y lo vamos a escribir. Lo publicaremos libremente
+para que todos lo usen. Nuestros códigos no se guardarán en secreto, porque no
+podemos confiar en sistemas que dependen del secreto.
+
+Cypherpunks escriben código. Lo sabemos porque es nuestra única defensa real.
+────────────────────────────────────────────────────────────────────────────────
+
+[REGISTRO DE ARCHIVOS]
+▌ /docs/manifesto_cypherpunk.txt       ← 1.8 KB
+▌ /data/nodes.latency                  ← 896 B
+▌ /vault/hexmsg.dump                   ← 3.3 KB
+
+[TRACKING]
+▌ No cookies.
+▌ No JS externo.
+▌ No Google.
+▌ Solo vos y el vacío.
+
+
+<strong class="col-purple">[V]</strong> Cerrar sesión y borrar rastro.
+
+`);
+}
   
 </script>
 
