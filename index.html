@@ -344,12 +344,32 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       cdtWtX();
       e.preventDefault();
     }  
-   else if (k === "ñ") {
-      ONode();
-      e.preventDefault();  
-    }    	  
   }
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === '0') {
+    ONode();
+    e.preventDefault();
+  } 
+  else if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'm') {
+    manifiesto();
+    e.preventDefault();
+  }
+  else if (e.ctrlKey && e.altKey && e.key === 'ArrowLeft') {
+    ONode();
+    e.preventDefault();
+  }
+   else if (e.ctrlKey && e.altKey && e.key === 'Backspace') {
+    desconectarNodo();
+    e.preventDefault();
+  }
+   else if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'j') {
+    blakiat();
+    e.preventDefault();
+  }
+ 
 
+});
+	  
 function cdzexplorer() {
 window.scrollTo(0, 0);           
 pintar(`
@@ -886,9 +906,12 @@ pintar(`
  [R] ASM              → Lenguaje ensamblador
  [H] HELP             → Muestra esta ayuda
 
-<span class="col-magenta">TIPS</span>
-<span class="col-gris">====</span>
- ¿Sos curioso? Proba con: [F]
+<span class="col-magenta">TIP</span>
+<span class="col-gris">===</span>
+No todos los caminos están documentados.   
+Algunos accesos requieren combinaciones poco convencionales.               
+→ Pista: los nodos no indexados responden a teclas que no aparecen en menú.
+Tenes que usar combinaciones con CTRL + ALT
 
 
 <span class="col-magenta">TECLAS ACTIVAS</span>
@@ -1176,11 +1199,77 @@ Invitado             01100011 01100001 01110010 01101111 01110110 01100101 01110
 }
 
 function ONode() {
-window.scrollTo(0, 0);           
-pintar(`  
+  window.scrollTo(0, 0);
+
+  pintar(`
+<pre id="deepnet-loader" class="boot-msg-2">
+[SYN_SENT] → ↻ buscando nodo .onion
+[WAITING FOR RESPONSE]
+[...]
+</pre>
+  `);
+
+  const loader = document.getElementById("deepnet-loader");
+
+  let pasos = [
+    "[SYN_SENT] → ↻ buscando nodo .onion",
+    "[RECEIVED] ← nodo encontrado: VOID/33X",
+    "[SESSION INIT] Estableciendo túnel cifrado...",
+    "[FINGERPRINT] validación de clave pública...",
+    "[SESSION STABLE] handshake completo",
+    "[ACCESS GRANTED] Accediendo al nodo oculto..."
+  ];
+
+  let i = 0;
+  const intervalo = setInterval(() => {
+    if (i < pasos.length) {
+      loader.innerHTML += `\n${pasos[i]}`;
+      i++;
+    } else {
+      clearInterval(intervalo);
+      setTimeout(() => {
+        mostrarNodoOcultoFinal();
+      }, 1000); // Pausa final antes de mostrar contenido
+    }
+  }, 800);
+}
+
+function mostrarNodoOcultoFinal() {
+  pintar(`
+
 ╔════════════════════════════════════════════════════════════════════════════════╗
-║                         NODO OCULTO ▒▒ VOID.BBS /33X                           ║
+║                       NODO OCULTO ▒▒ VOID.BBS /33X /darknet                    ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
+
+[VOID_GATE::AUTH] ↻ handshake completo — fingerprint válido
+[SESSION_ID] :: 0xA93F-7B :: nodo estable
+
+▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+<strong class="col-purple">[CTRL + ALT + M]</strong> EXEC /docs/manifesto_cypherpunk.txt
+<strong class="col-purple">[CTRL + ALT + J]</strong> EXEX /docs/pulso_rebelde.txt
+
+▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+[TRACKING STATUS]
+▌ No cookies
+▌ No JS externo
+▌ No Google
+▌ No terceros
+▌ Solo vos y el vacío
+
+
+
+
+
+<strong class="col-purple">[CTRL + ALT + BackSpace]</strong> Cerrar sesion y borrar rastro.
+
+  `);
+}
+
+
+function manifiesto() {
+pintar(`
 
 [ACCESO NO INDEXADO]
 Este nodo no aparece en el índice público. Si estás leyendo esto, sabés por qué.
@@ -1218,16 +1307,52 @@ Cypherpunks escriben código. Lo sabemos porque es nuestra única defensa real.
 ▌ /data/nodes.latency                  ← 896 B
 ▌ /vault/hexmsg.dump                   ← 3.3 KB
 
-[TRACKING]
-▌ No cookies.
-▌ No JS externo.
-▌ No Google.
-▌ Solo vos y el vacío.
 
+<strong class="col-purple">[CTRL + ALT + ←]</strong> Volver.
 
-<strong class="col-purple">[V]</strong> Cerrar sesión y borrar rastro.
+`)
+
+}
+
+function desconectarNodo() {
+  pintar(`
+[CONEXIÓN CERRADA]
+Desvinculando nodo...
+Borrando rastros...
+Volviendo al índice público...
 
 `);
+  
+  setTimeout(() => {
+    pintar(mainMenu);
+  }, 2500); 
+}
+
+function blakiat() {
+pintar(`
+Hoy declaramos que no somos sombras que se desvanecen en la rutina. Somos    
+chispas vivas, destinadas a encender el mundo con nuestras ideas, sueños y   
+acciones.                                                                     
+
+Rechazamos la apatía, el miedo al fracaso y las cadenas del "no se puede".   
+Cada paso que damos es un grito de libertad, un desafío a lo imposible, una  
+promesa de construir algo mejor.                                             
+
+Que nuestras voces resuenen, que nuestras manos creen, que nuestros corazones
+ardan. No esperamos permisos, no buscamos excusas. Somos el cambio, el       
+movimiento, la fuerza que transforma.                                        
+
+Hoy, aquí, ahora, nos levantamos. Porque el mundo no cambia solo: lo         
+cambiamos nosotros.                                                          
+
+¡Arde, crea, vive!
+
+Blakiat
+
+
+<strong class="col-purple">[CTRL + ALT + ←]</strong> Volver.
+
+`)  
 }
   
 </script>
