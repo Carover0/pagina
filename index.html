@@ -194,6 +194,7 @@ Usuario: <span class="col-magenta">Invitado</span> <span class="col-gris">(permi
 ║ <span class="col-magenta">[B]</span> BOTS       | Bots para Telegram                                          ║
 ║ <span class="col-magenta">[E]</span> ZCASH      | Conoce Zcash                                                ║
 ║ <span class="col-magenta">[D]</span> DEGOOGLE   | Desintoxicate de big tech                                   ║
+║ <span class="col-magenta">[U]</span> REFUGIO    | Refugio Digital                                             ║
 ║ <span class="col-cyan">[L]</span> LEEME      | Preguntas?                                                  ║
 ║ <span class="col-cyan">[H]</span> HELP       | Hay más de lo que ves...                                    ║
 ║ <span class="col-cyan">[A]</span> ACERCA     | Sobre mí...                                                 ║
@@ -344,6 +345,10 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       cdtWtX();
       e.preventDefault();
     }  
+   else if (k === "u") {
+      librE();
+      e.preventDefault();
+   }	  
   }
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === '0') {
@@ -1354,7 +1359,63 @@ Blakiat
 
 `)  
 }
-  
+function librE() {
+pintar(`
+Refugio en la era del ruido digital
+
+Vivimos en tiempos donde la información es fugaz y muchas veces vacía. Ray
+Bradbury, en Fahrenheit 451, nos advirtió sobre un mundo donde el fuego no
+solo consume libros, sino también el pensamiento crítico, reemplazándolo con
+distracciones superficiales y una cultura anestesiada.
+
+Hoy, esa advertencia es más real que nunca.
+
+Bradbury no fue un simple autor de ciencia ficción. Fue un cronista de lo que
+somos y, aún más, de lo que temía que nos convirtiéramos. En Fahrenheit 451,
+publicado en 1953, imaginó un mundo donde los libros eran quemados y la
+ignorancia era norma. Pero el fuego, decía, no era el verdadero peligro. El
+olvido, el desinterés, la autocensura, lo eran.
+
+Durante años se entendió Fahrenheit 451 como una crítica a regímenes
+totalitarios. Y sí, lo es. Pero Bradbury aclaró más de una vez que su temor
+principal no era el gobierno. Era la gente. Somos nosotros. “No fue el
+gobierno. Fue el pueblo. El pueblo quería censura. Ellos fueron quienes
+comenzaron la quema, y el gobierno simplemente los siguió.”
+
+Hoy, el contenido vacío, superficial y estandarizado domina el espacio público.
+
+En las redes sociales abundan los influencers: idiotas adictos a las redes
+sociales que buscan influir en la conducta de otros idiotas influenciables
+mediante contenido que exhibe su propia idiotez, con la esperanza de que esos
+idiotas la imiten. Esta definición no es un insulto, sino un diagnóstico de
+nuestra época.
+
+Ya no hay hogueras de libros. Hay algoritmos que castigan lo incorrecto. Ya no
+hay un dictador que impone silencio, hay un miedo generalizado a decir lo que
+se piensa. La palabra se desinfla, el pensamiento se diluye, y todo debe
+pasarse por el filtro de lo políticamente correcto.
+
+La ironía se malinterpreta. El disenso se cancela. El desacuerdo se tilda de
+odio. Y sin disenso, sin provocación, sin contradicción, el pensamiento se
+estanca.
+
+Estas lineas son para quienes rechazan esa mediocridad. Un espacio para valorar
+la reflexión auténtica, el debate honesto y las conexiones genuinas. Aquí se
+mantiene vivo el fuego de la curiosidad y el pensamiento crítico. Como decía
+Bradbury, vivimos en una época en la que la gente tiene miedo de ofender. Así
+es como empieza la censura.
+
+Leer sigue siendo un acto de resistencia. Pensar, un acto de valentía. Decir
+lo que otros no quieren oír, un acto profundamente humano.
+
+Si estás cansado del ruido y buscás algo más profundo, bienvenido.
+
+¡Viva la libertad!
+
+<strong class="col-purple">[V]</strong> Volver
+
+`)
+}  
 </script>
 
 </body>
