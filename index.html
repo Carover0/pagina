@@ -195,6 +195,7 @@ Usuario: <span class="col-magenta">Invitado</span> <span class="col-gris">(permi
 ║ <span class="col-magenta">[E]</span> ZCASH      | Conoce Zcash                                                ║
 ║ <span class="col-magenta">[D]</span> DEGOOGLE   | Desintoxicate de big tech                                   ║
 ║ <span class="col-magenta">[U]</span> REFUGIO    | Refugio Digital                                             ║
+║ <span class="col-magenta">[U]</span> ESTRATEGIA | Crypto estrategia                                           ║
 ║ <span class="col-cyan">[L]</span> LEEME      | Preguntas?                                                  ║
 ║ <span class="col-cyan">[H]</span> HELP       | Hay más de lo que ves...                                    ║
 ║ <span class="col-cyan">[A]</span> ACERCA     | Sobre mí...                                                 ║
@@ -348,7 +349,11 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
    else if (k === "u") {
       librE();
       e.preventDefault();
-   }	  
+   }
+   else if (k === "o") {
+      criptoEstrategia();
+      e.preventDefault();
+   }	  	  
   }
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === '0') {
@@ -896,6 +901,8 @@ pintar(`
  [Z] ZEXPLORER        → Explorador ZCASH (Telegram)
  [T] TEXPLORER        → Explorador TRON (Telegram)
  [P] TPERIODICA       → Tabla periódica interactiva
+ [U] REFUGIO          → Refugio Digital
+ [O] ESTRATEGIA       → Cripto-Estrategia
  [C] CPRECIOS         → Precios cripto en tiempo real
  [D] DEGOOGLE         → Desintoxicate de Big Tech
  [A] ABOUT            → Sobre el sistema
@@ -924,7 +931,7 @@ Tenes que usar combinaciones con CTRL + ALT
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
 │ 1* │ 2* │ 3* │ 4* │ 5* │ 6  │ 7  │ 8  │ 9  │ 0  │
 ├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
-│ Q  │ W  │ E* │ R* │ T* │ Y* │ U  │ I* │ O  │ P  │
+│ Q  │ W  │ E* │ R* │ T* │ Y* │ U* │ I* │ O* │ P* │
 ├────┬────┬────┬────┬────┬────┬────┬────┬────┬────┤
 │ A* │ S* │ D* │ F* │ G* │ H* │ J  │ K  │ L* │ Ñ  │
 ├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
@@ -1416,6 +1423,57 @@ Si estás cansado del ruido y buscás algo más profundo, bienvenido.
 
 `)
 }  
+
+function criptoEstrategia() {
+pintar(`
+<span class="col-magenta">ESTRATEGIA CRIPTO</span>
+
+Esta es mi estrategia. No te sugiero que la uses.  
+Me funciona… por ahora. Si algún día todo falla,  
+lo charlamos en este mismo BBS mientras nos hundimos  
+como buenos camaradas de naufragio.  
+A lo sumo te paso un par de sats para que salgas nadando.  
+
+<span class="col-magenta">INFRAESTRUCTURA PRINCIPAL</span>
+
+TRON (TRX) – rápido, barato y funcional.  
+Esqueleto operativo del sistema. Mueve USDT. Hospeda contratos.  
+No es descentralizado, pero funciona como un reloj soviético.  
+
+<span class="col-magenta">RESERVAS DE VALOR</span>
+
+BTC – el oro digital.  
+Inmóvil, denso, valioso. No se toca salvo que arda el mundo.  
+
+ZEC – privacidad real, como debe ser.  
+En tiempos de vigilancia, guardar en silencio también es resistencia.  
+
+<span class="col-magenta">SOPORTE PRINCIPAL</span>
+
+USDT (TRC20) – operatividad sin fricción.  
+Rápido como TRON, ideal para cobrar, enviar o sobrevivir.  
+
+<span class="col-magenta">SOPORTE SECUNDARIO</span>
+
+LTC – el cuchillo suizo.  
+Ligero, confiable, barato. Para mover cuando nadie más se mueve.  
+
+BCH – el cash digital.  
+En su día grande, hoy humilde. Pero funcional.  
+
+<span class="col-magenta">RESUMEN</span>
+
+TRX para mover | BTC para guardar | ZEC para proteger  
+USDT para operar | LTC y BCH para liberar congestión  
+
+Viva la libertad, la privacidad  
+y los protocolos simples que no fallan.
+
+
+<strong class="col-purple">[V]</strong> Volver
+
+`)
+}	  
 </script>
 
 </body>
