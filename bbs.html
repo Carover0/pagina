@@ -1,0 +1,1502 @@
+<!-- 
+No hay frameworks.
+No hay librerías modernas.
+No hay scroll infinito ni diseño responsive.
+
+Solo HTML, JavaScript, y una idea clara:
+emular la experiencia de cuando lo digital era más honesto.
+
+carover0
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>The Void.BBS</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #FFF;
+      font-family: "Lucida Console", monospace;
+      font-size: 16px;
+      /*line-height: 1.3;*/
+      padding: 20px;
+      white-space: pre;
+      cursor: none;
+      outline: none;
+      
+    }
+    #boot-msg {
+      font-family: 'Lucida Console', monospace;
+      font-size: 16px;
+      color: #ffffff;
+      background-color: black;
+      white-space: pre;
+      /*line-height: 1.2;*/
+    }
+     .boot-msg {
+      font-family: 'Lucida Console', monospace;
+      font-size: 18px;
+      color: #ffffff;
+      background-color: black;
+      white-space: pre;
+      /*line-height: 1.2;*/
+    }
+    .ascii-l { text-align: left; }
+    .col-rojo     { color: #f85149; }  /* rojo VSCode para errores / alerts */
+    .col-rojo-f   { color: #da3633; }  /* rojo fuerte, para énfasis crítico */
+    .col-verde    { color: #56d364; }  /* verde correcto / OK */
+    .col-verde-f  { color: #2ea043; }  /* verde fuerte */
+    .col-amarillo { color: #ffbf00; }  /* ambar - amarillo cálido */
+    .col-naranja  { color: #f0883e; }  /* naranja suave */
+    .col-azul     { color: #58a6ff; }  /* azul clásico de links */
+    .col-purple   { color: #bc8cff; }  /* púrpura claro para funciones o UI */
+    .col-violeta  { color: #a371f7; }  /* violeta sutil, para encabezados */
+    .col-magenta  { color: #d14;     }  /* magenta (tu color de identidad) */
+    .col-cyan     { color: #76e3ea; }  /* cian suave, para sistemas o redes */
+    .col-gris     { color: #8b949e; }  /* gris medio para descripciones */
+    .col-blanco   { color: #c9d1d9; }  /* blanco de VSCode (texto base) */
+    .col-negro    { color: #0d1117; }  /* fondo oscuro base */
+    ::-webkit-scrollbar {
+    display: none;
+   }
+   html {
+    scrollbar-width: none; 
+    overflow: auto;        
+   }
+   html {
+    -ms-overflow-style: none;
+   }
+   body {
+    overflow: auto;
+   }
+  </style>
+</head>
+<body tabindex="0"><pre id="boot-msg"></pre>
+<div id="output" style="display:none;"></div>
+  <script>
+const bootMessages = [
+  "████████████████████████████████████████",
+  "█      Conectando a The Void.BBS®      █",
+  "█         (SysOp: carover0)            █",
+  "█         [2400 Baud | ANSI]           █",
+  "████████████████████████████████████████",
+  "",
+  "[*] Discando línea segura [loading]",
+  "[*] Handshake establecido [loading]",
+  "[*] Negociando protocolo [loading]",
+  "[*] Cargar herramientas  [loading]",
+  "[✓] Autenticado como: INVITADO",
+  "",
+  "> La privacidad es un derecho!.",
+  "> Conectarse es un privilegio.",
+];
+
+let cm = 0;
+const bootEl = document.getElementById("boot-msg");
+
+const SPINNER_FRAMES = ["|", "/", "-", "\\"];
+let spinnerIntervals = [];
+
+function startSpinner(lineId) {
+  let index = 0;
+  spinnerIntervals[lineId] = setInterval(() => {
+    const el = document.getElementById("spinner-" + lineId);
+    if (el) el.textContent = SPINNER_FRAMES[index++ % SPINNER_FRAMES.length];
+  }, 120);
+}
+
+function stopSpinner(lineId) {
+  clearInterval(spinnerIntervals[lineId]);
+  const el = document.getElementById("spinner-" + lineId);
+  if (el) el.outerHTML = '<span class="col-verde">OK</span>';
+}
+
+function typeNext() {
+  if (cm < bootMessages.length) {
+    let rawLine = bootMessages[cm];
+
+    if (rawLine.includes("[loading]")) {
+      const id = cm; // usar índice de línea como id
+      const textOnly = rawLine.replace("[loading]", "");
+      bootEl.innerHTML += `${textOnly}[<span id="spinner-${id}">|</span>]\n`;
+      startSpinner(id);
+
+      setTimeout(() => {
+        stopSpinner(id);
+        cm++;
+        setTimeout(typeNext, 300);
+      }, 1500); // tiempo del spinner
+    } else {
+      bootEl.innerHTML += rawLine + "\n";
+      cm++;
+      setTimeout(typeNext, 180);
+    }
+  } else {
+    setTimeout(showUI, 1000);
+  }
+}
+
+ function actualizarFechaHora() {
+    const ahora = new Date();
+    const fecha = ahora.toLocaleDateString('es-AR'); // Formato DD/MM/AAAA
+    const hora = ahora.toLocaleTimeString('es-AR',  { hour12: false });  // Formato HH:MM:SS
+    document.getElementById("fecha").textContent = fecha;
+    document.getElementById("hora").textContent = hora;
+  }
+
+function showUI() {
+  bootEl.style.display = "none";
+  document.getElementById("output").style.display = "block";
+  window.focus();
+  document.body.focus();
+  pintar(mainMenu);
+  actualizarFechaHora(); 
+  document.body.addEventListener("keydown", handleKey);
+}
+
+setInterval(actualizarFechaHora, 1000);
+
+window.onload = actualizarFechaHora;
+
+typeNext();  // Inicia la animación de arranque
+const mainMenu = `
+<pre class="col-amarillo">
+         _______ _                       _     _   ____  ____   _____ 
+        |__   __| |                     (_)   | | |  _ \\|  _ \\ / ____|
+           | |  | |__   ___  __   _____  _  __| | | |_) | |_) | (___  
+           | |  |  _ \\ / _ \\ \\ \\ / / _ \\| |/ _\` | |  _ <|  _ < \\___ \\ 
+           | |  | | | |  __/  \\ V / (_) | | (_| |_| |_) | |_) |____) |
+           |_|  |_| |_|\\___|   \\_/ \\___/|_|\\__,_(_)____/|____/|_____/ 
+</pre>
+<div>
+Fecha y hora actual: <span class="col-rojo"><span id="fecha"></span> <span id="hora"></span></span>
+
+Identificador del sistema: <span class="col-blanco">CP BBS (#00311)</span>, ejecutando <span class="col-azul">BEBS/NT v4.10 Dada-1</span>  
+Ubicación: <span class="col-gris">Buenos Aires, Argentina.</span> <span class="col-azul">("You can still survive in Argentina. :)")</span>  
+Conexión establecida: <span class="col-verde">"ATX3D CONNECT 2400 - OK"</span>  
+Sistema operativo: <span class="col-cyan">MS-DOS 5.0 + CP/M 3.0 (modo dual)</span>  
+Protocolos activos: <span class="col-cyan">ZMODEM, YMODEM, XMODEM</span>  
+Shell activo: <span class="col-amarillo">VOIDShell v1.8 experimental</span>  
+Identificación CID: <span class="col-azul">10300200215</span> <span class="col-gris">(Caller ID detectado)</span>  
+Usuario: <span class="col-magenta">Invitado</span> <span class="col-gris">(permisos limitados)</span>  
+<span class="col-gris">Tema visual:</span> <span style="color:#58a6ff;">GitHub VSCode Dark</span> — <span class="col-cyan">Paleta personalizada para Void.BBS</span>
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ Este es mi espacio personal. ¿Convencional? Para nada...                     ║
+║ Es un BBS camuflado en HTML, una web de un solo archivo                      ║
+║ más liviana que el logo de Facebook en su página principal                   ║
+║ donde cada comando importa y cada línea tiene un propósito.                  ║
+║ En constante construcción y optimización.                                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║ MENU                                                                         ║
+║                                                                              ║
+║ <span class="col-magenta">[B]</span> BOTS       | Bots para Telegram                                          ║
+║ <span class="col-magenta">[E]</span> ZCASH      | Conoce Zcash                                                ║
+║ <span class="col-magenta">[D]</span> DEGOOGLE   | Desintoxicate de big tech                                   ║
+║ <span class="col-magenta">[R]</span> REFUGIO    | Refugio Digital                                             ║
+║ <span class="col-magenta">[S]</span> RESISTENCIA| Combatir el nuevo orden economico                           ║
+║ <span class="col-cyan">[L]</span> LEEME      | Preguntas?                                                  ║
+║ <span class="col-cyan">[H]</span> HELP       | Hay más de lo que ves...                                    ║
+║ <span class="col-cyan">[A]</span> ACERCA     | Sobre mí...                                                 ║
+║ <span class="col-rojo">[X]</span> SALIR      | Cierra sesión                                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Contraseña: <span class="col-rojo">******</span>
+Sesiones iniciadas: <span class="col-azul">82</span> <span class="col-gris">(Logons: 82)</span>
+Nivel de acceso: Invitado | Usuario | SysOp | <span class="col-magenta">Fundador</span></div>`;
+function pintar(html) {
+  document.getElementById("output").innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+
+function cdbots_menu() {
+window.scrollTo(0, 0); 
+return `
+<span class="col-purple">[*] BOTS PARA TELEGRAM</span>
+
+Un bot de Telegram es un programa automatizado que interactúa con los
+usuarios dentro de la app de mensajería Telegram. Funciona como una cuenta
+especial que no necesita intervención humana para responder. Puede enviar y
+recibir mensajes, mostrar menús, responder comandos y conectarse con otros
+servicios. Los bots se usan para juegos, notificaciones, búsquedas, y mucho
+más. Cualquiera puede crear uno usando la API oficial de Telegram.
+
+
+- Bots propios, hechos en Python desde cero, sin frameworks ni servicios externos.
+- Usan APIs en tiempo real, se actualizan con Git. 
+- Corren en mi propio servidor Linux por SSH, sin depender de terceros.
+- Rápidos, livianos, con registros persistentes y siempre online.
+- Desde herramientas científicas hasta exploradores de blockchain.
+- Simples, potentes y sin humo.
+
+<span class="col-rojo">> No son bots comunes... son míos.</span>
+
+
+-------------- MENU ---------------------------
+<span class="col-magenta">[Z]</span> ZEXPLORER   | ZCASH Explorer (TG)  
+<span class="col-magenta">[T]</span> TEXPLORER   | TRON Explorer (TG)  
+<span class="col-magenta">[P]</span> TPERIODICA  | Tabla periódica con imágenes  
+<span class="col-magenta">[C]</span> CPRECIOS    | Precios cripto  
+<span class="col-purple">[V]</span> VOLVER      | Volver al menú principal  
+------------------------------------------------
+
+`;
+  }
+
+  function handleKey(e) {
+    const k = e.key.toLowerCase();
+    if (k === "b") {
+      pintar(cdbots_menu());
+      e.preventDefault();
+    }
+    else if (k === "v") {
+      pintar(mainMenu);
+      e.preventDefault();
+    }
+    else if (k === "x") {
+      exitSequence();
+      e.preventDefault();
+    }
+    else if (k === "z") {
+      cdzexplorer();
+      e.preventDefault();
+    }
+    else if (k === "1") {
+      callZExplorer();
+      e.preventDefault();
+    }
+    else if (k === "t") {
+      cdtexplorer();
+      e.preventDefault();
+    }
+    else if (k === "2") {
+      callTExplorer();
+      e.preventDefault();
+    }
+    else if (k === "p") {
+      cdtperiodica();
+      e.preventDefault();
+    }
+    else if (k === "3") {
+      callTperiodica();
+      e.preventDefault();
+    }
+    else if (k === "c") {
+      cdprecios()
+      e.preventDefault();
+    }
+    else if (k === "4") {
+      callCPrecios();
+      e.preventDefault();
+    }
+     else if (k === "d") {
+      opcionDegoogle();
+      e.preventDefault();
+    }
+     else if (k === "l") {
+      cdreadme();
+      e.preventDefault();
+    }
+     else if (k === "a") {
+      cdabout();
+      e.preventDefault();
+    }
+     else if (k === "h") {
+      cdHelp();
+      e.preventDefault();
+    }
+     else if (k === "i") {
+      cdDir();
+      e.preventDefault();
+    }
+     else if (k === "f") {
+      simulateFormat();
+      e.preventDefault();
+    }
+     else if (k === "g") {
+      cdDebug();
+      e.preventDefault();
+    }
+     else if (k === "r") {
+      librE();
+      e.preventDefault();
+    }    
+     else if (k === "s") {
+      NuevoOrden();
+      e.preventDefault();
+    }    
+     else if (k === "5") {
+      openZcashEsp();
+      e.preventDefault();
+    }   
+     else if (k === "e") {
+      cdZCash();
+      e.preventDefault();
+    }   
+     else if (k === 'y') {
+      mostrarBarraProgreso();
+      e.preventDefault();
+    } else if (k === 'n') {
+      pintar(mainMenu);
+      e.preventDefault();
+    } 
+   else if (k === "w") {
+      cdtWtX();
+      e.preventDefault();
+    }  
+   else if (k === "u") {
+      librE();
+      e.preventDefault();
+   }
+  }
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.altKey && e.key.toLowerCase() === '0') {
+    ONode();
+    e.preventDefault();
+  } 
+  else if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'm') {
+    manifiesto();
+    e.preventDefault();
+  }
+  else if (e.ctrlKey && e.altKey && e.key === 'ArrowLeft') {
+    ONode();
+    e.preventDefault();
+  }
+   else if (e.ctrlKey && e.altKey && e.key === 'Backspace') {
+    desconectarNodo();
+    e.preventDefault();
+  }
+   else if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'j') {
+    blakiat();
+    e.preventDefault();
+  }
+ 
+
+});
+	  
+function cdzexplorer() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-amarillo">[*] ZEXPLORER (Análisis técnico de la red ZCASH en Telegram)</span>
+
+Z-Explorer/
+├── [Estado de la Red]
+│   ├── Red
+│   ├── Bloques Recientes
+│   └── Mercado
+├── [Exploración de Bloques]
+│   ├── Bloques Recientes
+│   ├── Mempool
+│   └── Acceso directo: /block <n> | /tx <hash>
+├── [Economía y Emisión]
+│   ├── Suministro
+│   ├── Cotización de Mercado
+│   └── Balance de Pools
+├── [Herramientas Técnicas]
+│   ├── Wallet
+│   └── Generador de QR
+├── [Bitácora Técnica]
+└── [Sobre el Proyecto y Contacto Técnico]
+
+
+<span class="col-rojo">Notas:</span>
+- No depende de API cerradas
+- Ideal para foros, análisis offline y terminales
+- Acceso directo a bloques y transacciones sin intermediarios
+- Soporte para direcciones blindadas (Z-addresses)
+- Transparencia en tarifas de transacción y uso de la red
+- Sin dependencias de terceros: totalmente independiente
+- Código Open-Source: auditable en funciones que lo requieren
+
+
+<strong class="col-purple">[V]</strong> Volver | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[1]</strong> Ejecutar  
+`);
+}
+
+function cdZCash() {
+window.scrollTo(0, 0);           
+pintar(`<span class="col-amarillo">[*] Zcash.</span>
+
+@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@%*:              :*%@@@@@@@@@@@@*+++%@@@@@@@*+++%@@@@@@
+@@@@+.   .-+*####*+-.   .+@@@@@@@@@#*-...+*%@@@#*-...+*%@@@@
+@@%-   :*%@@@%---#@@%*:   -%@@@@@%#-.---::.+###-.::::..+#%@@
+@%.  .*@@@%%%#   +###@@*.  .%@@%%=.--=+=---:...:::::::::.*%%
+%:  .#@@@@-          *@@#.  :%@=:--==**+=--::::::::::::::::*
++   #@@@@@-.....     *@@@#   +@=.:---=+=--:::::::::..::-=:.*
+.  -@@@@@@%%%%%+    +%@@@@-  :@=.:----=-:::::::::......=+:.*
+   +@@@@@@@@@#:   :#@@@@@@+   %*=:.:---::::::::::....:---==#
+   +@@@@@@@@+    =%@@@@@@@+   %@@+-::::::::::::....::-=--#@@
+.  -@@@@@@%-   :#@@@@@@@@@-  :%@@@@=:::::::::::..::-=-:#@@@@
++   #@@@@%.    ------#@@@#   +@@@@@%%=.::::::..::-=:.*%%@@@@
+%:  .#@@@#           #@@#.  :%@@@@@@@%#-.::::::-=:.*#%@@@@@@
+@%.  .*@@%+++=   -+++%@*.  .%@@@@@@@@@@#*-..:::::+*%@@@@@@@@
+@@%-   :*%@@@%...*@@%*:   -%@@@@@@@@@@@@@*+:...=+%@@@@@@@@@@
+@@@@+.   .-+*###**+-.   .+@@@@@@@@@@@@@@@@@+-=-#@@@@@@@@@@@@
+@@@@@%*:              :*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@%*=-:....:-=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Zcash es una criptomoneda de código abierto enfocada en la privacidad y seguridad
+financiera. A diferencia de Bitcoin, Zcash permite transacciones totalmente anonima­
+s gracias a los “zk‑SNARKs” (Zero‑Knowledge Succinct Non‑Interactive Argument of
+Knowledge), una técnica de prueba de conocimiento cero que oculta remitente,
+destinatario y monto cuando se usa su modo blindado.
+
+Lanzada en octubre de 2016, Zcash ofrece tres tipos de direcciones:
+
+  • t-addresses (transparentes): idénticas a las de Bitcoin. Todas las transaccio­
+    nes quedan registradas públicamente en la blockchain y pueden auditarse.
+
+  • z-addresses (blindadas): basadas en zk‑SNARKs. Ofrecen privacidad total: ni
+    el remitente, ni el receptor, ni el importe aparecen en el libro mayor público.
+
+  • u-addresses (unified addresses): introducidas con ZIP‑316 y la actualización
+    “Nu5”. Unifican bajo un único string los métodos transparentes y blindados;
+    al recibir fondos, el monedero elegirá automáticamente la mejor dirección
+    soportada por el remitente (t o z) y garantizará compatibilidad futura.
+
+<span class="col-amarillo">Características clave:</span>
+====================== 
+
+- Privacidad selectiva: el usuario decide por transacción si utiliza un modo
+  transparente (t) o blindado (z/u).  
+- Unificación de direcciones: las u-addresses facilitan la interoperabilidad
+  entre monederos y simplifican la recepción de pagos.  
+- Red descentralizada: su consenso es Proof‑of‑Work Equihash y mantiene un
+  suministro limitado de 21 M ZEC.  
+- Mejoras constantes: con actualizaciones periódicas (Overwinter, Sapling,
+  Blossom, Heartwood, Canopy, NU5) optimiza privacidad, rendimiento y tarifas.  
+- Compatibilidad: funciona con monederos oficiales (Zashi),
+  intercambios y exploradores como Z[E]xplorer.  
+- Comunidad y auditoría: todo es open‑source, permitiendo revisiones externas
+  y auditorías de código.
+
+Zcash es ideal para quienes valoran el control absoluto de sus finanzas y defienden
+la privacidad como un derecho digital fundamental; sus direcciones unificadas (UA)
+llevan esa experiencia un paso más allá, simplificando la vida del usuario sin
+renunciar a la confidencialidad.
+
+
+
+<strong class="col-purple">[V]</strong> Volver | <strong class="col-purple">[Z]</strong> ZExplorer | <strong class="col-purple">[5]</strong> ZcashEsp  
+`);
+}
+
+function openZcashEsp() {
+pintar(` 
+- Estas saliendo de TheVoid.BBS para visitar https://zcashesp.com
+
+<span class="col-naranja">[?] Queres continuar? [Y/N]</span>
+`);
+}
+
+function mostrarBarraProgreso() {
+  let progreso = 0;
+  const total = 20;
+
+  const interval = setInterval(() => {
+    progreso++;
+    const llenos = '#'.repeat(progreso);
+    const vacíos = ' '.repeat(total - progreso);
+    const porcentaje = progreso * 5;
+    pintar(`<pre>
+Dirigiendose...
+[${llenos}${vacíos}] ${porcentaje}%
+</pre>`);
+    if (progreso >= total) {
+      clearInterval(interval);
+      window.open("https://zcashesp.com/", "_blank"); 
+      pintar(mainMenu);
+      if (callback) callback(); 
+    }
+  }, 200); 
+}
+
+function callZExplorer() {
+	window.open("https://t.me/zcashexplorer_bot", "_blank"); 
+}
+
+function cdtexplorer() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-rojo">[*] TEXPLORER (Análisis técnico de la red TRON en Telegram)</span>
+
+T-Explorer/
+├── [Estadísticas Generales]
+│   ├── Red
+│   ├── Costo de Operación
+│   └── Mercado
+├── [Blockchain]
+│   ├── Bloques Recientes
+│   ├── Mempool
+│   └── Acceso directo: /block <n> | /tx <hash>
+├── [Validadores y Gobernanza]
+│   ├── Super Representantes
+│   ├── Propuestas
+│   └── Detalle de Votaciones
+├── [Economía]
+│   ├── Gráfico de Precio
+│   └── Supply & Burn
+├── [Herramientas]
+│   ├── Wallet Scanner
+│   ├── QR Generator
+│   └── Utilidades
+├── [Log y Actualizaciones]
+└── [Acerca del Proyecto]
+
+<span class="col-rojo">Notas:</span>
+- Transparencia y trazabilidad para la red TRON
+- Destinado a usuarios técnicos, auditores y entusiastas de blockchain
+- Datos tomados directamente desde la API pública de Trongrid
+- Herramientas para monitorear rendimiento y costos operativos
+- Soporte para exploración de bloques, transacciones y validadores
+
+
+<strong class="col-purple">[V]</strong> Inicio | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[2]</strong> Ejecutar  
+`);
+}
+
+function callTExplorer() {
+	window.open("https://t.me/texplorerbot", "_blank"); 
+}
+
+function cdtperiodica() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-naranja">[*] Tabla periodica con imagenes.</span>
+
+T-Periodica/
+├── [Información]
+│   ├── /tpe <elemento>  
+│       Muestra información del elemento con imagen representativa
+│   ├── Lista por elementos (ordenados por categoría)
+│   └── /ion <símbolo>  
+│       Muestra el valor de ionización en electronvoltios (eV)
+├── [Gráficos]
+│   └── Diagrama de Bohr
+└── [Acerca del Proyecto]
+    └── Información de contacto del desarrollador, feedback y donaciones
+
+
+<span class="col-rojo"><strong>Notas:</strong></span>
+- Visualizador de elementos químicos en formato texto + imagen
+- Pensado para uso educativo, técnico y consulta rápida desde terminal
+- Compatible con enlaces directos a elementos específicos vía comandos
+- Basado en datos públicos y visualizaciones simples
+- Proyecto independiente y de código abierto
+
+<strong class="col-purple">[V]</strong> Inicio | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[3]</strong> Ejecutar  
+`);
+}
+
+function callTperiodica() {
+	window.open("https://t.me/tablaperiodica_bot", "_blank");
+}
+
+function cdprecios() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-azul">[*] CPRECIOS - Precios de criptomonedas en Telegram.</span> 
+
+C-preciobot/
+├── [cex] Binance | Kucoin | Poloniex
+│   ├── /cex [simbolo] → mejor precio
+│   └── /kucoin [simbolo], etc.
+└── [dex] Precios DEX por cadena:
+    └── eth, arb, opt, bsc, ava, pol, ftm, sol, aur, era, celo...
+
+<span class="col-rojo"><strong>Notas:</strong></span>
+- Diseño sencillo.
+- Para usuarios técnicos y entusiastas de blockchain
+- Datos tomados directamente desde APIs públicas
+
+<strong class="col-purple">[V]</strong> Inicio | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[4]</strong> Ejecutar  
+`);
+}
+
+function callCPrecios() {
+	window.open("https://t.me/c_preciosbot", "_blank"); 
+}
+
+function opcionDegoogle() {
+window.scrollTo(0, 0);     	      
+pintar(`
+<span class="col-magenta">[!] DEGOOGLEATE y toma el control.</span>
+<span class="col-gris">=================================</span>
+
+Quita o limita a Google de tu dispositivo siguendo estos pasos sencillos:
+
+[1] ELIMINÁ APLICACIONES DE GOOGLE Y META
+──────────────────────────────────────────
+ ▸ Google: Teléfono, Galería, Gmail, SMS, Launcher, Files, Calculadora,
+           Cámara, Contactos, Teclado, Chrome, YouTube.
+ ▸ Meta: Instagram, Facebook, Meta Services, Installer, Manager.
+ ▸ X: X (antes Twitter y mejor cuando solo tenía 128 caracteres)
+
+[2] ALTERNATIVAS: APPS FOSS (Código Abierto)
+────────────────────────────────────────────
+ ▸ Reemplazo por apps como: Fossify, Proton Mail, Brave.
+ ▸ Todas desde F-Droid o Aurora Store.
+
+[3] USÁ SERVICIOS PRIVADOS
+──────────────────────────
+ ▸ Mail: Proton Mail (enmascarado vía DuckDuckGo).
+ ▸ Navegador: Brave + Brave Search.
+ ▸ Social: WebApps aisladas (Instagram, X, CoinMarketCap).
+
+[4] SEGURIDAD Y PRIVACIDAD
+──────────────────────────
+ ▸ Contraseñas: Proton Pass en lugar de Google Cloud Key.
+ ▸ Rastreadores: Bloqueo web y de apps (DuckDuckGo).
+ ▸ Protección contra rastreo por correo y pop-ups.
+
+[5] DESACTIVÁ GOOGLE
+────────────────────
+ ▸ Desactivá: Copia de seguridad, autocompletar,
+              encontrar dispositivo, compartir número de teléfono.
+
+
+<span class="col-magenta">¿POR QUÉ NO USAR GOOGLE SEARCH?</span>
+<span class="col-gris">===============================</span>
+
+Google Search/
+├── [Privacidad]
+│   ├── Recolección de datos personales
+│   ├── Perfilado para anuncios
+│   └── Historial y ubicación rastreados
+├── [Resultados]
+│   ├── Burbuja de filtros (resultados personalizados)
+│   ├── Publicidad disfrazada de búsqueda orgánica
+│   └── Posible censura o eliminación de enlaces
+├── [Centralización]
+│   ├── Dominio del 90% del mercado
+│   ├── Concentración de poder informativo
+│   └── Falta de diversidad en motores
+├── [Alternativas]
+│   ├── DuckDuckGo (privado, sin rastreo)
+│   ├── Startpage (Google sin seguimiento)
+│   ├── Brave Search (motor independiente)
+│   └── Mojeek (100% propio, sin perfiles)
+
+Esto se usa para construir perfiles publicitarios  
+y alimentar su negocio de anuncios.  
+
+A veces ves lo que Google cree que querés,  
+no toda la información disponible.  
+
+Depender de un solo actor concentra poder  
+y debilita la diversidad del ecosistema web.  
+
+
+<span class="col-magenta">¿QUÉ HACEN FACEBOOK Y X?</span>
+<span class="col-gris">========================</span>
+
+[Datos Personales]  
+Recolectan ubicación, contactos, historial, comportamiento y más.  
+Toda tu actividad queda registrada para construir un perfil detallado.  
+
+[Algoritmos]  
+Usan inteligencia artificial para predecir y dirigir tu atención.  
+El contenido que ves está optimizado para maximizar tiempo y reacción.  
+
+[Modelo de Negocio]  
+Viven de tu atención: cuanto más mirás, más ganan.  
+Venden publicidad hipersegmentada basada en tus datos.  
+
+
+<span class="col-magenta">¿POR QUÉ DESGOOGLEARSE?</span>
+<span class="col-gris">=======================</span>
+
+Las grandes tecnológicas (Google, Meta, X, etc) recolectan tus datos:     
+ubicación, contactos, búsquedas, hábitos, contenido y más.           
+                                                                
+Usan esta información para:                                 
+ - Perfilarte y manipular decisiones.                       
+ - Mostrarte publicidad dirigida.                           
+ - Compartir o vender tus datos a terceros.                 
+                                                            
+No es paranoia. Es el modelo de negocio.                    
+                                                            
+>>> DESGOOGLEARSE es romper con la vigilancia.              
+>>> Es tomar el control de tu vida digital.                 
+>>> ¿Querés saber algo más de mí? 				            
+ └── Mi cámara frontal está tapada con cinta de papel.		    
+
+
+<span class="col-verde">✘ Dejá de ser el producto. Empezá a ser el usuario. ✘</span>
+
+
+
+<strong class="col-purple">[V]</strong> Inicio
+</div>`);
+
+}
+
+function cdreadme() {
+pintar(`
+<span class="col-magenta">[*] CONTEXTUALIZACION</span>
+<span class="col-gris">======================</span>
+
+
+¿Por qué todo alineado a la izquierda?  
+Porque así eran las terminales.  
+El texto fluía en línea recta desde la esquina superior izquierda.  
+No había estilos. No había decoraciones. Solo información.
+
+¿Por qué esa fuente?  
+Porque monospace es legible, ordenada y precisa.  
+Cada carácter ocupa el mismo espacio.  
+Como en las consolas reales. Como en la programación de verdad.
+
+¿Por qué sin imágenes?  
+Porque antes, las imágenes no eran la norma.  
+Pesaban mucho. Tardaban en cargar.  
+La información venía en forma de texto, y eso bastaba.
+
+¿Por qué sin puntero ni mouse?  
+Porque las terminales no lo necesitaban.  
+Todo se hacía con el teclado. Rápido, directo, sin distracciones.
+
+¿Por qué líneas tan cortas?  
+Porque los monitores eran de 80 columnas.  
+El texto no se "ajustaba". Se cortaba.  
+Así se respetaban los márgenes, y todo era predecible.
+
+¿Por qué esos recuadros hechos con = y #?  
+Porque antes no había CSS.  
+Si querías separar algo visualmente, lo hacías con caracteres.  
+Eran los bordes, los menús, los títulos.
+
+¿Por qué hay líneas que parecen ensamblador o hexadecimales?  
+Porque es un guiño a los sistemas antiguos,  
+cuando todo tenía un código, una dirección, una estructura visible.  
+Donde el orden lo dictaban los bytes, no los pixeles.
+
+¿Por qué no puedo hacer scroll infinito, ni tocar con el dedo como en una app?  
+Porque esto no es una app. Es un homenaje.  
+A un tiempo en que el contenido importaba más que el envoltorio.
+
+¿Por qué no es "moderno"?  
+Porque no quiere serlo.  
+Este sitio no compite con lo actual.  
+Existe como una declaración.
+
+Porque entender esto…  
+es entender por qué alguna vez la informática fue hermosa en su crudeza.
+
+Esto no es un diseño.  
+Es una forma de pensar.
+
+Y si te sentís incómodo navegando así…  
+bienvenido. Así se sentía aprender a usar una computadora en 1994.
+
+
+<span class="col-magenta">[*] AÑO 1994</span> 
+<span class="col-gris">============</span>
+
+Internet ya existía, pero era muy limitada.
+La mayoría de la gente usaba BBS (Bulletin Board Systems),
+telnet, o se conectaba a través de compuserve o AOL.
+
+Los sistemas más usados eran:
+
+MS-DOS (línea de comandos)
+
+Windows 3.1
+
+Unix/Linux primitivos (Slackware, por ejemplo)
+
+MacOS clásico (aunque mucho más gráfico)
+
+En cuanto a diseño de software:
+
+Las interfaces eran de texto.
+
+Las fuentes eran monoespaciadas.
+
+Las resoluciones eran de 640x480 o menos.
+
+Se usaban ANSI art, marcos con caracteres, navegación por teclado.
+
+HTML 1.0 acababa de salir. Las webs eran 100% texto, sin imágenes, ni CSS, ni JS.
+Si te resulta raro...  
+es porque ya nos desacostumbramos a lo simple.
+
+
+
+<strong class="col-purple">[V]</strong> Volver
+`);
+}
+
+function cdabout() {
+window.scrollTo(0, 0);           
+pintar(`
+╔════════════════════════════════════════════════════════════════════════════╗
+║                              SOBRE MÍ...                                   ║
+╠════════════════════════════════════════════════════════════════════════════╣
+║  USER    : carover0                                                        ║
+║  STACK   : Python · JS · SQL · HTML · Excel · Blockchain                   ║
+║                                                                            ║
+║  CONTACTOS:                                                                ║
+║    · Telegram : @Cvg_1995                                                  ║
+║    · Free2z   : free2z.cash/carover0                                       ║
+║    · GitHub   : github.com/Carover0                                        ║
+║    · Session  :                                                            ║
+║        05a123e5ccf65f1a4482a22e813b2d9826238e35c545d23b7ef5bc5e44c0d9c92a  ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+<span class="col-magenta">[*] FILOSOFIA</span> 
+<span class="col-gris">=============</span>
+
+No hay frameworks.  
+No hay librerías modernas.  
+No hay scroll infinito ni diseño responsive.  
+
+Solo HTML, JavaScript, y una idea clara:  
+Emular la experiencia de cuando lo digital era más honesto.  
+
+Esta web nace de la nostalgia por esa era en que  
+las computadoras no intentaban ser "inteligentes",  
+solo hacían lo que les pedías.  
+Sin anuncios, sin rastreo, sin notificaciones.
+
+Aca no hay dark mode. No hay auto-save.  
+Cada línea, cada glitch, cada comando… es intencional.
+
+The Void.BBS® no pretende ser moderno.  
+Pretende ser real.  
+Un tributo a los terminales, a los BBS,  
+a cuando conectarse era un ritual y no una rutina.
+
+Bienvenidos al pasado, escrito en presente.
+
+Esto no es una web.  
+Esto es un homenaje.  
+
+Y si lo entendés,  
+no hace falta explicar más.
+
+>>> carover0 ~ The Void.BBS®
+
+
+<strong class="col-purple">[V]</strong> Volver`);
+}
+
+function cdHelp() {
+window.scrollTo(0, 0);     	       
+pintar(`
+<span class="col-magenta">[!] AYUDA DEL SISTEMA</span>
+<span class="col-gris">=====================</span>
+
+ COMANDOS DISPONIBLES
+ <span class="col-gris">────────────────────</span>
+ [Z] ZEXPLORER        → Explorador ZCASH (Telegram)
+ [T] TEXPLORER        → Explorador TRON (Telegram)
+ [P] TPERIODICA       → Tabla periódica interactiva
+ [R] REFUGIO          → Refugio Digital
+ [O] RESISTENCIA      → Combatir el nuevo orden economico
+ [C] CPRECIOS         → Precios cripto en tiempo real
+ [D] DEGOOGLE         → Desintoxicate de Big Tech
+ [A] ABOUT            → Sobre el sistema
+ [V] VOLVER           → Limpia la pantalla
+ [X] EXIT             → Salir
+
+<span class="col-magenta">FUNCIONES ESPECIALES</span>
+<span class="col-gris">────────────────────</span>
+ [I] DIR              → Lista contenido oculto
+ [F] FORMAT           → Borra el disco ¡Cuidado! ;)
+ [G] DEBUG            → Simula volcado de memoria
+ [H] HELP             → Muestra esta ayuda
+
+<span class="col-magenta">TIP</span>
+<span class="col-gris">===</span>
+No todos los caminos están documentados.   
+Algunos accesos requieren combinaciones poco convencionales.               
+→ Pista: los nodos no indexados responden a teclas que no aparecen en menú.
+Tenes que usar combinaciones con CTRL + ALT
+
+
+<span class="col-magenta">TECLAS ACTIVAS</span>
+<span class="col-gris">──────────────</span>
+┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
+│ 1* │ 2* │ 3* │ 4* │ 5* │ 6  │ 7  │ 8  │ 9  │ 0  │
+├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
+│ Q  │ W  │ E* │ R* │ T* │ Y* │ U* │ I* │ O  │ P* │
+├────┬────┬────┬────┬────┬────┬────┬────┬────┬────┤
+│ A* │ S* │ D* │ F* │ G* │ H* │ J  │ K  │ L* │ Ñ  │
+├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
+│ Z* │ X* │ C* │ V* │ B* │ N  │ M  │    │    │    │
+└─────────────────────────────────────────────────┘
+
+
+<span class="col-purple">[V]</span> Volver
+`);
+}
+
+function cdDir() {
+  window.scrollTo(0, 0);
+  const spinnerChars = ['|', '/', '-', '\\'];
+  let i = 0;
+  const spinnerDiv = document.createElement('div');
+  spinnerDiv.classList.add('spinner');
+  spinnerDiv.innerHTML = `> Cargando... ${spinnerChars[i % spinnerChars.length]}`;
+  output.appendChild(spinnerDiv);
+  const interval = setInterval(() => {
+    spinnerDiv.innerHTML = `> Cargando... ${spinnerChars[i % spinnerChars.length]}`;
+    i++;
+  }, 100);
+  setTimeout(() => {
+    clearInterval(interval);
+    output.removeChild(spinnerDiv);
+pintar(`
+A:\\>DIR *.*
+
+ Volumen en unidad C no tiene etiqueta.
+ Número de serie del volumen: E-2-7CB
+
+ Directorio de A:\\
+
+ [.]             .
+ [..]            ..
+ [zexplorer]     ZCASH Explorer
+ [texplorer]     TRON Explorer
+ [tperiodica]    Tabla periódica
+ [cprecios]      Precios cripto 
+ [debug]         Volcado de memoria
+ [format]        Borrar disco (¡CUIDADO!)
+ [secret.sys]    ????
+
+
+
+ <strong class="col-purple">[V]</strong> Volver
+
+`);
+
+
+}, 1500);
+
+}
+
+
+function simulateFormat() {
+  window.scrollTo(0, 0);
+  output.innerHTML = '';
+
+  const container = document.createElement('div');
+  container.classList.add('boot-msg'); // Usa el estilo de fuente retro
+  const pre = document.createElement('pre');
+  container.appendChild(pre);
+  output.appendChild(container);
+
+  const pasos = [
+    "Formateando unidad C: con sistema de archivos FAT16...",
+    "Montando volumen...",
+    "Verificando sectores defectuosos...",
+    "Asignando tabla de asignación de archivos (FAT)...",
+    "Creando estructura de directorios raíz...",
+    "Aplicando formato de bajo nivel...",
+    "Finalizando...",
+  ];
+
+  const glitches = [
+    "[INFO] Wiping sector 0x0000...",
+    "[INFO] Sector 0x0000 clean.",
+    "[WARN] Sector 0x0012 delayed response. Retrying...",
+    "[INFO] FAT16 signature written at offset 0x1BE.",
+    "[ERROR] Bad block detected at 0x001F. Recovery initiated.",
+    "[INFO] MBR overwritten successfully.",
+    "[SYS] DMA controller synced.",
+    "[IO] Controller response OK.",
+    "[MEM] Hex dump: 0x0000: FF FF FF 00 00 3F F8 00...",
+    "[KERNEL] Flushing write cache...",
+    "[DEBUG] INT 13h handler returned 00h (OK).",
+  ];
+
+  let currentStep = 0;
+  let progress = 0;
+  const total = 40;
+
+  function updateFormatStep() {
+    window.scrollTo(0, 0);
+    if (currentStep < pasos.length) {
+      pre.textContent += pasos[currentStep] + '\n';
+      currentStep++;
+      setTimeout(updateFormatStep, 800);
+    } else {
+      const interval = setInterval(() => {
+        const percent = Math.floor((progress / total) * 100);
+        const bar = '[' + '#'.repeat(progress) + ' '.repeat(total - progress) + `] ${percent}%`;
+        const randomLog = glitches[Math.floor(Math.random() * glitches.length)];
+
+        pre.innerHTML = pasos.join('<br>') +
+                        `<br><br>${randomLog}<br>Progreso: ${bar}`;
+        progress++;
+        if (progress > total) {
+          clearInterval(interval);
+          pre.innerHTML += `<br><br>Formateo completo. Todos los datos han sido eliminados.` +
+                           `<br><br>Así habrías vivido un formateo en los 80/90.` +
+                           `<br><br><span class="col-purple">[V]</span> Volver`;
+          document.body.addEventListener("keydown", volverConV);
+        }
+      }, 150);
+    }
+  }
+
+  updateFormatStep();
+}
+
+function generateFakeHexDump(lines = 10, startAddr = 0x00F4A0) {
+  let result = '';
+  for (let i = 0; i < lines; i++) {
+    const addr = (startAddr + i * 16).toString(16).padStart(6, '0');
+    const hex = Array.from({ length: 16 }, () =>
+      Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase()
+    ).join(' ');
+    const ascii = hex.match(/.{2}/g).map(h => {
+      const c = String.fromCharCode(parseInt(h, 16));
+      return /[ -~]/.test(c) ? c : '.';    
+    }).join('');
+    result += `0x${addr}  ${hex}  ${ascii}\n`;
+  }
+  return result;
+}
+
+function simulateTextWriting(text, element, speed, callback) {
+  let index = 0;
+  const interval = setInterval(() => {
+    element.innerText += text[index++];
+    if (index === text.length) {
+      clearInterval(interval);
+      if (callback) callback();
+    }
+  }, speed);
+}
+
+function cdDebug() {
+  const outputEl = document.getElementById('output');
+  outputEl.innerHTML = ''; 
+  const wrapper = document.createElement('div');
+  wrapper.className = 'ascii-l';
+  const pre = document.createElement('pre');
+  wrapper.appendChild(pre);
+  outputEl.appendChild(wrapper);
+  window.scrollTo(0, 0);          
+  const dump = generateFakeHexDump(30); 
+  simulateTextWriting(dump, pre, 5, () => {
+    const volverDiv = document.createElement('div');
+    volverDiv.innerHTML = `<strong class="col-purple">[V]</strong> Volver`;
+    wrapper.appendChild(volverDiv);
+  });
+}
+
+function exitSequence() {
+  document.body.innerHTML = `<div id="screen">
+      <div class="boot-msg"><pre id="exit-msg"></pre></div>
+    </div> `;
+  const exitMessages = [
+    "Saving user settings...",
+    "Logging off user: Invitado",
+    "Updating message counters...",
+    "",
+    "",
+    "Saving download/upload stats",
+    "",
+    "",
+    "██████████████████████████████████████████",
+    "█                   :)                   █",
+    "█     Gracias por usar The Void.BBS®     █",
+    "█ ¡El sysop está orgulloso de recibirte! █",
+    "█ ¡Volve pronto, siempre sos bienvenido! █",
+    "█                                        █",
+    "██████████████████████████████████████████",
+    "",
+    "",
+    "Carrier lost.",
+    "Connection closed by remote host.",
+    "NO CARRIER"
+  ];
+
+  let currentLine = 0;
+  let currentChar = 0;
+  const exitElement = document.getElementById("exit-msg");
+
+  function typeExitLine() {
+    if (currentLine < exitMessages.length) {
+      let line = exitMessages[currentLine];
+      if (line === "NO CARRIER") {
+        const coloredLine = '<span class="col-rojo">NO CARRIER</span>';
+        exitElement.innerHTML += coloredLine + "\n";
+        currentLine++;
+        currentChar = 0;
+        setTimeout(typeExitLine, 400);
+        return;
+      }
+      if (currentChar < line.length) {
+        exitElement.textContent += line.charAt(currentChar);
+        currentChar++;
+        setTimeout(typeExitLine, 4);
+      } else {
+        exitElement.textContent += "\n";
+        currentLine++;
+        currentChar = 0;
+        setTimeout(typeExitLine, 400);
+      }
+    } else {
+      setTimeout(() => {
+        window.location.href = "https://free2z.cash/carover0";
+      }, 1000);
+    }
+  }
+  typeExitLine();
+}
+
+function ONode() {
+  window.scrollTo(0, 0);
+
+  pintar(`
+<pre id="deepnet-loader" class="boot-msg-2">
+[SYN_SENT] → ↻ buscando nodo .onion
+[WAITING FOR RESPONSE]
+[...]
+</pre>
+  `);
+
+  const loader = document.getElementById("deepnet-loader");
+
+  let pasos = [
+    "[SYN_SENT] → ↻ buscando nodo .onion",
+    "[RECEIVED] ← nodo encontrado: VOID/33X",
+    "[SESSION INIT] Estableciendo túnel cifrado...",
+    "[FINGERPRINT] validación de clave pública...",
+    "[SESSION STABLE] handshake completo",
+    "[ACCESS GRANTED] Accediendo al nodo oculto..."
+  ];
+
+  let i = 0;
+  const intervalo = setInterval(() => {
+    if (i < pasos.length) {
+      loader.innerHTML += `\n${pasos[i]}`;
+      i++;
+    } else {
+      clearInterval(intervalo);
+      setTimeout(() => {
+        mostrarNodoOcultoFinal();
+      }, 1000); // Pausa final antes de mostrar contenido
+    }
+  }, 800);
+}
+
+function mostrarNodoOcultoFinal() {
+  pintar(`
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                       NODO OCULTO ▒▒ VOID.BBS /33X /darknet                    ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+[VOID_GATE::AUTH] ↻ handshake completo — fingerprint válido
+[SESSION_ID] :: 0xA93F-7B :: nodo estable
+
+▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+<strong class="col-purple">[CTRL + ALT + M]</strong> EXEC /docs/manifesto_cypherpunk.txt
+<strong class="col-purple">[CTRL + ALT + J]</strong> EXEC /docs/pulso_rebelde.txt
+
+▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+[TRACKING STATUS]
+▌ No cookies
+▌ No JS externo
+▌ No Google
+▌ No terceros
+▌ Solo vos y el vacío
+
+
+
+
+
+<strong class="col-purple">[CTRL + ALT + BackSpace]</strong> Cerrar sesion y borrar rastro.
+
+  `);
+}
+
+
+function manifiesto() {
+pintar(`
+
+[ACCESO NO INDEXADO]
+Este nodo no aparece en el índice público. Si estás leyendo esto, sabés por qué.
+
+[SYSLOG::PULSE]
+▌ 2025-05-22 04:12 UTC :: SYN desde IP .onion (5 nodos)
+▌ 2025-05-23 01:33 UTC :: Entrada reconocida → fingerprint válido
+▌ 2025-05-23 02:05 UTC :: flag: 'manifesto_cypherpunk.txt' consultado
+
+[ARCHIVO ABIERTO: manifesto_cypherpunk.txt]
+────────────────────────────────────────────────────────────────────────────────
+Cypherpunks write code.
+
+Nosotros defendemos la privacidad con criptografía, con sistemas de anonimato de
+reenvío de mensajes, con firmas digitales y dinero electrónico.
+
+La privacidad es necesaria para una sociedad abierta en la era electrónica. La
+privacidad no es secreto. Un asunto privado es algo que uno no quiere que todo
+el mundo sepa. Un asunto secreto es algo que uno no quiere que nadie sepa. La
+privacidad es el poder de revelarse selectivamente al mundo.
+
+Cuando decimos que queremos privacidad, no es porque tengamos algo que ocultar.
+No tenemos nada que ocultar; tenemos algo que proteger: la libertad.
+
+Cypherpunks escriben código. Sabemos que alguien tiene que escribir software
+para defender la privacidad, y lo vamos a escribir. Lo publicaremos libremente
+para que todos lo usen. Nuestros códigos no se guardarán en secreto, porque no
+podemos confiar en sistemas que dependen del secreto.
+
+Cypherpunks escriben código. Lo sabemos porque es nuestra única defensa real.
+────────────────────────────────────────────────────────────────────────────────
+
+[REGISTRO DE ARCHIVOS]
+▌ /docs/manifesto_cypherpunk.txt       ← 1.8 KB
+▌ /data/nodes.latency                  ← 896 B
+▌ /vault/hexmsg.dump                   ← 3.3 KB
+
+
+<strong class="col-purple">[CTRL + ALT + ←]</strong> Volver.
+
+`)
+
+}
+
+function desconectarNodo() {
+  pintar(`
+[CONEXIÓN CERRADA]
+Desvinculando nodo...
+Borrando rastros...
+Volviendo al índice público...
+
+`);
+  
+  setTimeout(() => {
+    pintar(mainMenu);
+  }, 2500); 
+}
+
+function blakiat() {
+pintar(`
+Hoy declaramos que no somos sombras que se desvanecen en la rutina. Somos    
+chispas vivas, destinadas a encender el mundo con nuestras ideas, sueños y   
+acciones.                                                                     
+
+Rechazamos la apatía, el miedo al fracaso y las cadenas del "no se puede".   
+Cada paso que damos es un grito de libertad, un desafío a lo imposible, una  
+promesa de construir algo mejor.                                             
+
+Que nuestras voces resuenen, que nuestras manos creen, que nuestros corazones
+ardan. No esperamos permisos, no buscamos excusas. Somos el cambio, el       
+movimiento, la fuerza que transforma.                                        
+
+Hoy, aquí, ahora, nos levantamos. Porque el mundo no cambia solo: lo         
+cambiamos nosotros.                                                          
+
+¡Arde, crea, vive!
+
+Blakiat
+
+
+<strong class="col-purple">[CTRL + ALT + ←]</strong> Volver.
+
+`)  
+}
+function librE() {
+pintar(`
+Refugio en la era del ruido digital
+
+Vivimos en tiempos donde la información es fugaz y muchas veces vacía. Ray
+Bradbury, en Fahrenheit 451, nos advirtió sobre un mundo donde el fuego no
+solo consume libros, sino también el pensamiento crítico, reemplazándolo con
+distracciones superficiales y una cultura anestesiada.
+
+Hoy, esa advertencia es más real que nunca.
+
+Bradbury no fue un simple autor de ciencia ficción. Fue un cronista de lo que
+somos y, aún más, de lo que temía que nos convirtiéramos. En Fahrenheit 451,
+publicado en 1953, imaginó un mundo donde los libros eran quemados y la
+ignorancia era norma. Pero el fuego, decía, no era el verdadero peligro. El
+olvido, el desinterés, la autocensura, lo eran.
+
+Durante años se entendió Fahrenheit 451 como una crítica a regímenes
+totalitarios. Y sí, lo es. Pero Bradbury aclaró más de una vez que su temor
+principal no era el gobierno. Era la gente. Somos nosotros. “No fue el
+gobierno. Fue el pueblo. El pueblo quería censura. Ellos fueron quienes
+comenzaron la quema, y el gobierno simplemente los siguió.”
+
+Hoy, el contenido vacío, superficial y estandarizado domina el espacio público.
+
+En las redes sociales abundan los influencers: idiotas adictos a las redes
+sociales que buscan influir en la conducta de otros idiotas influenciables
+mediante contenido que exhibe su propia idiotez, con la esperanza de que esos
+idiotas la imiten. Esta definición no es un insulto, sino un diagnóstico de
+nuestra época.
+
+Ya no hay hogueras de libros. Hay algoritmos que castigan lo incorrecto. Ya no
+hay un dictador que impone silencio, hay un miedo generalizado a decir lo que
+se piensa. La palabra se desinfla, el pensamiento se diluye, y todo debe
+pasarse por el filtro de lo políticamente correcto.
+
+La ironía se malinterpreta. El disenso se cancela. El desacuerdo se tilda de
+odio. Y sin disenso, sin provocación, sin contradicción, el pensamiento se
+estanca.
+
+Estas lineas son para quienes rechazan esa mediocridad. Un espacio para valorar
+la reflexión auténtica, el debate honesto y las conexiones genuinas. Aquí se
+mantiene vivo el fuego de la curiosidad y el pensamiento crítico. Como decía
+Bradbury, vivimos en una época en la que la gente tiene miedo de ofender. Así
+es como empieza la censura.
+
+Leer sigue siendo un acto de resistencia. Pensar, un acto de valentía. Decir
+lo que otros no quieren oír, un acto profundamente humano.
+
+Si estás cansado del ruido y buscás algo más profundo, bienvenido.
+
+¡Viva la libertad!
+
+<strong class="col-purple">[V]</strong> Volver
+
+`)
+}  
+
+function NuevoOrden() {
+  pintar(`
+<span class="col-magenta">NUEVO ORDEN: ESCAPE DE BRETTON WOODS 2.0</span>
+
+En julio de 1944, 44 países aliados se reunieron en Bretton Woods, EE.UU.,
+para definir un nuevo orden económico mundial tras la Segunda Guerra Mundial.
+El acuerdo resultante instauró un sistema de tipos de cambio fijos donde el
+dólar estadounidense se convirtió en la moneda de referencia, respaldado por
+oro a razón de 35 USD por onza. Así nació el dominio del dólar como moneda
+global. El sistema se mantuvo hasta 1971, cuando EE.UU. abandonó el patrón
+oro, dando paso al dinero fiduciario. Desde entonces, el valor del dinero se
+sostiene en la confianza... y en la deuda. Hoy se habla de un "Bretton Woods
+2.0".
+
+
+<span class="col-yellow">¿QUÉ ES BRETTON WOODS 2.0?</span>
+Un rediseño del sistema financiero mundial basado en control total:
+- Monedas digitales del banco central (CBDCs)
+- Vigilancia financiera en tiempo real
+- Eliminación del efectivo
+- Restricción del gasto programable
+- Inflación como herramienta sistémica
+
+No es un futuro posible, es un presente en desarrollo.
+
+<span class="col-yellow">DIAGNÓSTICO</span>
+- El dinero fiduciario pierde valor constantemente
+- El acceso financiero está condicionado por comportamiento
+- Los datos personales valen más que el saldo en tu cuenta
+- Cada nueva “comodidad” implica menos soberanía
+
+<span class="col-yellow">CÓMO ESCAPAR</span>
+
+<span class="col-cyan">1. SALIDA DEL FIAT</span>
+No guardes valor en moneda fiduciaria. Usala solo para circular.  
+Almacená valor en:
+- Bitcoin
+- Metales físicos
+- Stablecoins descentralizadas
+
+<span class="col-cyan">2. CUSTODIA PROPIA</span>
+No delegues la tenencia de tus activos.  
+- Usá wallets no-custodiales (Electrum, Zashi, Coinomi)  
+- Mové fondos en redes descentralizadas (BTC, ZEC, DGB)  
+- Evitá bancos, exchanges con KYC, y fintechs reguladas
+
+<span class="col-cyan">3. PRIVACIDAD DIGITAL</span>
+- Eliminá apps de Google y Apple cuando sea posible  
+- Usá Aurora Store y F-Droid en lugar de Play Store  
+- Navegá con Brave, DuckDuckGo o Tor  
+- No registres tu teléfono en servicios que no lo necesitan
+
+<span class="col-cyan">4. ECONOMÍA P2P</span>
+- Operá sin intermediarios  
+- Comprá y vendé directamente  
+- Armá redes de intercambio reales  
+- No dependas de terceros para mover valor
+
+<span class="col-cyan">5. INFRAESTRUCTURA PARALELA</span>
+- Rechazá la “comodidad” que implica vigilancia  
+- Promové herramientas libres, sistemas descentralizados  
+- Participá de redes resistentes, distribuidas, antifrágiles  
+- No pidas permiso: construí lo que usás
+
+<span class="col-yellow">CONCLUSIÓN</span>
+Bretton Woods 2.0 no se combate desde adentro.  
+Se evade. Se ignora. Se reemplaza.
+
+<span class="col-green">Este BBS no ofrece consejos financieros.  
+Ofrece herramientas para no ser una víctima.</span>
+
+
+<span class="col-magenta">MI ESTRATEGIA</span>
+
+Esta es mi estrategia. No te sugiero que la uses.  
+A mí me funciona… Si algún día todo falla,  
+lo charlamos mientras nos hundimos.
+
+<span class="col-magenta">INFRAESTRUCTURA PRINCIPAL</span>
+├─ TRON (TRX)
+│   ├─ rápido, barato y funcional
+│   ├─ mueve USDT, hospeda contratos
+│   └─ poco descentralizado, pero funciona como un reloj
+
+<span class="col-magenta">RESERVAS DE VALOR</span>
+├─ BTC
+│   ├─ oro digital
+│   └─ inmóvil, valioso, para guardar a largo plazo
+├─ ZEC
+│   ├─ privacidad real
+│   └─ resistencia silenciosa en tiempos de vigilancia
+└─ DGB
+    ├─ trabajo puro, sin marketing
+    ├─ rápida, descentralizada, olvidada
+    └─ si el ruido se apaga, esto puede quedar en pie
+
+<span class="col-magenta">SOPORTE PRINCIPAL</span>
+└─ USDT (TRC20)
+    ├─ operatividad sin fricción
+    └─ rápido como TRON, ideal para transacciones
+
+<span class="col-magenta">SOPORTE SECUNDARIO</span>
+├─ LTC
+│   ├─ cuchillo suizo
+│   ├─ ligero, confiable, barato
+│   └─ para mover cuando otros no pueden
+└─ BCH
+    ├─ cash digital
+    ├─ humilde pero funcional
+    └─ para lo cotidiano
+
+<span class="col-magenta">RESUMEN</span>
+├─ TRX para ganar
+├─ BTC para guardar
+├─ ZEC para proteger
+├─ DGB para resistir
+├─ USDT para operar
+└─ LTC y BCH para liberar congestión
+
+Viva la libertad, la privacidad  
+y los protocolos simples que no fallan.
+
+
+<strong class="col-purple">[V]</strong> Volver
+  `)
+}
+
+  
+</script>
+
+</body>
+</html>
