@@ -34,7 +34,10 @@ function openBBS() {
   );
   window.removeEventListener("keydown", openBBS);
   window.removeEventListener("click", openBBS);
-  window.close();
+  setTimeout(() => {
+    window.close(); // Cierra esta pestaña (la del launcher)
+  }, 500);
+  
 }
 window.addEventListener("keydown", openBBS);
 window.addEventListener("click", openBBS);
