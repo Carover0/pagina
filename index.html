@@ -194,8 +194,8 @@ Usuario: <span class="col-magenta">Invitado</span> <span class="col-gris">(permi
 ║ <span class="col-magenta">[B]</span> BOTS       | Bots para Telegram                                          ║
 ║ <span class="col-magenta">[E]</span> ZCASH      | Conoce Zcash                                                ║
 ║ <span class="col-magenta">[D]</span> DEGOOGLE   | Desintoxicate de big tech                                   ║
-║ <span class="col-magenta">[U]</span> REFUGIO    | Refugio Digital                                             ║
-║ <span class="col-magenta">[O]</span> ESTRATEGIA | Crypto estrategia                                           ║
+║ <span class="col-magenta">[R]</span> REFUGIO    | Refugio Digital                                             ║
+║ <span class="col-magenta">[S]</span> RESISTENCIA| Combatir el nuevo orden economico                        ║
 ║ <span class="col-cyan">[L]</span> LEEME      | Preguntas?                                                  ║
 ║ <span class="col-cyan">[H]</span> HELP       | Hay más de lo que ves...                                    ║
 ║ <span class="col-cyan">[A]</span> ACERCA     | Sobre mí...                                                 ║
@@ -320,11 +320,11 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       e.preventDefault();
     }
      else if (k === "r") {
-      cdasmblr();
+      NuevoOrden();
       e.preventDefault();
     }    
      else if (k === "s") {
-      cdwhoami();
+      libros();
       e.preventDefault();
     }    
      else if (k === "5") {
@@ -350,10 +350,6 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       librE();
       e.preventDefault();
    }
-   else if (k === "o") {
-      criptoEstrategia();
-      e.preventDefault();
-   }	  	  
   }
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === '0') {
@@ -901,7 +897,7 @@ pintar(`
  [Z] ZEXPLORER        → Explorador ZCASH (Telegram)
  [T] TEXPLORER        → Explorador TRON (Telegram)
  [P] TPERIODICA       → Tabla periódica interactiva
- [U] REFUGIO          → Refugio Digital
+ [R] REFUGIO          → Refugio Digital
  [O] ESTRATEGIA       → Cripto-Estrategia
  [C] CPRECIOS         → Precios cripto en tiempo real
  [D] DEGOOGLE         → Desintoxicate de Big Tech
@@ -914,8 +910,6 @@ pintar(`
  [I] DIR              → Lista contenido oculto
  [F] FORMAT           → Borra el disco ¡Cuidado! ;)
  [G] DEBUG            → Simula volcado de memoria
- [S] WHOAMI           → Información del usuario
- [R] ASM              → Lenguaje ensamblador
  [H] HELP             → Muestra esta ayuda
 
 <span class="col-magenta">TIP</span>
@@ -931,7 +925,7 @@ Tenes que usar combinaciones con CTRL + ALT
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
 │ 1* │ 2* │ 3* │ 4* │ 5* │ 6  │ 7  │ 8  │ 9  │ 0  │
 ├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
-│ Q  │ W  │ E* │ R* │ T* │ Y* │ U* │ I* │ O* │ P* │
+│ Q  │ W  │ E* │ R* │ T* │ Y* │ U* │ I* │ O  │ P* │
 ├────┬────┬────┬────┬────┬────┬────┬────┬────┬────┤
 │ A* │ S* │ D* │ F* │ G* │ H* │ J  │ K  │ L* │ Ñ  │
 ├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
@@ -1160,56 +1154,6 @@ function exitSequence() {
   typeExitLine();
 }
 
-function cdasmblr() {
-window.scrollTo(0, 0);     	      
-pintar(`
-
-; Este programa imprimiria un mensaje en pantalla.
-; Lenguajes creados directamente con ensamblador:
-; - FORTRAN (en sus primeras versiones).
-; - COBOL (en sus primeras versiones).
-; - Lisp (en sus primeras implementaciones).
-; Estos lenguajes fueron implementados inicialmente en ensamblador para mejorar el rendimiento y la eficiencia.
-
-.MODEL SMALL        ; Definir modelo de memoria (SMALL: único segmento para código y datos)
-.STACK 100h         ; Reservar 256 bytes para la pila
-.DATA               ; Sección de datos
-msg db 'Hola soy carover0 y esto es The Void.BBS en lenguaje ensamblador$', ; Definir el mensaje a mostrar
-
-.CODE               ; Sección de código
-; Mostrar mensaje
-MOV AH, 09h         ; Cargar la función 09h de DOS (mostrar cadena)
-INT 21h             ; Llamar a la interrupción 21h para ejecutar la función
-
-; Finalizar el programa
-MOV AH, 4Ch         ; Cargar la función 4Ch de DOS (terminar el programa)
-INT 21h             ; Llamar a la interrupción 21h para finalizar el programa
-
-; solo un poquito de historia...
-
-<strong class="col-purple">[V]</strong> Volver
- `);
-}
-
-function cdwhoami() {
-window.scrollTo(0, 0);           
-pintar(`
-<span class="col-verde">INFORMACIÓN DE USUARIO</span>
-======================
-
-NOMBRE DE USUARIO    BIN
-=================    =======================================================================
-Invitado             01100011 01100001 01110010 01101111 01110110 01100101 01110010 00110000
-
-[*] Sesión activa desde: 1995-02-14
-[*] Shell: /bin/nostalgia
-
-
-<strong class="col-purple">[V]</strong> Volver
-
-`); 
-}
-
 function ONode() {
   window.scrollTo(0, 0);
 
@@ -1424,14 +1368,83 @@ Si estás cansado del ruido y buscás algo más profundo, bienvenido.
 `)
 }  
 
-function criptoEstrategia() {
+function NuevoOrden() {
   pintar(`
-<span class="col-magenta">ESTRATEGIA CRIPTO</span>
+<span class="col-magenta">NUEVO ORDEN: ESCAPE DE BRETTON WOODS 2.0</span>
+
+En julio de 1944, 44 países aliados se reunieron en Bretton Woods, EE.UU.,
+para definir un nuevo orden económico mundial tras la Segunda Guerra Mundial.
+El acuerdo resultante instauró un sistema de tipos de cambio fijos donde el
+dólar estadounidense se convirtió en la moneda de referencia, respaldado por
+oro a razón de 35 USD por onza. Así nació el dominio del dólar como moneda
+global. El sistema se mantuvo hasta 1971, cuando EE.UU. abandonó el patrón
+oro, dando paso al dinero fiduciario. Desde entonces, el valor del dinero se
+sostiene en la confianza... y en la deuda. Hoy se habla de un "Bretton Woods
+2.0".
+
+
+<span class="col-yellow">¿QUÉ ES BRETTON WOODS 2.0?</span>
+Un rediseño del sistema financiero mundial basado en control total:
+- Monedas digitales del banco central (CBDCs)
+- Vigilancia financiera en tiempo real
+- Eliminación del efectivo
+- Restricción del gasto programable
+- Inflación como herramienta sistémica
+
+No es un futuro posible, es un presente en desarrollo.
+
+<span class="col-yellow">DIAGNÓSTICO</span>
+- El dinero fiduciario pierde valor constantemente
+- El acceso financiero está condicionado por comportamiento
+- Los datos personales valen más que el saldo en tu cuenta
+- Cada nueva “comodidad” implica menos soberanía
+
+<span class="col-yellow">CÓMO ESCAPAR</span>
+
+<span class="col-cyan">1. SALIDA DEL FIAT</span>
+No guardes valor en moneda fiduciaria. Usala solo para circular.  
+Almacená valor en:
+- Bitcoin
+- Metales físicos
+- Stablecoins descentralizadas
+
+<span class="col-cyan">2. CUSTODIA PROPIA</span>
+No delegues la tenencia de tus activos.  
+- Usá wallets no-custodiales (Electrum, Zashi, Coinomi)  
+- Mové fondos en redes descentralizadas (BTC, ZEC, DGB)  
+- Evitá bancos, exchanges con KYC, y fintechs reguladas
+
+<span class="col-cyan">3. PRIVACIDAD DIGITAL</span>
+- Eliminá apps de Google y Apple cuando sea posible  
+- Usá Aurora Store y F-Droid en lugar de Play Store  
+- Navegá con Brave, DuckDuckGo o Tor  
+- No registres tu teléfono en servicios que no lo necesitan
+
+<span class="col-cyan">4. ECONOMÍA P2P</span>
+- Operá sin intermediarios  
+- Comprá y vendé directamente  
+- Armá redes de intercambio reales  
+- No dependas de terceros para mover valor
+
+<span class="col-cyan">5. INFRAESTRUCTURA PARALELA</span>
+- Rechazá la “comodidad” que implica vigilancia  
+- Promové herramientas libres, sistemas descentralizados  
+- Participá de redes resistentes, distribuidas, antifrágiles  
+- No pidas permiso: construí lo que usás
+
+<span class="col-yellow">CONCLUSIÓN</span>
+Bretton Woods 2.0 no se combate desde adentro.  
+Se evade. Se ignora. Se reemplaza.
+
+<span class="col-green">Este BBS no ofrece consejos financieros.  
+Ofrece herramientas para no ser una víctima.</span>
+
+
+<span class="col-magenta">MI ESTRATEGIA</span>
 
 Esta es mi estrategia. No te sugiero que la uses.  
 A mí me funciona… Si algún día todo falla,  
 lo charlamos mientras nos hundimos.
-
 
 <span class="col-magenta">INFRAESTRUCTURA PRINCIPAL</span>
 ├─ TRON (TRX)
@@ -1474,13 +1487,11 @@ lo charlamos mientras nos hundimos.
 ├─ USDT para operar
 └─ LTC y BCH para liberar congestión
 
-
 Viva la libertad, la privacidad  
 y los protocolos simples que no fallan.
 
 
 <strong class="col-purple">[V]</strong> Volver
-
   `)
 }
 
