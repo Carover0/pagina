@@ -21,26 +21,32 @@
 </head>
 <body>
 <pre id="txt" style="display: block;">
-╔══════════════════════════════════════════════╗
-║ Presiona cualquier tecla para iniciar BBS... ║
-╚══════════════════════════════════════════════╝
+VOID BBS [v1.01]
+(c) 1994 Sysop @YourHandle
+
+Connecting to host...
+Press ENTER to continue_
+
 </pre>
 <script>
-function openBBS() {
-  const texto = document.getElementById('txt')
+function openBBS(e) {
+  if (e.key !== "Enter") return;
+
+  const texto = document.getElementById('txt');
+  
   window.open(
-    "bbs.html",
+    "inicio.html",
     "VoidBBS",
     'width=840,height=840,resizable=no,scrollbars=no,toolbar=no,location=no,status=no,menubar=no'
   );
+
   window.removeEventListener("keydown", openBBS);
   window.removeEventListener("click", openBBS);
 
   texto.style.display = 'none';
-
 }
+
 window.addEventListener("keydown", openBBS);
-window.addEventListener("click", openBBS);
 </script>
 </body>
 </html>
