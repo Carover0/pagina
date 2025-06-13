@@ -196,6 +196,7 @@ Usuario: <span class="col-magenta">Invitado</span> <span class="col-gris">(permi
 ║ <span class="col-magenta">[D]</span> DEGOOGLE   | Desintoxicate de big tech                                   ║
 ║ <span class="col-magenta">[R]</span> REFUGIO    | Refugio Digital                                             ║
 ║ <span class="col-magenta">[S]</span> RESISTENCIA| Combatir el nuevo orden economico                           ║
+║ <span class="col-magenta">[Q]</span> ADOPCION   | La mentira de la adopcion cripto                            ║
 ║ <span class="col-cyan">[L]</span> LEEME      | Preguntas?                                                  ║
 ║ <span class="col-cyan">[H]</span> HELP       | Hay más de lo que ves...                                    ║
 ║ <span class="col-cyan">[A]</span> ACERCA     | Sobre mí...                                                 ║
@@ -350,6 +351,10 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       librE();
       e.preventDefault();
    }
+    else if (k === "q") {
+      Adopcion();
+      e.preventDefault();
+   }	  
   }
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === '0') {
@@ -899,6 +904,7 @@ pintar(`
  [P] TPERIODICA       → Tabla periódica interactiva
  [R] REFUGIO          → Refugio Digital
  [O] RESISTENCIA      → Combatir el nuevo orden economico
+ [Q] ADOPCION         → La mentira de la adopcion cripto
  [C] CPRECIOS         → Precios cripto en tiempo real
  [D] DEGOOGLE         → Desintoxicate de Big Tech
  [A] ABOUT            → Sobre el sistema
@@ -925,7 +931,7 @@ Tenes que usar combinaciones con CTRL + ALT
 ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐
 │ 1* │ 2* │ 3* │ 4* │ 5* │ 6  │ 7  │ 8  │ 9  │ 0  │
 ├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
-│ Q  │ W  │ E* │ R* │ T* │ Y* │ U* │ I* │ O  │ P* │
+│ Q* │ W  │ E* │ R* │ T* │ Y* │ U* │ I* │ O  │ P* │
 ├────┬────┬────┬────┬────┬────┬────┬────┬────┬────┤
 │ A* │ S* │ D* │ F* │ G* │ H* │ J  │ K  │ L* │ Ñ  │
 ├────┴────┴────┴────┴────┴────┴────┴────┴────┴────┤
@@ -1470,6 +1476,161 @@ y los protocolos simples que no fallan.
   `)
 }
 
+function Adopcion() {
+  pintar(`
+<span class="col-magenta">LA "ADOPCION CRIPTO" ES UNA MENTIRA DISFRAZADA DE PROGRESO</span>
+
+Alguna vez soñamos con una red verdaderamente libre, sin permisos,
+donde el código era la única ley y nadie podía controlarte ni
+restringirte. Imaginamos un sistema financiero descentralizado,
+donde las personas pudieran mover su dinero sin intermediarios,
+sin vigilancia y sin censura.
+
+Ese sueño, sin embargo, hoy está en venta.
+
+Lo que la industria llama “adopción masiva” no es más que una máscara
+para la creciente centralización y control. En vez de avanzar hacia la
+libertad financiera, estamos retrocediendo hacia el viejo sistema,
+solo que ahora con logos de criptomonedas y palabras técnicas que
+ocultan la realidad.
+
+Las grandes instituciones financieras y empresas tecnológicas han
+entrado al juego. Quieren apropiarse de la narrativa cripto para
+legitimar su poder. Lo hacen poniendo su marca en proyectos
+blockchain, creando billeteras que exigen identificación completa
+(KYC), y lanzando tarjetas de crédito o débito que rastrean cada gasto,
+todo bajo la excusa de “hacer la cripto más accesible para todos”.
+
+Pero, ¿qué significa realmente esta “adopción”? ¿Y qué se pierde en el camino?
+
+
+<span class="col-magenta">LA "ADOPCION CRIPTO" COMO SINONIMO DE VIGILANCIA</span>
+
+En la visión original de Bitcoin y las primeras criptomonedas, el
+objetivo era permitir transacciones entre pares sin intermediarios ni
+la necesidad de confiar en bancos o gobiernos. La privacidad, la
+autonomía y la resistencia a la censura eran pilares fundamentales.
+
+Hoy, sin embargo, la “adopción masiva” se traduce en billeteras que
+te obligan a mostrar documentos de identidad, teléfonos móviles que
+recopilan datos de tus movimientos, y plataformas que monitorean
+cómo y dónde gastas tu dinero.
+
+Esta adopción significa que las transacciones cripto se vuelven tan
+rastreables como las bancarias, con el agravante de que ya no solo un
+banco, sino múltiples actores (plataformas, gobiernos, anunciantes)
+pueden acceder a esa información.
+
+El resultado es un ecosistema que, bajo la fachada de innovación,
+replica el control y la vigilancia que las criptomonedas supuestamente
+buscaban eliminar.
+
+
+<span class="col-magenta">LA PROSTITUCION DE IDEALES: DEL "SIN PERMISOS" AL "PERMISO TOTAL"</span>
+
+Otro punto clave es la pérdida de la filosofía “sin permisos”
+(permissionless). Las blockchains públicas, en su esencia, permiten a
+cualquiera participar sin pedir permiso a una autoridad central.
+
+Pero hoy vemos cada vez más redes y aplicaciones que funcionan
+bajo modelos “con permisos” o que imponen estrictos controles para
+acceder a servicios. Desde exchanges que bloquean cuentas sin
+explicación, hasta protocolos DeFi que exigen verificación total.
+
+Incluso proyectos que se autodenominan descentralizados dependen
+en realidad de unos pocos nodos controlados por grandes empresas o
+fundaciones, aumentando el riesgo de censura y manipulación.
+
+Así, la descentralización se convierte en un marketing vacío, mientras
+las estructuras centralizadas vuelven a dominar el ecosistema.
+
+
+<span class="col-magenta">EL PAPEL DE LAS GRANDES EMPRESAS Y REGULADORES</span>
+
+Grandes corporaciones financieras, tecnológicas y reguladoras están
+jugando un papel clave en esta “adopción”.
+
+El ejemplo más claro son las tarjetas de crédito o débito que ofrecen
+recompensas en Bitcoin u otras criptomonedas, pero que en el fondo
+funcionan igual que cualquier producto bancario tradicional: te
+rastrean, controlan tus gastos y fomentan el consumo dentro de un
+sistema cerrado.
+
+Al mismo tiempo, la presión regulatoria es cada vez mayor. Leyes y
+normas que exigen KYC/AML, reportes y control fiscal están
+transformando las criptomonedas en herramientas que permiten el
+control estatal más que la libertad individual.
+
+Este escenario beneficia a grandes jugadores que pueden cumplir con
+las regulaciones y ofrecer servicios “seguros”, pero excluye o penaliza
+a usuarios que buscan privacidad y autonomía.
+
+
+<span class="col-magenta">QUE PERDEMOS CON ESTA "ADOPCION"?</span>
+
+La adopción tal como se promueve hoy implica sacrificar los valores
+originales de las criptomonedas:
+
+Privacidad: Cada vez menos usuarios pueden usar las redes sin
+entregar sus datos personales.
+
+Autonomía: El control vuelve a estar en manos de pocos actores
+poderosos que deciden qué se puede o no hacer.
+
+Resistencia a la censura: Bloqueos, congelamientos y restricciones
+son cada vez más comunes.
+
+Inclusión financiera: Paradójicamente, los sistemas que dicen incluir
+terminan excluyendo a quienes no pueden o no quieren someterse a
+los controles.
+
+Libertad: La “libertad” se reduce a usar un producto dentro de un
+ecosistema cerrado, vigilado y regulado.
+
+
+<span class="col-magenta">QUE PODEMOS HACER?</span>
+
+No se trata de rechazar toda innovación o nueva tecnología, sino de
+exigir que la verdadera descentralización y autonomía sigan siendo
+prioridad.
+
+Apoyar proyectos que realmente protejan la privacidad.
+
+Usar wallets y redes que no exijan permisos ni KYC innecesarios.
+
+Ser críticos con la narrativa oficial y cuestionar qué intereses están
+detrás de cada “adopción”.
+
+Fomentar la educación para entender los riesgos y beneficios reales, no
+solo el marketing.
+
+Defender la filosofía original de las criptomonedas como herramientas
+para la libertad económica, no para el control.
+
+
+<span class="col-magenta">RESUMIENDO</span>
+
+La “adopción masiva” que nos venden no es progreso real. Es una forma
+de legitimar la centralización, la vigilancia y el control bajo la excusa
+de facilitar el acceso.
+
+No podemos dejar que se prostituyan los ideales originales para
+encajar en modelos que replican los problemas que la tecnología
+buscaba resolver.
+
+La libertad financiera solo será real cuando el control vuelva a estar en
+manos de los usuarios, sin intermediarios ni vigilancia, sin censura ni
+permisos.
+
+No nos vendan humo: la verdadera adopción es la que libera, no la que
+encadena.
+
+
+
+<strong class="col-purple">[V]</strong> Volver
+
+`)
+}
   
 </script>
 
