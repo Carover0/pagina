@@ -237,7 +237,8 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
 
 -------------- MENU ---------------------------
 <span class="col-magenta">[Z]</span> ZEXPLORER   | ZCASH Explorer (TG)  
-<span class="col-magenta">[T]</span> TEXPLORER   | TRON Explorer (TG)  
+<span class="col-magenta">[T]</span> TEXPLORER   | TRON Explorer (TG) 
+<span class="col-magenta">[O]</span> REXPLORER   | RAVENCOIN Explorer (TG) 
 <span class="col-magenta">[P]</span> TPERIODICA  | Tabla periódica con imágenes  
 <span class="col-magenta">[C]</span> CPRECIOS    | Precios cripto  
 <span class="col-purple">[V]</span> VOLVER      | Volver al menú principal  
@@ -284,6 +285,10 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       callTperiodica();
       e.preventDefault();
     }
+    else if (k === "6") {
+      callRaven();
+      e.preventDefault();
+    }	    
     else if (k === "c") {
       cdprecios()
       e.preventDefault();
@@ -355,6 +360,10 @@ más. Cualquiera puede crear uno usando la API oficial de Telegram.
       Adopcion();
       e.preventDefault();
    }	  
+    else if (k === "o") {
+      rvn_c();
+      e.preventDefault();
+   }	  	  
   }
 document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === '0') {
@@ -419,6 +428,41 @@ Z-Explorer/
 <strong class="col-purple">[V]</strong> Volver | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[1]</strong> Ejecutar  
 `);
 }
+
+function rvn_c() {
+window.scrollTo(0, 0);           
+pintar(`
+<span class="col-naranja">[*] R-Explorer (Análisis técnico de la red Ravencoin en Telegram)</span>
+
+R-Explorer/
+├── [Estado de la Red]
+│   ├── Red y Último Bloque
+│   ├── Nodos por País (/nodes)
+│   └── Mercado y Hashrate
+├── [Exploración de Bloques]
+│   ├── Bloques Recientes
+│   ├── Mempool
+│   └── Acceso directo: /block | /tx
+├── [Economía y Emisión]
+│   ├── Suministro Circulante
+│   ├── Capitalización y Precio
+│   └── Balance de Activos
+├── [Herramientas Técnicas]
+│   ├── Dirección / Balance Checker
+│   └── Generador de QR
+├── [Bitácora Técnica]
+└── [Sobre el Proyecto y Contacto Técnico]
+
+- No depende de API cerradas
+- Ideal para consultas sencillas
+- Codigo abierto y auditable de funciones que lo requieren
+
+
+
+<strong class="col-purple">[V]</strong> Volver | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[6]</strong> Ejecutar  
+`);
+}
+	  
 
 function cdZCash() {
 window.scrollTo(0, 0);           
@@ -524,7 +568,10 @@ Dirigiendose...
 function callZExplorer() {
 	window.open("https://t.me/zcashexplorer_bot", "_blank"); 
 }
-
+function callRaven() {
+	window.open("https://t.me/rvnexplorer_bot", "_blank"); 
+}
+	  
 function cdtexplorer() {
 window.scrollTo(0, 0);           
 pintar(`
