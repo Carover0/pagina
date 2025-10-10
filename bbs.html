@@ -1515,9 +1515,23 @@ function cdDebug() {
 }
 
 function exitSequence() {
-  document.body.innerHTML = `<div id="screen">
-      <div class="boot-msg"><pre id="exit-msg"></pre></div>
-    </div> `;
+  document.body.innerHTML = `
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: 'Lucida Console', monospace;
+      font-size: 16px;
+      margin: 0;
+      padding: 20px;
+      white-space: pre;
+    }
+    .col-rojo { color: #ff3333; }
+  </style>
+  <div id="screen">
+    <div class="boot-msg"><pre id="exit-msg"></pre></div>
+  </div>`;
+
   const exitMessages = [
     "Saving user settings...",
     "Logging off user: Invitado",
@@ -1549,8 +1563,7 @@ function exitSequence() {
     if (currentLine < exitMessages.length) {
       let line = exitMessages[currentLine];
       if (line === "NO CARRIER") {
-        const coloredLine = '<span class="col-rojo">NO CARRIER</span>';
-        exitElement.innerHTML += coloredLine + "\n";
+        exitElement.innerHTML += '<span class="col-rojo">NO CARRIER</span>\n';
         currentLine++;
         currentChar = 0;
         setTimeout(typeExitLine, 400);
@@ -1567,10 +1580,7 @@ function exitSequence() {
         setTimeout(typeExitLine, 400);
       }
     } else {
-      setTimeout(() => {
-        //window.location.href = "https://free2z.cash/cΔrovΣr0";
-	window.close();      
-      }, 1000);
+      setTimeout(() => window.close(), 1000);
     }
   }
   typeExitLine();
@@ -2058,6 +2068,7 @@ encadena.
 
 </body>
 </html>
+
 
 
 
