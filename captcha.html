@@ -4,81 +4,103 @@
   <meta charset="UTF-8" />
   <title>Captcha</title>
 
-  <!-- IMPORTANTE: SCRIPT OFICIAL DE TELEGRAM -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     body {
-      background: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
+      background: #000;
+      color: #00ff00;
+      font-family: "Courier New", monospace;
       text-align: center;
       padding-top: 40px;
+      text-shadow: 0 0 5px #0f0;
     }
-    .box {
-      background: #222;
-      padding: 20px;
+
+    .terminal-box {
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #00ff00;
+      padding: 25px;
       display: inline-block;
-      border-radius: 10px;
-    }
-    input {
-      font-size: 22px;
-      padding: 10px;
-      width: 130px;
-      border: none;
       border-radius: 8px;
-      margin-top: 10px;
-      text-align: center;
+      box-shadow: 0 0 20px #0f0;
+      width: 80%;
+      max-width: 350px;
     }
+
+    input {
+      font-size: 25px;
+      padding: 10px;
+      width: 150px;
+      border: 2px solid #00ff00;
+      border-radius: 4px;
+      background: #000;
+      color: #00ff00;
+      text-align: center;
+      text-shadow: 0 0 5px #0f0;
+    }
+
     button {
-      margin-top: 15px;
+      margin-top: 20px;
       padding: 10px 20px;
       font-size: 18px;
-      border-radius: 8px;
-      background: #4caf50;
-      color: white;
-      border: none;
+      border-radius: 4px;
+      background: #003300;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      cursor: pointer;
+      text-shadow: 0 0 5px #0f0;
+    }
+
+    button:hover {
+      background: #005500;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+
+    .blink {
+      animation: blink-animation 1s steps(2, start) infinite;
+    }
+
+    @keyframes blink-animation {
+      to {
+        visibility: hidden;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="box">
-    <h2>Verification</h2>
+  <div class="terminal-box">
+    <h2>> Verification Required</h2>
     <p id="op"></p>
     <input id="resp" type="number" placeholder="Answer" />
-    <button onclick="enviar()">Verify</button>
+    <br />
+    <button onclick="enviar()">EXECUTE</button>
+    <p class="blink" style="margin-top:10px;">█</p>
   </div>
 
   <script>
-    // Asegurar que Telegram WebApp está listo
     Telegram.WebApp.ready();
 
-    // Generar la operación
     let a = Math.floor(Math.random() * 10) + 1;
     let b = Math.floor(Math.random() * 10) + 1;
 
-    document.getElementById("op").innerText = `${a} + ${b} = ?`;
+    document.getElementById("op").innerText = `> Solve: ${a} + ${b}`;
 
     function enviar() {
       const resp = document.getElementById("resp").value;
 
-      // Si no escribieron nada, no envíes
       if (!resp) {
         alert("Enter a number");
         return;
       }
 
-      const payload = {
-        a: a,
-        b: b,
-        resp: resp
-      };
+      const payload = { a: a, b: b, resp: resp };
 
-      // ENVÍO REAL AL BOT
       Telegram.WebApp.sendData(JSON.stringify(payload));
-
-      // Cerrar la Mini App
       Telegram.WebApp.close();
     }
   </script>
