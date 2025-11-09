@@ -49,19 +49,18 @@ button {
 <button onclick="enviar()">Send</button>
 </div>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-let a = Math.floor(Math.random()*10);
-let b = Math.floor(Math.random()*10);
-document.getElementById("op").innerText = `¿Cuánto es ${a} + ${b}?`;
+let a = Math.floor(Math.random() * 10);
+let b = Math.floor(Math.random() * 10);
+
+// Mostrar la operación en el <p> al cargar la página
+window.onload = () => {
+    document.getElementById("op").innerText = `¿Cuánto es ${a} + ${b}?`;
+};
 
 function enviar() {
     const resp = parseInt(document.getElementById("resp").value);
-    Telegram.WebApp.sendData(JSON.stringify({a: a, b: b, resp: resp}));
-    Telegram.WebApp.close();
-}
-</script>
+    if (isNaN(resp)) { 
+        alert("Enter a number"); 
 
-</body>
-</html>
 
