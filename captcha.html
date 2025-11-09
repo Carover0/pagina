@@ -73,11 +73,9 @@ function enviar() {
     const payload = {a: a, b: b, resp: parseInt(resp)};
     console.log("Enviando al bot:", payload);
 
-    // Enviar datos al bot
     Telegram.WebApp.sendData(JSON.stringify(payload));
-
-    // Opcional: cerrar la Web App después de enviar
     Telegram.WebApp.close();
+
 }
 </script>
 </body>
