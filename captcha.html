@@ -49,35 +49,19 @@ button {
 <button onclick="enviar()">Send</button>
 </div>
 
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-let a, b;
+let a = Math.floor(Math.random()*10);
+let b = Math.floor(Math.random()*10);
+document.getElementById("op").innerText = `¿Cuánto es ${a} + ${b}?`;
 
-// Generar operación aleatoria y mostrarla
-function generarOperacion() {
-    a = Math.floor(Math.random() * 10);
-    b = Math.floor(Math.random() * 10);
-    document.getElementById("op").innerText = `¿Cuánto es ${a} + ${b}?`;
-}
-
-// Llamar al cargar la página
-window.onload = generarOperacion;
-
-// Enviar datos al bot
 function enviar() {
-    const resp = document.getElementById("resp").value;
-    if(!resp) { 
-        alert("Enter a number"); 
-        return; 
-    }
-
-    const payload = {a: a, b: b, resp: parseInt(resp)};
-    console.log("Enviando al bot:", payload);
-
-    Telegram.WebApp.sendData(JSON.stringify(payload));
+    const resp = parseInt(document.getElementById("resp").value);
+    Telegram.WebApp.sendData(JSON.stringify({a: a, b: b, resp: resp}));
     Telegram.WebApp.close();
-
 }
 </script>
+
 </body>
 </html>
 
