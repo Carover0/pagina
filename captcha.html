@@ -52,15 +52,17 @@ button {
 <script>
 let a, b;
 
+// Generar operación aleatoria y mostrarla
 function generarOperacion() {
     a = Math.floor(Math.random() * 10);
     b = Math.floor(Math.random() * 10);
     document.getElementById("op").innerText = `¿Cuánto es ${a} + ${b}?`;
 }
 
-// Llamamos al cargar la página
+// Llamar al cargar la página
 window.onload = generarOperacion;
 
+// Enviar datos al bot
 function enviar() {
     const resp = document.getElementById("resp").value;
     if(!resp) { 
@@ -71,9 +73,13 @@ function enviar() {
     const payload = {a: a, b: b, resp: parseInt(resp)};
     console.log("Enviando al bot:", payload);
 
-    // Enviar al bot vía Telegram Web App
+    // Enviar datos al bot
     Telegram.WebApp.sendData(JSON.stringify(payload));
+
+    // Opcional: cerrar la Web App después de enviar
+    Telegram.WebApp.close();
 }
 </script>
 </body>
 </html>
+
