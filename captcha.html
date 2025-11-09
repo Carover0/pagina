@@ -62,5 +62,13 @@ function enviar() {
     const resp = parseInt(document.getElementById("resp").value);
     if (isNaN(resp)) { 
         alert("Enter a number"); 
+        return; 
+    }
 
+    Telegram.WebApp.sendData(JSON.stringify({a: a, b: b, resp: resp}));
+    Telegram.WebApp.close();
+}
+</script>
+</body>
+</html>
 
