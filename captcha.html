@@ -5,39 +5,10 @@
 <title>Captcha Terminal</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-body {
-  background: #000;
-  color: #0f0;
-  font-family: monospace;
-  font-size: 18px;
-  padding: 20px;
-}
-.box {
-  border: 2px solid #0f0;
-  padding: 20px;
-  display: inline-block;
-  border-radius: 5px;
-}
-input {
-  background: #111;
-  color: #0f0;
-  border: 1px solid #0f0;
-  font-family: monospace;
-  font-size: 18px;
-  padding: 5px;
-  width: 80px;
-  text-align: center;
-}
-button {
-  margin-top: 10px;
-  background: #0f0;
-  color: #000;
-  border: none;
-  font-family: monospace;
-  font-size: 16px;
-  padding: 5px 10px;
-  cursor: pointer;
-}
+body { background: #000; color: #0f0; font-family: monospace; font-size: 18px; padding: 20px; }
+.box { border: 2px solid #0f0; padding: 20px; display: inline-block; border-radius: 5px; }
+input { background: #111; color: #0f0; border: 1px solid #0f0; font-family: monospace; font-size: 18px; padding: 5px; width: 80px; text-align: center; }
+button { margin-top: 10px; background: #0f0; color: #000; border: none; font-family: monospace; font-size: 16px; padding: 5px 10px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -53,22 +24,21 @@ button {
 let a = Math.floor(Math.random() * 10);
 let b = Math.floor(Math.random() * 10);
 
-// Mostrar la operación en el <p> al cargar la página
+// Mostrar la operación
 window.onload = () => {
     document.getElementById("op").innerText = `¿Cuánto es ${a} + ${b}?`;
 };
 
 function enviar() {
     const resp = parseInt(document.getElementById("resp").value);
-    if (isNaN(resp)) { 
-        alert("Enter a number"); 
-        return; 
-    }
+    if (isNaN(resp)) { alert("Enter a number"); return; }
 
+    // Enviar datos al bot
     Telegram.WebApp.sendData(JSON.stringify({a: a, b: b, resp: resp}));
+
+    // Cerrar la Web App
     Telegram.WebApp.close();
 }
 </script>
 </body>
 </html>
-
