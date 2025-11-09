@@ -46,30 +46,20 @@ button {
 <p id="op"></p>
 <input id="resp" type="number" placeholder="Answer" />
 <br>
-<button id="sendBtn">Send 1</button>
+<button onclick="enviar()">Send</button>
 
 <script>
-Telegram.WebApp.ready(); // inicializar WebApp
-
-let a = Math.floor(Math.random() * 10) + 1;
-let b = Math.floor(Math.random() * 10) + 1;
-document.getElementById("op").innerText = `Compute: ${a} + ${b} = ?`;
-
-document.getElementById("sendBtn").onclick = () => {
+function enviar() {
     const resp = document.getElementById("resp").value;
-    if (!resp) {
-        alert("Enter a number");
-        return;
-    }
+    if(!resp) { alert("Enter a number"); return; }
 
-    const payload = { a: a, b: b, resp: resp };
-
-    console.log("DEBUG: enviando al bot", payload); // Esto se ve en DevTools si quieres
+    const payload = {a: a, b: b, resp: resp};
+    console.log("Enviando al bot:", payload);  // SOLO se ve en DevTools
+    alert("Debug: enviando " + JSON.stringify(payload)); // Visual en Telegram Web App
     Telegram.WebApp.sendData(JSON.stringify(payload));
-
-    Telegram.WebApp.close();
-};
+}
 </script>
+
 
   
 </script>
