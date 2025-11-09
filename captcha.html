@@ -47,17 +47,14 @@ button {
 <input id="resp" type="number" placeholder="Answer" />
 <br>
 <button id="sendBtn">Send</button>
-</div>
 
 <script>
 Telegram.WebApp.ready(); // inicializar WebApp
 
-// Generar operación
 let a = Math.floor(Math.random() * 10) + 1;
 let b = Math.floor(Math.random() * 10) + 1;
 document.getElementById("op").innerText = `Compute: ${a} + ${b} = ?`;
 
-// Función enviar
 document.getElementById("sendBtn").onclick = () => {
     const resp = document.getElementById("resp").value;
     if (!resp) {
@@ -66,26 +63,14 @@ document.getElementById("sendBtn").onclick = () => {
     }
 
     const payload = { a: a, b: b, resp: resp };
+
+    console.log("DEBUG: enviando al bot", payload); // Esto se ve en DevTools si quieres
     Telegram.WebApp.sendData(JSON.stringify(payload));
+
     Telegram.WebApp.close();
 };
+</script>
 
-function enviar() {
-    const resp = document.getElementById("resp").value;
-    if (!resp) return alert("Enter a number");
-
-    const payload = { a: a, b: b, resp: resp };
-
-    // Muestra en alerta para debug
-    alert("Enviando al bot: " + JSON.stringify(payload));
-
-    Telegram.WebApp.sendData(JSON.stringify(payload));
-    
-    // Solo cerrar si estamos en Telegram
-    if (typeof Telegram !== "undefined") {
-        Telegram.WebApp.close();
-    }
-}
   
 </script>
 </body>
