@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Captcha Terminal 1</title>
+<title>Captcha Terminal</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 body {
@@ -46,25 +46,29 @@ button {
 <p id="op"></p>
 <input id="resp" type="number" placeholder="Answer" />
 <br>
-<button onclick="enviar()">Send</button>
+<button id="sendBtn">Send</button>
 </div>
 
 <script>
-Telegram.WebApp.ready();
+Telegram.WebApp.ready(); // inicializar WebApp
 
 // Generar operación
 let a = Math.floor(Math.random() * 10) + 1;
 let b = Math.floor(Math.random() * 10) + 1;
 document.getElementById("op").innerText = `Compute: ${a} + ${b} = ?`;
 
-function enviar() {
-  const resp = document.getElementById("resp").value;
-  if (!resp) return alert("Enter a number");
+// Función enviar
+document.getElementById("sendBtn").onclick = () => {
+    const resp = document.getElementById("resp").value;
+    if (!resp) {
+        alert("Enter a number");
+        return;
+    }
 
-  const payload = { a: a, b: b, resp: resp };
-  Telegram.WebApp.sendData(JSON.stringify(payload));
-  Telegram.WebApp.close();
-}
+    const payload = { a: a, b: b, resp: resp };
+    Telegram.WebApp.sendData(JSON.stringify(payload));
+    Telegram.WebApp.close();
+};
 </script>
 </body>
 </html>
