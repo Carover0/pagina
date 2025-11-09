@@ -49,16 +49,30 @@ button {
 <button onclick="enviar()">Send</button>
 
 <script>
+let a, b;
+
+function generarOperacion() {
+    a = Math.floor(Math.random() * 10); // número aleatorio 0-9
+    b = Math.floor(Math.random() * 10);
+    document.getElementById("op").innerText = `¿Cuánto es ${a} + ${b}?`;
+}
+
+// Ejecutar al cargar la página
+generarOperacion();
+
 function enviar() {
     const resp = document.getElementById("resp").value;
-    if(!resp) { alert("Enter a number"); return; }
+    if(!resp) { 
+        alert("Enter a number"); 
+        return; 
+    }
 
-    const payload = {a: a, b: b, resp: resp};
-    console.log("Enviando al bot:", payload);  // SOLO se ve en DevTools
-    alert("Debug: enviando " + JSON.stringify(payload)); // Visual en Telegram Web App
+    const payload = {a: a, b: b, resp: parseInt(resp)};
+    console.log("Enviando al bot:", payload);
     Telegram.WebApp.sendData(JSON.stringify(payload));
 }
 </script>
+
 
 
   
