@@ -1,108 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Captcha</title>
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    body {
-      background: #000;
-      color: #00ff00;
-      font-family: "Courier New", monospace;
-      text-align: center;
-      padding-top: 40px;
-      text-shadow: 0 0 5px #0f0;
-    }
-
-    .terminal-box {
-      background: rgba(0, 0, 0, 0.85);
-      border: 2px solid #00ff00;
-      padding: 25px;
-      display: inline-block;
-      border-radius: 8px;
-      box-shadow: 0 0 20px #0f0;
-      width: 80%;
-      max-width: 350px;
-    }
-
-    input {
-      font-size: 25px;
-      padding: 10px;
-      width: 150px;
-      border: 2px solid #00ff00;
-      border-radius: 4px;
-      background: #000;
-      color: #00ff00;
-      text-align: center;
-      text-shadow: 0 0 5px #0f0;
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 18px;
-      border-radius: 4px;
-      background: #003300;
-      color: #00ff00;
-      border: 2px solid #00ff00;
-      cursor: pointer;
-      text-shadow: 0 0 5px #0f0;
-    }
-
-    button:hover {
-      background: #005500;
-    }
-
-    h2 {
-      margin-bottom: 15px;
-      font-size: 22px;
-    }
-
-    .blink {
-      animation: blink-animation 1s steps(2, start) infinite;
-    }
-
-    @keyframes blink-animation {
-      to {
-        visibility: hidden;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Captcha Terminal</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+body {
+  background: #000;
+  color: #0f0;
+  font-family: monospace;
+  font-size: 18px;
+  padding: 20px;
+}
+.box {
+  border: 2px solid #0f0;
+  padding: 20px;
+  display: inline-block;
+  border-radius: 5px;
+}
+input {
+  background: #111;
+  color: #0f0;
+  border: 1px solid #0f0;
+  font-family: monospace;
+  font-size: 18px;
+  padding: 5px;
+  width: 80px;
+  text-align: center;
+}
+button {
+  margin-top: 10px;
+  background: #0f0;
+  color: #000;
+  border: none;
+  font-family: monospace;
+  font-size: 16px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+</style>
 </head>
-
 <body>
-  <div class="terminal-box">
-    <h2>> Verification Required</h2>
-    <p id="op"></p>
-    <input id="resp" type="number" placeholder="Answer" />
-    <br />
-    <button onclick="enviar()">EXECUTE</button>
-    <p class="blink" style="margin-top:10px;">█</p>
-  </div>
+<div class="box">
+<h3>Terminal Verification</h3>
+<p id="op"></p>
+<input id="resp" type="number" placeholder="Answer" />
+<br>
+<button onclick="enviar()">Send</button>
+</div>
 
-  <script>
-    Telegram.WebApp.ready();
+<script>
+Telegram.WebApp.ready();
 
-    let a = Math.floor(Math.random() * 10) + 1;
-    let b = Math.floor(Math.random() * 10) + 1;
+// Generar operación
+let a = Math.floor(Math.random() * 10) + 1;
+let b = Math.floor(Math.random() * 10) + 1;
+document.getElementById("op").innerText = `Compute: ${a} + ${b} = ?`;
 
-    document.getElementById("op").innerText = `> Solve: ${a} + ${b}`;
+function enviar() {
+  const resp = document.getElementById("resp").value;
+  if (!resp) return alert("Enter a number");
 
-    function enviar() {
-      const resp = document.getElementById("resp").value;
-
-      if (!resp) {
-        alert("Enter a number");
-        return;
-      }
-
-      const payload = { a: a, b: b, resp: resp };
-
-      Telegram.WebApp.sendData(JSON.stringify(payload));
-      Telegram.WebApp.close();
-    }
-  </script>
+  const payload = { a: a, b: b, resp: resp };
+  Telegram.WebApp.sendData(JSON.stringify(payload));
+  Telegram.WebApp.close();
+}
+</script>
 </body>
 </html>
