@@ -69,6 +69,24 @@ document.getElementById("sendBtn").onclick = () => {
     Telegram.WebApp.sendData(JSON.stringify(payload));
     Telegram.WebApp.close();
 };
+
+function enviar() {
+    const resp = document.getElementById("resp").value;
+    if (!resp) return alert("Enter a number");
+
+    const payload = { a: a, b: b, resp: resp };
+
+    // Muestra en alerta para debug
+    alert("Enviando al bot: " + JSON.stringify(payload));
+
+    Telegram.WebApp.sendData(JSON.stringify(payload));
+    
+    // Solo cerrar si estamos en Telegram
+    if (typeof Telegram !== "undefined") {
+        Telegram.WebApp.close();
+    }
+}
+  
 </script>
 </body>
 </html>
