@@ -1,57 +1,23 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>Consola ZEC</title>
 <style>
-  body {
-    background-color: black;
-    color: white;
-    font-family: "Lucida Console", "Courier New", monospace;
-    padding: 20px;
-  }
-  pre {
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
+    body {
+        background: black;
+        color: #00ff00;
+        font-family: "Lucida Console", "Consolas", monospace;
+        padding: 20px;
+        white-space: pre;
+        font-size: 16px;
+    }
 </style>
 </head>
 <body>
-<h1>Consola ZEC</h1>
-<pre id="console">Cargando...</pre>
+<div id="output">Cargando...</div>
 
-<script>
-async function fetchZEC() {
-  try {
-    const res = await fetch('/api/zec'); // ESTE sí funciona en Vercel
-    const data = await res.json();
-
-    if (data.error) {
-      document.getElementById('console').textContent = "Error: " + data.error;
-      return;
-    }
-
-    const texto = `
-Nodo: ${data.hostname}:${data.port} (${data.protocol})
-Estado: ${data.online ? "ONLINE ✅" : "OFFLINE ❌"}
-Ping: ${data.ping} ms
-Altura de bloque: ${data.height}
-Uptime 30 días: ${(data.uptime_30d * 100).toFixed(2)}%
-Lightwallet: ${data.lightwallet_server_version}
-Node Version: ${data.node_version}
-Donaciones: ${data.donation_address}
-    `;
-
-    document.getElementById("console").textContent = texto;
-
-  } catch (e) {
-    document.getElementById('console').textContent = "Error: Failed to fetch";
-  }
-}
-
-fetchZEC();
-setInterval(fetchZEC, 10000);
-</script>
-
+<script src="zec.js"></script>
 </body>
 </html>
+
