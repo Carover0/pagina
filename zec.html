@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <title>Consola ZEC</title>
 <style>
 body {
@@ -22,14 +22,12 @@ body {
 async function fetchZEC() {
     const output = document.getElementById("output");
     try {
-        const res = await fetch("https://hosh.zec.rocks/api/v0/zec.json");
-        const json = await res.json();
+        // Llamamos al endpoint serverless que ya filtra tu nodo
+        const res = await fetch("/api/zec");
+        const data = await res.json();
 
-        // Filtramos solo tu nodo
-        const data = json.find(n => n.hostname === "carover0.xyz");
-
-        if (!data) {
-            output.textContent = "Nodo no encontrado";
+        if (data.error) {
+            output.textContent = "Error: " + data.error;
             return;
         }
 
@@ -37,7 +35,7 @@ async function fetchZEC() {
 Nodo: ${data.hostname}:${data.port}
 Estado: ${data.online ? "ONLINE ✅" : "OFFLINE ❌"}
 Ping: ${data.ping} ms
-Altura: ${data.height}
+Altura de bloque: ${data.height}
 Uptime 30d: ${(data.uptime_30d*100).toFixed(2)}%
 Lightwallet: ${data.lightwallet_server_version}
 Nodo: ${data.node_version}
@@ -48,9 +46,9 @@ Donaciones: ${data.donation_address}
     }
 }
 
+// Carga inicial y refresco cada 10 segundos
 fetchZEC();
 setInterval(fetchZEC, 10000);
 </script>
 </body>
 </html>
-
