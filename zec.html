@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>Consola ZEC</title>
 <style>
-  body {
+body {
     background: black;
     color: #00ff00;
     font-family: "Lucida Console", "Consolas", monospace;
     padding: 20px;
     white-space: pre;
     font-size: 16px;
-  }
+}
 </style>
 </head>
 <body>
@@ -20,12 +20,20 @@
 
 <script>
 async function fetchZEC() {
-  const output = document.getElementById("output");
-  try {
-    const res = await fetch("/api/zec");
-    const data = await res.json();
+    const output = document.getElementById("output");
+    try {
+        const res = await fetch("https://hosh.zec.rocks/api/v0/zec.json");
+        const json = await res.json();
 
-    output.textContent = `
+        // Filtramos solo tu nodo
+        const data = json.find(n => n.hostname === "carover0.xyz");
+
+        if (!data) {
+            output.textContent = "Nodo no encontrado";
+            return;
+        }
+
+        output.textContent = `
 Nodo: ${data.hostname}:${data.port}
 Estado: ${data.online ? "ONLINE ✅" : "OFFLINE ❌"}
 Ping: ${data.ping} ms
@@ -34,10 +42,10 @@ Uptime 30d: ${(data.uptime_30d*100).toFixed(2)}%
 Lightwallet: ${data.lightwallet_server_version}
 Nodo: ${data.node_version}
 Donaciones: ${data.donation_address}
-    `;
-  } catch {
-    output.textContent = "Error: Failed to fetch";
-  }
+        `;
+    } catch (err) {
+        output.textContent = "Error: Failed to fetch";
+    }
 }
 
 fetchZEC();
@@ -45,5 +53,4 @@ setInterval(fetchZEC, 10000);
 </script>
 </body>
 </html>
-
 
