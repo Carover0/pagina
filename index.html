@@ -361,34 +361,183 @@ window.scrollTo(0, 0);
 pintar(`
 <span class="col-amarillo">[*] ZEXPLORER (Análisis técnico de la red ZCASH en Telegram)</span>
 
-Z-Explorer/
-├── [Estado de la Red]
-│   ├── Red
-│   ├── Bloques Recientes
-│   └── Mercado
-├── [Exploración de Bloques]
-│   ├── Bloques Recientes
-│   ├── Mempool
-│   └── Acceso directo: /block <n> | /tx <hash>
-├── [Economía y Emisión]
-│   ├── Suministro
-│   ├── Cotización de Mercado
-│   └── Balance de Pools
-├── [Herramientas Técnicas]
-│   ├── Wallet
-│   └── Generador de QR
-├── [Bitácora Técnica]
-└── [Sobre el Proyecto y Contacto Técnico]
+================================================================================
+                          INFORME TECNICO ZEXPLORER
+================================================================================
 
+Resumen del proyecto
+-------------------
 
-<span class="col-rojo">Notas:</span>
-- No depende de API cerradas
-- Ideal para foros, análisis offline y terminales
-- Acceso directo a bloques y transacciones sin intermediarios
-- Soporte para direcciones blindadas (Z-addresses)
-- Transparencia en tarifas de transacción y uso de la red
-- Sin dependencias de terceros: totalmente independiente
-- Código Open-Source: auditable en funciones que lo requieren
+Zexplorer es un bot de Telegram diseñado para explorar la blockchain de Zcash
+de manera sencilla, rapida y confiable. Su objetivo es acercar la informacion
+de la red a los usuarios, permitiendoles consultar bloques, transacciones y
+saldos sin necesidad de recurrir a exploradores web externos.
+
+Esta orientado a usuarios que buscan transparencia y control sobre sus fondos,
+pero tambien a desarrolladores que deseen integrar analisis de datos de Zcash
+en tiempo real.
+
+================================================================================
+1. Arquitectura y Tecnologias
+================================================================================
+
+Lenguaje y entorno
+------------------
+
+El proyecto esta desarrollado sobre Python 3.x, elegido no por moda sino por su
+equilibrio entre simplicidad, potencia y la amplitud de su ecosistema.
+
+Cada componente se ejecuta dentro de un entorno virtual (venv), garantizando
+independencia de dependencias y estabilidad entre sistemas.
+
+El codigo es multiplataforma, con deteccion automatica del sistema operativo
+mediante platform, lo que permite adaptar rutas, fuentes y configuraciones tanto
+en Windows como en Linux sin necesidad de modificaciones manuales.
+
+La version de prueba se ejecuta en Windows, mientras que la version principal
+corre en un servidor SSV Linux.
+
+La comunicacion con el usuario se canaliza a traves de la Telegram Bot API,
+implementada con la libreria telebot, que facilita la gestion de comandos, el
+envio de mensajes enriquecidos, imagenes y teclados interactivos.
+
+El procesamiento visual esta a cargo de Pillow (PIL), utilizado para generar
+composiciones graficas, superponer datos dinamicos o integrar codigos QR
+directamente sobre las imagenes.
+
+Las conexiones con fuentes externas de datos (blockchains, mercados,
+indexadores) se manejan con la libreria requests, base de toda la capa de
+comunicacion HTTP.
+
+Para la visualizacion analitica, se utiliza matplotlib.pyplot, que permite
+construir graficos de precios, volumen y metricas especificas (como las de
+Zcash) sin depender de herramientas externas.
+
+Cuando las APIs no exponen la informacion necesaria, el sistema recurre a la
+automatizacion web. A traves de selenium, con webdriver_manager y Chrome en
+modo headless, es posible interactuar con paneles, dashboards o exploradores
+que no ofrecen endpoints publicos, extrayendo la informacion directamente
+del DOM.
+
+Por ultimo, la gestion de imagenes y graficos se realiza integramente en
+memoria con io.BytesIO, evitando archivos temporales y manteniendo la
+operacion limpia, rapida y segura.
+
+================================================================================
+2. Fuentes de Informacion
+================================================================================
+
+- API de 3xpl:
+  Fuente general de transacciones, nodos y eventos de la red Zcash en tiempo
+  real.
+
+- API de Blockchair:
+  Fuente alternativa para transacciones, nodos y eventos de la red Zcash.
+
+- API de Coingecko:
+  Utilizada para obtener precios historicos, metricas de mercado y
+  capitalizacion de ZEC.
+
+- API de Binance:
+  Provee datos de trading, volumen y cotizaciones en tiempo real para los
+  pares ZEC/USDT y ZEC/BTC.
+
+- Scraping web (Selenium + Chrome headless):
+  Cuando las APIs no entregan la informacion requerida, se utiliza
+  automatizacion web para extraer datos desde dashboards, paneles de
+  mineria y block explorers sin endpoints publicos.
+
+- Nodo propio Zebra + Lightwallet:
+  carover0.xyz:9067
+
+  Fuente directa del comando /zebra, que permite mostrar el estado de la red
+  Zcash y transacciones en tiempo real directamente en Telegram.
+
+================================================================================
+3. Funcionalidades Principales
+================================================================================
+
+Exploracion de bloques:
+- Consulta de cualquier bloque de la blockchain.
+- Informacion detallada: numero de bloque, timestamp, transacciones,
+  recompensas y validadores confirmantes.
+
+Exploracion de transacciones:
+- Entradas y salidas completas.
+- Hash, direcciones involucradas y valor transferido.
+- Estado de la transaccion (confirmada o pendiente).
+
+Nodos por pais y version del software.
+
+Eventos y movimientos de fondos:
+- Registro de eventos en la red.
+- Presentacion directa en Telegram.
+- Resumen de entradas y salidas por direccion, incluyendo tokens compatibles.
+
+Generacion de codigos QR:
+- Compatible con direcciones t y u de Zcash.
+- Permite envio y recepcion de fondos de manera rapida y segura.
+
+Verificacion de saldo transparente:
+- Consulta de saldos de cualquier direccion.
+- Visualizacion de balances totales de pools de mineria y fondos de usuarios.
+
+Visualizacion y graficos dinamicos:
+- Graficos de precios, volumen y capitalizacion usando matplotlib.
+- Integracion de overlays informativos en imagenes de respuesta.
+
+Automatizacion web:
+- Scraping de dashboards de trading o block explorers.
+- Actualizacion de metricas no expuestas por APIs publicas.
+
+================================================================================
+4. Funcionalidades Avanzadas y Tecnicas
+================================================================================
+
+- Manejo de tiempos y cooldowns mediante time.sleep y timestamps para
+  controlar rate-limits y refrescos de comandos.
+
+- Interactividad mediante teclados inline (InlineKeyboardMarkup) con
+  botones de cierre, navegacion entre eventos y datos.
+
+- Optimizacion de recursos:
+  Uso de streams en memoria (io.BytesIO) para enviar imagenes y graficos
+  sin ocupar espacio en disco.
+
+- Soporte multiplataforma:
+  Deteccion automatica del sistema operativo para ajustar rutas de fuentes
+  y binarios.
+
+- Procesamiento de tokens y precios:
+  Ajuste dinamico de fuentes y formato de precios segun valor, incluyendo
+  decimales variables para valores menores a 1 USD.
+
+- Actualizacion automatica con visualizacion en formato de imagen o mensaje
+  enriquecido.
+
+================================================================================
+5. Novedades
+================================================================================
+
+/zebra
+Muestra el estado de la red Zcash en tiempo real directamente en Telegram.
+
+/preciozec
+Incluye el precio actual de ZEC, ideal para compartir en grupos.
+
+/noticias
+Noticias de multiples fuentes, actualizadas cada 1 hora para compartir
+en grupos.
+
+================================================================================
+6. Objetivos del Proyecto
+================================================================================
+
+- Brindar transparencia y acceso directo a la blockchain de Zcash.
+- Facilitar la auditoria independiente de transacciones y balances.
+- Generar reportes visuales y dinamicos de datos de mercado y blockchain.
+- Mantener un codigo abierto, ligero y adaptable a otros proyectos cripto.
+
 
 
 <strong class="col-purple">[V]</strong> Volver | <strong class="col-purple">[B]</strong> Bots | <strong class="col-purple">[1]</strong> Ejecutar  
@@ -1682,6 +1831,7 @@ encadena.
 
 </body>
 </html>
+
 
 
 
