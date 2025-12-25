@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zcash & FIRO Node Status</title>
+<style>
+body {
+    background-color: #0b0b0b;
+    color: #198652; /* verde estilo consola */
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+    padding: 14px;
+    white-space: pre; /* mantiene saltos de línea y espacios */
+}
+.separator {
+    color: #444;
+}
+.small {
+    color: #888;
+    font-size: 12px;
+}
+a, a:visited, a:hover, a:active {
+    color: #ffffff;
+    text-decoration: none; 
+}
+a:hover {
+    text-decoration: underline; /* opcional: subrayado al pasar cursor */
+}
+</style>
+</head>
+<body>
+<span style="color:#fff;"><b>cΔrovΣr0</b>
+-------------
+Diseño y sostengo infraestructura técnica que nunca falla.  
+Nodos, bots y exploradores se ejecutan con autonomía total,  
+garantizando operación continua incluso sin supervisión externa.
+</span>
+
+<span style="color:#fff;"><b>ZCASH FULL NODE + LIGHTWALLET SERVER STATUS</b></span><br><span class="small">Data source: https://carover0.xyz/zec/status.json</span><br><a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0611-explorador-de-bloques-zec.mp4" target="_blank">Video</a>
+<pre id="output-zec">Fetching Zcash data...</pre>
+<span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
+
+<span style="color:#fff;"><b>FIRO FULL NODE STATUS (VPS)</b></span><br><span class="small">Data source: https://carover0.xyz/firo/status.json</span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/1812-firo.mp4" target="_blank">Video</a>
+<pre id="output-firo">Fetching FIRO data...</pre>
+<span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
+
+<span style="color:#fff;"><b>FIRO FULL NODE STATUS (HOME)</b></span>
+<pre id="output-firo-home">Fetching FIRO data...</pre>
+<span class="small">Data source: https://carover0.xyz/cacaX/firo_status_X.json</span>
+<span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
+
+
+
+<script>
+async function updateStatus() {
+    // Zcash
+    try {
+        const r1 = await fetch("https://carover0.xyz/zec/status.json");
+        const data1 = await r1.json();
+        document.getElementById("output-zec").textContent =
+`Wallet server      : https://carover0.xyz:9067
+Block Height       : ${data1.blockHeight}
+Lightwallet Ver.   : ${data1.version}
+Node version       : ${data1.zcashdBuild}
+Donation Address   : t1LbUu1nCSkHnZVAatBh5uANYDJyDTDt5VF`;
+    } catch(err) {
+        document.getElementById("output-zec").textContent = "Error fetching Zcash data.";
+        console.error(err);
+    }
+
+    // FIRO VPS
+    try {
+        const r2 = await fetch("https://carover0.xyz/firo/status.json");
+        const data2 = await r2.json();
+        document.getElementById("output-firo").textContent =
+`Block Height       : ${data2.height}
+Difficulty         : ${data2.difficulty.toFixed(2)}
+Connections        : ${data2.connections}
+Mempool TX         : ${data2.mempool}
+Node Version       : ${data2.version}
+Donation Address   : a5nZBQziomct9sdQTdcrTinYWxgkEFAt94`;
+    } catch(err) {
+        document.getElementById("output-firo").textContent = "Error fetching FIRO data.";
+        console.error(err);
+    }
+
+    // FIRO HOME
+    try {
+        const r3 = await fetch('https://carover0.xyz/cacaX/firo_status_X.json');
+        const data3 = await r3.json();
+        document.getElementById('output-firo-home').textContent =
+`Block Height       : ${data3.height}
+Difficulty         : ${data3.difficulty ? data3.difficulty.toFixed(2) : "N/A"}
+Connections        : ${data3.connections}
+Mempool TX         : ${data3.mempool}
+Node Version       : ${data3.subversion}
+Donation Address   : a5nZBQziomct9sdQTdcrTinYWxgkEFAt94`;
+    } catch (err) {
+        document.getElementById('output-firo-home').textContent = 'Error: ' + err.message;
+    }
+}
+
+// Inicial + refresco cada 30s
+updateStatus();
+setInterval(updateStatus, 30000);
+</script>
+
+</body>
+</html>
