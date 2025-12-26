@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Bienvenido</title>
+<title>Zcash & FIRO Node Status</title>
 <style>
 body {
     background-color: #0b0b0b;
@@ -21,8 +21,13 @@ body {
 }
 .big {
     color: #fff;
+    font-size: 26px;
+}
+.titu {
+    color: #fff;
     font-size: 22px;
 }
+
 a, a:visited, a:hover, a:active {
     color: #ffffff;
     text-decoration: none; 
@@ -39,20 +44,35 @@ a:hover {
 Nodos, bots y exploradores se ejecutan con autonomía total,  
 garantizando operación continua incluso sin supervisión externa.
 </span>
+----------------------------------------------------
 
-<span style="color:#fff;"><b>ZCASH FULL NODE + LIGHTWALLET SERVER STATUS</b></span><br><span class="small">Data source: https://carover0.xyz/zec/status.json</span><br><a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0611-explorador-de-bloques-zec.mp4" target="_blank">Video</a>
+<span class="titu"><b>NODOS</b><br></span>
+<span style="color:#fff;"><b>ZCASH FULL NODO + SERVIDOR LIGHTWALLET</b></span><br><span class="small">Data source: https://carover0.xyz/zec/status.json</span><br><a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0611-explorador-de-bloques-zec.mp4" target="_blank">Video</a>
 <pre id="output-zec">Fetching Zcash data...</pre>
 <span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
 
-<span style="color:#fff;"><b>FIRO FULL NODE STATUS (VPS)</b></span><br><span class="small">Data source: https://carover0.xyz/firo/status.json</span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/1812-firo.mp4" target="_blank">Video</a>
+<span style="color:#fff;"><b>FIRO FULL NODO (VPS)</b></span><br><span class="small">Data source: https://carover0.xyz/firo/status.json</span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/1812-firo.mp4" target="_blank">Video</a>
 <pre id="output-firo">Fetching FIRO data...</pre>
 <span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
 
-<span style="color:#fff;"><b>FIRO FULL NODE STATUS (HOME)</b></span>
+<span style="color:#fff;"><b>FIRO FULL NODO (ARGENTINA)</b></span>
 <pre id="output-firo-home">Fetching FIRO data...</pre>
 <span class="small">Data source: https://carover0.xyz/cacaX/firo_status_X.json</span>
 <span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
 
+<span style="color:#fff;"><b>VERTCOIN FULL NODO (ARGENTINA)</b></span>
+<pre id="output-vertcoin-home">Fetching VERTCOIN data...</pre>
+<span class="small">Data source: https://carover0.xyz/cacaX/vertcoin_status_X.json</span>
+<span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
+
+
+<span class="titu"><b>OTROS DESARROLLOS</b><br></span>
+<span style="color:#fff;"><b>TRON</span>
+Explorador de bloques:</b> <a href="https://t.me/texplorerbot" target="_blank">Texplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/eng-2510-texplorer.mp4" target="_blank">Video</a>
+<b>TxGhost:</b> <a href="https://t.me/txghost_bot" target="_blank">Texplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/2512ghost.mp4" target="_blank">Video</a><br>
+
+<span style="color:#fff;"><b>RAVENCOIN</span>
+Explorador de bloques:</b> <a href="https://t.me/rvnexplorer_bot" target="_blank">Rexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/rvn.mp4" target="_blank">Video</a>
 
 
 <script>
@@ -101,6 +121,20 @@ Node Version       : ${data3.subversion}
 Donation Address   : a5nZBQziomct9sdQTdcrTinYWxgkEFAt94`;
     } catch (err) {
         document.getElementById('output-firo-home').textContent = 'Error: ' + err.message;
+        console.error(err);
+    }
+
+    // VERTCOIN HOME
+    try {
+        const r4 = await fetch('https://carover0.xyz/cacaX/vertcoin_status_X.json');
+        const data4 = await r4.json();
+        document.getElementById('output-vertcoin-home').textContent =
+`Block Height       : ${data4.height}
+Difficulty         : ${data4.difficulty ? data4.difficulty.toFixed(2) : "N/A"}
+Donation Address   : vtc1q4ufnkzmeuay686vtw9vzcdl8kqpcfsa0vr44w4`;
+    } catch(err) {
+        document.getElementById('output-vertcoin-home').textContent = 'Error: ' + err.message;
+        console.error(err);
     }
 }
 
