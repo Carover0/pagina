@@ -155,8 +155,7 @@ try {
     const h = await r.json();
 
     document.getElementById('output-health').textContent =
-`VPS HEALTH
-Timestamp : ${h.timestamp}
+`Timestamp : ${h.timestamp}
 Uptime    : ${h.uptime}
 
 CPU       : ${h.cpu.percent}% ${h.cpu.bar}
@@ -164,13 +163,13 @@ Activo    : ${h.load["1m"]} | ${h.load["5m"]} | ${h.load["15m"]}
 
 RAM       : ${h.memory.used_mb} / ${h.memory.total_mb} MB
 Uso       : ${h.memory.percent}% ${h.memory.bar}
-Alerta    : ${h.memory.alert ? "YES" : "OK"}
+Alerta    : ${h.memory.alert ? "SI" : "NO"}
 
 SWAP      : ${h.swap.used_mb} / ${h.swap.total_mb} MB
 Uso       : ${h.swap.percent}% ${h.swap.bar}
 
 DISCO /   : ${h.disk.root_percent}% ${h.disk.bar}
-Alerta    : ${h.disk.alert ? "YES" : "OK"}
+Alerta    : ${h.disk.alert ? "SI" : "NO"}
 `;
 } catch (err) {
     document.getElementById('output-health').textContent =
