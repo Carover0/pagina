@@ -154,27 +154,35 @@ try {
     const r = await fetch('https://carover0.xyz/firo/health.json');
     const h = await r.json();
 
+    const date = new Date(h.timestamp);
+    const dia = String(date.getUTCDate()).padStart(2, '0');
+    const mes = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const año = date.getUTCFullYear();
+    const horas = String(date.getUTCHours()).padStart(2, '0');
+    const minutos = String(date.getUTCMinutes()).padStart(2, '0');
+    const timestampLegible = `${dia}/${mes}/${año} ${horas}:${minutos} UTC`;
+
     document.getElementById('output-health').textContent =
-`Timestamp : ${h.timestamp}
+`Última actualización : ${timestampLegible}
 Uptime    : ${h.uptime}
 
 CPU       : ${h.cpu.percent}% ${h.cpu.bar}
 Activo    : ${h.load["1m"]} | ${h.load["5m"]} | ${h.load["15m"]}
-
 RAM       : ${h.memory.used_mb} / ${h.memory.total_mb} MB
 Uso       : ${h.memory.percent}% ${h.memory.bar}
-Alerta    : ${h.memory.alert ? "SI" : "NO"}
+Alerta    : ${h.memory.alert ? "YES" : "OK"}
 
 SWAP      : ${h.swap.used_mb} / ${h.swap.total_mb} MB
 Uso       : ${h.swap.percent}% ${h.swap.bar}
 
 DISCO /   : ${h.disk.root_percent}% ${h.disk.bar}
-Alerta    : ${h.disk.alert ? "SI" : "NO"}
+Alerta    : ${h.disk.alert ? "YES" : "OK"}
 `;
 } catch (err) {
     document.getElementById('output-health').textContent =
         'Error loading health.json: ' + err.message;
     console.error(err);
+
 }
 
 }
