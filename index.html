@@ -148,7 +148,7 @@ Donation Address   : vtc1q4ufnkzmeuay686vtw9vzcdl8kqpcfsa0vr44w4`;
         document.getElementById('output-vertcoin-home').textContent = 'Error: ' + err.message;
         console.error(err);
     }
-}
+
 // VPS / NODE HEALTH
 try {
     const r = await fetch('https://carover0.xyz/firo/health.json');
@@ -180,11 +180,11 @@ Alerta    : ${h.disk.alert ? "YES" : "OK"}
 
 }
 
-
 // Inicial + refresco cada 30s
 updateStatus();
 setInterval(updateStatus, 30000);
 </script>
+
 
 </body>
 </html>
