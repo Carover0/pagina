@@ -63,6 +63,11 @@ Operación continua y estable.
 <pre id="output-vertcoin-home">Fetching VERTCOIN data...</pre>
 <span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
 
+<span class="titu"><b>• ESTADO DE LA INFRAESTRUCTURA VPS</b><br></span>
+<span style="color:#fff;"><b>VPS ESTADO</b></span><br><span class="small">Data source: https://carover0.xyz/firo/health.json</span>
+<pre id="output-health">Fetching VPS data...</pre>
+<span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
+    
 <span class="titu"><b>• OTROS DESARROLLOS</b><br></span>
 <span style="color:#fff;"><b>TRON</span>
 → Explorador de bloques:</b> <a href="https://t.me/texplorerbot" target="_blank">Texplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/eng-2510-texplorer.mp4" target="_blank">Video</a>
@@ -144,6 +149,37 @@ Donation Address   : vtc1q4ufnkzmeuay686vtw9vzcdl8kqpcfsa0vr44w4`;
         console.error(err);
     }
 }
+// VPS / NODE HEALTH
+try {
+    const r = await fetch('https://carover0.xyz/firo/health.json');
+    const h = await r.json();
+
+    document.getElementById('output-health').textContent =
+`VPS HEALTH
+Timestamp : ${h.timestamp}
+Uptime    : ${h.uptime}
+
+CPU       : ${h.cpu.percent}% ${h.cpu.bar}
+Activo    : ${h.load["1m"]} | ${h.load["5m"]} | ${h.load["15m"]}
+
+RAM       : ${h.memory.used_mb} / ${h.memory.total_mb} MB
+Uso       : ${h.memory.percent}% ${h.memory.bar}
+Alerta    : ${h.memory.alert ? "YES" : "OK"}
+
+SWAP      : ${h.swap.used_mb} / ${h.swap.total_mb} MB
+Uso       : ${h.swap.percent}% ${h.swap.bar}
+
+DISCO /   : ${h.disk.root_percent}% ${h.disk.bar}
+Alerta    : ${h.disk.alert ? "YES" : "OK"}
+`;
+} catch (err) {
+    document.getElementById('output-health').textContent =
+        'Error loading health.json: ' + err.message;
+    console.error(err);
+}
+
+}
+
 
 // Inicial + refresco cada 30s
 updateStatus();
