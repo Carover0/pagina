@@ -86,6 +86,7 @@ Operación continua y estable.
 </span>
 
 <script>
+let firstRunHealth = true;
 async function updateStatus() {
     // Zcash
     try {
@@ -182,13 +183,17 @@ Alerta    : ${h.disk.alert ? "SI" : "NO"}
     document.getElementById('output-health').textContent =
         'Error loading health.json: ' + err.message;
     console.error(err);
-
-const now = new Date();
-const timeStr = now.toLocaleString("es-AR", { hour12: false });
-const el = document.getElementById("last-update-zec");
-  el.innerText = "Última actualización: " + timeStr;
-  el.style.display = "inline";
     
+}
+if (!firstRunHealth) {
+    const now = new Date();
+    const timeStr = now.toLocaleString("es-AR", { hour12: false });
+
+    const el = document.getElementById("last-update-zec");
+    el.innerText = "Última actualización: " + timeStr;
+    el.style.display = "inline";
+} else {
+    firstRunHealth = false;
 }
 
 }
