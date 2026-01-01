@@ -183,14 +183,15 @@ Alerta    : ${h.disk.alert ? "SI" : "NO"}
         'Error loading health.json: ' + err.message;
     console.error(err);
 
-}
-
-}
 const now = new Date();
 const timeStr = now.toLocaleString("es-AR", { hour12: false });
 const el = document.getElementById("last-update-zec");
   el.innerText = "Última actualización: " + timeStr;
   el.style.display = "inline";
+    
+}
+
+}
 
 
 
