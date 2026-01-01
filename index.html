@@ -186,18 +186,11 @@ Alerta    : ${h.disk.alert ? "SI" : "NO"}
 }
 
 }
-let firstRunZec = true;    
-
-if (!firstRunZec) {
-  const now = new Date();
-  const timeStr = now.toLocaleString("es-AR", { hour12: false });
-
-  const el = document.getElementById("last-update-zec");
+const now = new Date();
+const timeStr = now.toLocaleString("es-AR", { hour12: false });
+const el = document.getElementById("last-update-zec");
   el.innerText = "Última actualización: " + timeStr;
   el.style.display = "inline";
-} else {
-  firstRunZec = false;
-}
 
 
 
