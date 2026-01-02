@@ -1,5 +1,3 @@
-# carover0.xyz
-
 Personal infrastructure project.
 
 Running and monitoring:
