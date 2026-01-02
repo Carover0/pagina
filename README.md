@@ -1,27 +1,21 @@
-### BIENVENIDO A THE VOID.BBS
+# carover0.xyz
 
-**El codigo no miente.**  
-No importa si usás Windows 95 o la última distro de Linux:  
-acá manda el texto plano, la estética cruda, y la nostalgia digital.
+Personal infrastructure project.
 
----
+Running and monitoring:
+- Full blockchain nodes
+- Public explorers
+- Bots and status endpoints
 
-→ **Sin frameworks.**  
-→ **Sin librerías modernas.**  
-→ **Sin scroll infinito ni diseño responsive.**  
+All services are self-hosted and operate continuously.
 
-Solo **HTML**, **JavaScript** y una idea muy clara: Emular la experiencia de cuando lo digital era más honesto.
+No frameworks.  
+No third-party platforms.  
+No analytics.
 
----
-
-→ Proyecto: The void.bbs  
-→ Versión: 1.04  
-→ Creado por: carover0  
-→ Fecha: 17-04-2025  
-→ Sitio: [carover0.github.io/pagina](https://carover0.github.io/pagina/)
+Live data reflects real nodes in production.
 
 ---
 
-**Texto plano. Retro real. Web brutalista.**  
+© carover0
 
-Bienvenidos al pasado, escrito en presente.
