@@ -46,8 +46,10 @@ Operación continua y estable.
 </span>
 
 <span class="titu"><b>• NODOS</b></span><span class="small"> (Actualizado cada 30 segundos) - </span><span class="small" id="last-update-zec"></span><br>
-<span style="color:#fff;"><b>ZCASH FULL NODO + SERVIDOR LIGHTWALLET</b></span><br><span class="small">Data source: https://carover0.xyz/zec/status.json</span><br><a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0611-explorador-de-bloques-zec.mp4" target="_blank">Video</a> | <a href="https://github.com/Carover0/ztip_public" target="_blank">Ztip (Git hub)</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/ztip4.mp4" target="_blank">Ztip video</a>
-<pre id="output-zec">Fetching Zcash data...</pre>
+<span style="color:#fff;"><b>DIGIBYTE FULL NODO</b></span>
+<span class="small">Data source: https://carover0.xyz/dgb/info.json</span>
+<a href="https://t.me/dgbexplorer_bot" target="_blank">Dexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0201dexplorer.mp4" target="_blank">Video</a>
+<pre id="output-dgb">Fetching dgb data...</pre>
 <span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
 
 <span style="color:#fff;"><b>FIRO FULL NODO (VPS)</b></span><br><span class="small">Data source: https://carover0.xyz/firo/status.json</span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/1812-firo.mp4" target="_blank">Video</a>
@@ -68,8 +70,9 @@ Operación continua y estable.
 <span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
     
 <span class="titu"><b>• OTROS DESARROLLOS</b><br></span>
-<span style="color:#fff;"><b>DIGIBYTE</span>
-→ Explorador de bloques:</b> <a href="https://t.me/dgbexplorer_bot" target="_blank">Dexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0201dexplorer.mp4" target="_blank">Video</a>
+<span style="color:#fff;"><b>ZCASH</span>
+→ Explorador de bloques:</b> <a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0611-explorador-de-bloques-zec.mp4" target="_blank">Video</a>
+→ <b>Tip bot:</b> <a href="https://github.com/Carover0/ztip_public" target="_blank">Ztip (Git hub)</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/ztip4.mp4" target="_blank">Ztip video</a>
     
 <span style="color:#fff;"><b>TRON</span>
 → Explorador de bloques:</b> <a href="https://t.me/texplorerbot" target="_blank">Texplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/eng-2510-texplorer.mp4" target="_blank">Video</a>
@@ -91,21 +94,22 @@ Operación continua y estable.
 <script>
 let firstRunHealth = true;
 async function updateStatus() {
-    // Zcash
-    try {
-        const r1 = await fetch("https://carover0.xyz/zec/status.json");
-        const data1 = await r1.json();
-        document.getElementById("output-zec").textContent =
-`Wallet server      : https://carover0.xyz:9067
-Block Height       : ${data1.blockHeight}
-Lightwallet Ver.   : ${data1.version}
-Node version       : ${data1.zcashdBuild}
-Donation Address   : t1LbUu1nCSkHnZVAatBh5uANYDJyDTDt5VF`;
-    } catch(err) {
-        document.getElementById("output-zec").textContent = "Error fetching Zcash data.";
-        console.error(err);
-    }
-
+// DGB VPS
+try {
+    const r1 = await fetch("https://carover0.xyz/dgb/info.json"); 
+    const data1 = await r1.json();
+    const lastBlock = data1.last_blocks[0];
+    document.getElementById("output-dgb").textContent =
+`Block Height       : ${data1.height}
+Difficulty         : ${lastBlock.difficulty.toFixed(2)}
+Connections        : ${data1.connections}
+Mempool TX         : ${data1.mempool_tx}
+Node Version       : ${data1.version}
+Donation Address   : dgb1qv6qswmlgj27kr8fsssx98ckwaf4tck5rmda35a`;
+} catch(err) {
+    document.getElementById("output-dgb").textContent = "Error fetching Digibyte data.";
+    console.error(err);
+}
     // FIRO VPS
     try {
         const r2 = await fetch("https://carover0.xyz/firo/status.json");
