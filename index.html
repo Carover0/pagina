@@ -138,7 +138,7 @@ Mempool TX         : ${data3.mempool}
 Node Version       : ${data3.subversion}
 Donation Address   : carover0.firo`;
     } catch (err) {
-        document.getElementById("output-firo").textContent = "[i] en mantenimiento.";
+        document.getElementById("output-firo-home").textContent = "[i] en mantenimiento.";
         console.error(err);
     }
 
@@ -152,7 +152,7 @@ Difficulty         : ${data4.difficulty ? data4.difficulty.toFixed(2) : "N/A"}
 Node Version       : ${data4.software_subversion}
 Donation Address   : vtc1qvch7zdfapd7ngg36equxypk8vl0x9knnpkfumj`;
     } catch(err) {
-        document.getElementById("output-firo").textContent = "[i] en mantenimiento.";
+        document.getElementById("output-vertcoin-home").textContent = "[i] en mantenimiento.";
         console.error(err);
     }
 
