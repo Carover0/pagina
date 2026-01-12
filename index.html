@@ -60,8 +60,8 @@ Operación continua y estable.
 <pre id="output-firo-home">Fetching FIRO data...</pre>
 <span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
 
-<span style="color:#fff;"><b>VERTCOIN FULL NODO (ARGENTINA)</b></span><br><span class="small">Fuente: <a href="https://carover0.xyz/cacaX/vertcoin_status_X.json" style="color:#888;" target="_blank" ><b>https://carover0.xyz/cacaX/vertcoin_status_X.json</b></a></span>
-<pre id="output-vertcoin-home">Fetching VERTCOIN data...</pre>
+<span style="color:#fff;"><b>PIVX FULL NODO (ARGENTINA)</b></span><br><span class="small">Fuente: <a href="https://carover0.xyz/cacaX/pivx_status_X.json" style="color:#888;" target="_blank" ><b>https://carover0.xyz/cacaX/pivx_status_X.json</b></a></span>
+<pre id="output-pivx-home">Fetching PIVX data...</pre>
 <span class="separator" style="color:#fff;"><b>------------------------------------------------</b></span>
 
 <span class="titu"><b>• ESTADO DE LA INFRAESTRUCTURA VPS</b><br></span>
@@ -142,19 +142,21 @@ Donation Address   : carover0.firo`;
         console.error(err);
     }
 
-    // VERTCOIN HOME
-    try {
-        const r4 = await fetch('https://carover0.xyz/cacaX/vertcoin_status_X.json');
-        const data4 = await r4.json();
-        document.getElementById('output-vertcoin-home').textContent =
+// PIVX HOME
+try {
+    const r4 = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json');
+    const data4 = await r4.json();
+    document.getElementById('output-pivx-home').textContent =
 `Block Height       : ${data4.height}
 Difficulty         : ${data4.difficulty ? data4.difficulty.toFixed(2) : "N/A"}
+Connections        : ${data4.connections}
+Mempool TX         : ${data4.mempool}
 Node Version       : ${data4.software_subversion}
-Donation Address   : vtc1qvch7zdfapd7ngg36equxypk8vl0x9knnpkfumj`;
-    } catch(err) {
-        document.getElementById("output-vertcoin-home").textContent = "[i] en mantenimiento.";
-        console.error(err);
-    }
+Donation Address   : carover0.pivx`;
+} catch (err) {
+    document.getElementById("output-pivx-home").textContent = "[i] en mantenimiento.";
+    console.error(err);
+}
 
 // VPS / NODE HEALTH
 try {
