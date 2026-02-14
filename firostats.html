@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIRO Status</title>
+<style>
+body {
+  margin: 0;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: "Lucida Console", Monaco, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Card general unificada */
+.card, .node-card {
+  background: #000;           /* negro uniforme */
+  border: 1px solid #111;
+  padding: 20px;
+  font-size: 14px;            /* mismo tamaño que la tarjeta de precio */
+  margin-top: 20px;
+  width: 380px;
+}
+
+.node-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  width: 800px;
+  max-width: 95%;
+}
+
+/* filas de datos */
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.label { color: #888; }
+.positive { color: #0f0; }
+.negative { color: #f44; }
+
+/* separador estilo terminal */
+.separator {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* título de la tarjeta */
+.title { 
+  font-size: 20px; 
+  margin-bottom: 10px; 
+}
+
+.updated {
+  margin-top: 10px;
+  font-size: 11px;
+  color:#666;
+  text-align:right;
+}
+
+.footer {
+  margin-top:auto;
+  padding:20px 0;
+  color:#aaa;
+}
+.logo, logo2 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.logo img {
+  width: 180px;     
+  height: auto;
+  display: block;
+  margin: 0 auto;   
+}
+.logo2 img {
+  width: 150px;     
+  height: auto;
+  display: block;
+  margin: 0 auto;   
+}
+
+.node-description, node-precios {
+  font-size: 16px;
+  padding: 14 px;
+  color: #fff;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-family: "Lucida Console", Monaco, monospace;
+}
+
+
+</style>
+
+</head>
+<body>
+<div class="logo">
+  <img src="https://firo.org/img/firo-logo-white-text.svg" alt="FIRO" />
+</div>
+<div class="node-description">
+    Firo es una criptomoneda enfocada en <strong>privacidad y seguridad</strong>, con tecnología que protege transacciones y activos digitales.
+    Su blockchain combina <strong>Prueba de Trabajo (PoW)</strong> y <strong>ChainLocks</strong> para evitar ataques y garantizar transacciones rápidas.
+    Permite crear <strong>tokens privados</strong>, ejecutar <strong>masternodes</strong> y minar con GPUs, todo dentro de un ecosistema <strong>descentralizado y anónimo</strong>.<br><br>
+  Estado del nodo e infraestructura de la red FIRO, los datos provienen de un nodo FIRO de mi propiedad y se actualizan cada 60 seg.
+</div>
+<div class="node-row">
+  <div class="node-card" id="node-status">
+    Cargando estado del nodo...
+  </div>
+  <div class="node-card" id="node-network">
+    Cargando red...
+  </div>
+</div>
+</div>
+<div class="node-precios">
+<br><br><br>
+Estadisticas de mercado de FIRO (Sin trackers, ads y scripts basura. Solo datos)
+</div>
+
+<div class="card">
+  <div class="title">FIRO</div>
+  <div id="content">Cargando datos...</div>
+  <div class="updated" id="updated"></div>
+</div>
+
+<div class="logo2">
+  <img src="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/firo_t.png" alt="FIRO" />
+</div>
+
+
+<div class="footer">© 2025 Creada con ♥ por cΔrovΣr0</div>
+
+<script>
+const API_URL = "https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true";
+
+async function fetchFiro() {
+  try {
+    const res = await fetch(API_URL);
+    const d = await res.json();
+    const price = d.market_data.current_price.usd;
+    const change24 = d.market_data.price_change_percentage_24h;
+    const change7d = d.market_data.price_change_percentage_7d;
+    const marketCap = d.market_data.market_cap.usd;
+    const volume24 = d.market_data.total_volume.usd;
+    const supply = d.market_data.circulating_supply;
+
+    const change24Cls = change24>=0 ? "positive":"negative";
+    const change7dCls = change7d>=0 ? "positive":"negative";
+
+    document.getElementById("content").innerHTML = `
+      <div class="row"><span class="label">Precio USD</span><span>$${price.toLocaleString()}</span></div>
+      <div class="row"><span class="label">24h %</span><span class="${change24Cls}">${change24.toFixed(2)}%</span></div>
+      <div class="row"><span class="label">7d %</span><span class="${change7dCls}">${change7d.toFixed(2)}%</span></div>
+      <div class="row"><span class="label">Market Cap</span><span>$${marketCap.toLocaleString()}</span></div>
+      <div class="row"><span class="label">Volumen 24h</span><span>$${volume24.toLocaleString()}</span></div>
+      <div class="row"><span class="label">Supply</span><span>${supply.toLocaleString()} FIRO</span></div>
+    `;
+    document.getElementById("updated").innerText = "Actualiza cada: 60seg. → Actualizado: "+new Date().toLocaleTimeString();
+  } catch(err) {
+    console.error(err);
+    document.getElementById("content").innerText = "Error cargando datos...";
+  }
+}
+
+fetchFiro();
+setInterval(fetchFiro, 60000);
+
+const NODE_TXT_URL = "https://corsproxy.io/?key=dd8447d8&url=https://carover0.xyz/api/firo.txt";
+
+function parseNodeTXT(txt){
+  const lines = txt.split("\n");
+  const data = {};
+  let section=null;
+  for(let line of lines){
+    line=line.trim();
+    if(!line) continue;
+    if(line.endsWith(":")) { section=line.slice(0,-1).toLowerCase(); data[section]={}; continue;}
+    if(!section) continue;
+    const match=line.match(/^(.*?)\s*:\s*(.*)$/);
+    if(match) data[section][match[1].toLowerCase().replace(/\s+/g,"_")]=match[2];
+  }
+  return data;
+}
+
+function displayNodeData(data){
+  document.getElementById("node-status").innerHTML=`
+    <div class="row"><span class="label">Estado</span><span>${data.health.synced==="yes"?"Synced":"Syncing"}</span></div>
+    <div class="row"><span class="label">Bloques</span><span>${Number(data.blockchain.blocks).toLocaleString()}</span></div>
+    <div class="row"><span class="label">Conexiones</span><span>${data.network.connections}</span></div>
+    <div class="row"><span class="label">Mempool TX</span><span>${data.mempool.tx_count}</span></div>
+    <div class="row"><span class="label">Uptime</span><span>${(Number(data.node.uptime)/3600).toFixed(1)} h</span></div>
+  `;
+  document.getElementById("node-network").innerHTML=`
+    <div class="row"><span class="label">Dificultad</span><span>${Number(data.blockchain.difficulty).toFixed(2)}</span></div>
+    <div class="row"><span class="label">Hashrate</span><span>${(Number(data.mining.network_hashrate)/1e9).toFixed(2)} GH/s</span></div>
+    <div class="row"><span class="label">Inbound</span><span>${data.peers.inbound}</span></div>
+    <div class="row"><span class="label">Outbound</span><span>${data.peers.outbound}</span></div>
+    <div class="row"><span class="label">Chain</span><span>${data.blockchain.chain}</span></div>
+  `;
+}
+
+async function fetchNodeTXT(){
+  try{
+    const res=await fetch(NODE_TXT_URL);
+    const txt=await res.text();
+    const nodeData=parseNodeTXT(txt);
+    displayNodeData(nodeData);
+  }catch(err){
+    console.error("Error cargando TXT del nodo:",err);
+    document.getElementById("node-status").innerText="Error cargando estado del nodo";
+    document.getElementById("node-network").innerText="Error cargando red";
+  }
+}
+
+fetchNodeTXT();
+setInterval(fetchNodeTXT,60000);
+</script>
+
+</body>
+</html>
