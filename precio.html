@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minimal Crypto Board</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000000;
+      color: #ffffff;
+      font-family: "Lucida Console", Monaco, monospace;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    h1 {
+      font-weight: normal;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px 6px;
+      text-align: left;
+      border-bottom: 1px solid #111;
+    }
+
+    th {
+      font-weight: normal;
+      color: #888;
+    }
+
+    .positive { color: #00ff88; }
+    .negative { color: #ff4444; }
+
+    .symbol {
+      color: #777;
+      font-size: 12px;
+    }
+
+    .updated {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>cΔrovΣr0 precios</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>24h %</th>
+          <th>7d %</th>
+          <th>Market Cap</th>
+          <th>Volumen (24h)</th>
+          <th>Supply</th>
+        </tr>
+      </thead>
+      <tbody id="crypto-body"></tbody>
+    </table>
+    <div class="updated" id="updated"></div>
+  </div>
+
+  <script>
+    const coins = [
+      { id: "btc-bitcoin" },
+      { id: "bch-bitcoin-cash" },
+      { id: "ltc-litecoin" },
+      { id: "zec-zcash" },
+      { id: "dash-dash" },
+      { id: "dgb-digibyte" },
+      { id: "pivx-pivx" },
+      { id: "firo-firo" }
+    ];
+
+    async function fetchData() {
+      try {
+        const requests = coins.map(c =>
+          fetch(`https://api.coinpaprika.com/v1/tickers/${c.id}`).then(r => r.json())
+        );
+
+        const data = await Promise.all(requests);
+
+        const tbody = document.getElementById("crypto-body");
+        tbody.innerHTML = "";
+
+        // ordenar por rank ascendente
+        data.sort((a, b) => a.rank - b.rank);
+
+        data.forEach(coin => {
+          const usd = coin.quotes.USD;
+          const change24 = usd.percent_change_24h;
+          const change7d = usd.percent_change_7d;
+
+          const class24 = change24 >= 0 ? "positive" : "negative";
+          const class7d = change7d >= 0 ? "positive" : "negative";
+
+          const row = `
+            <tr>
+              <td>${coin.rank}</td>
+              <td>${coin.name}<br><span class="symbol">${coin.symbol}</span></td>
+              <td>$${usd.price.toLocaleString(undefined, { maximumFractionDigits: 8 })}</td>
+              <td class="${class24}">${change24.toFixed(2)}%</td>
+              <td class="${class7d}">${change7d.toFixed(2)}%</td>
+              <td>$${usd.market_cap.toLocaleString()}</td>
+              <td>$${usd.volume_24h.toLocaleString()}</td>
+              <td>${coin.total_supply.toLocaleString()} ${coin.symbol}</td>
+            </tr>
+          `;
+
+          tbody.innerHTML += row;
+        });
+
+        document.getElementById("updated").innerText =
+          "Actualizado: " + new Date().toLocaleTimeString();
+	  
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    fetchData();
+    setInterval(fetchData, 60000);
+  </script>
+</body>
+</html>
