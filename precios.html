@@ -1,25 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minimal Crypto Board</title>
+  <title>cΔrovΣr0 precios</title>
   <style>
     body {
       margin: 0;
-      background-color: #000000;
-      color: #ffffff;
+      background: #000;
+      color: #fff;
       font-family: "Lucida Console", Monaco, monospace;
     }
 
-    .container {
-      padding: 30px;
-    }
+    .container { padding: 30px; }
 
-    h1 {
-      font-weight: normal;
-      margin-bottom: 20px;
-    }
+    h1 { font-weight: normal; margin-bottom: 20px; }
 
     table {
       width: 100%;
@@ -29,22 +24,16 @@
 
     th, td {
       padding: 8px 6px;
-      text-align: left;
       border-bottom: 1px solid #111;
+      text-align: left;
     }
 
-    th {
-      font-weight: normal;
-      color: #888;
-    }
+    th { color: #888; font-weight: normal; }
 
     .positive { color: #00ff88; }
     .negative { color: #ff4444; }
 
-    .symbol {
-      color: #777;
-      font-size: 12px;
-    }
+    .symbol { color: #777; font-size: 12px; }
 
     .updated {
       margin-top: 15px;
@@ -56,6 +45,7 @@
 <body>
   <div class="container">
     <h1>cΔrovΣr0 precios</h1>
+
     <table>
       <thead>
         <tr>
@@ -63,7 +53,6 @@
           <th>Nombre</th>
           <th>Precio</th>
           <th>24h %</th>
-          <th>7d %</th>
           <th>Market Cap</th>
           <th>Volumen (24h)</th>
           <th>Supply</th>
@@ -71,70 +60,62 @@
       </thead>
       <tbody id="crypto-body"></tbody>
     </table>
+
     <div class="updated" id="updated"></div>
   </div>
 
-  <script>
-    const coins = [
-      { id: "btc-bitcoin" },
-      { id: "bch-bitcoin-cash" },
-      { id: "ltc-litecoin" },
-      { id: "zec-zcash" },
-      { id: "dash-dash" },
-      { id: "dgb-digibyte" },
-      { id: "pivx-pivx" },
-      { id: "firo-firo" }
-    ];
+<script>
+const coins = [
+  "bitcoin",
+  "bitcoin-cash",
+  "litecoin",
+  "zcash",
+  "dash",
+  "digibyte",
+  "pivx",
+  "zcoin"
+];
 
-    async function fetchData() {
-      try {
-        const requests = coins.map(c =>
-          fetch(`https://api.coinpaprika.com/v1/tickers/${c.id}`).then(r => r.json())
-        );
+async function fetchData() {
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coins.join(",")}&order=market_cap_desc&price_change_percentage=24h`
+    );
 
-        const data = await Promise.all(requests);
+    const data = await res.json();
 
-        const tbody = document.getElementById("crypto-body");
-        tbody.innerHTML = "";
+    const tbody = document.getElementById("crypto-body");
+    tbody.innerHTML = "";
 
-        // ordenar por rank ascendente
-        data.sort((a, b) => a.rank - b.rank);
+    data.forEach(coin => {
+      const change24 = coin.price_change_percentage_24h;
+      const changeClass = change24 >= 0 ? "positive" : "negative";
 
-        data.forEach(coin => {
-          const usd = coin.quotes.USD;
-          const change24 = usd.percent_change_24h;
-          const change7d = usd.percent_change_7d;
+      const row = `
+        <tr>
+          <td>${coin.market_cap_rank}</td>
+          <td>${coin.name}<br><span class="symbol">${coin.symbol.toUpperCase()}</span></td>
+          <td>$${coin.current_price.toLocaleString()}</td>
+          <td class="${changeClass}">${change24.toFixed(2)}%</td>
+          <td>$${coin.market_cap.toLocaleString()}</td>
+          <td>$${coin.total_volume.toLocaleString()}</td>
+          <td>${coin.circulating_supply.toLocaleString()} ${coin.symbol.toUpperCase()}</td>
+        </tr>
+      `;
 
-          const class24 = change24 >= 0 ? "positive" : "negative";
-          const class7d = change7d >= 0 ? "positive" : "negative";
+      tbody.innerHTML += row;
+    });
 
-          const row = `
-            <tr>
-              <td>${coin.rank}</td>
-              <td>${coin.name}<br><span class="symbol">${coin.symbol}</span></td>
-              <td>$${usd.price.toLocaleString(undefined, { maximumFractionDigits: 8 })}</td>
-              <td class="${class24}">${change24.toFixed(2)}%</td>
-              <td class="${class7d}">${change7d.toFixed(2)}%</td>
-              <td>$${usd.market_cap.toLocaleString()}</td>
-              <td>$${usd.volume_24h.toLocaleString()}</td>
-              <td>${coin.total_supply.toLocaleString()} ${coin.symbol}</td>
-            </tr>
-          `;
+    document.getElementById("updated").innerText =
+      "Actualizado: " + new Date().toLocaleTimeString() + " | Fuente: CoinGecko";
 
-          tbody.innerHTML += row;
-        });
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
 
-        document.getElementById("updated").innerText =
-          "Actualizado: " + new Date().toLocaleTimeString();
-	  
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    fetchData();
-    setInterval(fetchData, 60000);
-  </script>
+fetchData();
+setInterval(fetchData, 60000);
+</script>
 </body>
 </html>
