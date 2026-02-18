@@ -1,7 +1,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>FIRO</title>
+<title>FIRO NODE TERMINAL</title>
 <style>
 body { background: #000; color: #fff; font-family: "Lucida Console", monospace; padding: 20px; }
 .terminal { max-width: 80ch; white-space: pre-wrap; }
@@ -14,8 +14,8 @@ body { background: #000; color: #fff; font-family: "Lucida Console", monospace; 
 </head>
 <body>
 <div class="terminal" id="terminal">
-TERMINAL EXPLORER
-=================
+EXPLORADOR DE BLOQUES TERMINAL 
+==============================
 Cargando...
 </div>
 <div class="footer">--------------------------------------------------------------------------<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: carover0.firo</div>
@@ -23,8 +23,8 @@ Cargando...
 <script>
 function loadData() {
     const terminal = document.getElementById('terminal');
-    terminal.innerHTML = `FIRO NODE TERMINAL
-==================
+    terminal.innerHTML = `EXPLORADOR DE BLOQUES TERMINAL
+==============================
 Cargando usando JSONP...`;
 
     // Limpiar script anterior
@@ -56,8 +56,8 @@ window.handleData = function(wrapper) {
         const days = Math.floor(uptimeSec / 86400);
         const hours = Math.floor((uptimeSec % 86400) / 3600);
         
-        let output = `FIRO NODE TERMINAL
-==================
+        let output = `EXPLORADOR DE BLOQUES TERMINAL
+==============================
 
 BLOQUE ACTUAL : ${data.blockchain.blocks}
 FECHA         : ${data.datetime}
@@ -65,20 +65,23 @@ CONEXIONES    : ${data.network.connections}
 UPTIME        : ${days}d ${hours}h
 TIMESTAMP     : ${data.timestamp} (${new Date(data.timestamp*1000).toLocaleTimeString()})
 
------------------------------------------------------------------
 ULTIMOS 15 BLOQUES
------------------------------------------------------------------`;
+--------------------------------------------------------------------------------
+bloque  tx  hash                                            fecha
+--------------------------------------------------------------------------------`;
 
         data.recent.last_15_blocks.forEach(b => {
             const fecha = new Date(b.time * 1000).toLocaleString();
-            const hashMostrado = b.hash.substring(0,18) + '...' + b.hash.slice(-25);
-            output += `\n#${String(b.height).padEnd(6)} ${String(b.tx_count).padEnd(3)} ${hashMostrado.padEnd(22)} ${fecha}`;
+            const hashMostrado = b.hash.substring(0,19) + '...' + b.hash.slice(-25);
+            output += `\n${String(b.height).padEnd(6)} ${String(b.tx_count).padEnd(3)} ${hashMostrado.padEnd(22)} ${fecha}`;
         });
 
         output += `\n
------------------------------------------------------------------
+
 ULTIMAS 15 TRANSACCIONES
------------------------------------------------------------------`;
+--------------------------------------------------------------------------------
+conf monto     hash
+--------------------------------------------------------------------------------`;
 
         data.recent.last_15_transactions.forEach(t => {
             const valor = t.value_out === null ? "0.0000" : t.value_out.toFixed(4);
@@ -86,12 +89,17 @@ ULTIMAS 15 TRANSACCIONES
         });
 
         output += `\n
+
 -----------------------------------------------------------------
 MEMPOOL PREVIEW (${data.mempool.txcount} TRANSACCIONES)
 -----------------------------------------------------------------`;
 
         if (data.recent.mempool_preview?.length) {
-            data.recent.mempool_preview.forEach(txid => output += `\n${txid.substring(0,40)}`);
+            data.recent.mempool_preview.forEach(item => {
+                const txid = item.txid || item;
+                const valor = item.value_out ? ` (${Number(item.value_out).toFixed(4)} FIRO)` : '';
+                output += `\n${txid.substring(0,40)}${valor}`;
+            });
         } else {
             output += `\nMempool vacío`;
         }
@@ -100,13 +108,12 @@ MEMPOOL PREVIEW (${data.mempool.txcount} TRANSACCIONES)
         terminal.innerHTML = output;
         
     } catch (error) {
-        terminal.innerHTML = `ERROR procesando datos: ${error.message}`;
+        terminal.innerHTML = `ERROR: ${error.message}`;
     }
-};
+} 
 
 loadData();
-setInterval(loadData, 30000);
+setInterval(loadData, 10000);
 </script>
-
 </body>
 </html>
