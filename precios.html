@@ -105,14 +105,13 @@ async function fetchData() {
         <tr>
           <td>${coin.market_cap_rank}</td>
           <td>${coin.name}<br><span class="symbol">${coin.symbol.toUpperCase()}</span></td>
-          <td>$${coin.current_price.toLocaleString()}</td>
+          <td>$${coin.current_price.toFixed(6)}</td>
           <td class="${changeClass}">${change24.toFixed(2)}%</td>
           <td>$${coin.market_cap.toLocaleString()}</td>
           <td>$${coin.total_volume.toLocaleString()}</td>
           <td>${coin.circulating_supply.toLocaleString()} ${coin.symbol.toUpperCase()}</td>
         </tr>
       `;
-
       tbody.innerHTML += row;
     });
 
