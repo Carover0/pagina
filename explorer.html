@@ -1,0 +1,98 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>FIRO NODE TERMINAL</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", monospace;
+    font-size: 14px;
+    margin: 0;
+    padding: 20px;
+}
+
+.terminal {
+    max-width: 80ch;
+    white-space: pre;
+    line-height: 1.4;
+}
+.footer {
+  margin-top:auto;
+  padding:20px 0;
+  color:#fff;
+}
+
+</style>
+</head>
+<body>
+
+<div class="terminal" id="terminal">
+Loading...
+</div>
+
+<div class="footer">--------------------------------------------------------------------------<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: carover0.firo</div>
+
+<script>
+const NODE_JSON_URL = "https://corsproxy.io/?key=dd8447d8&url=https://carover0.xyz/api/firo.json";
+
+function pad(str, len) {
+    return str.toString().padEnd(len).substring(0, len);
+}
+
+function formatTime(ts) {
+    const d = new Date(ts * 1000);
+    return d.toISOString().replace("T"," ").substring(0,19);
+}
+
+fetch(NODE_JSON_URL)
+.then(r => r.json())
+.then(data => {
+
+    let output = "";
+
+    output += "FIRO TERMINAL EXPLORER\n";
+    output += "======================\n\n";
+
+    output += "HEIGHT : " + data.blockchain.blocks + "\n";
+    output += "SYNCED : " + (data.health.synced ? "YES" : "NO") + "\n";
+    output += "TIME   : " + data.datetime + "\n\n";
+
+    output += "LAST 15 BLOCKS\n";
+    output += "--------------------------------------------------------------------------\n";
+    output += pad("HEIGHT",8) + pad("TX",6) + pad("SIZE",8) + "TIME\n";
+    output += "--------------------------------------------------------------------------\n";
+
+    data.recent.last_10_blocks.forEach(b => {
+        output += pad(b.height,8)
+               + pad(b.tx_count,6)
+               + pad(b.size,8)
+               + formatTime(b.time)
+               + "\n";
+    });
+
+    output += "\nLAST 15 TRANSACTIONS\n";
+    output += "--------------------------------------------------------------------------\n";
+    output += pad("CONF",6) + pad("SIZE",8) + pad("VALUE",14) + "TXID\n";
+    output += "--------------------------------------------------------------------------\n";
+
+    data.recent.last_10_transactions.forEach(tx => {
+        output += pad(tx.confirmations,6)
+               + pad(tx.size,8)
+               + pad(tx.value_out ?? 0,14)
+               + tx.txid.substring(0,32)
+               + "\n";
+    });
+
+    output += "\nMEMPOOL: " + data.mempool.txcount + " TX\n";
+
+    document.getElementById("terminal").textContent = output;
+
+})
+.catch(err => {
+    document.getElementById("terminal").textContent = "NODE OFFLINE";
+});
+</script>
+
+</body>
+</html>
