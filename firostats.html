@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FIRO Status</title>
 <style>
@@ -16,12 +14,11 @@ body {
   min-height: 100vh;
 }
 
-/* Card general unificada */
 .card, .node-card {
-  background: #000;           /* negro uniforme */
+  background: #000;      
   border: 1px solid #111;
   padding: 20px;
-  font-size: 14px;            /* mismo tamaño que la tarjeta de precio */
+  font-size: 14px;       
   margin-top: 20px;
   width: 380px;
 }
@@ -34,7 +31,6 @@ body {
   max-width: 95%;
 }
 
-/* filas de datos */
 .row {
   display: flex;
   justify-content: space-between;
@@ -45,17 +41,21 @@ body {
 .positive { color: #0f0; }
 .negative { color: #f44; }
 
-/* separador estilo terminal */
 .separator {
   color: #666;
   margin-bottom: 10px;
 }
 
-/* título de la tarjeta */
 .title { 
   font-size: 20px; 
   margin-bottom: 10px; 
 }
+
+.titlegeneral { 
+  font-size: 25px; 
+  margin-bottom: 10px; 
+}
+
 
 .updated {
   margin-top: 10px;
@@ -93,10 +93,24 @@ body {
   color: #fff;
   margin-top: 20px;
   margin-bottom: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
   font-family: "Lucida Console", Monaco, monospace;
 }
 
+.updated {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #666;
+    }
 
+a, a:visited, a:hover, a:active {
+    color: #9B1C2E;
+    text-decoration: none; 
+}
+a:hover {
+    text-decoration: underline; 
+}
 </style>
 
 </head>
@@ -105,10 +119,14 @@ body {
   <img src="https://firo.org/img/firo-logo-white-text.svg" alt="FIRO" />
 </div>
 <div class="node-description">
-    Firo es una criptomoneda enfocada en <strong>privacidad y seguridad</strong>, con tecnología que protege transacciones y activos digitales.
-    Su blockchain combina <strong>Prueba de Trabajo (PoW)</strong> y <strong>ChainLocks</strong> para evitar ataques y garantizar transacciones rápidas.
-    Permite crear <strong>tokens privados</strong>, ejecutar <strong>masternodes</strong> y minar con GPUs, todo dentro de un ecosistema <strong>descentralizado y anónimo</strong>.<br><br>
-  Estado del nodo e infraestructura de la red FIRO, los datos provienen de un nodo FIRO de mi propiedad y se actualizan cada 60 seg.
+Firo es una criptomoneda enfocada en la privacidad y el anonimato de las transacciones. Utiliza protocolos criptográficos como Lelantus Spark para ocultar remitentes, receptores y montos sin necesidad de confianza previa. Además combina minería Proof-of-Work con masternodes y ChainLocks para seguridad y rapidez.
+</div>
+<div><p><br></p></div>
+<div class="titlegeneral">
+Estado del nodo e infraestructura de la red FIRO
+</div>
+<div class="updated">
+(Los datos provienen de un nodo FIRO de mi propiedad y se actualizan cada 60 seg.)
 </div>
 <div class="node-row">
   <div class="node-card" id="node-status">
@@ -118,18 +136,27 @@ body {
     Cargando red...
   </div>
 </div>
+<hr width=75%>
+<div class="titlegeneral">
+Estadisticas de mercado de FIRO
 </div>
-<div class="node-precios">
-<br><br><br>
-Estadisticas de mercado de FIRO (Sin trackers, ads y scripts basura. Solo datos)
+<div class="updated">
+(Sin trackers, ads y scripts basura. Solo datos)
 </div>
-
 <div class="card">
   <div class="title">FIRO</div>
   <div id="content">Cargando datos...</div>
   <div class="updated" id="updated"></div>
 </div>
-
+<hr width=75%>
+<div class="titlegeneral">
+API publica
+</div>
+<div class="node-description">
+Accede a métricas de infraestructura y estado de mi nodo FIRO en tiempo real: health, bloques, peers, mempool, dificultad, uptime y más desde un endpoint JSON directo.
+<a href="https://carover0.xyz/api/firo.json target="_blank"">API publica</a>
+</div>
+<hr width=75%>
 <div class="logo2">
   <img src="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/firo_t.png" alt="FIRO" />
 </div>
@@ -211,7 +238,6 @@ function formatUptime(seconds) {
 
 function displayNodeData(data){
 
-  // Extraer solo número del uptime
   const uptimeRaw = data.node.uptime.match(/\d+/);
   const uptimeSec = uptimeRaw ? parseInt(uptimeRaw[0]) : 0;
 
@@ -254,4 +280,5 @@ setInterval(fetchNodeTXT,60000);
 
 </body>
 </html>
+
 
