@@ -1,4 +1,5 @@
 <html>
+<meta charset="UTF-8">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FIRO Status</title>
@@ -51,17 +52,22 @@ body {
   margin-bottom: 10px; 
 }
 
-.titlegeneral { 
-  font-size: 25px; 
-  margin-bottom: 10px; 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 80ch;
+  width: 100%;
+  gap: 20px;
 }
 
+.titlegeneral {
+  font-size: 25px;
+}
 
 .updated {
-  margin-top: 10px;
-  font-size: 11px;
-  color:#666;
-  text-align:right;
+  font-size: 12px;
+  color: #666;
 }
 
 .footer {
@@ -124,9 +130,8 @@ Firo es una criptomoneda enfocada en la privacidad y el anonimato de las transac
 <div><p><br></p></div>
 <div class="titlegeneral">
 Estado del nodo e infraestructura de la red FIRO
-</div>
-<div class="updated">
-(Los datos provienen de un nodo FIRO de mi propiedad y se actualizan cada 60 seg.)
+</div><div class="updated">
+Los datos provienen de un nodo FIRO de mi propiedad, accede <a href="https://carover0.xyz/api/firo.json target="_blank"">API publica</a>
 </div>
 <div class="node-row">
   <div class="node-card" id="node-status">
@@ -136,7 +141,7 @@ Estado del nodo e infraestructura de la red FIRO
     Cargando red...
   </div>
 </div>
-<hr width=75%>
+<br>
 <div class="titlegeneral">
 Estadisticas de mercado de FIRO
 </div>
@@ -148,15 +153,6 @@ Estadisticas de mercado de FIRO
   <div id="content">Cargando datos...</div>
   <div class="updated" id="updated"></div>
 </div>
-<hr width=75%>
-<div class="titlegeneral">
-API publica
-</div>
-<div class="node-description">
-Accede a métricas de infraestructura y estado de mi nodo FIRO en tiempo real: health, bloques, peers, mempool, dificultad, uptime y más desde un endpoint JSON directo.
-<a href="https://carover0.xyz/api/firo.json target="_blank"">API publica</a>
-</div>
-<hr width=75%>
 <div class="logo2">
   <img src="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/firo_t.png" alt="FIRO" />
 </div>
@@ -243,7 +239,7 @@ function displayNodeData(data){
 
   document.getElementById("node-status").innerHTML = `
     <div class="title">FIRO NODE · STATUS</div>
-    <div class="row"><span class="label">Estado</span><span>${data.health.synced==="yes"?"🟢 Synced":"🔴 Syncing"}</span></div>
+    <div class="row"><span class="label">Estado</span><span>${data.health.synced==="yes"?"Synced":"Syncing"}</span></div>
     <div class="row"><span class="label">Bloques</span><span>${Number(data.blockchain.blocks).toLocaleString()}</span></div>
     <div class="row"><span class="label">Conexiones</span><span>${data.network.connections}</span></div>
     <div class="row"><span class="label">Mempool TX</span><span>${data.mempool.tx_count}</span></div>
@@ -280,5 +276,6 @@ setInterval(fetchNodeTXT,60000);
 
 </body>
 </html>
+
 
 
