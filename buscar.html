@@ -1,4 +1,3 @@
-<html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -20,8 +19,13 @@ body {
 .input-line {
     display: flex;
     align-items: center;
-    margin: 15px 0;
+    margin: 0 0 5px 0;  
     gap: 5px;
+}
+
+#output {
+    margin-top: 0;  
+    padding-top: 0;
 }
 .prompt {
     color: #fff;
@@ -75,13 +79,11 @@ a:hover {
 <body>
 
 <div class="terminal">
-<div id="nodeInfo" class="node-line">[!] cargando datos, espera antes de buscar...</div>
+<div id="nodeInfo" class="node-line">Cargando datos, espera antes de buscar. El proxy genera demoras a veces, recargar la pagina soluciona el problema.</div>
 <div class="input-line">
     <span class="prompt">═></span>
     <input type="text" id="search" class="cursor-input" placeholder="buscar bloque/hash/txid..." autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-    <button id="searchBtn" class="hidden-button"></button>
-</div>
-
+    <button id="searchBtn" class="hidden-button"></button></div>
 <div id="output"></div>
 </div>
 
@@ -92,10 +94,8 @@ let data = null;
 
 window.handleData = function(wrapper) {
     try {
-        // El contenido está en wrapper.contents
         const text = wrapper.contents;
         
-        // Parsear el formato: tipo|datos...
         const lines = text.split('\n').filter(line => line.trim());
         data = {
             blocks: [],
@@ -113,23 +113,42 @@ window.handleData = function(wrapper) {
                     size: parts[5]
                 });
             } else if (parts[0] === 'TX') {
+                // Parsear outputs y filtrar inválidos
+                let outputs = [];
+                if (parts[5]) {
+                    outputs = parts[5]
+                        .split(';')
+                        .map(str => {
+                            const [vout, address, value] = str.split(':');
+                            if (address && address !== 'undefined' && address !== 'null' && value && !isNaN(parseFloat(value))) {
+                                return {
+                                    vout: parseInt(vout),
+                                    address: address,
+                                    value: parseFloat(value)
+                                };
+                            }
+                            return null;
+                        })
+                        .filter(o => o !== null); // Eliminar los null
+                }
+                
                 data.transactions.push({
                     txid: parts[1],
                     block_height: parts[2],
-                    value_out: parts[3],
-                    time: parts[4]
+                    value_out: parts[3] === 'null' ? null : parseFloat(parts[3]),
+                    time: parts[4],
+                    outputs: outputs
                 });
             }
         });
         
         document.getElementById('nodeInfo').innerHTML = 
-            `> FIRO SEARCH\n> ${data.blocks.length} bloques · ${data.transactions.length} transacciones ≈ 4h 10m atras.\n\n<a href="https://carover0.github.io/pagina/explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a>
- `;
+            `> BUSCAR\n> ${data.blocks.length} bloques · ${data.transactions.length} transacciones, ≈ 6h 25m atras\n\n<a href="https://carover0.github.io/pagina/explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a>`;
         
         console.log("Datos cargados:", data);
         
     } catch (e) {
-        document.getElementById('nodeInfo').innerHTML = '> error cargando datos: ' + e.message;
+        document.getElementById('nodeInfo').innerHTML = 'Error cargando datos: ' + e.message;
         console.error(e);
     }
 };
@@ -155,7 +174,7 @@ function formatDate(timestamp) {
 
 function search() {
     if (!data) {
-        document.getElementById('output').innerHTML = '[!] datos no cargados aún';
+        document.getElementById('output').innerHTML = 'Datos no cargados aún';
         return;
     }
     
@@ -177,16 +196,35 @@ function search() {
     });
     
     data.transactions.forEach(t => {
+        let matchInOutputs = t.outputs?.some(o => 
+            (o.address?.toLowerCase().includes(q)) || 
+            (o.value?.toString().includes(q))
+        ) || false;
+        
         if (t.txid.toLowerCase().includes(q) || 
-            t.value_out.includes(q) || 
-            t.block_height.includes(q)) {
+            (t.value_out !== null && t.value_out.toString().includes(q)) || 
+            t.block_height.includes(q) ||
+            matchInOutputs) {
+            
             encontrados++;
             out += `\n→ TX ${t.txid}\n`;
             out += `  block: #${t.block_height}\n`;
-            out += `  value: ${parseFloat(t.value_out).toFixed(4)} FIRO\n`;
             out += `  time: ${formatDate(t.time)}\n`;
+            
+            if (t.value_out !== null) {
+                out += `  total: ${t.value_out.toFixed(4)} FIRO\n`;
+            }
+            
+            if (t.outputs?.length) {
+                out += `  outputs:\n`;
+                t.outputs.forEach(output => {
+                    if (output.address && output.address !== 'undefined' && output.address !== 'null') {
+                        out += `    ${output.address} : ${output.value.toFixed(4)} FIRO\n`;
+                    }
+                });
+            }
         }
-    });
+    });    
     
     document.getElementById('output').innerHTML = 
         encontrados > 0 ? out : '> no results';
