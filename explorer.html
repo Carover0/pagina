@@ -1,7 +1,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>FIRO</title>
+<title>FIRO NODE TERMINAL</title>
 <style>
 body { background: #000; color: #fff; font-family: "Lucida Console", monospace; padding: 20px; }
 .terminal { max-width: 80ch; white-space: pre-wrap; }
@@ -10,6 +10,14 @@ body { background: #000; color: #fff; font-family: "Lucida Console", monospace; 
   padding:20px 0;
   color:#aaa;
 }
+a, a:visited, a:hover, a:active {
+    color: #9B1C2E;
+    text-decoration: none; 
+}
+a:hover {
+    text-decoration: underline; 
+}
+
 </style>
 </head>
 <body>
@@ -40,7 +48,7 @@ Cargando usando JSONP...`;
     script.src = `https://whateverorigin.org/get?callback=handleData&url=${encodeURIComponent(JSON_URL)}&_=${Date.now()}`;
     
     script.onerror = () => {
-        terminal.innerHTML = `ERROR: No se pudo cargar los datos.\n\nURL: ${script.src}`;
+        terminal.innerHTML = `ERROR: No se pudo cargar los datos. Recargar la pagina suele solucionarlo o espera, la pagina se actualiza sola cada 45 seg\n\nURL: ${script.src}`;
     };
     
     document.body.appendChild(script);
@@ -56,14 +64,16 @@ window.handleData = function(wrapper) {
         const days = Math.floor(uptimeSec / 86400);
         const hours = Math.floor((uptimeSec % 86400) / 3600);
         
-        let output = `EXPLORADOR DE BLOQUES TERMINAL
-==============================
+        let output = `EXPLORADOR
+==========
 
 BLOQUE ACTUAL : ${data.blockchain.blocks}
 FECHA         : ${data.datetime}
 CONEXIONES    : ${data.network.connections}
 UPTIME        : ${days}d ${hours}h
 TIMESTAMP     : ${data.timestamp} (${new Date(data.timestamp*1000).toLocaleTimeString()})
+
+<a href="https://carover0.github.io/pagina/buscar.html">[BUSCAR]</a> <a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a>
 
 ULTIMOS 15 BLOQUES
 --------------------------------------------------------------------------------
@@ -91,7 +101,7 @@ conf monto     hash
         output += `\n
 
 -----------------------------------------------------------------
-MEMPOOL (${data.mempool.txcount} TRANSACCIONES)
+MEMPOOL PREVIEW (${data.mempool.txcount} TRANSACCIONES)
 -----------------------------------------------------------------`;
 
         if (data.recent.mempool_preview?.length) {
