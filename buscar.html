@@ -75,9 +75,9 @@ a:hover {
 <body>
 
 <div class="terminal">
-<div id="nodeInfo" class="node-line">> cargando datos, espera antes de buscar...</div>
+<div id="nodeInfo" class="node-line">[!] cargando datos, espera antes de buscar...</div>
 <div class="input-line">
-    <span class="prompt">></span>
+    <span class="prompt">═></span>
     <input type="text" id="search" class="cursor-input" placeholder="buscar bloque/hash/txid..." autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <button id="searchBtn" class="hidden-button"></button>
 </div>
@@ -123,7 +123,7 @@ window.handleData = function(wrapper) {
         });
         
         document.getElementById('nodeInfo').innerHTML = 
-            `> FIRO SEARCH\n> ${data.blocks.length} bloques · ${data.transactions.length} transacciones (≈ 4h 10m atras).\n\n<a href="https://carover0.github.io/pagina/explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a>
+            `> FIRO SEARCH\n> ${data.blocks.length} bloques · ${data.transactions.length} transacciones ≈ 4h 10m atras.\n\n<a href="https://carover0.github.io/pagina/explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a>
  `;
         
         console.log("Datos cargados:", data);
@@ -155,7 +155,7 @@ function formatDate(timestamp) {
 
 function search() {
     if (!data) {
-        document.getElementById('output').innerHTML = '> datos no cargados aún';
+        document.getElementById('output').innerHTML = '[!] datos no cargados aún';
         return;
     }
     
@@ -169,7 +169,7 @@ function search() {
     data.blocks.forEach(b => {
         if (b.height.includes(q) || b.hash.toLowerCase().includes(q)) {
             encontrados++;
-            out += `\n> BLOQUE #${b.height}\n`;
+            out += `\n■ BLOQUE #${b.height}\n`;
             out += `  hash: ${b.hash}\n`;
             out += `  time: ${formatDate(b.time)}\n`;
             out += `  tx: ${b.tx_count} · size: ${b.size}b\n`;
@@ -181,7 +181,7 @@ function search() {
             t.value_out.includes(q) || 
             t.block_height.includes(q)) {
             encontrados++;
-            out += `\n> TX ${t.txid}\n`;
+            out += `\n→ TX ${t.txid}\n`;
             out += `  block: #${t.block_height}\n`;
             out += `  value: ${parseFloat(t.value_out).toFixed(4)} FIRO\n`;
             out += `  time: ${formatDate(t.time)}\n`;
