@@ -128,7 +128,7 @@ a:hover {
 <div class="titlegeneral">
 Estado del nodo e infraestructura de la red FIRO
 </div><div class="updated">
-Los datos provienen de un nodo FIRO de mi propiedad, accede <a href="https://carover0.xyz/api/firo.json" target="_blank"">API publica</a> | <a href="https://t.me/firoexplorer_bot" target="_blank">Explorador</a> | <a href="https://carover0.github.io/pagina/explorer.html">Explorador web</a>
+Los datos provienen de un nodo FIRO de mi propiedad, accede <a href="https://carover0.xyz/api/firo.json" target="_blank">API publica</a> | <a href="https://t.me/firoexplorer_bot" target="_blank">Explorador</a> | <a href="https://carover0.github.io/pagina/explorer.html">Explorador web</a>
 </div>
 <div class="node-row">
 <div class="node-card" id="node-status">
@@ -141,9 +141,6 @@ Cargando red...
 <div><p>•</p></div>
 <div class="titlegeneral">
 Estadisticas de mercado de FIRO
-</div>
-<div class="updated">
-(Sin trackers, ads y scripts basura. Solo datos)
 </div>
 <div class="card">
   <div class="title">FIRO</div>
@@ -233,7 +230,7 @@ function displayNodeData(data){
   const uptimeSec = uptimeRaw ? parseInt(uptimeRaw[0]) : 0;
 
   document.getElementById("node-status").innerHTML = `
-    <div class="title">NODO FIRO · STATUS</div>
+    <div class="title">FIRO NODE · STATUS</div>
     <div class="row"><span class="label">Estado</span><span>${data.health.synced==="yes"?"Synced":"Syncing"}</span></div>
     <div class="row"><span class="label">Bloques</span><span>${Number(data.blockchain.blocks).toLocaleString()}</span></div>
     <div class="row"><span class="label">Conexiones</span><span>${data.network.connections}</span></div>
@@ -242,7 +239,7 @@ function displayNodeData(data){
   `;
 
   document.getElementById("node-network").innerHTML = `
-    <div class="title">NODO FIRO · NETWORK</div>
+    <div class="title">FIRO NODE · NETWORK</div>
     <div class="row"><span class="label">Dificultad</span><span>${Number(data.blockchain.difficulty).toFixed(2)}</span></div>
     <div class="row"><span class="label">Hashrate</span><span>${(Number(data.mining.network_hashrate)/1e9).toFixed(2)} GH/s</span></div>
     <div class="row"><span class="label">Inbound</span><span>${data.peers.inbound}</span></div>
@@ -271,5 +268,3 @@ setInterval(fetchNodeTXT,60000);
 
 </body>
 </html>
-
-
