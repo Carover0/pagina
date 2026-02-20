@@ -1,8 +1,5 @@
 #!/bin/bash
 
-## Lo hice en muchas etapas
-## Lo modifico y le agrego cosas al final
-## 
 
 ### ===== FIRO FULL STATUS API (STABLE) =====
 
@@ -350,7 +347,6 @@ for i in $(seq 0 149); do
     RAWTX=$($FIRO_CLI -conf=$FIRO_CONF getrawtransaction "$TXID" true)
     VALUE=$(echo "$RAWTX" | jq '[.vout[].value] | add')
 
-    # Construir lista de UTXO de forma segura sin subshell
     UTXOS=""
     VOUT_COUNT=$(echo "$RAWTX" | jq '.vout | length')
     for ((n=0;n<VOUT_COUNT;n++)); do
