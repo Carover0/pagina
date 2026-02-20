@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## Lo hice en muchas etapas
+## Lo modifico y le agrego cosas al final
+## 
+
 ### ===== FIRO FULL STATUS API (STABLE) =====
 
 FIRO_CLI="/root/firo_node/bin/firo-cli"
