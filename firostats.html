@@ -1,229 +1,271 @@
 <html>
-<meta charset="UTF-8">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIRO Status</title>
+<title>FIRO: TERMINAL</title>
 <style>
 body {
-  margin: 0;
-  background: #0a0a0a;
+  background: #000;
   color: #fff;
   font-family: "Lucida Console", Monaco, monospace;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.card, .node-card {
-  background: #000;      
-  border: 1px solid #111;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
   padding: 20px;
-  font-size: 14px;       
-  margin-top: 20px;
-  width: 380px;
 }
 
-.node-row {
-  display: flex;
-  gap: 20px;
-  margin-top: 20px;
-  width: 800px;
-  max-width: 95%;
+.terminal {
+  max-width: 80ch;
+  width: 100%;
+  margin: 0;
+}
+
+.ascii-art {
+  color: #9B1C2E;
+  font-size: 11px;
+  line-height: 1.2;
+  margin: 5px 0 10px 0;
+  white-space: pre;
+}
+
+.header-red {
+  color: #9B1C2E;
+  font-weight: bold;
+  font-size: 24px;
+  letter-spacing: 2px;
+  margin: 10px 0;
+}
+
+.subheader {
+  color: #9B1C2E;
+  font-weight: bold;
+  margin: 25px 0 10px 0;
+  text-transform: uppercase;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin: 3px 0;
+  max-width: 60ch;
 }
 
-.label { color: #888; }
-.positive { color: #0f0; }
-.negative { color: #f44; }
-
-.separator {
-  color: #666;
-  margin-bottom: 10px;
+.label {
+  color: #bbb;
+  width: 15ch;
 }
 
-.title { 
-  font-size: 20px; 
-  margin-bottom: 10px; 
+.value {
+  color: #fff;
 }
 
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 80ch;
-  width: 100%;
-  gap: 20px;
-}
-
-.titlegeneral {
-  font-size: 25px;
-}
-
-.updated {
-  font-size: 12px;
-  color: #666;
-}
+.positive { color: #198652; }
+.negative { color: #9B1C2E; }
 
 .footer {
-  margin-top:auto;
-  padding:20px 0;
-  color:#aaa;
+  margin-top: 40px;
+  padding-top: 15px;
+  color: #888;
+  font-size: 12px;
 }
-.logo, logo2 {
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.logo img {
-  width: 150px;     
-  height: auto;
-  display: block;
-  margin: 0 auto;   
-}
-.logo2 img {
-  width: 100px;     
-  height: auto;
-  display: block;
-  margin: 0 auto;   
-}
-
-.node-description, node-precios {
-  font-size: 16px;
-  padding: 14 px;
-  color: #fff;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
-  font-family: "Lucida Console", Monaco, monospace;
-}
-
-.updated {
-      margin-top: 15px;
-      font-size: 12px;
-      color: #666;
-    }
 
 a, a:visited, a:hover, a:active {
-    color: #9B1C2E;
-    text-decoration: none; 
+  color: #9B1C2E;
+  text-decoration: none;
 }
 a:hover {
-    text-decoration: underline; 
+  text-decoration: underline;
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.version {
+  color: #777;
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin: 20px 0;
+  max-width: 70ch;
+}
+
+@media (max-width: 600px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+.data-block {
+  margin: 10px 0;
+}
+
+.small {
+  color: #777;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.link-block {
+  margin: 2px 0;
+}
+
+.link-label {
+  color: #999;
+  font-size: 12px;
+  margin-bottom: 2px;
 }
 </style>
-
 </head>
 <body>
-<div class="logo">
-  <img src="https://firo.org/img/firo-logo-white-text.svg" alt="FIRO" />
+
+<div class="terminal">
+
+<!-- HEADER ROJO -->
+<div class="ascii-art">
+  ███████╗██╗██████╗  ██████╗     ███╗   ██╗ ██████╗ ██████╗ ███████╗
+  ██╔════╝██║██╔══██╗██╔═══██╗    ████╗  ██║██╔═══██╗██╔══██╗██╔════╝
+  █████╗  ██║██████╔╝██║   ██║    ██╔██╗ ██║██║   ██║██║  ██║█████╗  
+  ██╔══╝  ██║██╔══██╗██║   ██║    ██║╚██╗██║██║   ██║██║  ██║██╔══╝  
+  ██║     ██║██║  ██║╚██████╔╝    ██║ ╚████║╚██████╔╝██████╔╝███████╗
+  ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝     ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝
 </div>
-<div><p><br></p></div>
-<div class="titlegeneral">
-Estado del nodo e infraestructura de la red FIRO
-</div><div class="updated">
-Los datos provienen de un nodo FIRO de mi propiedad, accede <a href="https://carover0.xyz/api/firo.json" target="_blank">API publica</a> | <a href="https://t.me/firoexplorer_bot" target="_blank">Explorador</a> | <a href="https://carover0.github.io/pagina/explorer.html">Explorador web</a>
+<div class="header-red">TERMINAL NODE MONITOR</div>
+<div class="version">[SISTEMA]: NODO PROPIO · ACTUALIZACION CADA 60s · <span class="blink">▶</span> ONLINE</div>
+
+<!-- NODO STATUS -->
+<div class="subheader">FIRO NODE · STATUS</div>
+<div id="node-status" class="data-block">
+  <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">/Satoshi:0.14.15.2/</span></div>
+  <div class="row"><span class="label">ESTADO</span><span class="value positive" id="node-state">SYNCED</span></div>
+  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">1,259,927</span></div>
+  <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">16 (8 IN · 8 OUT)</span></div>
+  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">0 TX</span></div>
+  <div class="row"><span class="label">UPTIME</span><span class="value" id="node-uptime">29d 19h 36min</span></div>
 </div>
-<div class="node-row">
-<div class="node-card" id="node-status">
-Cargando estado del nodo...
+
+<!-- NODO NETWORK -->
+<div class="subheader">FIRO NODE · NETWORK</div>
+<div id="node-network" class="data-block">
+  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">965.28</span></div>
+  <div class="row"><span class="label">HASHRATE</span><span class="value" id="node-hashrate">29.12 GH/s</span></div>
+  <div class="row"><span class="label">CHAIN</span><span class="value" id="node-chain">main</span></div>
+  <div class="row"><span class="label">BEST BLOCK</span><span class="value" id="node-bestblock">4d8ac95d73c1...3293617</span></div>
+  <div class="row"><span class="label">TIMESTAMP</span><span class="value" id="node-timestamp">1771768441 (13:54:01 UTC)</span></div>
 </div>
-<div class="node-card" id="node-network">
-Cargando red...
+
+<!-- MARKET DATA -->
+<div class="subheader">FIRO MARKET DATA</div>
+<div id="market-content" class="data-block">
+  <div class="row"><span class="label">PRECIO USD</span><span class="value">$1.2345</span></div>
+  <div class="row"><span class="label">24h %</span><span class="value positive">+2.34%</span></div>
+  <div class="row"><span class="label">7d %</span><span class="value negative">-1.23%</span></div>
+  <div class="row"><span class="label">MARKET CAP</span><span class="value">$12.34M</span></div>
+  <div class="row"><span class="label">VOLUMEN 24h</span><span class="value">$1.23M</span></div>
 </div>
+<div class="small" id="market-updated">actualizado: 13:54:01</div>
+
+<!-- LINKS -->
+<div class="grid-2">
+  <div>
+    <div class="link-label">API PUBLICA</div>
+    <div class="link-block"><a href="https://carover0.xyz/api/firo.json" target="_blank">carover0.xyz/api/firo.json</a></div>
+  </div>
+  <div>
+    <div class="link-label">EXPLORADORES</div>
+    <div class="link-block"><a href="https://t.me/firoexplorer_bot" target="_blank">@firoexplorer_bot</a></div>
+    <div class="link-block"><a href="https://carover0.github.io/pagina/explorer.html" target="_blank">carover0.github.io/explorer</a></div>
+  </div>
 </div>
-<div><p>•</p></div>
-<div class="titlegeneral">
-Estadisticas de mercado de FIRO
+<!-- FOOTER -->
+<div class="footer">
+  ═════════════════════════════════════════════════════════════════════<br>
+  © 2025 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
 </div>
-<div class="card">
-  <div class="title">FIRO</div>
-  <div id="content">Cargando datos...</div>
-  <div class="updated" id="updated"></div>
+
 </div>
-<div class="logo2">
-  <img src="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/firo_t.png" alt="FIRO" />
-</div>
-<div class="footer">© 2025 Creada con ♥ por cΔrovΣr0 | apoya: carover0.firo</div>
 
 <script>
-const API_URL = "https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true";
+const NODE_JSON_URL = "https://carover0.xyz/api/firo.json";
+const COINGECKO_API = "https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true";
 
-async function fetchFiro() {
+function formatUptime(seconds) {
+  seconds = parseInt(seconds);
+  const days = Math.floor(seconds / (60 * 60 * 24));
+  seconds %= (60 * 60 * 24);
+  const hours = Math.floor(seconds / (60 * 60));
+  seconds %= (60 * 60);
+  const minutes = Math.floor(seconds / 60);
+  return `${days}d ${hours}h ${minutes}min`;
+}
+
+function formatHash(hash) {
+  if (!hash) return 'N/A';
+  return hash.substring(0, 15) + '...' + hash.substring(hash.length - 7);
+}
+
+function displayNodeData(data) {
+  const uptimeSec = data.node.uptime_seconds;
+  const isSynced = data.health.synced ? "SYNCED" : "SYNCING";
+  const syncClass = data.health.synced ? "positive" : "negative";
+  const connections = data.network.connections;
+  const inbound = data.peers.inbound;
+  const outbound = data.peers.outbound;
+  const version = data.network.subversion || 'N/A';
+  const datetime = data.datetime || '';
+  const timePart = datetime.split(' ')[1] || '';
+  
+  document.getElementById('node-version').innerText = version;
+  document.getElementById('node-state').innerText = isSynced;
+  document.getElementById('node-state').className = `value ${syncClass}`;
+  document.getElementById('node-blocks').innerText = Number(data.blockchain.blocks).toLocaleString();
+  document.getElementById('node-connections').innerText = `${connections} (${inbound} IN · ${outbound} OUT)`;
+  document.getElementById('node-mempool').innerText = `${data.mempool.txcount} TX`;
+  document.getElementById('node-uptime').innerText = formatUptime(uptimeSec);
+  document.getElementById('node-difficulty').innerText = Number(data.blockchain.difficulty).toFixed(2);
+  document.getElementById('node-hashrate').innerText = (Number(data.mining.networkhashps)/1e9).toFixed(2) + ' GH/s';
+  document.getElementById('node-chain').innerText = data.blockchain.chain;
+  document.getElementById('node-bestblock').innerText = formatHash(data.blockchain.bestblockhash);
+  document.getElementById('node-timestamp').innerHTML = `${data.timestamp} (${timePart} UTC)`;
+}
+
+async function fetchMarketData() {
   try {
-    const res = await fetch(API_URL);
+    const res = await fetch(COINGECKO_API);
     const d = await res.json();
     const price = d.market_data.current_price.usd;
     const change24 = d.market_data.price_change_percentage_24h;
     const change7d = d.market_data.price_change_percentage_7d;
     const marketCap = d.market_data.market_cap.usd;
     const volume24 = d.market_data.total_volume.usd;
-    const supply = d.market_data.circulating_supply;
 
-    const change24Cls = change24>=0 ? "positive":"negative";
-    const change7dCls = change7d>=0 ? "positive":"negative";
+    const change24Cls = change24 >= 0 ? "positive" : "negative";
+    const change7dCls = change7d >= 0 ? "positive" : "negative";
+    const change24Sign = change24 >= 0 ? "+" : "";
+    const change7dSign = change7d >= 0 ? "+" : "";
 
-    document.getElementById("content").innerHTML = `
-      <div class="row"><span class="label">Precio USD</span><span>$${price.toLocaleString()}</span></div>
-      <div class="row"><span class="label">24h %</span><span class="${change24Cls}">${change24.toFixed(2)}%</span></div>
-      <div class="row"><span class="label">7d %</span><span class="${change7dCls}">${change7d.toFixed(2)}%</span></div>
-      <div class="row"><span class="label">Market Cap</span><span>$${marketCap.toLocaleString()}</span></div>
-      <div class="row"><span class="label">Volumen 24h</span><span>$${volume24.toLocaleString()}</span></div>
-      <div class="row"><span class="label">Supply</span><span>${supply.toLocaleString()} FIRO</span></div>
+    document.getElementById("market-content").innerHTML = `
+      <div class="row"><span class="label">PRECIO USD</span><span class="value">$${price.toFixed(4)}</span></div>
+      <div class="row"><span class="label">24h %</span><span class="value ${change24Cls}">${change24Sign}${change24.toFixed(2)}%</span></div>
+      <div class="row"><span class="label">7d %</span><span class="value ${change7dCls}">${change7dSign}${change7d.toFixed(2)}%</span></div>
+      <div class="row"><span class="label">MARKET CAP</span><span class="value">$${(marketCap/1e6).toFixed(2)}M</span></div>
+      <div class="row"><span class="label">VOLUMEN 24h</span><span class="value">$${(volume24/1e6).toFixed(2)}M</span></div>
     `;
-    document.getElementById("updated").innerText = "Actualiza cada: 60seg. → Actualizado: "+new Date().toLocaleTimeString();
+    document.getElementById("market-updated").innerHTML = `actualizado: ${new Date().toLocaleTimeString()}`;
   } catch(err) {
-    console.error(err);
-    document.getElementById("content").innerText = "Error cargando datos...";
+    document.getElementById("market-content").innerHTML = '<div><span class="label negative">ERROR DE MERCADO</span></div>';
   }
-}
-
-
-fetchFiro();
-setInterval(fetchFiro, 60000);
-
-const NODE_JSON_URL = "https://carover0.xyz/api/firo.json";
-
-function formatUptime(seconds) {
-  seconds = parseInt(seconds);
-  const months = Math.floor(seconds / (60 * 60 * 24 * 30));
-  seconds %= (60 * 60 * 24 * 30);
-  const weeks = Math.floor(seconds / (60 * 60 * 24 * 7));
-  seconds %= (60 * 60 * 24 * 7);
-  const days = Math.floor(seconds / (60 * 60 * 24));
-  seconds %= (60 * 60 * 24);
-  const hours = Math.floor(seconds / (60 * 60));
-  seconds %= (60 * 60);
-  const minutes = Math.floor(seconds / 60);
-  return `${months}m ${weeks}w ${days}d ${hours}h ${minutes}min`;
-}
-
-function displayNodeData(data) {
-  const uptimeSec = data.node.uptime_seconds;
-
-  document.getElementById("node-status").innerHTML = `
-    <div class="title">FIRO NODE · STATUS</div>
-    <div class="row"><span class="label">Estado</span><span>${data.health.synced ? "Synced" : "Syncing"}</span></div>
-    <div class="row"><span class="label">Bloques</span><span>${Number(data.blockchain.blocks).toLocaleString()}</span></div>
-    <div class="row"><span class="label">Conexiones</span><span>${data.network.connections}</span></div>
-    <div class="row"><span class="label">Mempool TX</span><span>${data.mempool.txcount}</span></div>
-    <div class="row"><span class="label">Uptime</span><span>${uptimeSec} sec (${formatUptime(uptimeSec)})</span></div>
-  `;
-
-  document.getElementById("node-network").innerHTML = `
-    <div class="title">FIRO NODE · NETWORK</div>
-    <div class="row"><span class="label">Dificultad</span><span>${Number(data.blockchain.difficulty).toFixed(2)}</span></div>
-    <div class="row"><span class="label">Hashrate</span><span>${(Number(data.mining.networkhashps)/1e9).toFixed(2)} GH/s</span></div>
-    <div class="row"><span class="label">Inbound</span><span>${data.peers.inbound}</span></div>
-    <div class="row"><span class="label">Outbound</span><span>${data.peers.outbound}</span></div>
-    <div class="row"><span class="label">Chain</span><span>${data.blockchain.chain}</span></div>
-  `;
 }
 
 window.handleNodeData = function(wrapper) {
@@ -231,9 +273,7 @@ window.handleNodeData = function(wrapper) {
     const jsonData = JSON.parse(wrapper.contents);
     displayNodeData(jsonData);
   } catch(err) {
-    console.error("Error procesando JSONP:", err);
-    document.getElementById("node-status").innerText = "Error procesando datos";
-    document.getElementById("node-network").innerText = "Error procesando datos";
+    console.error(err);
   }
 };
 
@@ -243,24 +283,39 @@ function fetchNodeData() {
 
   const script = document.createElement('script');
   script.id = 'jsonp-script';
-  
   script.src = "https://whateverorigin.org/get?callback=handleNodeData&url=" + 
                encodeURIComponent(NODE_JSON_URL) + 
                "&_=" + Date.now();
   
   script.onerror = () => {
-    console.error("Error cargando JSONP");
-    document.getElementById("node-status").innerText = "Error cargando estado del nodo";
-    document.getElementById("node-network").innerText = "Error cargando red";
+    console.error("Error de conexion");
   };
   
   document.body.appendChild(script);
 }
 
+// Inicializar con datos estáticos de ejemplo mientras carga
+displayNodeData({
+  node: { uptime_seconds: 2576215, version: "0.14.15.2" },
+  health: { synced: true },
+  network: { connections: 16, subversion: "/Satoshi:0.14.15.2/" },
+  peers: { inbound: 8, outbound: 8 },
+  mempool: { txcount: 0 },
+  blockchain: { 
+    blocks: 1259927, 
+    difficulty: 965.2796498213461,
+    chain: "main",
+    bestblockhash: "4d8ac95d73c12f7df2875e79f48b7d8019f7706d14e10e6706bb135dd3293617"
+  },
+  mining: { networkhashps: 29120670367.06828 },
+  timestamp: 1771768441,
+  datetime: "2026-02-22 13:54:01 UTC"
+});
+
 fetchNodeData();
+fetchMarketData();
 setInterval(fetchNodeData, 60000);
-
-
+setInterval(fetchMarketData, 60000);
 </script>
 
 </body>
