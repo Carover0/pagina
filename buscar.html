@@ -113,23 +113,31 @@ window.handleData = function(wrapper) {
                     size: parts[5]
                 });
             } else if (parts[0] === 'TX') {
-                // Parsear outputs y filtrar inválidos
+                let inputs = [];
                 let outputs = [];
+                
                 if (parts[5]) {
-                    outputs = parts[5]
-                        .split(';')
-                        .map(str => {
-                            const [vout, address, value] = str.split(':');
-                            if (address && address !== 'undefined' && address !== 'null' && value && !isNaN(parseFloat(value))) {
-                                return {
-                                    vout: parseInt(vout),
+                    const items = parts[5].split(';').filter(item => item.trim() !== '');
+                    
+                    items.forEach(item => {
+                        if (item.startsWith('<-')) {
+                            const [_, address, value] = item.match(/<- (\w+):([\d.]+)/) || [];
+                            if (address && value) {
+                                inputs.push({
                                     address: address,
                                     value: parseFloat(value)
-                                };
+                                });
                             }
-                            return null;
-                        })
-                        .filter(o => o !== null); // Eliminar los null
+                        } else if (item.startsWith('->')) {
+                            const [_, address, value] = item.match(/-> (\w+):([\d.]+)/) || [];
+                            if (address && address !== 'undefined' && address !== 'null' && value) {
+                                outputs.push({
+                                    address: address,
+                                    value: parseFloat(value)
+                                });
+                            }
+                        }
+                    });
                 }
                 
                 data.transactions.push({
@@ -137,6 +145,7 @@ window.handleData = function(wrapper) {
                     block_height: parts[2],
                     value_out: parts[3] === 'null' ? null : parseFloat(parts[3]),
                     time: parts[4],
+                    inputs: inputs,   // <--- NUEVO: Guardar entradas
                     outputs: outputs
                 });
             }
@@ -196,6 +205,11 @@ function search() {
     });
     
     data.transactions.forEach(t => {
+        let matchInInputs = t.inputs?.some(o => 
+            (o.address?.toLowerCase().includes(q)) || 
+            (o.value?.toString().includes(q))
+        ) || false;
+        
         let matchInOutputs = t.outputs?.some(o => 
             (o.address?.toLowerCase().includes(q)) || 
             (o.value?.toString().includes(q))
@@ -204,10 +218,11 @@ function search() {
         if (t.txid.toLowerCase().includes(q) || 
             (t.value_out !== null && t.value_out.toString().includes(q)) || 
             t.block_height.includes(q) ||
+            matchInInputs ||
             matchInOutputs) {
             
             encontrados++;
-            out += `\n→ TX ${t.txid}\n`;
+            out += `\n• TX ${t.txid}\n`;
             out += `  block: #${t.block_height}\n`;
             out += `  time: ${formatDate(t.time)}\n`;
             
@@ -215,11 +230,18 @@ function search() {
                 out += `  total: ${t.value_out.toFixed(4)} FIRO\n`;
             }
             
+            if (t.inputs?.length) {
+                t.inputs.forEach(input => {
+                    if (input.address && input.address !== 'undefined' && input.address !== 'null') {
+                        out += `  <- ${input.address} : ${input.value.toFixed(4)} FIRO\n`;
+                    }
+                });
+            }
+            
             if (t.outputs?.length) {
-                out += `  outputs:\n`;
                 t.outputs.forEach(output => {
                     if (output.address && output.address !== 'undefined' && output.address !== 'null') {
-                        out += `    ${output.address} : ${output.value.toFixed(4)} FIRO\n`;
+                        out += `  -> ${output.address} : ${output.value.toFixed(4)} FIRO\n`;
                     }
                 });
             }
@@ -243,6 +265,7 @@ input.addEventListener('keypress', e => {
 
 window.onload = () => input.focus();
 </script>
+
 
 </body>
 </html>
