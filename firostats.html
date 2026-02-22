@@ -8,8 +8,8 @@ body {
   background: #000;
   color: #fff;
   font-family: "Lucida Console", Monaco, monospace;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 15px;
+  line-height: 1.2;  
   margin: 0;
   padding: 20px;
 }
@@ -22,32 +22,32 @@ body {
 
 .ascii-art {
   color: #9B1C2E;
-  font-size: 11px;
-  line-height: 1.2;
-  margin: 5px 0 10px 0;
+  font-size: 12px;
+  line-height: 1.1;  
+  margin: 5px 0 5px 0; 
   white-space: pre;
 }
 
 .header-red {
   color: #9B1C2E;
-  font-weight: bold;
-  font-size: 24px;
+  font-size: 23px;  
   letter-spacing: 2px;
-  margin: 10px 0;
+  margin: 5px 0 2px 0;
 }
 
 .subheader {
   color: #9B1C2E;
-  font-weight: bold;
-  margin: 25px 0 10px 0;
+  font-size: 15px;  
+  margin: 15px 0 5px 0;
   text-transform: uppercase;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  margin: 3px 0;
-  max-width: 60ch;
+  margin: 1px 0;  
+  max-width: 80ch;
+  line-height: 1.2;
 }
 
 .label {
@@ -63,10 +63,11 @@ body {
 .negative { color: #9B1C2E; }
 
 .footer {
-  margin-top: 40px;
-  padding-top: 15px;
-  color: #888;
-  font-size: 12px;
+  margin-top: 55px;
+  padding-top: 5px;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.2;
 }
 
 a, a:visited, a:hover, a:active {
@@ -88,16 +89,18 @@ a:hover {
 
 .version {
   color: #777;
-  font-size: 11px;
-  margin-top: 5px;
+  font-size: 15px;
+  margin-top: 0px;
+  margin-bottom: 5px;
+  line-height: 1.2;
 }
 
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  margin: 20px 0;
-  max-width: 70ch;
+  gap: 15px;
+  margin: 10px 0 5px 0;  
+  max-width: 80ch;
 }
 
 @media (max-width: 600px) {
@@ -108,23 +111,27 @@ a:hover {
 }
 
 .data-block {
-  margin: 10px 0;
+  margin: 5px 0;  
 }
 
 .small {
   color: #777;
-  font-size: 12px;
-  margin-top: 5px;
+  font-size: 15px;
+  margin-top: 2px;
+  line-height: 1.2;
 }
 
 .link-block {
-  margin: 2px 0;
+  margin: 0px 0;  
+  line-height: 1.2;
 }
 
 .link-label {
   color: #999;
-  font-size: 12px;
-  margin-bottom: 2px;
+  font-size: 15px;
+  margin-bottom: 0px;
+  margin-top: 20px;
+  line-height: 1.2;
 }
 </style>
 </head>
@@ -149,32 +156,32 @@ a:hover {
 <div id="node-status" class="data-block">
   <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">/Satoshi:0.14.15.2/</span></div>
   <div class="row"><span class="label">ESTADO</span><span class="value positive" id="node-state">SYNCED</span></div>
-  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">1,259,927</span></div>
+  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">1,259,972</span></div>
   <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">16 (8 IN · 8 OUT)</span></div>
-  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">0 TX</span></div>
-  <div class="row"><span class="label">UPTIME</span><span class="value" id="node-uptime">29d 19h 36min</span></div>
+  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">4 TX</span></div>
+  <div class="row"><span class="label">UPTIME</span><span class="value" id="node-uptime">29d 21h 18min</span></div>
 </div>
 
 <!-- NODO NETWORK -->
 <div class="subheader">FIRO NODE · NETWORK</div>
 <div id="node-network" class="data-block">
-  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">965.28</span></div>
-  <div class="row"><span class="label">HASHRATE</span><span class="value" id="node-hashrate">29.12 GH/s</span></div>
+  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">964.18</span></div>
+  <div class="row"><span class="label">HASHRATE</span><span class="value" id="node-hashrate">32.16 GH/s</span></div>
   <div class="row"><span class="label">CHAIN</span><span class="value" id="node-chain">main</span></div>
-  <div class="row"><span class="label">BEST BLOCK</span><span class="value" id="node-bestblock">4d8ac95d73c1...3293617</span></div>
-  <div class="row"><span class="label">TIMESTAMP</span><span class="value" id="node-timestamp">1771768441 (13:54:01 UTC)</span></div>
+  <div class="row"><span class="label">BEST BLOCK</span><span class="value" id="node-bestblock">e7c640163c5105a...4811721</span></div>
+  <div class="row"><span class="label">TIMESTAMP</span><span class="value" id="node-timestamp">1771774561 (15:36:01 UTC)</span></div>
 </div>
 
 <!-- MARKET DATA -->
 <div class="subheader">FIRO MARKET DATA</div>
 <div id="market-content" class="data-block">
-  <div class="row"><span class="label">PRECIO USD</span><span class="value">$1.2345</span></div>
-  <div class="row"><span class="label">24h %</span><span class="value positive">+2.34%</span></div>
-  <div class="row"><span class="label">7d %</span><span class="value negative">-1.23%</span></div>
-  <div class="row"><span class="label">MARKET CAP</span><span class="value">$12.34M</span></div>
-  <div class="row"><span class="label">VOLUMEN 24h</span><span class="value">$1.23M</span></div>
+  <div class="row"><span class="label">PRECIO USD</span><span class="value">$0.7351</span></div>
+  <div class="row"><span class="label">24h %</span><span class="value negative">-6.91%</span></div>
+  <div class="row"><span class="label">7d %</span><span class="value negative">-19.81%</span></div>
+  <div class="row"><span class="label">MARKET CAP</span><span class="value">$13.44M</span></div>
+  <div class="row"><span class="label">VOLUMEN 24h</span><span class="value">$0.33M</span></div>
 </div>
-<div class="small" id="market-updated">actualizado: 13:54:01</div>
+<div class="small" id="market-updated">actualizado: 15:36:01</div>
 
 <!-- LINKS -->
 <div class="grid-2">
@@ -190,7 +197,7 @@ a:hover {
 </div>
 <!-- FOOTER -->
 <div class="footer">
-  ═════════════════════════════════════════════════════════════════════<br>
+  ════════════════════════════════════════════════════════════════════════════════<br>
   © 2025 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
 </div>
 
@@ -296,20 +303,20 @@ function fetchNodeData() {
 
 // Inicializar con datos estáticos de ejemplo mientras carga
 displayNodeData({
-  node: { uptime_seconds: 2576215, version: "0.14.15.2" },
+  node: { uptime_seconds: 2581795 },
   health: { synced: true },
   network: { connections: 16, subversion: "/Satoshi:0.14.15.2/" },
   peers: { inbound: 8, outbound: 8 },
-  mempool: { txcount: 0 },
+  mempool: { txcount: 4 },
   blockchain: { 
-    blocks: 1259927, 
-    difficulty: 965.2796498213461,
+    blocks: 1259970, 
+    difficulty: 964.1764364256455,
     chain: "main",
-    bestblockhash: "4d8ac95d73c12f7df2875e79f48b7d8019f7706d14e10e6706bb135dd3293617"
+    bestblockhash: "e7c640163c5105a8e0eaa62d82e0922f37cf4161cfb884a378ba4528b4811721"
   },
-  mining: { networkhashps: 29120670367.06828 },
-  timestamp: 1771768441,
-  datetime: "2026-02-22 13:54:01 UTC"
+  mining: { networkhashps: 32156800000 },
+  timestamp: 1771774561,
+  datetime: "2026-02-22 15:36:01 UTC"
 });
 
 fetchNodeData();
