@@ -1,5 +1,14 @@
+# contruido por etapas y modificado de acuerdo a mis necesidades.
+# debe correr en el vps donde se ejecuta el nodo.
+# si lo implementas tene en cuenta las rutas en tu nodo
+# revisa las versiones porque cambia periodicamente de acuerdo a lo que voy haciendo.
+
 #!/bin/bash
 
+LOCKFILE="/tmp/firo_api.lock"
+
+exec 9>"$LOCKFILE"
+flock -n 9 || exit 1
 
 ### ===== FIRO FULL STATUS API (STABLE) =====
 
@@ -320,7 +329,7 @@ MEDIAN_TIME=$(echo "$BLOCKCHAIN_INFO" | jq -r '.mediantime')
 echo "INFO|$CURRENT_BLOCK|$MEDIAN_TIME|$(date +%s)" > "$TMP"
 
 ################################
-# 100 BLOQUES
+# 150 BLOQUES
 ################################
 for i in $(seq 0 149); do
   HEIGHT=$((CURRENT_BLOCK - i))
@@ -334,32 +343,85 @@ for i in $(seq 0 149); do
   echo "BLOCK|$HEIGHT|$HASH|$TIME|$TXC|$SIZE" >> "$TMP"
 done
 
-################################
-# TRANSACCIONES
-################################
+# 150 TRANSACCIONES
+
+FIRO_CLI="/root/firo_node/bin/firo-cli"
+FIRO_CONF="/root/firo_node/.firo/firo.conf"
+
+
+CURRENT_BLOCK=$($FIRO_CLI -conf=$FIRO_CONF getblockcount)
+
 for i in $(seq 0 149); do
+
   HEIGHT=$((CURRENT_BLOCK - i))
   HASH=$($FIRO_CLI -conf=$FIRO_CONF getblockhash $HEIGHT)
   BLOCK=$($FIRO_CLI -conf=$FIRO_CONF getblock "$HASH" true)
+
   BLOCK_TIME=$(echo "$BLOCK" | jq -r '.time')
 
+  # recorrer txid directamente
   for TXID in $(echo "$BLOCK" | jq -r '.tx[]'); do
-    RAWTX=$($FIRO_CLI -conf=$FIRO_CONF getrawtransaction "$TXID" true)
-    VALUE=$(echo "$RAWTX" | jq '[.vout[].value] | add')
 
-    UTXOS=""
-    VOUT_COUNT=$(echo "$RAWTX" | jq '.vout | length')
-    for ((n=0;n<VOUT_COUNT;n++)); do
-      VOUT=$(echo "$RAWTX" | jq ".vout[$n]")
-      ADDR=$(echo "$VOUT" | jq -r '.scriptPubKey.addresses[0]?')
-      VAL=$(echo "$VOUT" | jq -r '.value')
+    if [ -z "$TXID" ]; then
+      continue
+    fi
 
-      if [ "$($FIRO_CLI -conf=$FIRO_CONF gettxout "$TXID" $n)" != "null" ]; then
-        UTXOS="${UTXOS}${n}:${ADDR}:${VAL};"
+    TX=$($FIRO_CLI -conf=$FIRO_CONF getrawtransaction "$TXID" true 2>/dev/null)
+
+    if [ -z "$TX" ]; then
+      continue
+    fi
+
+    TOTAL=$(echo "$TX" | jq '[.vout[].value] | add')
+
+    LINE="TX|$TXID|$HEIGHT|$TOTAL|$BLOCK_TIME|"
+
+    ################################
+    # INPUTS
+    ################################
+
+    VIN_COUNT=$(echo "$TX" | jq '.vin | length')
+
+    for ((v=0; v<VIN_COUNT; v++)); do
+
+      PREV_TXID=$(echo "$TX" | jq -r ".vin[$v].txid // empty")
+      PREV_VOUT=$(echo "$TX" | jq -r ".vin[$v].vout // empty")
+
+      if [ -z "$PREV_TXID" ]; then
+        continue
       fi
+
+      PREV_TX=$($FIRO_CLI -conf=$FIRO_CONF getrawtransaction "$PREV_TXID" true 2>/dev/null)
+
+      if [ -z "$PREV_TX" ]; then
+        continue
+      fi
+
+      IN_ADDR=$(echo "$PREV_TX" | jq -r ".vout[$PREV_VOUT].scriptPubKey.addresses[0] // empty")
+      IN_VAL=$(echo "$PREV_TX" | jq -r ".vout[$PREV_VOUT].value // empty")
+
+      LINE="${LINE}<- ${IN_ADDR}:${IN_VAL};"
+
     done
 
-    echo "TX|$TXID|$HEIGHT|$VALUE|$BLOCK_TIME|$UTXOS" >> "$TMP"
+    ################################
+    # OUTPUTS
+    ################################
+
+    VOUT_COUNT=$(echo "$TX" | jq '.vout | length')
+
+    for ((n=0; n<VOUT_COUNT; n++)); do
+
+      OUT_ADDR=$(echo "$TX" | jq -r ".vout[$n].scriptPubKey.addresses[0] // empty")
+#      OUT_VAL=$(echo "$TX" | jq -r ".vout[$n].value // empty")
+      OUT_VAL=$(echo "$TX" | jq -r ".vout[$n].value // 0" | awk '{printf "%.8f", $1}')
+
+      LINE="${LINE}-> ${OUT_ADDR}:${OUT_VAL};"
+
+    done
+
+    echo "$LINE" >> "$TMP"
+
   done
 done
 
