@@ -6,7 +6,7 @@
 body {
     background-color: #0b0b0b;
     color: #198652; 
-    Font-family: "Lucida Console", "Monaco", "monospace";
+    font-family: "Lucida Console", "Monaco", "monospace";
     font-size: 16px;
     padding: 14px;
     white-space: pre; 
@@ -16,15 +16,15 @@ body {
 }
 .small {
     color: #888;
-    font-size: 12px;
+    font-size: 12px; 
 }
 .big {
     color: #fff;
-    font-size: 26px;
+    font-size: 26px; 
 }
 .titu {
     color: #fff;
-    font-size: 22px;
+    font-size: 22px; 
 }
 
 a, a:visited, a:hover, a:active {
@@ -34,6 +34,27 @@ a, a:visited, a:hover, a:active {
 a:hover {
     text-decoration: underline; 
 }
+
+body, p, span, pre, div, .body, .separator, #output-dgb, #output-firo, #output-firo-home, #output-pivx-home, #output-health {
+    font-size: 16px;
+    font-family: "Lucida Console", "Monaco", "monospace";
+}
+
+.small, .small a, .small a:visited, .small a:hover, .small a:active {
+    font-size: 12px !important;
+}
+
+.big, .titu {
+    font-size: 26px; 
+    font-size: 22px; 
+}
+.titu {
+    font-size: 22px !important;
+}
+.big {
+    font-size: 26px !important;
+}
+
 </style>
 </head>
 <body>
@@ -48,7 +69,7 @@ Operación continua y estable.
 <span style="color:#fff;">DIGIBYTE FULL NODO (VPS)</span>
 <span class="small">Fuente: <a href="https://carover0.xyz/dgb/info.json" style="color:#888;" target="_blank">https://carover0.xyz/dgb/info.json</a></span>
 <a href="https://t.me/dgbexplorer_bot" target="_blank">Dexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0201dexplorer.mp4" target="_blank">Video</a>
-<pre id="output-dgb">Fetching DGB data...</pre>
+<pre class="body" id="output-dgb">Fetching DGB data...</pre>
 <span class="separator" style="color:#fff;">------------------------------------------------</span>
 
 <span style="color:#fff;">FIRO FULL NODO (VPS)</span><br><span class="small">Fuente: <a href="https://carover0.xyz/firo/status.json" style="color:#888;" target="_blank" >https://carover0.xyz/firo/status.json</a></span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0902-firo.mp4" target="_blank">Video</a>
@@ -99,7 +120,7 @@ Operación continua y estable.
 <script>
 let firstRunHealth = true;
 async function updateStatus() {
-// DGB VPS
+
 try {
     const r1 = await fetch("https://carover0.xyz/dgb/info.json"); 
     const data1 = await r1.json();
@@ -115,7 +136,6 @@ Donation Address   : dgb1qv6qswmlgj27kr8fsssx98ckwaf4tck5rmda35a`;
     document.getElementById("output-dgb").textContent = "[info] en mantenimiento/actualizacion.";
     console.error(err);
 }
-    // FIRO VPS
     try {
         const r2 = await fetch("https://carover0.xyz/firo/status.json");
         const data2 = await r2.json();
@@ -131,7 +151,6 @@ Donation Address   : carover0.firo`;
         console.error(err);
     }
 
-    // FIRO HOME
     try {
         const r3 = await fetch('https://carover0.xyz/cacaX/firo_status_X.json');
         const data3 = await r3.json();
@@ -147,7 +166,6 @@ Donation Address   : carover0.firo`;
         console.error(err);
     }
 
-// PIVX HOME
 try {
     const r4 = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json');
     const data4 = await r4.json();
@@ -163,7 +181,6 @@ Donation Address   : D5i41DmoYPUFFjR6m4UoQ7uQNkngTuBgNp`;
     console.error(err);
 }
 
-// VPS / NODE HEALTH
 try {
     const r = await fetch('https://carover0.xyz/firo/health.json');
     const h = await r.json();
@@ -212,13 +229,9 @@ if (!firstRunHealth) {
 
 }
 
-
-
 // Inicial + refresco cada 30s
 updateStatus();
 setInterval(updateStatus, 30000);
 </script>
-
-
 </body>
 </html>
