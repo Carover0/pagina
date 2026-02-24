@@ -94,16 +94,13 @@ bloque  tx  hash                                            fecha
 --------------------------------------------------------------------------------
 monto ZEC    hash
 --------------------------------------------------------------------------------`;
-
-        // Mostrar últimas 30 transacciones (o todas si son menos)
-        const txsToShow = data.recent.transactions.slice(0, 30);
-        txsToShow.forEach(t => {
-            const valor = t.value === null ? "PRIVADA" : t.value.toFixed(4);
-            output += `\n${valor.padEnd(11)}  ${t.txid}`;
-        });
-
-        output += `\n\n-----------------------------------------------------------------
-MEMPOOL (${data.mempool.size} TRANSACCIONES - ${data.mempool.total_visible_zec.toFixed(4)} ZEC visibles)
+	const txsToShow = data.recent.transactions.slice(0, 30);
+	txsToShow.forEach(t => {
+	    // Si es null O valor es 0 (o muy cercano a 0) → PRIVADA
+	    const valor = (t.value === null || Math.abs(t.value) < 0.00001) ? "PRIVADA" : t.value.toFixed(4);
+	    output += `\n${valor.padEnd(11)}  ${t.txid}`;
+	});        output += `\n\n-----------------------------------------------------------------
+	MEMPOOL (${data.mempool.size} TRANSACCIONES)
 -----------------------------------------------------------------`;
 
         if (data.mempool.transactions?.length) {
