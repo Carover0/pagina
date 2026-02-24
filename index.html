@@ -66,13 +66,12 @@ Operación continua y estable.
 </span>
 
 <span class="titu">• NODOS</span><span class="small"> (Actualizado cada 30 segundos) - </span><span class="small" id="last-update-zec"></span><br>
-<span style="color:#fff;">DIGIBYTE FULL NODO (VPS)</span>
-<span class="small">Fuente: <a href="https://carover0.xyz/dgb/info.json" style="color:#888;" target="_blank">https://carover0.xyz/dgb/info.json</a></span>
-<a href="https://t.me/dgbexplorer_bot" target="_blank">Dexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0201dexplorer.mp4" target="_blank">Video</a>
-<pre class="body" id="output-dgb">Fetching DGB data...</pre>
+<span style="color:#fff;">ZCASH FULL NODO (VPS)</span>
+<span class="small">Fuente: <a href="https://carover0.xyz/zec/status.json" style="color:#888;" target="_blank">https://carover0.xyz/zec/status.json</a></span>
+<a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0611-explorador-de-bloques-zec.mp4" target="_blank">Video</a> | <a href="https://github.com/Carover0/ztip_public" target="_blank">Ztip (Git hub)</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/ztip4.mp4" target="_blank">Ztip video</a> | <a href="https://carover0.github.io/pagina/zcashstats.html" target="_blank">Zcash nodo</a>
+<pre class="body" id="output-dgb">Fetching ZEC data...</pre>
 <span class="separator" style="color:#fff;">------------------------------------------------</span>
-
-<span style="color:#fff;">FIRO FULL NODO (VPS)</span><br><span class="small">Fuente: <a href="https://carover0.xyz/firo/status.json" style="color:#888;" target="_blank" >https://carover0.xyz/firo/status.json</a></span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0902-firo.mp4" target="_blank">Video</a>
+<span style="color:#fff;">FIRO FULL NODO (VPS)</span><br><span class="small">Fuente: <a href="https://carover0.xyz/firo/status.json" style="color:#888;" target="_blank" >https://carover0.xyz/firo/status.json</a></span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0902-firo.mp4" target="_blank">Video</a> | <a href="https://carover0.github.io/pagina/firostats.html" target="_blank">Firo nodo</a> 
 <pre id="output-firo">Fetching FIRO data...</pre>
 <span class="separator" style="color:#fff;">------------------------------------------------</span>
 
@@ -90,10 +89,9 @@ Operación continua y estable.
 <span class="separator" style="color:#fff;">------------------------------------------------</span>
     
 <span class="titu">• OTROS DESARROLLOS<br></span>
-<span style="color:#fff;">ZCASH</span>
-→ Explorador de bloques: <a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0611-explorador-de-bloques-zec.mp4" target="_blank">Video</a>
-→ Tip bot: <a href="https://github.com/Carover0/ztip_public" target="_blank">Ztip (Git hub)</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/ztip4.mp4" target="_blank">Ztip video</a>
-    
+<span style="color:#fff;">DIGIBYTE</span>
+→ Explorador de bloques: <a href="https://t.me/dgbexplorer_bot" target="_blank">Dexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0201dexplorer.mp4" target="_blank">Video</a>
+   
 <span style="color:#fff;">TRON</span>
 → Explorador de bloques: <a href="https://t.me/texplorerbot" target="_blank">Texplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/eng-2510-texplorer.mp4" target="_blank">Video</a>
 → TxGhost: <a href="https://t.me/txghost_bot" target="_blank">TxGhost</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/2512ghost.mp4" target="_blank">Video</a>
@@ -122,16 +120,28 @@ let firstRunHealth = true;
 async function updateStatus() {
 
 try {
-    const r1 = await fetch("https://carover0.xyz/dgb/info.json"); 
+    const r1 = await fetch("https://carover0.xyz/zec/status.json"); 
     const data1 = await r1.json();
-    const lastBlock = data1.last_blocks[0];
+    const mappedData = {
+        height: data1.chain?.height ?? 0,
+        last_blocks: [{
+            difficulty: data1.chain?.difficulty ?? 0
+        }],
+        connections: data1.network?.connections ?? 0,
+        mempool_tx: data1.mempool?.size ?? 0,
+        version: data1.versions?.lightwalletd ?? "desconocido"
+    };
+    
+    const lastBlock = mappedData.last_blocks[0];
+    const donationAddr = "t1NxVLsRg4kNqMHE2bqmFL5Qizr2JDtmumU";
+    
     document.getElementById("output-dgb").textContent =
-`Block Height       : ${data1.height}
+`Block Height       : ${mappedData.height}
 Difficulty         : ${lastBlock.difficulty.toFixed(2)}
-Connections        : ${data1.connections}
-Mempool TX         : ${data1.mempool_tx}
-Node Version       : ${data1.version}
-Donation Address   : dgb1qv6qswmlgj27kr8fsssx98ckwaf4tck5rmda35a`;
+Connections        : ${mappedData.connections}
+Mempool TX         : ${mappedData.mempool_tx}
+Node Version       : ${mappedData.version}
+Donation Address   : ${donationAddr}`;
 } catch(err) {
     document.getElementById("output-dgb").textContent = "[info] en mantenimiento/actualizacion.";
     console.error(err);
@@ -235,3 +245,4 @@ setInterval(updateStatus, 30000);
 </script>
 </body>
 </html>
+
