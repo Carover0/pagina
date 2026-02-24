@@ -1,0 +1,294 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ZCASH: TERMINAL EXPLORER</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", monospace;
+    font-size: 16px;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 90ch;
+    white-space: pre-wrap;
+    line-height: 1.4;
+}
+.input-line {
+    display: flex;
+    align-items: center;
+    margin: 0 0 5px 0;  
+    gap: 5px;
+}
+#output {
+    margin-top: 0;  
+    padding-top: 0;
+}
+.prompt {
+    color: #DD9D34;
+}
+.cursor-input {
+    background: #000;
+    color: #fff;
+    border: none;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    padding: 4px 0;
+    width: 50ch;
+    outline: none;
+    caret-color: #DD9D34;
+    animation: blink 1s step-end infinite;
+    autocomplete: off;
+    autocorrect: off;
+    autocapitalize: off;
+    spellcheck: false;
+}
+@keyframes blink {
+    from, to { caret-color: #DD9D34; }
+    50% { caret-color: transparent; }
+}
+.cursor-input::selection {
+    background: #DD9D34;
+    color: #000;
+}
+.hidden-button {
+    display: none;
+}
+.footer {
+    margin-top: 40px;
+    padding: 20px 0;
+    color: #fff;
+}
+.node-line {
+    margin: 10px 0;
+    white-space: pre-line;
+}
+a, a:visited, a:hover, a:active {
+    color: #DD9D34;
+    text-decoration: none; 
+}
+a:hover {
+    text-decoration: underline; 
+}
+.shielded {
+    color: #888;
+    font-style: italic;
+}
+</style>
+</head>
+<body>
+
+<div class="terminal">
+<div id="nodeInfo" class="node-line">Cargando datos, espera antes de buscar. El proxy genera demoras a veces, recargar la pagina soluciona el problema.</div>
+<div class="input-line">
+    <span class="prompt">zcash═></span>
+    <input type="text" id="search" class="cursor-input" placeholder="buscar bloque/hash/txid/dirección..." autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button id="searchBtn" class="hidden-button"></button>
+</div>
+<div id="output"></div>
+</div>
+
+<div class="footer">--------------------------------------------------------------------------<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: Zcash</div>
+
+<script>
+let data = null;
+
+window.handleData = function(wrapper) {
+    try {
+        const text = wrapper.contents;
+        
+        const lines = text.split('\n').filter(line => line.trim());
+        data = {
+            blocks: [],
+            transactions: []
+        };
+        
+        // Primera línea es INFO
+        const infoLine = lines[0].split('|');
+        const currentBlock = infoLine[1];
+        
+        lines.forEach(line => {
+            const parts = line.split('|');
+            if (parts[0] === 'BLOCK') {
+                data.blocks.push({
+                    height: parts[1],
+                    hash: parts[2],
+                    time: parts[3],
+                    tx_count: parts[4],
+                    size: parts[5]
+                });
+            } else if (parts[0] === 'TX') {
+                let inputs = [];
+                let outputs = [];
+                
+                if (parts[5]) {
+                    const items = parts[5].split(';').filter(item => item.trim() !== '');
+                    
+                    items.forEach(item => {
+                        if (item.startsWith('<-')) {
+                            // Formato: <- SHIELDED:0 o <- ADDRESS:VALUE
+                            const match = item.match(/<- ([^:]+):([\d.]+)/);
+                            if (match) {
+                                const address = match[1] === 'COINBASE' ? 'COINBASE' : match[1];
+                                inputs.push({
+                                    address: address,
+                                    value: parseFloat(match[2]),
+                                    isShielded: address === 'SHIELDED' || address === 'COINBASE'
+                                });
+                            }
+                        } else if (item.startsWith('->')) {
+                            const match = item.match(/-> ([^:]+):([\d.]+)/);
+                            if (match) {
+                                outputs.push({
+                                    address: match[1],
+                                    value: parseFloat(match[2]),
+                                    isShielded: match[1] === 'SHIELDED'
+                                });
+                            }
+                        }
+                    });
+                }
+                
+                data.transactions.push({
+                    txid: parts[1],
+                    block_height: parts[2],
+                    value_out: parts[3] === 'null' ? null : parseFloat(parts[3]),
+                    time: parts[4],
+                    inputs: inputs,
+                    outputs: outputs
+                });
+            }
+        });
+        
+        // Ordenar bloques por altura descendente
+        data.blocks.sort((a, b) => parseInt(b.height) - parseInt(a.height));
+        
+        document.getElementById('nodeInfo').innerHTML = 
+            `> BUSCAR ZCASH\n> ${data.blocks.length} bloques · ${data.transactions.length} transacciones, ≈ 6h 25m atras\n\n` +
+            `<a href="https://carover0.github.io/pagina/explorer-zec.html">[EXPLORADOR]</a> ` +
+            `<a href="https://carover0.github.io/pagina/zecstats.html">[ZCASH]</a>`;
+        
+        console.log("Datos Zcash cargados:", data);
+        
+    } catch (e) {
+        document.getElementById('nodeInfo').innerHTML = 'Error cargando datos: ' + e.message;
+        console.error(e);
+    }
+};
+
+function loadData() {
+    const oldScript = document.getElementById('jsonp-script');
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'jsonp-script';
+    
+    const url = "https://whateverorigin.org/get?callback=handleData&url=" + 
+                encodeURIComponent("https://carover0.xyz/zec.txt") + 
+                "&_=" + Date.now();
+    
+    script.src = url;
+    document.body.appendChild(script);
+}
+
+function formatDate(timestamp) {
+    return new Date(timestamp * 1000).toLocaleString();
+}
+
+function search() {
+    if (!data) {
+        document.getElementById('output').innerHTML = 'Datos no cargados aún';
+        return;
+    }
+    
+    const input = document.getElementById('search');
+    const q = input.value.trim().toLowerCase();
+    if (!q) return;
+    
+    let out = '';
+    let encontrados = 0;
+    
+    // Buscar en bloques
+    data.blocks.forEach(b => {
+        if (b.height.includes(q) || b.hash.toLowerCase().includes(q)) {
+            encontrados++;
+            out += `\n■ BLOQUE #${b.height}\n`;
+            out += `  hash: ${b.hash}\n`;
+            out += `  time: ${formatDate(b.time)}\n`;
+            out += `  tx: ${b.tx_count} · size: ${b.size}b\n`;
+        }
+    });
+    
+    // Buscar en transacciones
+    data.transactions.forEach(t => {
+        let matchInInputs = t.inputs?.some(o => 
+            (o.address?.toLowerCase().includes(q)) || 
+            (o.value?.toString().includes(q))
+        ) || false;
+        
+        let matchInOutputs = t.outputs?.some(o => 
+            (o.address?.toLowerCase().includes(q)) || 
+            (o.value?.toString().includes(q))
+        ) || false;
+        
+        if (t.txid.toLowerCase().includes(q) || 
+            (t.value_out !== null && t.value_out.toString().includes(q)) || 
+            t.block_height.includes(q) ||
+            matchInInputs ||
+            matchInOutputs) {
+            
+            encontrados++;
+            out += `\n• TX ${t.txid}\n`;
+            out += `  block: #${t.block_height}\n`;
+            out += `  time: ${formatDate(t.time)}\n`;
+            
+            if (t.value_out !== null) {
+                out += `  total: ${t.value_out.toFixed(4)} ZEC\n`;
+            } else {
+                out += `  total: PRIVADA\n`;
+            }
+            
+            // Mostrar inputs
+            if (t.inputs?.length) {
+                t.inputs.forEach(input => {
+                    if (input.address && input.address !== 'undefined' && input.address !== 'null') {
+                        const addrClass = input.isShielded ? 'shielded' : '';
+                        out += `  <- <span class="${addrClass}">${input.address}</span> : ${input.value.toFixed(4)} ZEC\n`;
+                    }
+                });
+            }
+            
+            // Mostrar outputs
+            if (t.outputs?.length) {
+                t.outputs.forEach(output => {
+                    if (output.address && output.address !== 'undefined' && output.address !== 'null') {
+                        const addrClass = output.isShielded ? 'shielded' : '';
+                        out += `  -> <span class="${addrClass}">${output.address}</span> : ${output.value.toFixed(4)} ZEC\n`;
+                    }
+                });
+            }
+        }
+    });    
+    
+    document.getElementById('output').innerHTML = 
+        encontrados > 0 ? out : '> no results';
+    
+    input.value = '';
+}
+
+loadData();
+
+const input = document.getElementById('search');
+input.addEventListener('keypress', e => { 
+    if (e.key === 'Enter') {
+        search();
+    }
+});
+
+window.onload = () => input.focus();
+</script>
+
+</body>
+</html>
