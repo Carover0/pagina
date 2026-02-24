@@ -97,7 +97,7 @@ monto ZEC    hash
 	const txsToShow = data.recent.transactions.slice(0, 30);
 	txsToShow.forEach(t => {
 	    // Si es null O valor es 0 (o muy cercano a 0) → PRIVADA
-	    const valor = (t.value === null || Math.abs(t.value) < 0.00001) ? "PRIVADA" : t.value.toFixed(4);
+	    const valor = (t.value === null || Math.abs(t.value) === 0) ? "PRIVADA" : t.value.toFixed(6);
 	    output += `\n${valor.padEnd(11)}  ${t.txid}`;
 	});        output += `\n\n-----------------------------------------------------------------
 MEMPOOL (${data.mempool.size} TRANSACCIONES)
