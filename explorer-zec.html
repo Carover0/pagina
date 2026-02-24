@@ -1,0 +1,132 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ZCASH NODE TERMINAL</title>
+<style>
+body { background: #000; color: #fff; font-family: "Lucida Console", monospace; padding: 20px; }
+.terminal { max-width: 80ch; white-space: pre-wrap; }
+.footer {
+  margin-top:auto;
+  padding:20px 0;
+  color:#aaa;
+}
+a, a:visited, a:hover, a:active {
+    color: #DD9D34;
+    text-decoration: none; 
+}
+a:hover {
+    text-decoration: underline; 
+}
+</style>
+</head>
+<body>
+<div class="terminal" id="terminal">
+EXPLORADOR DE BLOQUES TERMINAL (ZCASH)
+=======================================
+Cargando...
+</div>
+<div class="footer">--------------------------------------------------------------------------<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: t1NxVLsRg4kNqMHE2bqmFL5Qizr2JDtmumU</div>
+
+<script>
+function loadData() {
+    const terminal = document.getElementById('terminal');
+    terminal.innerHTML = `EXPLORADOR DE BLOQUES TERMINAL (ZCASH)
+=======================================
+Cargando usando JSONP...`;
+
+    // Limpiar script anterior
+    const oldScript = document.getElementById('jsonp-script');
+    if (oldScript) oldScript.remove();
+
+    // Crear nuevo script con JSONP
+    const script = document.createElement('script');
+    script.id = 'jsonp-script';
+    
+    const JSON_URL = "https://carover0.xyz/zec/status.json";
+    // Usamos JSONP con callback
+    script.src = `https://whateverorigin.org/get?callback=handleData&url=${encodeURIComponent(JSON_URL)}&_=${Date.now()}`;
+    
+    script.onerror = () => {
+        terminal.innerHTML = `ERROR: No se pudo cargar los datos. Recargar la pagina suele solucionarlo o espera, la pagina se actualiza sola cada 60 seg\n\nURL: ${script.src}`;
+    };
+    
+    document.body.appendChild(script);
+}
+
+// Función global que recibe los datos del JSONP
+window.handleData = function(wrapper) {
+    const terminal = document.getElementById('terminal');
+    try {
+        const data = JSON.parse(wrapper.contents);
+        
+        // Calcular uptime
+        const uptimeSec = data.node.uptime_seconds;
+        const days = Math.floor(uptimeSec / 86400);
+        const hours = Math.floor((uptimeSec % 86400) / 3600);
+        
+        // Versión a mostrar
+        const version = data.versions.zcashd || 'N/A';
+        
+        let output = `EXPLORADOR DE BLOQUES TERMINAL (ZCASH)
+=======================================
+
+BLOQUE ACTUAL : ${data.chain.height.toLocaleString()}
+FECHA         : ${data.datetime}
+CONEXIONES    : ${data.network.connections} (${data.network.inbound} IN · ${data.network.outbound} OUT)
+UPTIME        : ${days}d ${hours}h
+VERSION       : Zebra ${version}
+TIMESTAMP     : ${data.timestamp} (${new Date(data.timestamp*1000).toLocaleTimeString()})
+
+<a href="https://carover0.github.io/pagina/buscar-zec.html">[BUSCAR]</a> <a href="#">[ZCASH]</a>
+
+ULTIMOS 15 BLOQUES
+--------------------------------------------------------------------------------
+bloque  tx  hash                                            fecha
+--------------------------------------------------------------------------------`;
+
+        data.recent.blocks.forEach(b => {
+            const fecha = new Date(b.time * 1000).toLocaleString();
+            const hashMostrado = b.hash.substring(0,16) + '...' + b.hash.slice(-16);
+            output += `\n${String(b.height).padEnd(6)} ${String(b.tx_count).padEnd(3)} ${hashMostrado.padEnd(22)} ${fecha}`;
+        });
+
+        output += `\n\nULTIMAS 30 TRANSACCIONES 
+--------------------------------------------------------------------------------
+monto ZEC    hash
+--------------------------------------------------------------------------------`;
+
+        // Mostrar últimas 30 transacciones (o todas si son menos)
+        const txsToShow = data.recent.transactions.slice(0, 30);
+        txsToShow.forEach(t => {
+            const valor = t.value === null ? "PRIVADA" : t.value.toFixed(4);
+            output += `\n${valor.padEnd(11)}  ${t.txid}`;
+        });
+
+        output += `\n\n-----------------------------------------------------------------
+MEMPOOL (${data.mempool.size} TRANSACCIONES - ${data.mempool.total_visible_zec.toFixed(4)} ZEC visibles)
+-----------------------------------------------------------------`;
+
+        if (data.mempool.transactions?.length) {
+            data.mempool.transactions.forEach(tx => {
+                const txid = tx.txid.substring(0,40);
+                const valor = tx.visible ? `${tx.value_zec.toFixed(4)} ZEC` : 'PRIVADA';
+                output += `\n${txid}... : ${valor}`;
+            });
+        } else {
+            output += `\nMempool vacío`;
+        }
+
+        
+
+        terminal.innerHTML = output;
+        
+    } catch (error) {
+        terminal.innerHTML = `ERROR: ${error.message}`;
+    }
+} 
+
+loadData();
+setInterval(loadData, 60000);
+</script>
+</body>
+</html>
