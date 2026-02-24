@@ -100,7 +100,7 @@ monto ZEC    hash
 	    const valor = (t.value === null || Math.abs(t.value) < 0.00001) ? "PRIVADA" : t.value.toFixed(4);
 	    output += `\n${valor.padEnd(11)}  ${t.txid}`;
 	});        output += `\n\n-----------------------------------------------------------------
-	MEMPOOL (${data.mempool.size} TRANSACCIONES)
+MEMPOOL (${data.mempool.size} TRANSACCIONES)
 -----------------------------------------------------------------`;
 
         if (data.mempool.transactions?.length) {
