@@ -33,7 +33,6 @@ let data = null;
 
 async function loadData() {
     try {
-        // Leer DIRECTO (sin proxy)
         const response = await fetch("https://carover0.xyz/zfiro.txt");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
