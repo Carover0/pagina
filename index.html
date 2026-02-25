@@ -129,7 +129,7 @@ try {
         }],
         connections: data1.network?.connections ?? 0,
         mempool_tx: data1.mempool?.size ?? 0,
-        version: data1.versions?.lightwalletd ?? "desconocido"
+        version: data1.network?.subversion ?? "desconocido"
     };
     
     const lastBlock = mappedData.last_blocks[0];
