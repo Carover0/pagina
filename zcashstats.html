@@ -238,7 +238,7 @@ function formatDifficulty(diff) {
 
 function displayNodeData(data) {
   const uptimeSec = data.node?.uptime_seconds || 0;
-  const isSynced = data.health?.synced ? "SYNCED" : "SYNCING";
+  const isSynced = data.health?.synced ? "SINCRONIZADO" : "SINCRONIZANDO";
   const syncClass = data.health?.synced ? "positive" : "negative";
   const connections = data.network?.connections || 0;
   const inbound = data.network?.inbound || 0;
@@ -296,30 +296,18 @@ async function fetchMarketData() {
   }
 }
 
-window.handleNodeData = function(wrapper) {
+// 🔁 NUEVA: fetchNodeData con fetch directo
+async function fetchNodeData() {
   try {
-    const jsonData = JSON.parse(wrapper.contents);
+    const response = await fetch(NODE_JSON_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const jsonData = await response.json();
     displayNodeData(jsonData);
   } catch(err) {
-    console.error(err);
+    console.error("Error de conexion:", err);
+    // Podés mostrar algo en la UI si querés
+    document.getElementById('node-version').innerText = "ERROR DE CONEXIÓN";
   }
-};
-
-function fetchNodeData() {
-  const oldScript = document.getElementById('jsonp-script');
-  if (oldScript) oldScript.remove();
-
-  const script = document.createElement('script');
-  script.id = 'jsonp-script';
-  script.src = "https://whateverorigin.org/get?callback=handleNodeData&url=" + 
-               encodeURIComponent(NODE_JSON_URL) + 
-               "&_=" + Date.now();
-  
-  script.onerror = () => {
-    console.error("Error de conexion");
-  };
-  
-  document.body.appendChild(script);
 }
 
 // Datos de ejemplo mientras carga
@@ -346,6 +334,7 @@ fetchMarketData();
 setInterval(fetchNodeData, 60000);
 setInterval(fetchMarketData, 60000);
 </script>
+
 
 </body>
 </html>
