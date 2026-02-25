@@ -95,9 +95,12 @@ a:hover {
 <script>
 let data = null;
 
-window.handleData = function(wrapper) {
+async function loadData() {
     try {
-        const text = wrapper.contents;
+        const response = await fetch("https://carover0.xyz/zec.txt");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const text = await response.text();
         
         const lines = text.split('\n').filter(line => line.trim());
         data = {
@@ -105,7 +108,6 @@ window.handleData = function(wrapper) {
             transactions: []
         };
         
-        // Primera línea es INFO
         const infoLine = lines[0].split('|');
         const currentBlock = infoLine[1];
         
@@ -128,7 +130,6 @@ window.handleData = function(wrapper) {
                     
                     items.forEach(item => {
                         if (item.startsWith('<-')) {
-                            // Formato: <- SHIELDED:0 o <- ADDRESS:VALUE
                             const match = item.match(/<- ([^:]+):([\d.]+)/);
                             if (match) {
                                 const address = match[1] === 'COINBASE' ? 'COINBASE' : match[1];
@@ -162,7 +163,6 @@ window.handleData = function(wrapper) {
             }
         });
         
-        // Ordenar bloques por altura descendente
         data.blocks.sort((a, b) => parseInt(b.height) - parseInt(a.height));
         
         document.getElementById('nodeInfo').innerHTML = 
@@ -176,21 +176,6 @@ window.handleData = function(wrapper) {
         document.getElementById('nodeInfo').innerHTML = 'Error cargando datos: ' + e.message;
         console.error(e);
     }
-};
-
-function loadData() {
-    const oldScript = document.getElementById('jsonp-script');
-    if (oldScript) oldScript.remove();
-
-    const script = document.createElement('script');
-    script.id = 'jsonp-script';
-    
-    const url = "https://whateverorigin.org/get?callback=handleData&url=" + 
-                encodeURIComponent("https://carover0.xyz/zec.txt") + 
-                "&_=" + Date.now();
-    
-    script.src = url;
-    document.body.appendChild(script);
 }
 
 function formatDate(timestamp) {
@@ -210,7 +195,6 @@ function search() {
     let out = '';
     let encontrados = 0;
     
-    // Buscar en bloques
     data.blocks.forEach(b => {
         if (b.height.includes(q) || b.hash.toLowerCase().includes(q)) {
             encontrados++;
@@ -221,7 +205,6 @@ function search() {
         }
     });
     
-    // Buscar en transacciones
     data.transactions.forEach(t => {
         let matchInInputs = t.inputs?.some(o => 
             (o.address?.toLowerCase().includes(q)) || 
@@ -250,7 +233,6 @@ function search() {
                 out += `  total: PRIVADA\n`;
             }
             
-            // Mostrar inputs
             if (t.inputs?.length) {
                 t.inputs.forEach(input => {
                     if (input.address && input.address !== 'undefined' && input.address !== 'null') {
@@ -260,7 +242,6 @@ function search() {
                 });
             }
             
-            // Mostrar outputs
             if (t.outputs?.length) {
                 t.outputs.forEach(output => {
                     if (output.address && output.address !== 'undefined' && output.address !== 'null') {
