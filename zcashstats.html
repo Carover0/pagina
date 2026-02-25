@@ -295,8 +295,6 @@ async function fetchMarketData() {
     document.getElementById("market-content").innerHTML = '<div><span class="label negative">ERROR DE MERCADO</span></div>';
   }
 }
-
-// 🔁 NUEVA: fetchNodeData con fetch directo
 async function fetchNodeData() {
   try {
     const response = await fetch(NODE_JSON_URL);
@@ -305,12 +303,10 @@ async function fetchNodeData() {
     displayNodeData(jsonData);
   } catch(err) {
     console.error("Error de conexion:", err);
-    // Podés mostrar algo en la UI si querés
     document.getElementById('node-version').innerText = "ERROR DE CONEXIÓN";
   }
 }
 
-// Datos de ejemplo mientras carga
 displayNodeData({
   node: { uptime_seconds: 4077418 },
   health: { synced: true },
@@ -334,7 +330,5 @@ fetchMarketData();
 setInterval(fetchNodeData, 60000);
 setInterval(fetchMarketData, 60000);
 </script>
-
-
 </body>
 </html>
