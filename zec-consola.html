@@ -1,0 +1,175 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ZCASH: RPC CONSOLE</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 90ch;
+    white-space: pre-wrap;
+    line-height: 1.4;
+}
+.input-line {
+    display: flex;
+    align-items: center;
+    margin: 0 0 5px 0;
+    gap: 5px;
+}
+#output {
+    margin-top: 0;
+    padding-top: 0;
+}
+.prompt {
+    color: #DD9D34;
+}
+.cursor-input {
+    background: #000;
+    color: #fff;
+    border: none;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    padding: 4px 0;
+    width: 50ch;
+    outline: none;
+    caret-color: #DD9D34;
+    animation: blink 1s step-end infinite;
+    autocomplete: off;
+    autocorrect: off;
+    autocapitalize: off;
+    spellcheck: false;
+}
+@keyframes blink {
+    from, to { caret-color: #DD9D34; }
+    50% { caret-color: transparent; }
+}
+.cursor-input::selection {
+    background: #DD9D34;
+    color: #000;
+}
+.hidden-button {
+    display: none;
+}
+.footer {
+    margin-top: 40px;
+    padding: 20px 0;
+    color: #aaa;
+}
+.node-line {
+    margin: 10px 0;
+    white-space: pre-line;
+}
+a, a:visited, a:hover, a:active {
+    color: #DD9D34;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+pre {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    border-left: 3px solid #DD9D34;
+    padding: 10px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.help-box {
+    margin-top: 30px;
+    color: #888;
+    border-left: 3px solid #444;
+    padding-left: 10px;
+}
+.help-box .title {
+    color: #DD9D34;
+    margin-bottom: 5px;
+}
+.help-box .simple {
+    color: #aaa;
+    margin-bottom: 10px;
+}
+.help-box .params {
+    color: #aaa;
+}
+.help-box .params div {
+    margin-left: 15px;
+}
+</style>
+</head>
+<body>
+<div class="terminal">
+<div id="nodeInfo" class="node-line">
+ZCASH - CONSOLA RPC
+===================
+<a href="https://carover0.github.io/pagina/zec-terminal.html">[MONITOR]</a> <a href="https://carover0.github.io/pagina/buscar-zec.html">[BUSCAR]</a>
+<div class="help-box"><div class="title">COMANDOS SIMPLES (sin parámetros)</div> <div class="simple">getblockchaininfo · getblockcount · getbestblockhash · getdifficulty · getpeerinfo · getmempoolinfo · getrawmempool · getchaintips · gettxoutsetinfo · getinfo</div>
+<div class="title">COMANDOS CON PARÁMETROS</div><div class="params"><div>getblockhash &lt;altura&gt; · getblock &lt;hash&gt; · getrawtransaction &lt;txid&gt; [verbose] · getaddressbalance &lt;dirección&gt; · getaddresstxids &lt;dirección&gt; · getaddressutxos &lt;dirección&gt; · validateaddress &lt;dirección&gt; · z_validateaddress &lt;z-addr&gt; · gettxout &lt;txid&gt; &lt;vout&gt;</div></div></div></div>
+<div class="input-line">
+    <span class="prompt">zcash -> </span>
+    <input type="text" id="cmdInput" class="cursor-input" placeholder="getblockchaininfo" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button id="sendBtn" class="hidden-button"></button>
+</div><div id="output">
+<pre>Listo para ejecutar comandos...</pre>
+</div>
+
+
+<div class="footer">--------------------------------------------------------------------------------<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: t1NxVLsRg4kNqMHE2bqmFL5Qizr2JDtmumU</div>
+</div>
+
+<script>
+const API_URL = "https://carover0.xyz/api/zec/rpc.php";
+const TOKEN = "zec2026";
+
+async function sendCommand() {
+    const input = document.getElementById('cmdInput');
+    const cmd = input.value.trim();
+    const outputDiv = document.getElementById('output');
+    
+    if (!cmd) return;
+    
+    outputDiv.innerHTML = `<pre>Ejecutando: ${cmd}...</pre>`;
+    
+    try {
+        const response = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
+        const data = await response.json();
+        
+        let output = `<pre>`;
+        output += `<span style="color:#DD9D34;">zcash> ${cmd}</span>\n\n`;
+        
+        if (data.error) {
+            output += `Error: ${JSON.stringify(data.error, null, 2)}`;
+        } else {
+            output += JSON.stringify(data.result || data, null, 2);
+        }
+        
+        output += `\n</pre>`;
+        outputDiv.innerHTML = output;
+        
+    } catch (error) {
+        outputDiv.innerHTML = `<pre>Error: ${error.message}</pre>`;
+    }
+    
+    input.value = '';
+}
+
+document.getElementById('cmdInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendCommand();
+    }
+});
+
+window.onload = () => document.getElementById('cmdInput').focus();
+</script>
+
+</body>
+</html>
