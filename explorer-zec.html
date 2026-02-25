@@ -25,7 +25,7 @@ EXPLORADOR DE BLOQUES TERMINAL (ZCASH)
 =======================================
 Cargando...
 </div>
-<div class="footer">--------------------------------------------------------------------------<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: t1NxVLsRg4kNqMHE2bqmFL5Qizr2JDtmumU</div>
+<div class="footer">--------------------------------------------------------------------------------<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: t1NxVLsRg4kNqMHE2bqmFL5Qizr2JDtmumU</div>
 
 <script>
 function loadData() {
@@ -88,7 +88,7 @@ bloque  tx  hash                                            fecha
 	    .sort((a, b) => b.height - a.height)
 	    .forEach(b => {
 	        const fecha = new Date(b.time * 1000).toLocaleString();
-	        const hashMostrado = b.hash.substring(0,16) + '...' + b.hash.slice(-16);
+	        const hashMostrado = b.hash.substring(0,22) + '...' + b.hash.slice(-22);
 	        output += `\n${String(b.height).padEnd(6)} ${String(b.tx_count).padEnd(3)} ${hashMostrado.padEnd(22)} ${fecha}`;
     });
         output += `\n\nULTIMAS 30 TRANSACCIONES 
@@ -100,22 +100,19 @@ monto ZEC    hash
 	    // Si es null O valor es 0 (o muy cercano a 0) → PRIVADA
 	    const valor = (t.value === null || Math.abs(t.value) === 0) ? "PRIVADA" : t.value.toFixed(6);
 	    output += `\n${valor.padEnd(11)}  ${t.txid}`;
-	});        output += `\n\n-----------------------------------------------------------------
+	});        output += `\n\n--------------------------------------------------------------------------------
 MEMPOOL (${data.mempool.size} TRANSACCIONES)
------------------------------------------------------------------`;
+--------------------------------------------------------------------------------`;
 
         if (data.mempool.transactions?.length) {
             data.mempool.transactions.forEach(tx => {
-                const txid = tx.txid.substring(0,40);
-                const valor = tx.visible ? `${tx.value_zec.toFixed(4)} ZEC` : 'PRIVADA';
-                output += `\n${txid}... : ${valor}`;
+                const txid = tx.txid.substring(0,64);
+                const valor = tx.visible ? `${tx.value_zec.toFixed(6)} ZEC` : 'PRIVADA';
+                output += `\n${txid} ${valor}`;
             });
         } else {
             output += `\nMempool vacío`;
         }
-
-        
-
         terminal.innerHTML = output;
         
     } catch (error) {
