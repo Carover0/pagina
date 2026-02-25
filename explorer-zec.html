@@ -84,16 +84,6 @@ ULTIMOS 15 BLOQUES
 bloque  tx  hash                                            fecha
 --------------------------------------------------------------------------------`;
 
-        data.recent.blocks.forEach(b => {
-            const fecha = new Date(b.time * 1000).toLocaleString();
-            const hashMostrado = b.hash.substring(0,16) + '...' + b.hash.slice(-16);
-            output += `\n${String(b.height).padEnd(6)} ${String(b.tx_count).padEnd(3)} ${hashMostrado.padEnd(22)} ${fecha}`;
-        });
-
-        output += `\n\nULTIMAS 30 TRANSACCIONES 
---------------------------------------------------------------------------------
-monto ZEC    hash
---------------------------------------------------------------------------------`;
 	data.recent.blocks
 	    .sort((a, b) => b.height - a.height)
 	    .forEach(b => {
@@ -101,7 +91,16 @@ monto ZEC    hash
 	        const hashMostrado = b.hash.substring(0,16) + '...' + b.hash.slice(-16);
 	        output += `\n${String(b.height).padEnd(6)} ${String(b.tx_count).padEnd(3)} ${hashMostrado.padEnd(22)} ${fecha}`;
     });
-        output += `\n\n-----------------------------------------------------------------
+        output += `\n\nULTIMAS 30 TRANSACCIONES 
+--------------------------------------------------------------------------------
+monto ZEC    hash
+--------------------------------------------------------------------------------`;
+	const txsToShow = data.recent.transactions.slice(0, 30);
+	txsToShow.forEach(t => {
+	    // Si es null O valor es 0 (o muy cercano a 0) → PRIVADA
+	    const valor = (t.value === null || Math.abs(t.value) === 0) ? "PRIVADA" : t.value.toFixed(6);
+	    output += `\n${valor.padEnd(11)}  ${t.txid}`;
+	});        output += `\n\n-----------------------------------------------------------------
 MEMPOOL (${data.mempool.size} TRANSACCIONES)
 -----------------------------------------------------------------`;
 
