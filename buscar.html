@@ -92,9 +92,12 @@ a:hover {
 <script>
 let data = null;
 
-window.handleData = function(wrapper) {
+async function loadData() {
     try {
-        const text = wrapper.contents;
+        const response = await fetch("https://carover0.xyz/zfiro.txt");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const text = await response.text();
         
         const lines = text.split('\n').filter(line => line.trim());
         data = {
@@ -145,7 +148,7 @@ window.handleData = function(wrapper) {
                     block_height: parts[2],
                     value_out: parts[3] === 'null' ? null : parseFloat(parts[3]),
                     time: parts[4],
-                    inputs: inputs,   // <--- NUEVO: Guardar entradas
+                    inputs: inputs,
                     outputs: outputs
                 });
             }
@@ -160,21 +163,6 @@ window.handleData = function(wrapper) {
         document.getElementById('nodeInfo').innerHTML = 'Error cargando datos: ' + e.message;
         console.error(e);
     }
-};
-
-function loadData() {
-    const oldScript = document.getElementById('jsonp-script');
-    if (oldScript) oldScript.remove();
-
-    const script = document.createElement('script');
-    script.id = 'jsonp-script';
-    
-    const url = "https://whateverorigin.org/get?callback=handleData&url=" + 
-                encodeURIComponent("https://carover0.xyz/zfiro.txt") + 
-                "&_=" + Date.now();
-    
-    script.src = url;
-    document.body.appendChild(script);
 }
 
 function formatDate(timestamp) {
@@ -255,6 +243,7 @@ function search() {
 }
 
 loadData();
+setInterval(loadData, 60000);
 
 const input = document.getElementById('search');
 input.addEventListener('keypress', e => { 
