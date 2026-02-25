@@ -29,101 +29,172 @@ Cargando...
 <div class="footer">--------------------------------------------------------------------------<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: carover0.firo</div>
 
 <script>
-function loadData() {
-    const terminal = document.getElementById('terminal');
-    terminal.innerHTML = `CARGANDO
-=========
-Cargando usando JSONP...`;
+let data = null;
 
-    // Limpiar script anterior
-    const oldScript = document.getElementById('jsonp-script');
-    if (oldScript) oldScript.remove();
-
-    // Crear nuevo script con JSONP
-    const script = document.createElement('script');
-    script.id = 'jsonp-script';
-    
-    const JSON_URL = "https://carover0.xyz/api/firo.json";
-    // Usamos JSONP con callback
-    script.src = `https://whateverorigin.org/get?callback=handleData&url=${encodeURIComponent(JSON_URL)}&_=${Date.now()}`;
-    
-    script.onerror = () => {
-        terminal.innerHTML = `ERROR: No se pudo cargar los datos. Recargar la pagina suele solucionarlo o espera, la pagina se actualiza sola cada 45 seg\n\nURL: ${script.src}`;
-    };
-    
-    document.body.appendChild(script);
+async function loadData() {
+    try {
+        // Leer DIRECTO (sin proxy)
+        const response = await fetch("https://carover0.xyz/zfiro.txt");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const text = await response.text();
+        
+        const lines = text.split('\n').filter(line => line.trim());
+        data = {
+            blocks: [],
+            transactions: []
+        };
+        
+        lines.forEach(line => {
+            const parts = line.split('|');
+            if (parts[0] === 'BLOCK') {
+                data.blocks.push({
+                    height: parts[1],
+                    hash: parts[2],
+                    time: parts[3],
+                    tx_count: parts[4],
+                    size: parts[5]
+                });
+            } else if (parts[0] === 'TX') {
+                let inputs = [];
+                let outputs = [];
+                
+                if (parts[5]) {
+                    const items = parts[5].split(';').filter(item => item.trim() !== '');
+                    
+                    items.forEach(item => {
+                        if (item.startsWith('<-')) {
+                            const [_, address, value] = item.match(/<- (\w+):([\d.]+)/) || [];
+                            if (address && value) {
+                                inputs.push({
+                                    address: address,
+                                    value: parseFloat(value)
+                                });
+                            }
+                        } else if (item.startsWith('->')) {
+                            const [_, address, value] = item.match(/-> (\w+):([\d.]+)/) || [];
+                            if (address && address !== 'undefined' && address !== 'null' && value) {
+                                outputs.push({
+                                    address: address,
+                                    value: parseFloat(value)
+                                });
+                            }
+                        }
+                    });
+                }
+                
+                data.transactions.push({
+                    txid: parts[1],
+                    block_height: parts[2],
+                    value_out: parts[3] === 'null' ? null : parseFloat(parts[3]),
+                    time: parts[4],
+                    inputs: inputs,
+                    outputs: outputs
+                });
+            }
+        });
+        
+        document.getElementById('nodeInfo').innerHTML = 
+            `> BUSCAR\n> ${data.blocks.length} bloques · ${data.transactions.length} transacciones, ≈ 6h 25m atras\n\n<a href="https://carover0.github.io/pagina/explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a>`;
+        
+        console.log("Datos cargados:", data);
+        
+    } catch (e) {
+        document.getElementById('nodeInfo').innerHTML = 'Error cargando datos: ' + e.message;
+        console.error(e);
+    }
 }
 
-// Función global que recibe los datos del JSONP
-window.handleData = function(wrapper) {
-    const terminal = document.getElementById('terminal');
-    try {
-        const data = JSON.parse(wrapper.contents);
-        
-        const uptimeSec = data.node.uptime_seconds;
-        const days = Math.floor(uptimeSec / 86400);
-        const hours = Math.floor((uptimeSec % 86400) / 3600);
-        
-        let output = `EXPLORADOR FIRO
-===============
+function formatDate(timestamp) {
+    return new Date(timestamp * 1000).toLocaleString();
+}
 
-BLOQUE ACTUAL : ${data.blockchain.blocks}
-FECHA         : ${data.datetime}
-CONEXIONES    : ${data.network.connections}
-UPTIME        : ${days}d ${hours}h
-TIMESTAMP     : ${data.timestamp} (${new Date(data.timestamp*1000).toLocaleTimeString()})
-
-<a href="https://carover0.github.io/pagina/buscar.html">[BUSCAR]</a> <a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a>
-
-ULTIMOS 15 BLOQUES
---------------------------------------------------------------------------------
-bloque  tx  hash                                            fecha
---------------------------------------------------------------------------------`;
-
-        data.recent.last_15_blocks.forEach(b => {
-            const fecha = new Date(b.time * 1000).toLocaleString();
-            const hashMostrado = b.hash.substring(0,19) + '...' + b.hash.slice(-25);
-            output += `\n${String(b.height).padEnd(6)} ${String(b.tx_count).padEnd(3)} ${hashMostrado.padEnd(22)} ${fecha}`;
-        });
-
-        output += `\n
-
-ULTIMAS 15 TRANSACCIONES
---------------------------------------------------------------------------------
-conf monto     hash
---------------------------------------------------------------------------------`;
-
-        data.recent.last_15_transactions.forEach(t => {
-            const valor = t.value_out === null ? "0.0000" : t.value_out.toFixed(4);
-            output += `\n${String(t.confirmations).padEnd(3)}  ${valor.padEnd(8)}  ${t.txid}`;
-        });
-
-        output += `\n
-
------------------------------------------------------------------
-MEMPOOL PREVIEW (${data.mempool.txcount} TRANSACCIONES)
------------------------------------------------------------------`;
-
-        if (data.recent.mempool_preview?.length) {
-            data.recent.mempool_preview.forEach(item => {
-                const txid = item.txid || item;
-                const valor = item.value_out ? ` (${Number(item.value_out).toFixed(4)} FIRO)` : '';
-                output += `\n${txid.substring(0,40)}${valor}`;
-            });
-        } else {
-            output += `\nMempool vacío`;
-        }
-
-        output += `\n`;
-        terminal.innerHTML = output;
-        
-    } catch (error) {
-        terminal.innerHTML = `ERROR: ${error.message}`;
+function search() {
+    if (!data) {
+        document.getElementById('output').innerHTML = 'Datos no cargados aún';
+        return;
     }
-} 
+    
+    const input = document.getElementById('search');
+    const q = input.value.trim().toLowerCase();
+    if (!q) return;
+    
+    let out = '';
+    let encontrados = 0;
+    
+    data.blocks.forEach(b => {
+        if (b.height.includes(q) || b.hash.toLowerCase().includes(q)) {
+            encontrados++;
+            out += `\n■ BLOQUE #${b.height}\n`;
+            out += `  hash: ${b.hash}\n`;
+            out += `  time: ${formatDate(b.time)}\n`;
+            out += `  tx: ${b.tx_count} · size: ${b.size}b\n`;
+        }
+    });
+    
+    data.transactions.forEach(t => {
+        let matchInInputs = t.inputs?.some(o => 
+            (o.address?.toLowerCase().includes(q)) || 
+            (o.value?.toString().includes(q))
+        ) || false;
+        
+        let matchInOutputs = t.outputs?.some(o => 
+            (o.address?.toLowerCase().includes(q)) || 
+            (o.value?.toString().includes(q))
+        ) || false;
+        
+        if (t.txid.toLowerCase().includes(q) || 
+            (t.value_out !== null && t.value_out.toString().includes(q)) || 
+            t.block_height.includes(q) ||
+            matchInInputs ||
+            matchInOutputs) {
+            
+            encontrados++;
+            out += `\n• TX ${t.txid}\n`;
+            out += `  block: #${t.block_height}\n`;
+            out += `  time: ${formatDate(t.time)}\n`;
+            
+            if (t.value_out !== null) {
+                out += `  total: ${t.value_out.toFixed(4)} FIRO\n`;
+            }
+            
+            if (t.inputs?.length) {
+                t.inputs.forEach(input => {
+                    if (input.address && input.address !== 'undefined' && input.address !== 'null') {
+                        out += `  <- ${input.address} : ${input.value.toFixed(4)} FIRO\n`;
+                    }
+                });
+            }
+            
+            if (t.outputs?.length) {
+                t.outputs.forEach(output => {
+                    if (output.address && output.address !== 'undefined' && output.address !== 'null') {
+                        out += `  -> ${output.address} : ${output.value.toFixed(4)} FIRO\n`;
+                    }
+                });
+            }
+        }
+    });    
+    
+    document.getElementById('output').innerHTML = 
+        encontrados > 0 ? out : '> no results';
+    
+    input.value = '';
+}
 
 loadData();
-setInterval(loadData, 45000);
+setInterval(loadData, 60000);
+
+const input = document.getElementById('search');
+input.addEventListener('keypress', e => { 
+    if (e.key === 'Enter') {
+        search();
+    }
+});
+
+window.onload = () => input.focus();
 </script>
+
+  
 </body>
 </html>
