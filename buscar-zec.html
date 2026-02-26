@@ -166,7 +166,7 @@ async function loadData() {
         data.blocks.sort((a, b) => parseInt(b.height) - parseInt(a.height));
         
         document.getElementById('nodeInfo').innerHTML = 
-            `> BUSCAR ZCASH\n> ${data.blocks.length} bloques · ${data.transactions.length} transacciones, ≈ 3h 15m atras. · Para buscar transacciones mas antiguas usa la consola.\n\n` +
+            `> BUSCAR ZCASH\n> ${data.blocks.length} bloques · ${data.transactions.length} transacciones, ≈ 3h 15m atras. Para transacciones mas antiguas usa la consola.\n\n` +
             `<a href="https://carover0.github.io/pagina/zcashstats.html">[ZCASH]</a> ` +
             `<a href="https://carover0.github.io/pagina/explorer-zec.html">[EXPLORADOR]</a> ` + 
             `<a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a>`;
