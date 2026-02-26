@@ -10,7 +10,7 @@ LOCKFILE="/tmp/firo_api.lock"
 exec 9>"$LOCKFILE"
 flock -n 9 || exit 1
 
-### ===== FIRO FULL STATUS API (STABLE) =====
+### ===== FIRO FULL STATUS API =====
 
 FIRO_CLI="/root/firo_node/bin/firo-cli"
 FIRO_CONF="/root/firo_node/.firo/firo.conf"
@@ -28,7 +28,7 @@ MEMINFO=$($FIRO_CLI -conf=$FIRO_CONF getmempoolinfo)
 MININFO=$($FIRO_CLI -conf=$FIRO_CONF getmininginfo)
 PEERINFO=$($FIRO_CLI -conf=$FIRO_CONF getpeerinfo)
 
-### --- PROCESS UPTIME (REAL) ---
+### --- PROCESS UPTIME ---
 FIRO_PID=$(pidof firod)
 UPTIME=$(ps -o etimes= -p "$FIRO_PID" | tr -d ' ')
 
@@ -138,7 +138,6 @@ LAST_TX_JSON="${LAST_TX_JSON%,}]"
 MEMPOOL_TXS=$($FIRO_CLI -conf=$FIRO_CONF getrawmempool)
 for txid in $(echo "$MEMPOOL_TXS" | jq -r '.[]'); do
     RAW_TX=$($FIRO_CLI -conf=$FIRO_CONF getrawtransaction $txid true)
-    # Valor total de salida de la transacción
     VALUE_OUT=$(echo "$RAW_TX" | jq '[.vout[].value] | add')
     echo "$txid -> $VALUE_OUT Firo"
 done
@@ -150,7 +149,6 @@ MEMPOOL_PREVIEW_JSON=$(for txid in $(echo "$MEMPOOL_TXS" | jq -r '.[]'); do
 done | jq -s .)
 
 
-# Quita corchetes inicial y final
 LAST_BLOCKS_YAML="${LAST_BLOCKS_JSON#[}"
 LAST_BLOCKS_YAML="${LAST_BLOCKS_YAML%]}"
 
@@ -160,11 +158,8 @@ LAST_TX_YAML="${LAST_TX_YAML%]}"
 LAST_BLOCKS_YAML="${LAST_BLOCKS_JSON#[}"
 LAST_BLOCKS_YAML="${LAST_BLOCKS_YAML%]}"
 
-# Para mempool
 MEMPOOL_YAML="${MEMPOOL_TXS#[}"
 MEMPOOL_YAML="${MEMPOOL_YAML%]}"
-
-### --- CONVERTIR A YAML LEGIBLE PARA TXT ---
 
 # LAST BLOCKS
 LAST_BLOCKS_YAML=$(echo "$LAST_BLOCKS_JSON" | jq -r '.[] | "  - height: \(.height)\n    hash: \(.hash)\n    time: \(.time)\n    tx_count: \(.tx_count)\n    size: \(.size)"')
@@ -174,9 +169,6 @@ LAST_TX_YAML=$(echo "$LAST_TX_JSON" | jq -r '.[] | "  - txid: \(.txid)\n    bloc
 
 # MEMPOOL PREVIEW
 MEMPOOL_YAML=$(echo "$MEMPOOL_TXS" | jq -r '.[] | "  - \(. )"')
-
-
-
 
 ### --- OUTPUT ---
 cat > "$FIRO_OUT" <<EOF
