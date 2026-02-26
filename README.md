@@ -1,19 +1,19 @@
-Personal infrastructure project.
+Proyecto de infraestructura personal.
 
-Running and monitoring:
-- Full blockchain nodes
-- Public explorers
-- Bots and status endpoints
+Ejecución y monitorización:
+Nodos blockchain completos
+Exploradores públicos
+Bots y endpoints de estado
 
-All services are self-hosted and operate continuously.
+Todos los servicios son autoalojados y operan de forma continua.
 
-No frameworks.  
-No third-party platforms.  
-No analytics.
+Sin frameworks · HTML, CSS y JavaScript plano
+Sin terceros · todo corre en VPS propio o al menos trato de que la mayoria sea asi.
+Sin trackers, ads y scripts basura.
+Solo datos
 
-Live data reflects real nodes in production.
+Sentite libre de usar lo que necesites de esta pagina siempre, solo hacemelo saber (solo un poco de dopamina) 
 
 ---
 
 © carover0
-
