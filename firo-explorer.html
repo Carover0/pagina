@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -20,7 +19,7 @@ body {
     white-space: pre-wrap;
 }
 .prompt {
-    color: #9B1C2E;  /* Rojo Firo */
+    color: #9B1C2E;
 }
 .input-line {
     display: flex;
@@ -60,6 +59,8 @@ pre {
     font-size: 15px;
     white-space: pre-wrap;
     word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 </style>
 </head>
@@ -73,7 +74,7 @@ DIFICULTAD   : <span id="stat-difficulty">---</span>
 CONEXIONES   : <span id="stat-connections">---</span>
 MEMPOOL      : <span id="stat-mempool">---</span> tx
 <br><a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a> <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a><br>
-<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash / txid / direccion" autofocus>
+<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / txid / direccion" autofocus>
 
 <div id="output"></div>
 
@@ -82,6 +83,8 @@ MEMPOOL      : <span id="stat-mempool">---</span> tx
 </div>
 
 <script>
+
+
 const API_URL = "https://carover0.xyz/api/firo/rpc.php";
 const TOKEN = "firo2026";
 const STATUS_URL = "https://carover0.xyz/api/firo.json";
@@ -90,34 +93,45 @@ const STATUS_URL = "https://carover0.xyz/api/firo.json";
 function detectCommand(input) {
     input = input.trim();
     
-    // Bloque por altura
-    if (/^\d+$/.test(input)) {
-        return `getblock ${input}`;
+    // 1. Si ya es un comando RPC, devolverlo sin cambios
+    if (input.startsWith('getblock') || 
+        input.startsWith('getrawtransaction') || 
+        input.startsWith('validateaddress') ||
+        input.startsWith('getaddressbalance')) {
+        return input;
     }
     
-    // Txid (64 hex)
+    // 2. Bloque por altura
+    if (/^\d+$/.test(input)) {
+        return `getblockhash ${input}`;
+    }
+    
+    // 3. TXID (64 hex)
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         return `getrawtransaction ${input} 1`;
     }
     
-    // Dirección transparente Firo (formato similar a Bitcoin)
+    // 4. Dirección transparente (F... o a...)
     if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
         return `validateaddress ${input}`;
     }
     
-    // Dirección blindada? (formato largo)
+    // 5. Dirección Spark (sm... largo) u otras largas
     if (input.length > 50) {
+        // IMPORTANTE: No agregar validateaddress si ya está presente
+        if (input.startsWith('validateaddress')) {
+            return input;
+        }
         return `validateaddress ${input}`;
     }
     
-    // Hash de bloque (64 hex)
+    // 6. Hash de bloque (64 hex)
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         return `getblock ${input}`;
     }
     
     return input;
 }
-
 // ========== CARGA DE ESTADOS ==========
 async function loadNetworkStats() {
     try {
@@ -130,7 +144,7 @@ async function loadNetworkStats() {
         document.getElementById('stat-mempool').innerText = d.mempool?.txcount || '0';
         
     } catch(e) {
-        // no mostramos error
+        // Silencio
     }
 }
 
@@ -148,6 +162,12 @@ async function executeSearch(q) {
         if (data.error) {
             res += `error: ${JSON.stringify(data.error)}`;
         } 
+        // ===== RESPUESTA DE GETBLOCKHASH =====
+        else if (q.includes('getblockhash') && typeof data.result === 'string') {
+            const hash = data.result;
+            executeSearch(`getblock ${hash}`);
+            return;
+        }
         // ===== BLOQUES =====
         else if (q.includes('getblock') && data.result?.hash) {
             const b = data.result;
@@ -156,11 +176,10 @@ async function executeSearch(q) {
             res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
             res += `transacciones: ${b.tx?.length || 0}\n`;
             res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
-            if (b.previousblockhash) res += `anterior: ${b.previousblockhash.substring(0,64)}...\n`;
-            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash.substring(0,64)}...\n`;
+            if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
+            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
             if (b.size) res += `tamaño: ${b.size} bytes\n`;
             
-            // Mostrar transacciones si hay
             if (b.tx && b.tx.length > 0) {
                 res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
                 b.tx.forEach((txid, i) => {
@@ -172,10 +191,8 @@ async function executeSearch(q) {
         else if (q.includes('getrawtransaction') && data.result?.txid) {
             const t = data.result;
             
-            // Detectar si es blindada (simplificado)
-            const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0 || t.orchard?.actions?.length > 0;
+            const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0;
             
-            // ----- CABECERA -----
             if (esBlindada) {
                 res += `🛡️ TRANSACCIÓN PRIVADA (SHIELDED)\n`;
             } else {
@@ -183,25 +200,19 @@ async function executeSearch(q) {
             }
             res += `TXID: ${t.txid}\n`;
             
-            // Bloque
             const blockHeight = t.blockheight || t.height || 
                                (t.blockhash ? 'consultar bloque' : 'no confirmada');
             res += `bloque: #${blockHeight}\n`;
             res += `confirmaciones: ${t.confirmations || 0}\n`;
             
-            // Fecha
             if (t.blocktime || t.time) {
                 const ts = t.blocktime || t.time;
                 res += `fecha: ${new Date(ts*1000).toLocaleString()}\n`;
             }
             
-            // Versión
             res += `versión: ${t.version || 'N/A'}\n`;
-            
-            // Tamaño
             if (t.size) res += `tamaño: ${t.size} bytes\n`;
             
-            // ----- ENTRADAS -----
             if (t.vin && t.vin.length > 0) {
                 res += `\n▶ ENTRADAS (${t.vin.length})\n`;
                 t.vin.forEach((vin, i) => {
@@ -214,7 +225,6 @@ async function executeSearch(q) {
                 });
             }
             
-            // ----- SALIDAS -----
             if (t.vout && t.vout.length > 0) {
                 res += `\n◀ SALIDAS (${t.vout.length})\n`;
                 let totalOut = 0;
@@ -236,14 +246,12 @@ async function executeSearch(q) {
                 }
             }
             
-            // ----- SHIELDED -----
             if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
                 res += `\n🛡️ SHIELDED\n`;
                 if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
                 if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
             }
             
-            // ----- FEE -----
             if (!esBlindada && t.vin && t.vout) {
                 let totalIn = 0;
                 t.vin.forEach(vin => { if (vin.value) totalIn += vin.value; });
@@ -254,23 +262,43 @@ async function executeSearch(q) {
                 }
             }
         }
-        // ===== INFORMACIÓN DE DIRECCIÓN =====
-        else if (q.includes('validateaddress') && data.result) {
-            const v = data.result;
-            const direccion = v.address || q.split(' ')[1] || 'desconocida';
+// ===== VALIDACIÓN DE DIRECCIÓN =====
+else if (q.includes('validateaddress') && data.result) {
+    const v = data.result;
+    const direccion = v.address || q.split(' ')[1] || 'desconocida';
+    
+    res += `DIRECCIÓN\n`;
+    res += `dirección: ${direccion}\n`;
+    
+    // Detectar si es Spark (campo específico)
+    if (v.isvalidSpark !== undefined) {
+        res += `válida (Spark): ${v.isvalidSpark ? 'sí' : 'no'}\n`;
+        if (v.isvalidSpark) {
+            res += `tipo: shielded (Spark)\n`;
+        }
+    } else {
+        // Dirección transparente (formato clásico)
+        res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
+        
+        if (v.isvalid) {
+            let tipo = 'transparente';
+            if (v.isscript) tipo = 'script';
+            else if (v.iswatchonly) tipo = 'watchonly';
+            res += `tipo: ${tipo}\n`;
             
-            res += `DIRECCIÓN\n`;
-            res += `dirección: ${direccion}\n`;
-            res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
-            
-            if (v.isvalid) {
-                res += `tipo: ${v.isscript ? 'script' : 'transparente'}\n`;
-            }
-            
-            if (v.ismine !== undefined) {
-                res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
+            // Mostrar scriptPubKey si está disponible
+            if (v.scriptPubKey) {
+                res += `scriptPubKey: ${v.scriptPubKey}\n`;
             }
         }
+    }
+    
+    // Información común a ambos tipos
+    if (v.ismine !== undefined) {
+        res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
+    }
+}
+
         // ===== CUALQUIER OTRO COMANDO =====
         else {
             res += JSON.stringify(data.result || data, null, 2);
@@ -288,7 +316,6 @@ async function executeSearch(q) {
 // ========== EVENTOS ==========
 const searchInput = document.getElementById('searchInput');
 
-// Enter
 searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
@@ -300,7 +327,6 @@ searchInput.addEventListener('keydown', (e) => {
     }
 });
 
-// Pegar
 searchInput.addEventListener('paste', (e) => {
     setTimeout(() => {
         const input = searchInput.value;
@@ -313,8 +339,16 @@ searchInput.addEventListener('paste', (e) => {
 
 // ========== INICIALIZACIÓN ==========
 loadNetworkStats();
-setInterval(loadNetworkStats, 30000);
+//setInterval(loadNetworkStats, 30000);
 </script>
+
+
+
+
+
+
+
+
 
 </body>
 </html>
