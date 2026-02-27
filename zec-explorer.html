@@ -241,7 +241,7 @@ async function executeSearch(q) {
             // Expiración
             if (t.expiryheight) {
                 if (esBlindada) {
-                    res += `privacidad: expira en bloque ${t.expiryheight}\n`;
+                    res += `validez: expira en bloque ${t.expiryheight} si no se confirma\n`;
                 } else {
                     res += `expira: bloque ${t.expiryheight}\n`;
                 }
