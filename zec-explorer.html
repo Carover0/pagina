@@ -86,10 +86,10 @@ const TOKEN = "zec2026";
 const STATUS_URL = "https://carover0.xyz/zec/status.json";
 
 
-// ========== DETECCION AUTOMATICA ==========
+// ========== DETECCIÓN AUTOMÁTICA ==========
 function detectCommand(input) {
     input = input.trim();
-    
+
     if (input.startsWith('getblock') || 
         input.startsWith('getrawtransaction') || 
         input.startsWith('validateaddress') || 
@@ -97,33 +97,31 @@ function detectCommand(input) {
         input.startsWith('getaddressbalance')) {
         return input;
     }
-    
     if (input.startsWith('u') && input.length > 100) {
         return `UA:${input}`;
     }
-    
     if (/^\d+$/.test(input)) {
         return `getblock ${input}`;
     }
-    
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
-        return `getrawtransaction ${input} 1`;
+        // Si empieza con al menos 4 ceros → es un hash de bloque
+        if (/^0{4,}[a-fA-F0-9]*$/.test(input)) {
+            return `getblock ${input}`;
+        } 
+        // Si no → es un txid
+        else {
+            return `getrawtransaction ${input} 1`;
+        }
     }
-    
     if (/^t1[a-zA-Z0-9]{33}$/.test(input)) {
         return `getaddressbalance ${input}`;
     }
-    
     if (input.startsWith('z') && input.length > 50) {
         return `z_getbalance ${input}`;
     }
-    
-    if (/^[a-fA-F0-9]{64}$/.test(input)) {
-        return `getblock ${input}`;
-    }
-    
     return input;
 }
+
 // ========== CARGA DE ESTADOS ==========
 async function loadNetworkStats() {
     try {
