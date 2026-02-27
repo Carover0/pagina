@@ -128,6 +128,8 @@ async function loadNetworkStats() {
     }
 }
 
+
+
 // ========== EJECUCIÓN DE BÚSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
@@ -153,7 +155,46 @@ async function executeSearch(q) {
             if (b.previousblockhash) res += `anterior: ${b.previousblockhash.substring(0,64)}...\n`;
             if (b.nextblockhash) res += `siguiente: ${b.nextblockhash.substring(0,64)}...\n`;
             if (b.size) res += `tamaño: ${b.size} bytes\n`;
-        } 
+            
+            // Mostrar transacciones con detalles si están disponibles
+            if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
+                res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
+                b.tx.forEach((tx, i) => {
+                    res += `\n  TX #${i+1}: ${tx.txid}\n`;
+                    
+                    // Calcular total de salidas
+                    if (tx.vout && tx.vout.length > 0) {
+                        let totalOut = 0;
+                        tx.vout.forEach(vout => {
+                            totalOut += vout.value || 0;
+                        });
+                        res += `    total salida: ${totalOut.toFixed(4)} ZEC\n`;
+                        
+                        // Mostrar todas las salidas
+                        tx.vout.forEach((vout, j) => {
+                            let addr = 'privada';
+                            if (vout.scriptPubKey?.addresses?.[0]) {
+                                addr = vout.scriptPubKey.addresses[0];
+                                if (addr.length > 64) addr = addr.substring(0,64) + '...';
+                            }
+                            res += `    → ${vout.value} ZEC a ${addr}\n`;
+                        });
+                    }
+                    
+                    // Indicar si es blindada
+                    const esBlindada = tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0 || tx.orchard?.actions?.length > 0;
+                    if (esBlindada) {
+                        res += `    🛡️ incluye ${tx.vShieldedSpend?.length || 0} spends, ${tx.vShieldedOutput?.length || 0} outputs\n`;
+                    }
+                });
+            } else if (b.tx && b.tx.length > 0) {
+                // Si solo tenemos TXIDs, mostrar TODOS
+                res += `\n▶ TXIDS (${b.tx.length})\n`;
+                b.tx.forEach((txid, i) => {
+                    res += `  ${i+1}. ${txid}\n`;
+                });
+            }
+        }
         // ===== TRANSACCIONES =====
         else if (q.includes('getrawtransaction') && data.result?.txid) {
             const t = data.result;
@@ -215,7 +256,7 @@ async function executeSearch(q) {
                         res += `  [#${i}] COINBASE (nuevos ZEC)\n`;
                     } else if (vin.txid) {
                         const valStr = vin.value ? ` ${vin.value} ZEC` : '';
-                        res += `  [#${i}] desde ${vin.txid.substring(0,64)}...:${vin.vout}${valStr}\n`;
+                        res += `  [#${i}] desde ${vin.txid}...:${vin.vout}${valStr}\n`;
                     }
                 });
             }
@@ -254,27 +295,28 @@ async function executeSearch(q) {
                 if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
             }
             
-	    // ----- SHIELDED ORCHARD -----
+            // ----- SHIELDED ORCHARD -----
             if (t.orchard?.actions?.length > 0) {
-              res += `\n🛡️ ORCHARD SHIELDED\n`;
-              res += `  acciones: ${t.orchard.actions.length}\n`;
-    
-              t.orchard.actions.slice(0, 2).forEach((action, i) => {
-                  res += `  acción #${i+1}:\n`;
-                  if (action.nullifier) res += `    nullifier: ${action.nullifier}\n`;
-                  if (action.cmx) res += `    commitment: ${action.cmx}\n`;
-              });
-    
-              if (t.orchard.valueBalance && t.orchard.valueBalance !== 0) {
-                  res += `  balance: ${t.orchard.valueBalance} ZEC\n`;
-              }
-              if (t.orchard.anchor) {
-                  res += `  anchor: ${t.orchard.anchor}\n`;
-             }
-              if (t.orchard.bindingSig) {
-                  res += `  bindingSig: ${t.orchard.bindingSig}\n`;
+                res += `\n🛡️ ORCHARD SHIELDED\n`;
+                res += `  acciones: ${t.orchard.actions.length}\n`;
+                
+                t.orchard.actions.forEach((action, i) => {
+                    res += `  acción #${i+1}:\n`;
+                    if (action.nullifier) res += `    nullifier: ${action.nullifier}\n`;
+                    if (action.cmx) res += `    commitment: ${action.cmx}\n`;
+                });
+                
+                if (t.orchard.valueBalance && t.orchard.valueBalance !== 0) {
+                    res += `  balance: ${t.orchard.valueBalance} ZEC\n`;
+                }
+                if (t.orchard.anchor) {
+                    res += `  anchor: ${t.orchard.anchor}\n`;
+                }
+                if (t.orchard.bindingSig) {
+                    res += `  bindingSig: ${t.orchard.bindingSig}\n`;
+                }
             }
-          }            
+            
             // ----- BALANCE Y FIRMAS GLOBALES -----
             if (t.valueBalance && t.valueBalance !== 0) {
                 const balanceZec = t.valueBalance / 1e8;
@@ -350,8 +392,6 @@ async function executeSearch(q) {
     
     document.getElementById('searchInput').value = '';
 }
-
-
 
 
 
