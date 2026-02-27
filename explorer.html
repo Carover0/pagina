@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>FIRO: TERMINAL EXPLORER</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", "Monaco", monospace;
+    font-size: 15px;
+    line-height: 1.2;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 80ch;
+    width: 100%;
+    margin: 0;
+    white-space: pre-wrap;
+}
+.prompt {
+    color: #9B1C2E;  /* Rojo Firo */
+}
+.input-line {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+#searchInput {
+    background: #000;
+    color: #fff;
+    border: none;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    padding: 4px 0;
+    width: 60ch;
+    outline: none;
+    caret-color: #9B1C2E;
+    autocomplete: off;
+}
+.footer {
+    margin-top: 20px;
+    padding-top: 10px;
+    color: #777;
+}
+a, a:visited {
+    color: #9B1C2E;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+.shielded {
+    color: #888;
+}
+pre {
+    margin: 10px 0 0 0;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+</style>
+</head>
+<body>
+<div class="terminal">
+
+FIRO TERMINAL EXPLORER
+======================<br>
+ALTURA       : <span id="stat-height">---</span>
+DIFICULTAD   : <span id="stat-difficulty">---</span>
+CONEXIONES   : <span id="stat-connections">---</span>
+MEMPOOL      : <span id="stat-mempool">---</span> tx
+<br><a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a> <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a><br>
+<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash / txid / direccion" autofocus>
+
+<div id="output"></div>
+
+===============================================================================
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
+</div>
+
+<script>
+const API_URL = "https://carover0.xyz/api/firo/rpc.php";
+const TOKEN = "firo2026";
+const STATUS_URL = "https://carover0.xyz/api/firo.json";
+
+// ========== DETECCIÓN AUTOMÁTICA ==========
+function detectCommand(input) {
+    input = input.trim();
+    
+    // Bloque por altura
+    if (/^\d+$/.test(input)) {
+        return `getblock ${input}`;
+    }
+    
+    // Txid (64 hex)
+    if (/^[a-fA-F0-9]{64}$/.test(input)) {
+        return `getrawtransaction ${input} 1`;
+    }
+    
+    // Dirección transparente Firo (formato similar a Bitcoin)
+    if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
+        return `validateaddress ${input}`;
+    }
+    
+    // Dirección blindada? (formato largo)
+    if (input.length > 50) {
+        return `validateaddress ${input}`;
+    }
+    
+    // Hash de bloque (64 hex)
+    if (/^[a-fA-F0-9]{64}$/.test(input)) {
+        return `getblock ${input}`;
+    }
+    
+    return input;
+}
+
+// ========== CARGA DE ESTADOS ==========
+async function loadNetworkStats() {
+    try {
+        const r = await fetch(STATUS_URL);
+        const d = await r.json();
+        
+        document.getElementById('stat-height').innerText = d.blockchain?.blocks?.toLocaleString() || '---';
+        document.getElementById('stat-difficulty').innerText = d.blockchain?.difficulty?.toFixed(2) || '---';
+        document.getElementById('stat-connections').innerText = d.network?.connections || '---';
+        document.getElementById('stat-mempool').innerText = d.mempool?.txcount || '0';
+        
+    } catch(e) {
+        // no mostramos error
+    }
+}
+
+// ========== EJECUCIÓN DE BÚSQUEDA ==========
+async function executeSearch(q) {
+    const out = document.getElementById('output');
+    out.innerHTML = '<pre>Ejecutando...</pre>';
+    
+    try {
+        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
+        const data = await r.json();
+        
+        let res = `<pre><span style="color:#9B1C2E;">firo> ${q}</span>\n\n`;
+        
+        if (data.error) {
+            res += `error: ${JSON.stringify(data.error)}`;
+        } 
+        // ===== BLOQUES =====
+        else if (q.includes('getblock') && data.result?.hash) {
+            const b = data.result;
+            res += `BLOQUE #${b.height}\n`;
+            res += `hash: ${b.hash}\n`;
+            res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
+            res += `transacciones: ${b.tx?.length || 0}\n`;
+            res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
+            if (b.previousblockhash) res += `anterior: ${b.previousblockhash.substring(0,64)}...\n`;
+            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash.substring(0,64)}...\n`;
+            if (b.size) res += `tamaño: ${b.size} bytes\n`;
+            
+            // Mostrar transacciones si hay
+            if (b.tx && b.tx.length > 0) {
+                res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
+                b.tx.forEach((txid, i) => {
+                    res += `  ${i+1}. ${txid}\n`;
+                });
+            }
+        }
+        // ===== TRANSACCIONES =====
+        else if (q.includes('getrawtransaction') && data.result?.txid) {
+            const t = data.result;
+            
+            // Detectar si es blindada (simplificado)
+            const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0 || t.orchard?.actions?.length > 0;
+            
+            // ----- CABECERA -----
+            if (esBlindada) {
+                res += `🛡️ TRANSACCIÓN PRIVADA (SHIELDED)\n`;
+            } else {
+                res += `📄 TRANSACCIÓN TRANSPARENTE\n`;
+            }
+            res += `TXID: ${t.txid}\n`;
+            
+            // Bloque
+            const blockHeight = t.blockheight || t.height || 
+                               (t.blockhash ? 'consultar bloque' : 'no confirmada');
+            res += `bloque: #${blockHeight}\n`;
+            res += `confirmaciones: ${t.confirmations || 0}\n`;
+            
+            // Fecha
+            if (t.blocktime || t.time) {
+                const ts = t.blocktime || t.time;
+                res += `fecha: ${new Date(ts*1000).toLocaleString()}\n`;
+            }
+            
+            // Versión
+            res += `versión: ${t.version || 'N/A'}\n`;
+            
+            // Tamaño
+            if (t.size) res += `tamaño: ${t.size} bytes\n`;
+            
+            // ----- ENTRADAS -----
+            if (t.vin && t.vin.length > 0) {
+                res += `\n▶ ENTRADAS (${t.vin.length})\n`;
+                t.vin.forEach((vin, i) => {
+                    if (vin.coinbase) {
+                        res += `  [#${i}] COINBASE (nuevos FIRO)\n`;
+                    } else if (vin.txid) {
+                        const valStr = vin.value ? ` ${vin.value} FIRO` : '';
+                        res += `  [#${i}] desde ${vin.txid}...:${vin.vout}${valStr}\n`;
+                    }
+                });
+            }
+            
+            // ----- SALIDAS -----
+            if (t.vout && t.vout.length > 0) {
+                res += `\n◀ SALIDAS (${t.vout.length})\n`;
+                let totalOut = 0;
+                t.vout.forEach((vout, i) => {
+                    totalOut += vout.value || 0;
+                    let addr = 'OP_RETURN/privada';
+                    if (vout.scriptPubKey?.addresses?.[0]) {
+                        addr = vout.scriptPubKey.addresses[0];
+                    } else if (vout.scriptPubKey?.address) {
+                        addr = vout.scriptPubKey.address;
+                    }
+                    if (addr.length > 64) {
+                        addr = addr.substring(0,64) + '...';
+                    }
+                    res += `  [#${i}] ${vout.value} FIRO → ${addr}\n`;
+                });
+                if (totalOut > 0) {
+                    res += `  total salida: ${totalOut.toFixed(4)} FIRO\n`;
+                }
+            }
+            
+            // ----- SHIELDED -----
+            if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
+                res += `\n🛡️ SHIELDED\n`;
+                if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
+                if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
+            }
+            
+            // ----- FEE -----
+            if (!esBlindada && t.vin && t.vout) {
+                let totalIn = 0;
+                t.vin.forEach(vin => { if (vin.value) totalIn += vin.value; });
+                let totalOut = t.vout.reduce((sum, v) => sum + (v.value || 0), 0);
+                if (totalIn > 0 && totalOut > 0) {
+                    const fee = (totalIn - totalOut).toFixed(6);
+                    res += `\nfee: ${fee} FIRO\n`;
+                }
+            }
+        }
+        // ===== INFORMACIÓN DE DIRECCIÓN =====
+        else if (q.includes('validateaddress') && data.result) {
+            const v = data.result;
+            const direccion = v.address || q.split(' ')[1] || 'desconocida';
+            
+            res += `DIRECCIÓN\n`;
+            res += `dirección: ${direccion}\n`;
+            res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
+            
+            if (v.isvalid) {
+                res += `tipo: ${v.isscript ? 'script' : 'transparente'}\n`;
+            }
+            
+            if (v.ismine !== undefined) {
+                res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
+            }
+        }
+        // ===== CUALQUIER OTRO COMANDO =====
+        else {
+            res += JSON.stringify(data.result || data, null, 2);
+        }
+        
+        res += '</pre>';
+        out.innerHTML = res;
+    } catch(e) {
+        out.innerHTML = `<pre>error: ${e.message}</pre>`;
+    }
+    
+    document.getElementById('searchInput').value = '';
+}
+
+// ========== EVENTOS ==========
+const searchInput = document.getElementById('searchInput');
+
+// Enter
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const rawInput = searchInput.value.trim();
+        if (rawInput) {
+            const cmd = detectCommand(rawInput);
+            executeSearch(cmd);
+        }
+    }
+});
+
+// Pegar
+searchInput.addEventListener('paste', (e) => {
+    setTimeout(() => {
+        const input = searchInput.value;
+        const cmd = detectCommand(input);
+        if (cmd !== input) {
+            searchInput.value = cmd;
+        }
+    }, 10);
+});
+
+// ========== INICIALIZACIÓN ==========
+loadNetworkStats();
+setInterval(loadNetworkStats, 30000);
+</script>
+
+</body>
+</html>
