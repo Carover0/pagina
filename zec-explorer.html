@@ -85,7 +85,8 @@ const API_URL = "https://carover0.xyz/api/zec/rpc.php";
 const TOKEN = "zec2026";
 const STATUS_URL = "https://carover0.xyz/zec/status.json";
 
-// ========== DETECCIÓN AUTOMÁTICA ==========
+
+// ========== DETECCION AUTOMATICA ==========
 function detectCommand(input) {
     input = input.trim();
     
@@ -100,25 +101,29 @@ function detectCommand(input) {
     if (input.startsWith('u') && input.length > 100) {
         return `UA:${input}`;
     }
+    
     if (/^\d+$/.test(input)) {
         return `getblock ${input}`;
     }
+    
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         return `getrawtransaction ${input} 1`;
     }
+    
     if (/^t1[a-zA-Z0-9]{33}$/.test(input)) {
         return `getaddressbalance ${input}`;
     }
+    
     if (input.startsWith('z') && input.length > 50) {
         return `z_getbalance ${input}`;
     }
+    
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         return `getblock ${input}`;
     }
     
     return input;
 }
-
 
 // ========== CARGA DE ESTADOS ==========
 async function loadNetworkStats() {
@@ -134,10 +139,14 @@ async function loadNetworkStats() {
         // no mostramos error
     }
 }
-// ========== EJECUCIÓN DE BÚSQUEDA ==========
+
+
+
+// ========== EJECUCION DE BUSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
+
 
     if (q.startsWith('UA:')) {
         const ua = q.substring(3); 
@@ -178,7 +187,6 @@ async function executeSearch(q) {
             if (b.nextblockhash) res += `siguiente: ${b.nextblockhash.substring(0,64)}...\n`;
             if (b.size) res += `tamaño: ${b.size} bytes\n`;
             
-            // Mostrar transacciones con detalles si están disponibles
             if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
                 res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
                 b.tx.forEach((tx, i) => {
@@ -261,10 +269,10 @@ async function executeSearch(q) {
             // Tamaño
             if (t.size) res += `tamaño: ${t.size} bytes\n`;
             
-            // Expiración
+            // Expiracion
             if (t.expiryheight) {
                 if (esBlindada) {
-                    res += `validez: expira en bloque ${t.expiryheight} si no se confirma\n`;
+                    res += `privacidad: expira en bloque ${t.expiryheight}\n`;
                 } else {
                     res += `expira: bloque ${t.expiryheight}\n`;
                 }
@@ -339,7 +347,7 @@ async function executeSearch(q) {
                 }
             }
             
-            // ----- BALANCE Y FIRMAS GLOBALES -----
+            // ----- BALANCE -----
             if (t.valueBalance && t.valueBalance !== 0) {
                 const balanceZec = t.valueBalance / 1e8;
                 const signo = balanceZec > 0 ? '+' : '';
@@ -361,12 +369,13 @@ async function executeSearch(q) {
                 }
             }
         }
-        // ===== INFORMACIÓN DE DIRECCIÓN (UNIFICADA) =====
+        // ===== INFORMACIÓN DE DIRECCION UNIFICADA =====
         else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
             
             const esBalance = q.includes('getaddressbalance');
             const esValidate = q.includes('validateaddress');
             const esZValidate = q.includes('z_validateaddress');
+
             
             if (esBalance) {
                 const b = data.result;
@@ -443,36 +452,11 @@ searchInput.addEventListener('paste', (e) => {
     }, 10);
 });
 
-// ========== DETECCIÓN MEJORADA ==========
-function detectCommand(input) {
-    input = input.trim();
-    
-    if (/^\d+$/.test(input)) {
-        return `getblock ${input}`;
-    }
-    
-    if (/^[a-fA-F0-9]{64}$/.test(input)) {
-        return `getrawtransaction ${input} 1`;
-    }
-    
-    if (/^t1[a-zA-Z0-9]{33}$/.test(input)) {
-        return `getaddressbalance ${input}`;
-    }
-    
-    if (input.startsWith('z') && input.length > 50) {
-        return `z_getbalance ${input}`;  // Para z-addrs usamos z_getbalance
-    }
-    
-    if (/^[a-fA-F0-9]{64}$/.test(input)) {
-        return `getblock ${input}`;
-    }
-    
-    return input;
-}
 // ========== INICIALIZACIÓN ==========
 loadNetworkStats();
 setInterval(loadNetworkStats, 30000);
 </script>
+
 
 </body>
 </html>
