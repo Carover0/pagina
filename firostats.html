@@ -138,38 +138,36 @@ a:hover {
 <body>
 
 <div class="terminal">
-
-<!-- HEADER ROJO -->
+<!-- ASCII ART FIRO con MONITOR DE NODO -->
 <div class="ascii-art">
-  ███████╗██╗██████╗  ██████╗     ███╗   ██╗ ██████╗ ██████╗ ███████╗
-  ██╔════╝██║██╔══██╗██╔═══██╗    ████╗  ██║██╔═══██╗██╔══██╗██╔════╝
-  █████╗  ██║██████╔╝██║   ██║    ██╔██╗ ██║██║   ██║██║  ██║█████╗  
-  ██╔══╝  ██║██╔══██╗██║   ██║    ██║╚██╗██║██║   ██║██║  ██║██╔══╝  
-  ██║     ██║██║  ██║╚██████╔╝    ██║ ╚████║╚██████╔╝██████╔╝███████╗
-  ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝     ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝
+  ███████╗██╗██████╗  ██████╗  
+  ██╔════╝██║██╔══██╗██╔═══██╗ 
+  █████╗  ██║██████╔╝██║   ██║ 
+  ██╔══╝  ██║██╔══██╗██║   ██║ 
+  ██║     ██║██║  ██║╚██████╔╝ 
+  ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝  M O N I T O R   D E   N O D O
 </div>
-<div class="header-red">TERMINAL NODE MONITOR</div>
 <div class="version">[SISTEMA]: NODO PROPIO · ACTUALIZACION CADA 60s · <span class="blink">▶</span> ONLINE</div>
 
 <!-- NODO STATUS -->
-<div class="subheader">FIRO NODE · STATUS</div>
+<div class="subheader">FIRO NODE · ESTADO</div>
 <div id="node-status" class="data-block">
   <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
   <div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
   <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
   <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
   <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
-  <div class="row"><span class="label">UPTIME</span><span class="value" id="node-uptime">---</span></div>
+  <div class="row"><span class="label">TIEMPO EN LINEA</span><span class="value" id="node-uptime">---</span></div>
 </div>
 
 <!-- NODO NETWORK -->
-<div class="subheader">FIRO NODE · NETWORK</div>
+<div class="subheader">FIRO NODE · RED</div>
 <div id="node-network" class="data-block">
   <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
   <div class="row"><span class="label">HASHRATE</span><span class="value" id="node-hashrate">---</span></div>
-  <div class="row"><span class="label">CHAIN</span><span class="value" id="node-chain">---</span></div>
-  <div class="row"><span class="label">BEST BLOCK</span><span class="value" id="node-bestblock">---</span></div>
-  <div class="row"><span class="label">TIMESTAMP</span><span class="value" id="node-timestamp">---</span></div>
+  <div class="row"><span class="label">CADENA</span><span class="value" id="node-chain">---</span></div>
+  <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
+  <div class="row"><span class="label">HORA</span><span class="value" id="node-timestamp">---</span></div>
 </div>
 
 <!-- MARKET DATA -->
@@ -178,7 +176,7 @@ a:hover {
   <div class="row"><span class="label">PRECIO USD</span><span class="value">---</span></div>
   <div class="row"><span class="label">24h %</span><span class="value">---</span></div>
   <div class="row"><span class="label">7d %</span><span class="value">---</span></div>
-  <div class="row"><span class="label">MARKET CAP</span><span class="value">---</span></div>
+  <div class="row"><span class="label">CAPITALIZACION</span><span class="value">---</span></div>
   <div class="row"><span class="label">VOLUMEN 24h</span><span class="value">---</span></div>
 </div>
 <div class="small" id="market-updated">actualizando...</div>
@@ -207,7 +205,7 @@ a:hover {
 <!-- FOOTER -->
 <div class="footer">
   ════════════════════════════════════════════════════════════════════════════════<br>
-  © 2025 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
+  © 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
 </div>
 
 </div>
@@ -297,9 +295,11 @@ async function fetchNodeData() {
   }
 }
 
+// Ejecutar una vez al cargar
 fetchNodeData();
 fetchMarketData();
 
+// Actualizar cada 60 segundos
 setInterval(fetchNodeData, 60000);
 setInterval(fetchMarketData, 60000);
 </script>
