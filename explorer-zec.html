@@ -67,10 +67,10 @@ pre {
 
 ZCASH TERMINAL EXPLORER
 =======================<br>
-ALTURA       : <span id="stat-height">---</span>
-DIFICULTAD   : <span id="stat-difficulty">---</span>
-CONEXIONES   : <span id="stat-connections">---</span>
-MEMPOOL      : <span id="stat-mempool">---</span> tx
+ALTURA               : <span id="stat-height">---</span>
+CONEXIONES           : <span id="stat-connections">---</span>
+MEMPOOL              : <span id="stat-mempool">---</span> tx
+SERVIDOR LIGHTWALLET : <span id="stat-difficulty">https://carover0.xyz:9067</span>
 <br><a href="https://carover0.github.io/pagina/zcashstats.html">[ZCASH]</a> <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a><br>
 <span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash / txid / direccion" autofocus>
 
@@ -119,7 +119,6 @@ async function loadNetworkStats() {
         const d = await r.json();
         
         document.getElementById('stat-height').innerText = d.chain?.height?.toLocaleString() || '---';
-        document.getElementById('stat-difficulty').innerText = d.chain?.difficulty?.toFixed(2) || '---';
         document.getElementById('stat-connections').innerText = d.network?.connections || '---';
         document.getElementById('stat-mempool').innerText = d.mempool?.size || '0';
         
