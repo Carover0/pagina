@@ -189,7 +189,7 @@ async function executeSearch(q) {
                         tx.vout.forEach(vout => {
                             totalOut += vout.value || 0;
                         });
-                        res += `    total salida: ${totalOut.toFixed(4)} ZEC\n`;
+                        res += `    total salida: ${totalOut.toFixed(8)} ZEC\n`;
                         // Todas las salidas
                         tx.vout.forEach((vout, j) => {
                             let addr = 'privada';
@@ -289,7 +289,7 @@ async function executeSearch(q) {
                     res += `  [#${i}] ${vout.value} ZEC → ${addr}\n`;
                 });
                 if (totalOut > 0) {
-                    res += `  total salida: ${totalOut.toFixed(4)} ZEC\n`;
+                    res += `  total salida: ${totalOut.toFixed(8)} ZEC\n`;
                 }
             }
             // ----- SHIELDED SPROUT -----
