@@ -137,10 +137,11 @@ async function loadNetworkStats() {
     }
 }
 
-// ========== BUSQUEDA ==========
+// ========== EJECUCIÓN DE BÚSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
+
 
     if (q.startsWith('UA:')) {
         const ua = q.substring(3); 
@@ -158,10 +159,12 @@ async function executeSearch(q) {
         document.getElementById('searchInput').value = '';
         return;
     }
-   
+
+    
     try {
         const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
         const data = await r.json();
+        
         let res = `<pre><span style="color:#DD9D34;">zcash> ${q}</span>\n\n`;
         
         if (data.error) {
@@ -177,36 +180,43 @@ async function executeSearch(q) {
             res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
             if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
             if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
+
+
             if (b.size) res += `tamaño: ${b.size} bytes\n`;
             
+            // Mostrar transacciones con detalles si están disponibles
             if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
                 res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
                 b.tx.forEach((tx, i) => {
                     res += `\n  TX #${i+1}: ${tx.txid}\n`;
-                    // Salidas
+                    
+                    // Calcular total de salidas
                     if (tx.vout && tx.vout.length > 0) {
                         let totalOut = 0;
                         tx.vout.forEach(vout => {
                             totalOut += vout.value || 0;
                         });
                         res += `    total salida: ${totalOut.toFixed(8)} ZEC\n`;
-                        // Todas las salidas
+                        
+                        // Mostrar todas las salidas
                         tx.vout.forEach((vout, j) => {
                             let addr = 'privada';
                             if (vout.scriptPubKey?.addresses?.[0]) {
                                 addr = vout.scriptPubKey.addresses[0];
                                 if (addr.length > 64) addr = addr.substring(0,64) + '...';
                             }
-                            res += `    → ${vout.value} ZEC a ${addr}\n`;
+                            res += `    → ${vout.value.toFixed(8)} ZEC a ${addr}\n`;
                         });
                     }
-                    // Blindada
+                    
+                    // Indicar si es blindada
                     const esBlindada = tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0 || tx.orchard?.actions?.length > 0;
                     if (esBlindada) {
                         res += `    🛡️ incluye ${tx.vShieldedSpend?.length || 0} spends, ${tx.vShieldedOutput?.length || 0} outputs\n`;
                     }
                 });
             } else if (b.tx && b.tx.length > 0) {
+                // Si solo tenemos TXIDs, mostrar TODOS
                 res += `\n▶ TXIDS (${b.tx.length})\n`;
                 b.tx.forEach((txid, i) => {
                     res += `  ${i+1}. ${txid}\n`;
@@ -216,7 +226,8 @@ async function executeSearch(q) {
         // ===== TRANSACCIONES =====
         else if (q.includes('getrawtransaction') && data.result?.txid) {
             const t = data.result;
-            // ===== BLINDADAS =====
+            
+            // ===== DETECTOR DE TRANSACCIONES BLINDADAS =====
             function esTransaccionBlindada(tx) {
                 if (tx.orchard?.actions?.length > 0) return true;
                 if (tx.vShieldedSpend?.length > 0) return true;
@@ -237,21 +248,26 @@ async function executeSearch(q) {
                 res += `📄 TRANSACCIÓN TRANSPARENTE\n`;
             }
             res += `TXID: ${t.txid}\n`;
+            
             // Bloque
             const blockHeight = t.blockheight || t.height || 
                                (t.blockhash ? 'consultar bloque' : 'no confirmada');
             res += `bloque: #${blockHeight}\n`;
             res += `confirmaciones: ${t.confirmations || 0}\n`;
+            
             // Fecha
             if (t.blocktime || t.time) {
                 const ts = t.blocktime || t.time;
                 res += `fecha: ${new Date(ts*1000).toLocaleString()}\n`;
             }
+            
             // Versión y locktime
             res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
+            
             // Tamaño
             if (t.size) res += `tamaño: ${t.size} bytes\n`;
-            // Expiracion
+            
+            // Expiración
             if (t.expiryheight) {
                 if (esBlindada) {
                     res += `privacidad: expira en bloque ${t.expiryheight}\n`;
@@ -259,6 +275,7 @@ async function executeSearch(q) {
                     res += `expira: bloque ${t.expiryheight}\n`;
                 }
             }
+            
             // ----- ENTRADAS TRANSPARENTES -----
             if (t.vin && t.vin.length > 0) {
                 res += `\n▶ ENTRADAS (${t.vin.length})\n`;
@@ -266,11 +283,12 @@ async function executeSearch(q) {
                     if (vin.coinbase) {
                         res += `  [#${i}] COINBASE (nuevos ZEC)\n`;
                     } else if (vin.txid) {
-                        const valStr = vin.value ? ` ${vin.value} ZEC` : '';
+                        const valStr = vin.value ? ` ${vin.value.toFixed(8)} ZEC` : '';
                         res += `  [#${i}] desde ${vin.txid}...:${vin.vout}${valStr}\n`;
                     }
                 });
             }
+            
             // ----- SALIDAS TRANSPARENTES -----
             if (t.vout && t.vout.length > 0) {
                 res += `\n◀ SALIDAS (${t.vout.length})\n`;
@@ -286,26 +304,30 @@ async function executeSearch(q) {
                     if (addr.length > 64) {
                         addr = addr.substring(0,64) + '...';
                     }
-                    res += `  [#${i}] ${vout.value} ZEC → ${addr}\n`;
+                    res += `  [#${i}] ${vout.value.toFixed(8)} ZEC → ${addr}\n`;
                 });
                 if (totalOut > 0) {
                     res += `  total salida: ${totalOut.toFixed(8)} ZEC\n`;
                 }
             }
+            
             // ----- SHIELDED SPROUT -----
             if (t.vjoinsplit && t.vjoinsplit.length > 0) {
                 res += `\n🛡️ SPROUT SHIELDED (${t.vjoinsplit.length})\n`;
             }
+            
             // ----- SHIELDED SAPLING -----
             if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
                 res += `\n🛡️ SAPLING SHIELDED\n`;
                 if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
                 if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
             }
+            
             // ----- SHIELDED ORCHARD -----
             if (t.orchard?.actions?.length > 0) {
                 res += `\n🛡️ ORCHARD SHIELDED\n`;
                 res += `  acciones: ${t.orchard.actions.length}\n`;
+                
                 t.orchard.actions.forEach((action, i) => {
                     res += `  acción #${i+1}:\n`;
                     if (action.nullifier) res += `    nullifier: ${action.nullifier}\n`;
@@ -313,7 +335,7 @@ async function executeSearch(q) {
                 });
                 
                 if (t.orchard.valueBalance && t.orchard.valueBalance !== 0) {
-                    res += `  balance: ${t.orchard.valueBalance} ZEC\n`;
+                    res += `  balance: ${t.orchard.valueBalance.toFixed(8)} ZEC\n`;
                 }
                 if (t.orchard.anchor) {
                     res += `  anchor: ${t.orchard.anchor}\n`;
@@ -322,34 +344,37 @@ async function executeSearch(q) {
                     res += `  bindingSig: ${t.orchard.bindingSig}\n`;
                 }
             }
-            // ----- BALANCE -----
+            
+            // ----- BALANCE Y FIRMAS GLOBALES -----
             if (t.valueBalance && t.valueBalance !== 0) {
                 const balanceZec = t.valueBalance / 1e8;
                 const signo = balanceZec > 0 ? '+' : '';
-                res += `\nbalance blindado neto: ${signo}${balanceZec} ZEC\n`;
+                res += `\nbalance blindado neto: ${signo}${balanceZec.toFixed(8)} ZEC\n`;
             }
             
             if (t.bindingSig && !t.orchard?.bindingSig) {
-                res += `bindingSig: ${t.bindingSig.substring(0,64)}...\n`;
+                res += `bindingSig: ${t.bindingSig}...\n`;
             }
+            
             // ----- FEE -----
             if (!esBlindada && t.vin && t.vout) {
                 let totalIn = 0;
                 t.vin.forEach(vin => { if (vin.value) totalIn += vin.value; });
                 let totalOut = t.vout.reduce((sum, v) => sum + (v.value || 0), 0);
                 if (totalIn > 0 && totalOut > 0) {
-                    const fee = (totalIn - totalOut).toFixed(6);
+                    const fee = (totalIn - totalOut).toFixed(8);
                     res += `\nfee: ${fee} ZEC\n`;
                 }
             }
         }
-        // ===== INFORMACIÓN DE DIRECCION UNIFICADA =====
+        // ===== INFORMACIÓN DE DIRECCIÓN (UNIFICADA) =====
         else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
             
             const esBalance = q.includes('getaddressbalance');
             const esValidate = q.includes('validateaddress');
             const esZValidate = q.includes('z_validateaddress');
 
+            
             if (esBalance) {
                 const b = data.result;
                 const direccion = q.split(' ')[1] || b.address || 'desconocida';
@@ -397,6 +422,7 @@ async function executeSearch(q) {
     document.getElementById('searchInput').value = '';
 }
 
+    
 // ========== EVENTOS ==========
 const searchInput = document.getElementById('searchInput');
 // enter
