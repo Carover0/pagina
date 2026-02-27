@@ -183,8 +183,8 @@ async function executeSearch(q) {
             res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
             res += `transacciones: ${b.tx?.length || 0}\n`;
             res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
-            if (b.previousblockhash) res += `anterior: ${b.previousblockhash.substring(0,64)}...\n`;
-            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash.substring(0,64)}...\n`;
+            if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
+            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
             if (b.size) res += `tamaño: ${b.size} bytes\n`;
             
             if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
