@@ -89,28 +89,36 @@ const STATUS_URL = "https://carover0.xyz/zec/status.json";
 function detectCommand(input) {
     input = input.trim();
     
+    if (input.startsWith('getblock') || 
+        input.startsWith('getrawtransaction') || 
+        input.startsWith('validateaddress') || 
+        input.startsWith('z_validateaddress') ||
+        input.startsWith('getaddressbalance')) {
+        return input;
+    }
+    
+    if (input.startsWith('u') && input.length > 100) {
+        return `UA:${input}`;
+    }
     if (/^\d+$/.test(input)) {
         return `getblock ${input}`;
     }
-    
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         return `getrawtransaction ${input} 1`;
     }
-    
     if (/^t1[a-zA-Z0-9]{33}$/.test(input)) {
-        return `validateaddress ${input}`;
+        return `getaddressbalance ${input}`;
     }
-    
     if (input.startsWith('z') && input.length > 50) {
-        return `z_validateaddress ${input}`;
+        return `z_getbalance ${input}`;
     }
-    
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         return `getblock ${input}`;
     }
     
     return input;
 }
+
 
 // ========== CARGA DE ESTADOS ==========
 async function loadNetworkStats() {
@@ -126,13 +134,28 @@ async function loadNetworkStats() {
         // no mostramos error
     }
 }
-
-
-
 // ========== EJECUCIÓN DE BÚSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
+
+    if (q.startsWith('UA:')) {
+        const ua = q.substring(3); 
+        let res = `<pre><span style="color:#DD9D34;">zcash> ${ua}</span>\n\n`;
+        res += `DIRECCIÓN UNIFICADA (UA)\n`;
+        res += `dirección: ${ua}\n`;
+        res += `\n`;
+        res += `Las direcciones unificadas pertenecen a una cuenta.\n`;
+        res += `Solo se puede consultar su balance si es una cuenta propia.\n`;
+        res += `\n`;
+        res += `Para validar formato: z_validateaddress ${ua}\n`;
+        res += `Para listar receivers: z_listunifiedreceivers ${ua}\n`;
+        res += `</pre>`;
+        out.innerHTML = res;
+        document.getElementById('searchInput').value = '';
+        return;
+    }
+
     
     try {
         const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
