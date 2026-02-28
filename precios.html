@@ -2,128 +2,253 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>cΔrovΣr0 precios</title>
+  <title>cΔrovΣr0 · precios</title>
   <style>
     body {
-      margin: 0;
       background: #000;
       color: #fff;
       font-family: "Lucida Console", Monaco, monospace;
+      font-size: 15px;
+      line-height: 1.2;  
+      margin: 0;
+      padding: 20px;
     }
 
-    .container { padding: 30px; }
-
-    h1 { font-weight: normal; margin-bottom: 20px; }
-
-    table {
+    .terminal {
+      max-width: 80ch;
       width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
+      margin: 0;
     }
 
-    th, td {
-      padding: 8px 6px;
-      border-bottom: 1px solid #111;
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 1px 0;  
+      max-width: 80ch;
+      line-height: 1.2;
+    }
+
+    .label {
+      color: #bbb;
+      width: 15ch;
+    }
+
+    .value {
+      color: #fff;
+    }
+
+    .positive { color: #198652; }
+    .negative { color: #9B1C2E; }
+
+    .footer {
+      margin-top: 25px;
+      padding-top: 5px;
+      color: #fff;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    @keyframes blink {
+      from, to { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .version {
+      color: #777;
+      font-size: 15px;
+      margin-top: 0px;
+      margin-bottom: 5px;
+      line-height: 1.2;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 10px 0 5px 0;  
+      max-width: 80ch;
+    }
+
+    @media (max-width: 600px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+    }
+
+    .data-block {
+      margin: 5px 0;  
+    }
+
+    .small {
+      color: #777;
+      font-size: 15px;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+
+    .link-block {
+      margin: 0px 0;  
+      line-height: 1.2;
+    }
+
+    .link-label {
+      color: #999;
+      font-size: 15px;
+      margin-bottom: 0px;
+      margin-top: 20px;
+      line-height: 1.2;
+    }
+
+    /* NUEVO: violeta para privacidad */
+    .privacy-marker {
+      color: #b8a0ff;  /* violeta suave */
+      font-weight: normal;
+    }
+
+    .price-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 1px 0;
+      max-width: 80ch;
+      font-family: "Lucida Console", Monaco, monospace;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .price-rank {
+      color: #fff;
+      width: 4ch;
+      text-align: right;
+      margin-right: 2ch;
+    }
+
+    .price-name {
+      color: #fff;
+      width: 22ch;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .price-symbol {
+      color: #777;
+      margin-left: 1ch;
+      font-size: 13px;
+    }
+
+    .price-value {
+      width: 14ch;
+      text-align: right;
+      margin-right: 2ch;
+    }
+
+    .price-change {
+      width: 10ch;
+      text-align: right;
+      margin-right: 2ch;
+    }
+
+    .price-privacy {
+      width: 5ch;
       text-align: left;
     }
-
-    th { color: #888; font-weight: normal; }
-
-    .positive { color: #00ff88; }
-    .negative { color: #ff4444; }
-
-    .symbol { color: #777; font-size: 12px; }
-
-    .updated {
-      margin-top: 15px;
-      font-size: 12px;
-      color: #666;
+    .sep-raw {
+      color: #fff;
+      white-space: pre;
+      font-size: 15px;
+      margin: 10px 0;
+      letter-spacing: normal;
     }
-    .footer {
-       margin-top: 40px;
-       text-align: center;
-       font-size: 12px;
-       color: #fff;
-  }
-
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>cΔrovΣr0 • precios</h1>
+  <div class="terminal">
+    <div><h1>cΔrovΣr0 - Precios</h1></div>
+    <div class="price-line" style="color: #9B1C2E; margin-bottom: 5px;">
+      <span class="price-rank">#</span>
+      <span class="price-name">NOMBRE</span>
+      <span class="price-value">PRECIO</span>
+      <span class="price-change">24H%</span>
+      <span class="price-privacy">PRIV</span>
+    </div>
+    <div id="crypto-container"></div>
+    <div class="sep-raw">════════════════════════════════════════════════════════════════════════════════ 
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
+    </div><div class="small" id="updated"></div></div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th>Precio</th>
-          <th>24h %</th>
-          <th>Market Cap</th>
-          <th>Volumen (24h)</th>
-          <th>Supply</th>
-        </tr>
-      </thead>
-      <tbody id="crypto-body"></tbody>
-    </table>
+  <script>
+    const coins = [
+      "bitcoin", "bitcoin-cash", "litecoin", "zcash",
+      "dash", "digibyte", "pivx", "zcoin", "pirate-chain"
+    ];
 
-    <div class="updated" id="updated"></div>
-  </div>
-    <div class="footer">
-    © 2026 Creada con ♥ por cΔrovΣr0
-  </div>
+    const privacyCoins = {
+      "zcash": true,
+      "dash": true,
+      "pivx": true,
+      "zcoin": true,
+      "pirate-chain": true
+    };
 
-<script>
-const coins = [
-  "bitcoin",
-  "bitcoin-cash",
-  "litecoin",
-  "zcash",
-  "dash",
-  "digibyte",
-  "pivx",
-  "zcoin"
-];
-
-async function fetchData() {
-  try {
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coins.join(",")}&order=market_cap_desc&price_change_percentage=24h`
-    );
-
-    const data = await res.json();
-
-    const tbody = document.getElementById("crypto-body");
-    tbody.innerHTML = "";
-
-    data.forEach(coin => {
+    function formatPriceLine(coin) {
       const change24 = coin.price_change_percentage_24h;
       const changeClass = change24 >= 0 ? "positive" : "negative";
+      
+      const isPrivacy = privacyCoins[coin.id] || false;
+      const privacyIcon = isPrivacy ? '<span class="privacy-marker">🛡</span>' : '·';
+      
+      const price = coin.current_price < 1 
+        ? `$${coin.current_price.toFixed(6)}` 
+        : `$${coin.current_price.toFixed(2)}`;
 
-      const row = `
-        <tr>
-          <td>${coin.market_cap_rank}</td>
-          <td>${coin.name}<br><span class="symbol">${coin.symbol.toUpperCase()}</span></td>
-          <td>$${coin.current_price.toFixed(6)}</td>
-          <td class="${changeClass}">${change24.toFixed(2)}%</td>
-          <td>$${coin.market_cap.toLocaleString()}</td>
-          <td>$${coin.total_volume.toLocaleString()}</td>
-          <td>${coin.circulating_supply.toLocaleString()} ${coin.symbol.toUpperCase()}</td>
-        </tr>
+      const change = change24 ? change24.toFixed(2) : '0.00';
+      const changeDisplay = change24 >= 0 ? `+${change}` : `${change}`;
+
+      return `
+        <div class="price-line">
+          <span class="price-rank">${coin.market_cap_rank}</span>
+          <span class="price-name">
+            ${coin.name}<span class="price-symbol">${coin.symbol.toUpperCase()}</span>
+          </span>
+          <span class="price-value">${price}</span>
+          <span class="price-change ${changeClass}">${changeDisplay}%</span>
+          <span class="price-privacy">${privacyIcon}</span>
+        </div>
       `;
-      tbody.innerHTML += row;
-    });
+    }
 
-    document.getElementById("updated").innerText =
-      "Actualiza cada 60 seg. → Actualizado: " + new Date().toLocaleTimeString() + " | Fuente: CoinGecko";
+    async function fetchData() {
+      try {
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coins.join(",")}&order=market_cap_desc&price_change_percentage=24h`
+        );
 
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
 
-fetchData();
-setInterval(fetchData, 60000);
-</script>
+        const data = await res.json();
+        data.sort((a, b) => a.market_cap_rank - b.market_cap_rank);
+
+        const container = document.getElementById("crypto-container");
+        
+        let lines = '';
+        data.forEach(coin => {
+          lines += formatPriceLine(coin);
+        });
+
+        container.innerHTML = lines;
+
+        document.getElementById("updated").innerText =
+          `actualizado: ${new Date().toLocaleTimeString()}  ·  fuente: coingecko`;
+
+      } catch (error) {
+        document.getElementById("crypto-container").innerHTML = 
+          `<div class="price-line" style="color: #9B1C2E;">ERROR: ${error.message}</div>`;
+      }
+    }
+
+    fetchData();
+    setInterval(fetchData, 60000);
+  </script>
 </body>
 </html>
