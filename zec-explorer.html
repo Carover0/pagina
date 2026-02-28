@@ -138,10 +138,14 @@ async function loadNetworkStats() {
 }
 // =========== OBTENER VALOR UTXO ==========
 async function getVinValue(txid, voutIndex) {
+    // Pedir la transacción anterior con verbosidad 1 (para tener vouts)
     const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
         .then(r => r.json())
         .then(r => r.result);
+    
     if (!prevTx || !prevTx.vout || !prevTx.vout[voutIndex]) return null;
+    
+    // El valor está en prevTx.vout[voutIndex].value
     return prevTx.vout[voutIndex].value;
 }
 
@@ -285,44 +289,53 @@ async function executeSearch(q) {
             }
             
             // ----- ENTRADAS TRANSPARENTES -----
-            if (t.vin && t.vin.length > 0) {
-                res += `\n▶ ENTRADAS (${t.vin.length})\n`;
-                t.vin.forEach((vin, i) => {
-            if (vin.coinbase) {
-                res += `  [#${i}] COINBASE (nuevos ZEC)\n`;
-                } else if (vin.txid) {
-                    const shortTxid = vin.txid.substring(0,32) + '...' + vin.txid.substring(50);
-                    const valStr = vin.value ? ` ${vin.value.toFixed(8)} ZEC` : '';
-                    res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
-                    }
-                });
-             }
+if (t.vin && t.vin.length > 0) {
+    res += `\n▶ ENTRADAS (${t.vin.length})\n`;
+    
+    // Mapear a promesas
+    const vinPromises = t.vin.map(async (vin, i) => {
+        if (vin.coinbase) {
+            return `  [#${i}] COINBASE (nuevos ZEC)`;
+        } else if (vin.txid) {
+            const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
+            
+            // Buscar el valor si no viene
+            let value = vin.value;
+            if (!value) {
+                value = await getVinValue(vin.txid, vin.vout);
+            }
+            
+            const valStr = value ? ` ${value.toFixed(8)} ZEC` : '';
+            return `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}`;
+        }
+        return '';
+    });
+    
+    const vinLines = await Promise.all(vinPromises);
+    res += vinLines.filter(line => line !== '').join('\n') + '\n';
+} 
+            
             // ----- SALIDAS TRANSPARENTES -----
-            if (t.vin && t.vin.length > 0) {
-                res += `\n▶ ENTRADAS (${t.vin.length})\n`;
-    
-                // Mapear a promesas
-                const vinPromises = t.vin.map(async (vin, i) => {
-                    if (vin.coinbase) {
-                        return `  [#${i}] COINBASE (nuevos ZEC)`;
-                    } else if (vin.txid) {
-                        const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
-            
-                    // Buscar el valor si no viene
-                        let value = vin.value;
-                        if (!value) {
-                            value = await getVinValue(vin.txid, vin.vout);
-                        }
-            
-                        const valStr = value ? ` ${value.toFixed(8)} ZEC` : '';
-                        return `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}`;
-                        }
-                        return '';
-                    });
-    
-                    const vinLines = await Promise.all(vinPromises);
-                    res += vinLines.filter(line => line !== '').join('\n') + '\n';
-            } 
+            if (t.vout && t.vout.length > 0) {
+                res += `\n◀ SALIDAS (${t.vout.length})\n`;
+                let totalOut = 0;
+                t.vout.forEach((vout, i) => {
+                    totalOut += vout.value || 0;
+                    let addr = 'OP_RETURN/privada';
+                    if (vout.scriptPubKey?.addresses?.[0]) {
+                        addr = vout.scriptPubKey.addresses[0];
+                    } else if (vout.scriptPubKey?.address) {
+                        addr = vout.scriptPubKey.address;
+                    }
+                    if (addr.length > 64) {
+                        addr = addr.substring(0,64) + '...';
+                    }
+                    res += `  [#${i}] ${vout.value.toFixed(8)} ZEC → ${addr}\n`;
+                });
+                if (totalOut > 0) {
+                    res += `  total salida: ${totalOut.toFixed(8)} ZEC\n`;
+                }
+            }
             
             // ----- SHIELDED SPROUT -----
             if (t.vjoinsplit && t.vjoinsplit.length > 0) {
