@@ -1,5 +1,5 @@
 <html lang="es">
-<head> 
+<head>
 <meta charset="UTF-8">
 <title>FIRO: TERMINAL EXPLORER</title>
 <style>
@@ -76,7 +76,7 @@ DIFICULTAD   : <span id="stat-difficulty">---</span>
 CONEXIONES   : <span id="stat-connections">---</span>
 MEMPOOL      : <span id="stat-mempool">---</span> tx
 <br><a href="https://carover0.github.io/pagina/firostats.html">[FIRO]</a> <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a><br>
-<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / txid / direccion" autofocus>
+<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash / txid / direccion" autofocus>
 
 <div id="output"></div>
 
@@ -91,49 +91,44 @@ const API_URL = "https://carover0.xyz/api/firo/rpc.php";
 const TOKEN = "firo2026";
 const STATUS_URL = "https://carover0.xyz/api/firo.json";
 
-// ========== DETECCIÓN AUTOMÁTICA ==========
+// ========== DETECCION AUTOMATICA ==========
 function detectCommand(input) {
     input = input.trim();
     
-    // 1. Si ya es un comando RPC, devolverlo sin cambios
     if (input.startsWith('getblock') || 
         input.startsWith('getrawtransaction') || 
         input.startsWith('validateaddress') ||
-        input.startsWith('getaddressbalance')) {
+        input.startsWith('getaddressbalance') ||
+        input.startsWith('HASH:')) {  
         return input;
     }
     
-    // 2. Bloque por altura
+    // 1. Bloque por altura
     if (/^\d+$/.test(input)) {
         return `getblockhash ${input}`;
     }
     
-    // 3. TXID (64 hex)
+    // 2. HASH DE 64 CARACTERES (sin prefijo)
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
-        return `getrawtransaction ${input} 1`;
+        return `HASH:${input}`;
     }
     
-    // 4. Dirección transparente (F... o a...)
+    // 3. Dirección transparente (F... o a...)
     if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
         return `validateaddress ${input}`;
     }
     
-    // 5. Dirección Spark (sm... largo) u otras largas
+    // 4. Dirección Spark (sm... largo) u otras largas
     if (input.length > 50) {
-        // IMPORTANTE: No agregar validateaddress si ya está presente
         if (input.startsWith('validateaddress')) {
             return input;
         }
         return `validateaddress ${input}`;
     }
     
-    // 6. Hash de bloque (64 hex)
-    if (/^[a-fA-F0-9]{64}$/.test(input)) {
-        return `getblock ${input}`;
-    }
-    
     return input;
 }
+
 // ========== CARGA DE ESTADOS ==========
 async function loadNetworkStats() {
     try {
@@ -146,14 +141,50 @@ async function loadNetworkStats() {
         document.getElementById('stat-mempool').innerText = d.mempool?.txcount || '0';
         
     } catch(e) {
-        // Silencio
+        // NADA
     }
 }
 
-// ========== EJECUCIÓN DE BÚSQUEDA ==========
+// ========== EJECUCION DE BUSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
+
+    // Si es un hash (viene con HASH:)
+    if (q.startsWith('HASH:')) {
+        const hash = q.substring(5);
+        
+        // Probar primero como bloque
+        try {
+            const blockTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblock%20${hash}`);
+            const blockData = await blockTest.json();
+            
+            if (blockData.result && blockData.result.hash) {
+                // Es un bloque
+                return executeSearch(`getblock ${hash}`);
+            }
+        } catch(e) {
+            // Ignorar, probar como transacción
+        }
+        
+        // Probar como transaccion
+        try {
+            const txTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${hash}%201`);
+            const txData = await txTest.json();
+            
+            if (txData.result && txData.result.txid) {
+                // Es una transacción
+                return executeSearch(`getrawtransaction ${hash} 1`);
+            }
+        } catch(e) {
+            // No es ni bloque ni transacción
+        }
+        
+        // Si llegamos ac, no se encontro nada
+        out.innerHTML = `<pre>No se encontró bloque ni transacción con hash ${hash}</pre>`;
+        document.getElementById('searchInput').value = '';
+        return;
+    }
     
     try {
         const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
@@ -272,14 +303,14 @@ else if (q.includes('validateaddress') && data.result) {
     res += `DIRECCIÓN\n`;
     res += `dirección: ${direccion}\n`;
     
-    // Detectar si es Spark (campo específico)
+    // Detectar si es Spark
     if (v.isvalidSpark !== undefined) {
         res += `válida (Spark): ${v.isvalidSpark ? 'sí' : 'no'}\n`;
         if (v.isvalidSpark) {
             res += `tipo: shielded (Spark)\n`;
         }
     } else {
-        // Dirección transparente (formato clásico)
+        // Direccion transparente 
         res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
         
         if (v.isvalid) {
@@ -339,18 +370,8 @@ searchInput.addEventListener('paste', (e) => {
     }, 10);
 });
 
-// ========== INICIALIZACIÓN ==========
 loadNetworkStats();
-//setInterval(loadNetworkStats, 30000);
+setInterval(loadNetworkStats, 30000);
 </script>
-
-
-
-
-
-
-
-
-
 </body>
 </html>
