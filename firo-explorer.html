@@ -227,7 +227,7 @@ async function executeSearch(q) {
             const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0;
             
             if (esBlindada) {
-                res += `🛡️ TRANSACCIÓN PRIVADA (SHIELDED)\n`;
+                res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
             } else {
                 res += `📄 TRANSACCIÓN TRANSPARENTE\n`;
             }
@@ -280,7 +280,7 @@ async function executeSearch(q) {
             }
             
             if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
-                res += `\n🛡️ SHIELDED\n`;
+                res += `\n🛡 SHIELDED\n`;
                 if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
                 if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
             }
