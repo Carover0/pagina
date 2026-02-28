@@ -252,12 +252,13 @@ async function executeSearch(q) {
                     if (vin.coinbase) {
                         res += `  [#${i}] COINBASE (nuevos FIRO)\n`;
                     } else if (vin.txid) {
+			const shortTxid = vin.txid.substring(0, 28) + '...' + vin.txid.substring(48);
                         const valStr = vin.value ? ` ${vin.value} FIRO` : '';
-                        res += `  [#${i}] desde ${vin.txid}...:${vin.vout}${valStr}\n`;
+                         res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
                     }
                 });
             }
-            
+           
             if (t.vout && t.vout.length > 0) {
                 res += `\n◀ SALIDAS (${t.vout.length})\n`;
                 let totalOut = 0;
