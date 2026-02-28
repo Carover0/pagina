@@ -212,7 +212,7 @@ async function executeSearch(q) {
                     // Indicar si es blindada
                     const esBlindada = tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0 || tx.orchard?.actions?.length > 0;
                     if (esBlindada) {
-                        res += `    🛡️ incluye ${tx.vShieldedSpend?.length || 0} spends, ${tx.vShieldedOutput?.length || 0} outputs\n`;
+                        res += `    🛡 incluye ${tx.vShieldedSpend?.length || 0} spends, ${tx.vShieldedOutput?.length || 0} outputs\n`;
                     }
                 });
             } else if (b.tx && b.tx.length > 0) {
