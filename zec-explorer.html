@@ -280,15 +280,15 @@ async function executeSearch(q) {
             if (t.vin && t.vin.length > 0) {
                 res += `\n▶ ENTRADAS (${t.vin.length})\n`;
                 t.vin.forEach((vin, i) => {
-                    if (vin.coinbase) {
-                        res += `  [#${i}] COINBASE (nuevos ZEC)\n`;
-                    } else if (vin.txid) {
-                        const valStr = vin.value ? ` ${vin.value.toFixed(8)} ZEC` : '';
-                        res += `  [#${i}] desde ${vin.txid}...:${vin.vout}${valStr}\n`;
+            if (vin.coinbase) {
+                res += `  [#${i}] COINBASE (nuevos ZEC)\n`;
+                } else if (vin.txid) {
+                    const shortTxid = vin.txid.substring(0,32) + '...' + vin.txid.substring(50);
+                    const valStr = vin.value ? ` ${vin.value.toFixed(8)} ZEC` : '';
+                    res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
                     }
                 });
-            }
-            
+             }
             // ----- SALIDAS TRANSPARENTES -----
             if (t.vout && t.vout.length > 0) {
                 res += `\n◀ SALIDAS (${t.vout.length})\n`;
