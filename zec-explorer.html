@@ -243,7 +243,7 @@ async function executeSearch(q) {
             
             // ----- CABECERA -----
             if (esBlindada) {
-                res += `🛡️ TRANSACCIÓN PRIVADA (SHIELDED)\n`;
+                res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
             } else {
                 res += `📄 TRANSACCIÓN TRANSPARENTE\n`;
             }
@@ -313,19 +313,19 @@ async function executeSearch(q) {
             
             // ----- SHIELDED SPROUT -----
             if (t.vjoinsplit && t.vjoinsplit.length > 0) {
-                res += `\n🛡️ SPROUT SHIELDED (${t.vjoinsplit.length})\n`;
+                res += `\n🛡 SPROUT SHIELDED (${t.vjoinsplit.length})\n`;
             }
             
             // ----- SHIELDED SAPLING -----
             if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
-                res += `\n🛡️ SAPLING SHIELDED\n`;
+                res += `\n🛡 SAPLING SHIELDED\n`;
                 if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
                 if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
             }
             
             // ----- SHIELDED ORCHARD -----
             if (t.orchard?.actions?.length > 0) {
-                res += `\n🛡️ ORCHARD SHIELDED\n`;
+                res += `\n🛡 ORCHARD SHIELDED\n`;
                 res += `  acciones: ${t.orchard.actions.length}\n`;
                 
                 t.orchard.actions.forEach((action, i) => {
