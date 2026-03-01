@@ -356,7 +356,7 @@ if (t.vout && t.vout.length > 0) {
         
         pagos.forEach(p => {
             if (p.index === pagoPrincipal.index) {
-                res += `  PAGO:      ${p.raw}\n`;
+                res += `  PAGO:     ${p.raw}\n`;
             } else {
                 res += `  CAMBIO:   ${p.raw}\n`;
             }
