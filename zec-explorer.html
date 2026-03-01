@@ -358,7 +358,7 @@ if (t.vout && t.vout.length > 0) {
             if (p.index === pagoPrincipal.index) {
                 res += `  PAGO:      ${p.raw}\n`;
             } else {
-                res += `  RETORNO:   ${p.raw}\n`;
+                res += `  CAMBIO:   ${p.raw}\n`;
             }
         });
     } else {
@@ -387,9 +387,9 @@ if (t.vout && t.vout.length > 0) {
         const fee = totalIn - totalOut;
         
         res += `\nRESUMEN UTXO:\n`;
-        res += `  • ${t.vin.length} UTXOs gastados → ${t.vout.length} UTXOs creados\n`;
-        res += `  • Pago neto: ${pagoPrincipal.value.toFixed(8)} ZEC\n`;
-        res += `  • RETORNO: ${retornoTotal.toFixed(8)} ZEC (nuevo UTXO para el remitente)\n`;
+        res += `   ${t.vin.length} UTXOs gastados → ${t.vout.length} UTXOs creados\n`;
+        res += `   Pago neto: ${pagoPrincipal.value.toFixed(8)} ZEC\n`;
+        res += `   CAMBIO: ${retornoTotal.toFixed(8)} ZEC (nuevo UTXO para el remitente)\n`;
         if (fee > 0) {
             res += `  • Fee red: ${fee.toFixed(8)} ZEC\n`;
         }
