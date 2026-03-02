@@ -1,7 +1,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>ZCASH TERMINAL EXPLORER</title>
+<title>ZCASH: TERMINAL EXPLORER 2</title>
 <style>
 body {
     background: #000;
@@ -90,10 +90,12 @@ const STATUS_URL = "https://carover0.xyz/zec/status.json";
 function detectCommand(input) {
     input = input.trim();
 
+    // 0. Si ya tiene prefijo UA:, devolverlo directamente
     if (input.startsWith('UA:')) {
         return input;
     }
 
+    // 1. Comandos explícitos
     if (input.startsWith('getblock') || 
         input.startsWith('getrawtransaction') || 
         input.startsWith('validateaddress') || 
@@ -103,14 +105,17 @@ function detectCommand(input) {
         return input;
     }
     
+    // 2. Detectar UA (unified address) - PRIORIDAD ALTA
     if (input.startsWith('u1') && input.length > 100) {
         return `UA:${input}`;  // Solo UAs con prefijo u1 y largas
     }
     
+    // 3. Bloque por altura
     if (/^\d+$/.test(input)) {
         return `getblock ${input}`;
     }
     
+    // 4. Hash de 64 caracteres
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         if (/^0{4,}[a-fA-F0-9]*$/.test(input)) {
             return `getblock ${input}`;
@@ -119,21 +124,23 @@ function detectCommand(input) {
         }
     }
     
+    // 5. Dirección transparente (t1)
     if (/^t1[a-zA-Z0-9]{33}$/.test(input)) {
         return `getaddressbalance ${input}`;
     }
     
+    // 6. Dirección Sapling (zs) - larga
     if (input.startsWith('zs') && input.length > 50) {
         return `z_getbalance ${input}`;
     }
     
+    // 7. Cualquier otra cosa larga que parezca dirección
     if (input.length > 50) {
         return `validateaddress ${input}`;
     }
     
     return input;
 }
-
 
 // ========== CARGA DE ESTADOS ==========
 async function loadNetworkStats() {
@@ -149,7 +156,8 @@ async function loadNetworkStats() {
         // NADA
     }
 }
-// =========== OBTENER VALOR UTXO ==========
+
+
 async function getVinValue(txid, voutIndex) {
     // Pedir la transacción anterior con verbosidad 1 (para tener vouts)
     const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
@@ -162,55 +170,60 @@ async function getVinValue(txid, voutIndex) {
     return prevTx.vout[voutIndex].value;
 }
 
+
+
 // ========== EJECUCIÓN DE BÚSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
 
 
-if (q.startsWith('UA:')) {
-    const ua = q.substring(3); 
-    let res = `<pre><span style="color:#DD9D34;">zcash> ${ua}</span>\n\n`;
-    res += `DIRECCIÓN UNIFICADA (UA)\n`;
-    res += `dirección: ${ua}\n\n`;
-    res += `Las direcciones unificadas pertenecen a una cuenta.\n`;
-    res += `Solo se puede consultar su balance si es una cuenta propia.\n\n`;
-    
-    // Ejecutar z_validateaddress automáticamente
-    try {
-        const validateCmd = `z_validateaddress ${ua}`;
-        const validateRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(validateCmd)}`);
-        const validateData = await validateRes.json();
+    if (q.startsWith('UA:')) {
+        const ua = q.substring(3); 
+        let res = `<pre><span style="color:#DD9D34;">zcash> ${ua}</span>\n\n`;
+        res += `DIRECCIÓN UNIFICADA (UA)\n`;
+        res += `dirección: ${ua}\n`;
+        res += `\n`;
+        res += `Las direcciones unificadas pertenecen a una cuenta.\n`;
+        res += `Solo se puede consultar su balance si es una cuenta propia.\n`;
+        res += `\n`;
         
-        if (validateData.result) {
-            res += `Validación del formato con z_validateaddress:\n`;
-            res += `<span style="color:#DD9D34;">zcash> ${validateCmd}</span>\n`;
-            res += `${JSON.stringify(validateData.result, null, 2)}\n\n`;
+        // Ejecutar z_validateaddress automáticamente
+        try {
+            const validateCmd = `z_validateaddress ${ua}`;
+            const validateRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(validateCmd)}`);
+            const validateData = await validateRes.json();
+            
+            if (validateData.result) {
+                res += `Validación del formato con z_validateaddress:\n`;
+                res += `<span style="color:#DD9D34;">zcash> ${validateCmd}</span>\n`;
+                res += `${JSON.stringify(validateData.result, null, 2)}\n\n`;
+            }
+        } catch(e) {
+            res += `Error validando dirección: ${e.message}\n\n`;
         }
-    } catch(e) {
-        res += `Error validando dirección: ${e.message}\n\n`;
-    }
-    
-    // Ejecutar z_listunifiedreceivers automáticamente
-    try {
-        const receiversCmd = `z_listunifiedreceivers ${ua}`;
-        const receiversRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(receiversCmd)}`);
-        const receiversData = await receiversRes.json();
         
-        if (receiversData.result) {
-            res += `Listando receivers con z_listunifiedreceivers:\n`;
-            res += `<span style="color:#DD9D34;">zcash> ${receiversCmd}</span>\n`;
-            res += `${JSON.stringify(receiversData.result, null, 2)}\n`;
+        // Ejecutar z_listunifiedreceivers automáticamente
+        try {
+            const receiversCmd = `z_listunifiedreceivers ${ua}`;
+            const receiversRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(receiversCmd)}`);
+            const receiversData = await receiversRes.json();
+            
+            if (receiversData.result) {
+                res += `Listando receivers con z_listunifiedreceivers:\n`;
+                res += `<span style="color:#DD9D34;">zcash> ${receiversCmd}</span>\n`;
+                res += `${JSON.stringify(receiversData.result, null, 2)}\n`;
+            }
+        } catch(e) {
+            res += `Error listando receivers: ${e.message}\n`;
         }
-    } catch(e) {
-        res += `Error listando receivers: ${e.message}\n`;
+        
+        res += `</pre>`;
+        out.innerHTML = res;
+        document.getElementById('searchInput').value = '';
+        return;
     }
-    
-    res += `</pre>`;
-    out.innerHTML = res;
-    document.getElementById('searchInput').value = '';
-    return;
-}
+
     
     try {
         const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
@@ -321,121 +334,123 @@ if (q.startsWith('UA:')) {
             // Expiración
             if (t.expiryheight) {
                 if (esBlindada) {
-                    res += `expira: bloque: ${t.expiryheight}\n`;
+                    res += `privacidad: expira en bloque ${t.expiryheight}\n`;
                 } else {
                     res += `expira: bloque ${t.expiryheight}\n`;
                 }
             }
             
-
-
             // ----- ENTRADAS TRANSPARENTES -----
-let totalIn = 0;
-
-if (t.vin && t.vin.length > 0) {
-    res += `\n▶ ENTRADAS (UTXOs gastados: ${t.vin.length})\n`;
-    totalIn = 0;
-    
-    const vinPromises = t.vin.map(async (vin, i) => {
-        if (vin.coinbase) {
-            return `  [#${i}] COINBASE (nuevos ZEC)`;
-        } else if (vin.txid) {
-            const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
+            let totalIn = 0;
             
-            let value = vin.value;
-            if (!value) {
-                value = await getVinValue(vin.txid, vin.vout);
+            if (t.vin && t.vin.length > 0) {
+                res += `\n▶ ENTRADAS (UTXOs gastados: ${t.vin.length})\n`;
+                totalIn = 0;
+                
+                const vinPromises = t.vin.map(async (vin, i) => {
+                    if (vin.coinbase) {
+                        return `  [#${i}] COINBASE (nuevos ZEC)`;
+                    } else if (vin.txid) {
+                        const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
+                        
+                        let value = vin.value;
+                        if (!value) {
+                            value = await getVinValue(vin.txid, vin.vout);
+                        }
+                        
+                        if (value) totalIn += value;
+                        const valStr = value ? ` ${value.toFixed(8)} ZEC` : '';
+                        return `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}`;
+                    }
+                    return '';
+                });
+                
+                const vinLines = await Promise.all(vinPromises);
+                res += vinLines.filter(line => line !== '').join('\n') + '\n';
+                
+                if (totalIn > 0) {
+                    res += `  total entradas: ${totalIn.toFixed(8)} ZEC\n`;
+                }
+            } 
+            
+            // ----- SALIDAS TRANSPARENTES -----
+            if (t.vout && t.vout.length > 0) {
+                res += `\n◀ SALIDAS (UTXOs creados: ${t.vout.length})\n`;
+                let totalOut = 0;
+                let pagos = [];
+                
+                t.vout.forEach((vout, i) => {
+                    totalOut += vout.value || 0;
+                    let addr = 'OP_RETURN/privada';
+                    if (vout.scriptPubKey?.addresses?.[0]) {
+                        addr = vout.scriptPubKey.addresses[0];
+                    } else if (vout.scriptPubKey?.address) {
+                        addr = vout.scriptPubKey.address;
+                    }
+                    if (addr.length > 64) {
+                        addr = addr.substring(0,64) + '...';
+                    }
+                    
+                    pagos.push({
+                        index: i,
+                        value: vout.value,
+                        address: addr,
+                        raw: `  [#${i}] ${vout.value.toFixed(8)} ZEC → ${addr}`
+                    });
+                });
+                
+                // Clasificar pagos vs retornos
+                if (pagos.length >= 2) {
+                    const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+                    const pagoPrincipal = pagosOrdenados[0];
+                    
+                    pagos.forEach(p => {
+                        if (p.index === pagoPrincipal.index) {
+                            res += `  PAGO:      ${p.raw}\n`;
+                        } else {
+                            res += `  RETORNO:   ${p.raw}\n`;
+                        }
+                    });
+                } else {
+                    pagos.forEach(p => {
+                        res += `  ${p.raw}\n`;
+                    });
+                }
+                
+                if (totalOut > 0) {
+                    res += `  total salida: ${totalOut.toFixed(8)} ZEC\n`;
+                }
+                
+                // ----- CÁLCULO DE FEE -----
+                if (totalIn > 0 && totalOut > 0) {
+                    const fee = totalIn - totalOut;
+                    if (fee > 0) {
+                        res += `\n  FEE: ${fee.toFixed(8)} ZEC\n`;
+                    }
+                }
+                
+                // ----- RESUMEN UTXO -----
+                if (totalIn > 0 && totalOut > 0) {
+                    const fee = totalIn - totalOut;
+                    
+                    res += `\nRESUMEN UTXO:\n`;
+                    res += `   ${t.vin.length} UTXOs gastados → ${t.vout.length} UTXOs creados\n`;
+                    
+                    if (pagos.length >= 2) {
+                        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+                        const pagoPrincipal = pagosOrdenados[0];
+                        const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
+                        res += `   Pago neto: ${pagoPrincipal.value.toFixed(8)} ZEC\n`;
+                        res += `   CAMBIO: ${retornoTotal.toFixed(8)} ZEC (nuevo UTXO para el remitente)\n`;
+                    } else {
+                        res += `   Valor transferido: ${pagos[0].value.toFixed(8)} ZEC\n`;
+                    }
+                    
+                    if (fee > 0) {
+                        res += `   Fee red: ${fee.toFixed(8)} ZEC\n`;
+                    }
+                }
             }
-            
-            if (value) totalIn += value;
-            const valStr = value ? ` ${value.toFixed(8)} ZEC` : '';
-            return `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}`;
-        }
-        return '';
-    });
-    
-    const vinLines = await Promise.all(vinPromises);
-    res += vinLines.filter(line => line !== '').join('\n') + '\n';
-    
-    if (totalIn > 0) {
-        res += `  total entradas: ${totalIn.toFixed(8)} ZEC\n`;
-    }
-} 
-
-// ----- SALIDAS TRANSPARENTES -----
-if (t.vout && t.vout.length > 0) {
-    res += `\n◀ SALIDAS (UTXOs creados: ${t.vout.length})\n`;
-    let totalOut = 0;
-    let pagos = [];
-    
-    t.vout.forEach((vout, i) => {
-        totalOut += vout.value || 0;
-        let addr = 'OP_RETURN/privada';
-        if (vout.scriptPubKey?.addresses?.[0]) {
-            addr = vout.scriptPubKey.addresses[0];
-        } else if (vout.scriptPubKey?.address) {
-            addr = vout.scriptPubKey.address;
-        }
-        if (addr.length > 64) {
-            addr = addr.substring(0,64) + '...';
-        }
-        
-        pagos.push({
-            index: i,
-            value: vout.value,
-            address: addr,
-            raw: `  [#${i}] ${vout.value.toFixed(8)} ZEC → ${addr}`
-        });
-    });
-    
-    // Clasificar pagos vs retornos
-    if (pagos.length >= 2) {
-        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
-        const pagoPrincipal = pagosOrdenados[0];
-        
-        pagos.forEach(p => {
-            if (p.index === pagoPrincipal.index) {
-                res += `  PAGO:     ${p.raw}\n`;
-            } else {
-                res += `  CAMBIO:   ${p.raw}\n`;
-            }
-        });
-    } else {
-        pagos.forEach(p => {
-            res += `  ${p.raw}\n`;
-        });
-    }
-    
-    if (totalOut > 0) {
-        res += `  total salida: ${totalOut.toFixed(8)} ZEC\n`;
-    }
-    
-    // ----- CÁLCULO DE FEE -----
-    if (totalIn > 0 && totalOut > 0) {
-        const fee = totalIn - totalOut;
-        if (fee > 0) {
-            res += `\n  FEE: ${fee.toFixed(8)} ZEC\n`;
-        }
-    }
-    
-    // ----- RESUMEN UTXO -----
-    if (totalIn > 0 && totalOut > 0 && pagos.length >= 2) {
-        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
-        const pagoPrincipal = pagosOrdenados[0];
-        const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
-        const fee = totalIn - totalOut;
-        
-        res += `\nRESUMEN UTXO:\n`;
-        res += `   ${t.vin.length} UTXOs gastados → ${t.vout.length} UTXOs creados\n`;
-        res += `   Pago neto: ${pagoPrincipal.value.toFixed(8)} ZEC\n`;
-        res += `   CAMBIO: ${retornoTotal.toFixed(8)} ZEC (nuevo UTXO para el remitente)\n`;
-        if (fee > 0) {
-            res += `   Fee red: ${fee.toFixed(8)} ZEC\n`;
-        }
-    }
-}
-
-            
             
             // ----- SHIELDED SPROUT -----
             if (t.vjoinsplit && t.vjoinsplit.length > 0) {
@@ -480,17 +495,6 @@ if (t.vout && t.vout.length > 0) {
             
             if (t.bindingSig && !t.orchard?.bindingSig) {
                 res += `bindingSig: ${t.bindingSig}...\n`;
-            }
-            
-            // ----- FEE -----
-            if (!esBlindada && t.vin && t.vout) {
-                let totalIn = 0;
-                t.vin.forEach(vin => { if (vin.value) totalIn += vin.value; });
-                let totalOut = t.vout.reduce((sum, v) => sum + (v.value || 0), 0);
-                if (totalIn > 0 && totalOut > 0) {
-                    const fee = (totalIn - totalOut).toFixed(8);
-                    res += `\nfee: ${fee} ZEC\n`;
-                }
             }
         }
         // ===== INFORMACIÓN DE DIRECCIÓN =====
@@ -537,8 +541,6 @@ if (t.vout && t.vout.length > 0) {
                 }
             }
         }
-
-            
         // ===== CUALQUIER OTRO COMANDO =====
         else {
             res += JSON.stringify(data.result || data, null, 2);
@@ -552,6 +554,11 @@ if (t.vout && t.vout.length > 0) {
     
     document.getElementById('searchInput').value = '';
 }
+
+
+
+
+
 
     
 // ========== EVENTOS ==========
