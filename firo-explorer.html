@@ -84,14 +84,15 @@ MEMPOOL      : <span id="stat-mempool">---</span> tx
 © 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
 </div>
 
-<script>
 
+
+<script>
 
 const API_URL = "https://carover0.xyz/api/firo/rpc.php";
 const TOKEN = "firo2026";
 const STATUS_URL = "https://carover0.xyz/api/firo.json";
 
-// ========== DETECCION AUTOMATICA ==========
+// ========== DETECCIÓN AUTOMÁTICA ==========
 function detectCommand(input) {
     input = input.trim();
     
@@ -99,26 +100,22 @@ function detectCommand(input) {
         input.startsWith('getrawtransaction') || 
         input.startsWith('validateaddress') ||
         input.startsWith('getaddressbalance') ||
-        input.startsWith('HASH:')) {  
+        input.startsWith('HASH:')) {
         return input;
     }
     
-    // 1. Bloque por altura
     if (/^\d+$/.test(input)) {
         return `getblockhash ${input}`;
     }
     
-    // 2. HASH DE 64 CARACTERES (sin prefijo)
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         return `HASH:${input}`;
     }
     
-    // 3. Dirección transparente (F... o a...)
     if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
         return `validateaddress ${input}`;
     }
     
-    // 4. Dirección Spark (sm... largo) u otras largas
     if (input.length > 50) {
         if (input.startsWith('validateaddress')) {
             return input;
@@ -141,16 +138,31 @@ async function loadNetworkStats() {
         document.getElementById('stat-mempool').innerText = d.mempool?.txcount || '0';
         
     } catch(e) {
-        // NADA
+        // Silencio
     }
 }
 
-// ========== EJECUCION DE BUSQUEDA ==========
+// Función para obtener valor de una entrada
+async function getVinValue(txid, vout) {
+    try {
+        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
+        const data = await r.json();
+        
+        if (data.result && data.result.vout && data.result.vout[vout]) {
+            return data.result.vout[vout].value;
+        }
+        return null;
+    } catch(e) {
+        return null;
+    }
+}
+
+// ========== EJECUCIÓN DE BÚSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
 
-    // Si es un hash (viene con HASH:)
+    // Si es un hash ambiguo (viene con HASH:)
     if (q.startsWith('HASH:')) {
         const hash = q.substring(5);
         
@@ -160,27 +172,24 @@ async function executeSearch(q) {
             const blockData = await blockTest.json();
             
             if (blockData.result && blockData.result.hash) {
-                // Es un bloque
                 return executeSearch(`getblock ${hash}`);
             }
         } catch(e) {
             // Ignorar, probar como transacción
         }
         
-        // Probar como transaccion
+        // Probar como transacción
         try {
             const txTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${hash}%201`);
             const txData = await txTest.json();
             
             if (txData.result && txData.result.txid) {
-                // Es una transacción
                 return executeSearch(`getrawtransaction ${hash} 1`);
             }
         } catch(e) {
             // No es ni bloque ni transacción
         }
         
-        // Si llegamos ac, no se encontro nada
         out.innerHTML = `<pre>No se encontró bloque ni transacción con hash ${hash}</pre>`;
         document.getElementById('searchInput').value = '';
         return;
@@ -223,11 +232,14 @@ async function executeSearch(q) {
         // ===== TRANSACCIONES =====
         else if (q.includes('getrawtransaction') && data.result?.txid) {
             const t = data.result;
+            const moneda = 'FIRO';
+            let totalIn = 0;
+            let utxosGastados = 0;
             
             const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0;
             
             if (esBlindada) {
-                res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
+                res += `🛡️ TRANSACCIÓN PRIVADA (SHIELDED)\n`;
             } else {
                 res += `📄 TRANSACCIÓN TRANSPARENTE\n`;
             }
@@ -246,214 +258,187 @@ async function executeSearch(q) {
             res += `versión: ${t.version || 'N/A'}\n`;
             if (t.size) res += `tamaño: ${t.size} bytes\n`;
             
-
-
-
-// ----- ENTRADAS TRANSPARENTES (UTXOs GASTADOS) -----
-let totalIn = 0;
-let utxosGastados = 0;
-const moneda = 'FIRO';
-
-
-if (t.vin && t.vin.length > 0) {
-    utxosGastados = t.vin.length;
-    res += `\n▶ ENTRADAS (UTXOs gastados: ${utxosGastados})\n`;
-    totalIn = 0;
-    
-    if (t.vin[0]?.coinbase) {
-        t.vin.forEach((vin, i) => {
-            res += `  [#${i}] COINBASE (nuevos ${moneda})\n`;
-        });
-    } else {
-        const vinPromises = t.vin.map(async (vin, i) => {
-            if (vin.txid) {
-                const shortTxid = vin.txid.substring(0, 6) + '...' + vin.txid.substring(59);
+            // ----- ENTRADAS TRANSPARENTES (UTXOs GASTADOS) -----
+            if (t.vin && t.vin.length > 0) {
+                utxosGastados = t.vin.length;
+                res += `\n▶ ENTRADAS (UTXOs gastados: ${utxosGastados})\n`;
+                totalIn = 0;
                 
-                let value = vin.value;
-                if (!value) {
-                    value = await getVinValue(vin.txid, vin.vout);
+                if (t.vin[0]?.coinbase) {
+                    t.vin.forEach((vin, i) => {
+                        res += `  [#${i}] COINBASE (nuevos ${moneda})\n`;
+                    });
+                } else {
+                    const vinPromises = t.vin.map(async (vin, i) => {
+                        if (vin.txid) {
+                            const shortTxid = vin.txid.substring(0, 6) + '...' + vin.txid.substring(59);
+                            
+                            let value = vin.value;
+                            if (!value) {
+                                value = await getVinValue(vin.txid, vin.vout);
+                            }
+                            
+                            if (value) totalIn += value;
+                            
+                            const addrStr = vin.address ? ` (de ${vin.address})` : '';
+                            const valStr = value ? ` ${value.toFixed(8)} ${moneda}` : '';
+                            return `  [#${i}] ${shortTxid}:${vin.vout}${valStr}${addrStr}`;
+                        }
+                        return '';
+                    });
+                    
+                    const vinLines = await Promise.all(vinPromises);
+                    res += vinLines.filter(line => line !== '').join('\n') + '\n';
+                    
+                    if (totalIn > 0) {
+                        res += `  total entrada: ${totalIn.toFixed(8)} ${moneda}\n`;
+                    }
+                }
+            }
+            
+            // ----- SALIDAS TRANSPARENTES (UTXOs CREADOS) -----
+            if (t.vout && t.vout.length > 0) {
+                const utxosCreados = t.vout.length;
+                res += `\n◀ SALIDAS (UTXOs creados: ${utxosCreados})\n`;
+                let totalOut = 0;
+                let pagos = [];
+                
+                t.vout.forEach((vout, i) => {
+                    totalOut += vout.value || 0;
+                    let tipo = '';
+                    let addr = '';
+                    
+                    if (vout.scriptPubKey?.type === 'sparkmint') {
+                        tipo = ' SPARKMINT';
+                        addr = 'Spark Mint (privado)';
+                    } else if (vout.scriptPubKey?.addresses?.[0]) {
+                        addr = vout.scriptPubKey.addresses[0];
+                    } else if (vout.scriptPubKey?.address) {
+                        addr = vout.scriptPubKey.address;
+                    } else {
+                        addr = 'OP_RETURN/privada';
+                    }
+                    
+                    if (addr.length > 64) {
+                        addr = addr.substring(0,64) + '...';
+                    }
+                    
+                    pagos.push({
+                        index: i,
+                        value: vout.value,
+                        address: addr,
+                        tipo: tipo,
+                        raw: `  [#${i}] ${vout.value.toFixed(8)} ${moneda} → ${addr}${tipo}`
+                    });
+                });
+                
+                // CLASIFICACIÓN INTELIGENTE
+                if (!t.vin[0]?.coinbase && pagos.length >= 2) {
+                    const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+                    const pagoPrincipal = pagosOrdenados[0];
+                    
+                    pagos.forEach(p => {
+                        if (p.index === pagoPrincipal.index) {
+                            res += `  PAGO: ${p.raw}\n`;
+                        } else {
+                            res += `  CAMBIO: ${p.raw}\n`;
+                        }
+                    });
+                } else {
+                    pagos.forEach(p => {
+                        res += `  ${p.raw}\n`;
+                    });
                 }
                 
-                if (value) totalIn += value;
+                if (totalOut > 0) {
+                    res += `  total salida: ${totalOut.toFixed(8)} ${moneda}\n`;
+                }
                 
-                // Mostrar dirección de origen si está disponible
-                const addrStr = vin.address ? ` (de ${vin.address})` : '';
-                const valStr = value ? ` ${value.toFixed(8)} ${moneda}` : '';
-                return `  [#${i}] ${shortTxid}:${vin.vout}${valStr}${addrStr}`;
+                // ----- CÁLCULO DE FEE -----
+                if (!t.vin[0]?.coinbase && totalIn > 0 && totalOut > 0) {
+                    const fee = totalIn - totalOut;
+                    if (fee > 0) {
+                        res += `\n  FEE: ${fee.toFixed(8)} ${moneda}\n`;
+                    }
+                }
+                
+                // ----- RESUMEN UTXO -----
+                if (!t.vin[0]?.coinbase && totalIn > 0 && totalOut > 0) {
+                    const fee = totalIn - totalOut;
+                    const haySpark = pagos.some(p => p.tipo.includes('SPARKMINT'));
+                    
+                    res += `\nRESUMEN UTXO:\n`;
+                    res += `   UTXOs gastados: ${utxosGastados} → UTXOs creados: ${utxosCreados}\n`;
+                    
+                    if (pagos.length >= 2) {
+                        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+                        const pagoPrincipal = pagosOrdenados[0];
+                        const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
+                        res += `   Pago neto: ${pagoPrincipal.value.toFixed(8)} ${moneda}\n`;
+                        res += `   Retorno: ${retornoTotal.toFixed(8)} ${moneda} (${pagos.length-1} UTXO${pagos.length-1 > 1 ? 's' : ''})\n`;
+                    } else {
+                        res += `   Valor transferido: ${pagos[0].value.toFixed(8)} ${moneda}\n`;
+                    }
+                    
+                    if (haySpark) {
+                        res += `   Tipo: Spark Mint (transacción con privacidad)\n`;
+                    }
+                    
+                    if (fee > 0) {
+                        res += `   Fee red: ${fee.toFixed(8)} ${moneda}\n`;
+                    }
+                }
+                
+                // ----- RESUMEN PARA COINBASE -----
+                if (t.vin[0]?.coinbase) {
+                    const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+                    const mayorSalida = pagosOrdenados[0];
+                    
+                    res += `\nRESUMEN COINBASE:\n`;
+                    res += `   Recompensa total: ${totalOut.toFixed(8)} ${moneda}\n`;
+                    res += `   Distribuido a ${t.vout.length} direcciones\n`;
+                    res += `   Salida mayor: [#${mayorSalida.index}] ${mayorSalida.value.toFixed(8)} ${moneda}\n`;
+                }
             }
-            return '';
-        });
-        
-        const vinLines = await Promise.all(vinPromises);
-        res += vinLines.filter(line => line !== '').join('\n') + '\n';
-        
-        if (totalIn > 0) {
-            res += `  total entrada: ${totalIn.toFixed(8)} ${moneda}\n`;
-        }
-    }
-}
-
-// ----- SALIDAS TRANSPARENTES (UTXOs CREADOS) -----
-if (t.vout && t.vout.length > 0) {
-    const utxosCreados = t.vout.length;
-    res += `\n◀ SALIDAS (UTXOs creados: ${utxosCreados})\n`;
-    let totalOut = 0;
-    let pagos = [];
-    
-    t.vout.forEach((vout, i) => {
-        totalOut += vout.value || 0;
-        let tipo = '';
-        let addr = '';
-        
-        // Detectar tipo de salida
-        if (vout.scriptPubKey?.type === 'sparkmint') {
-            tipo = 'SPARKMINT';
-            addr = 'Spark Mint (privado)';
-        } else if (vout.scriptPubKey?.addresses?.[0]) {
-            addr = vout.scriptPubKey.addresses[0];
-        } else if (vout.scriptPubKey?.address) {
-            addr = vout.scriptPubKey.address;
-        } else {
-            addr = 'OP_RETURN/privada';
-        }
-        
-        if (addr.length > 64) {
-            addr = addr.substring(0,64) + '...';
-        }
-        
-        pagos.push({
-            index: i,
-            value: vout.value,
-            address: addr,
-            tipo: tipo,
-            raw: `  [#${i}] ${vout.value.toFixed(8)} ${moneda} → ${addr}${tipo}`
-        });
-    });
-    
-    // CLASIFICACIÓN INTELIGENTE
-    if (!t.vin[0]?.coinbase && pagos.length >= 2) {
-        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
-        const pagoPrincipal = pagosOrdenados[0];
-        
-        pagos.forEach(p => {
-            if (p.index === pagoPrincipal.index) {
-                res += `  PAGO: ${p.raw}\n`;
-            } else {
-                res += `  CAMBIO:${p.raw}\n`;
-            }
-        });
-    } else {
-        pagos.forEach(p => {
-            res += `  ${p.raw}\n`;
-        });
-    }
-    
-    if (totalOut > 0) {
-        res += `  total salida: ${totalOut.toFixed(8)} ${moneda}\n`;
-    }
-    
-    // ----- CÁLCULO DE FEE -----
-    if (!t.vin[0]?.coinbase && totalIn > 0 && totalOut > 0) {
-        const fee = totalIn - totalOut;
-        if (fee > 0) {
-            res += `\n  FEE: ${fee.toFixed(8)} ${moneda}\n`;
-        }
-    }
-    
-    // ----- ANÁLISIS DETALLADO -----
-    if (!t.vin[0]?.coinbase && pagos.length >= 2) {
-        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
-        const pagoPrincipal = pagosOrdenados[0];
-        const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
-        const fee = totalIn - totalOut;
-        
-        // Detectar si hay Spark Mint
-        const haySpark = pagos.some(p => p.tipo.includes('SPARKMINT'));
-        
-        res += `\nRESUMEN UTXO:\n`;
-        res += `   UTXOs gastados: ${utxosGastados} → UTXOs creados: ${utxosCreados}\n`;
-        res += `   Pago neto: ${pagoPrincipal.value.toFixed(8)} ${moneda}\n`;
-        res += `   Retorno: ${retornoTotal.toFixed(8)} ${moneda} (${pagos.length-1} UTXO${pagos.length-1 > 1 ? 's' : ''})\n`;
-        if (haySpark) {
-            res += `   Tipo: Spark Mint (transacción con privacidad)\n`;
-        }
-        if (fee > 0) {
-            res += `   Fee red: ${fee.toFixed(8)} ${moneda}\n`;
-        }
-    }
-    
-    // ----- RESUMEN PARA COINBASE -----
-    if (t.vin[0]?.coinbase) {
-        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
-        const mayorSalida = pagosOrdenados[0];
-        
-        res += `\nRESUMEN COINBASE:\n`;
-        res += `   Recompensa total: ${totalOut.toFixed(8)} ${moneda}\n`;
-        res += `   Distribuido a ${t.vout.length} direcciones\n`;
-        res += `   Salida mayor: [#${mayorSalida.index}] ${mayorSalida.value.toFixed(8)} ${moneda}\n`;
-    }
-}
-
-
-
-
-
-
-			
             
             if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
-                res += `\n🛡 SHIELDED\n`;
+                res += `\n🛡️ SHIELDED\n`;
                 if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
                 if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
             }
+        }
+        // ===== VALIDACIÓN DE DIRECCIÓN =====
+        else if (q.includes('validateaddress') && data.result) {
+            const v = data.result;
+            const direccion = v.address || q.split(' ')[1] || 'desconocida';
             
-            if (!esBlindada && t.vin && t.vout) {
-                let totalIn = 0;
-                t.vin.forEach(vin => { if (vin.value) totalIn += vin.value; });
-                let totalOut = t.vout.reduce((sum, v) => sum + (v.value || 0), 0);
-                if (totalIn > 0 && totalOut > 0) {
-                    const fee = (totalIn - totalOut).toFixed(6);
-                    res += `\nfee: ${fee} FIRO\n`;
+            res += `DIRECCIÓN\n`;
+            res += `dirección: ${direccion}\n`;
+            
+            if (v.isvalidSpark !== undefined) {
+                res += `válida (Spark): ${v.isvalidSpark ? 'sí' : 'no'}\n`;
+                if (v.isvalidSpark) {
+                    res += `tipo: shielded (Spark)\n`;
+                }
+            } else {
+                res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
+                
+                if (v.isvalid) {
+                    let tipo = 'transparente';
+                    if (v.isscript) tipo = 'script';
+                    else if (v.iswatchonly) tipo = 'watchonly';
+                    res += `tipo: ${tipo}\n`;
+                    
+                    if (v.scriptPubKey) {
+                        res += `scriptPubKey: ${v.scriptPubKey}\n`;
+                    }
                 }
             }
-        }
-// ===== VALIDACIÓN DE DIRECCIÓN =====
-else if (q.includes('validateaddress') && data.result) {
-    const v = data.result;
-    const direccion = v.address || q.split(' ')[1] || 'desconocida';
-    
-    res += `DIRECCIÓN\n`;
-    res += `dirección: ${direccion}\n`;
-    
-    // Detectar si es Spark
-    if (v.isvalidSpark !== undefined) {
-        res += `válida (Spark): ${v.isvalidSpark ? 'sí' : 'no'}\n`;
-        if (v.isvalidSpark) {
-            res += `tipo: shielded (Spark)\n`;
-        }
-    } else {
-        // Direccion transparente 
-        res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
-        
-        if (v.isvalid) {
-            let tipo = 'transparente';
-            if (v.isscript) tipo = 'script';
-            else if (v.iswatchonly) tipo = 'watchonly';
-            res += `tipo: ${tipo}\n`;
             
-            // Mostrar scriptPubKey si está disponible
-            if (v.scriptPubKey) {
-                res += `scriptPubKey: ${v.scriptPubKey}\n`;
+            if (v.ismine !== undefined) {
+                res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
             }
         }
-    }
-    
-    // Información común a ambos tipos
-    if (v.ismine !== undefined) {
-        res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
-    }
-}
-
         // ===== CUALQUIER OTRO COMANDO =====
         else {
             res += JSON.stringify(data.result || data, null, 2);
@@ -492,8 +477,16 @@ searchInput.addEventListener('paste', (e) => {
     }, 10);
 });
 
+// ========== INICIALIZACIÓN ==========
 loadNetworkStats();
 setInterval(loadNetworkStats, 30000);
 </script>
+
+
+
+
+
+
+	
 </body>
 </html>
