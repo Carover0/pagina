@@ -248,9 +248,9 @@ else if (q.includes('getrawtransaction') && data.result?.txid) {
     
     // Cabecera según tipo
     if (esSpark) {
-        res += `🛡️ TRANSACCIÓN SPARK (PRIVADA)\n`;
+        res += `🛡 TRANSACCIÓN SPARK (PRIVADA)\n`;
     } else if (esBlindada) {
-        res += `🛡️ TRANSACCIÓN PRIVADA (SHIELDED)\n`;
+        res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
     } else if (esCoinbase) {
         res += `TRANSACCIÓN COINBASE (MINERÍA)\n`;
     } else {
