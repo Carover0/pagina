@@ -168,23 +168,49 @@ async function executeSearch(q) {
     out.innerHTML = '<pre>Ejecutando...</pre>';
 
 
-    if (q.startsWith('UA:')) {
-        const ua = q.substring(3); 
-        let res = `<pre><span style="color:#DD9D34;">zcash> ${ua}</span>\n\n`;
-        res += `DIRECCIÓN UNIFICADA (UA)\n`;
-        res += `dirección: ${ua}\n`;
-        res += `\n`;
-        res += `Las direcciones unificadas pertenecen a una cuenta.\n`;
-        res += `Solo se puede consultar su balance si es una cuenta propia.\n`;
-        res += `\n`;
-        res += `Para validar formato: z_validateaddress ${ua}\n`;
-        res += `Para listar receivers: z_listunifiedreceivers ${ua}\n`;
-        res += `</pre>`;
-        out.innerHTML = res;
-        document.getElementById('searchInput').value = '';
-        return;
+if (q.startsWith('UA:')) {
+    const ua = q.substring(3); 
+    let res = `<pre><span style="color:#DD9D34;">zcash> ${ua}</span>\n\n`;
+    res += `DIRECCIÓN UNIFICADA (UA)\n`;
+    res += `dirección: ${ua}\n\n`;
+    res += `Las direcciones unificadas pertenecen a una cuenta.\n`;
+    res += `Solo se puede consultar su balance si es una cuenta propia.\n\n`;
+    
+    // Ejecutar z_validateaddress automáticamente
+    try {
+        const validateCmd = `z_validateaddress ${ua}`;
+        const validateRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(validateCmd)}`);
+        const validateData = await validateRes.json();
+        
+        if (validateData.result) {
+            res += `Validación del formato con z_validateaddress:\n`;
+            res += `<span style="color:#DD9D34;">zcash> ${validateCmd}</span>\n`;
+            res += `${JSON.stringify(validateData.result, null, 2)}\n\n`;
+        }
+    } catch(e) {
+        res += `Error validando dirección: ${e.message}\n\n`;
     }
-
+    
+    // Ejecutar z_listunifiedreceivers automáticamente
+    try {
+        const receiversCmd = `z_listunifiedreceivers ${ua}`;
+        const receiversRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(receiversCmd)}`);
+        const receiversData = await receiversRes.json();
+        
+        if (receiversData.result) {
+            res += `Listando receivers con z_listunifiedreceivers:\n`;
+            res += `<span style="color:#DD9D34;">zcash> ${receiversCmd}</span>\n`;
+            res += `${JSON.stringify(receiversData.result, null, 2)}\n`;
+        }
+    } catch(e) {
+        res += `Error listando receivers: ${e.message}\n`;
+    }
+    
+    res += `</pre>`;
+    out.innerHTML = res;
+    document.getElementById('searchInput').value = '';
+    return;
+}
     
     try {
         const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
