@@ -157,12 +157,12 @@ async function getVinValue(txid, vout) {
     }
 }
 
-// ========== EJECUCIÓN DE BÚSQUEDA ==========
+// ========== EJECUCION DE BÚSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
 
-    // Si es un hash ambiguo (viene con HASH:)
+    // Si es un hash ambiguo 
     if (q.startsWith('HASH:')) {
         const hash = q.substring(5);
         
