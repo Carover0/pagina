@@ -1,0 +1,327 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ZCASH: STATS</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", "Monaco", monospace;
+    font-size: 15px;
+    line-height: 1.2;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 80ch;
+    width: 100%;
+    margin: 0;
+    white-space: pre-wrap;
+}
+.prompt {
+    color: #DD9D34;
+}
+.stat-line {
+    display: flex;
+    margin: 2px 0;
+}
+.stat-label {
+    width: 25ch;
+    color: #888;
+}
+.stat-value {
+    color: #DD9D34;
+}
+.stat-value-green {
+    color: #0f0;
+}
+.stat-value-red {
+    color: #f00;
+}
+.progress-bar {
+    color: #DD9D34;
+    margin-left: 10px;
+    letter-spacing: 2px;
+}
+hr {
+    border: none;
+    border-top: 1px dashed #333;
+    margin: 8px 0;
+}
+a, a:visited {
+    color: #DD9D34;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+.title {
+    color: #DD9D34;
+    font-size: 20px;
+    font-weight: bold;
+}
+.header-line {
+    color: #DD9D34;
+}
+</style>
+</head>
+<body>
+<div class="terminal"><span class="title">ZCASH • Estadisticas</span>
+<span class="header-line">===========================</span>
+<a href="https://carover0.github.io/pagina/zcashstats.html">[NODO]</a> <a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a>
+<div id="output"><pre>
+<span style="color:#888;">► ESTADISTICAS DE RED</span>
+<span style="color:#fff;">PRECIO ZEC:</span>                <span style="color:#DD9D34;" id="price">cargando...</span> <span id="priceChange" class="stat-value-green"></span>
+<span style="color:#fff;">CAPITALIZACION:</span>            <span style="color:#DD9D34;" id="marketCap">---</span> <span style="color:#666;" id="volume24h">vol ---</span>
+<span style="color:#fff;">SUMINISTRO TOTAL:</span>          <span style="color:#DD9D34;" id="totalSupply">--- ZEC</span>
+<span style="color:#fff;">PROGRESO MINADO:</span>           <span style="color:#DD9D34;" id="minedPercent">---</span> <span class="progress-bar" id="minedBar">[----------]</span>
+<span style="color:#fff;">BLOQUES:</span>                   <span style="color:#DD9D34;" id="blocks">---</span>
+<span style="color:#fff;">DIFICULTAD:</span>                <span style="color:#DD9D34;" id="difficulty">---</span>
+<span style="color:#fff;">BEST BLOCK:</span>                <span style="color:#DD9D34;" id="bestBlock">---</span>
+
+<span style="color:#888;">► POOLS DE VALOR</span>
+<span style="color:#fff;">TRANSPARENTE (t...):</span>       <span style="color:#DD9D34;" id="transparentValue">--- ZEC</span> <span style="color:#666;" id="transparentPct">---%</span>
+<span style="color:#fff;">ORCHARD (u1...):</span>           <span style="color:#DD9D34;" id="orchardValue">--- ZEC</span> <span style="color:#666;" id="orchardPct">---%</span>
+<span style="color:#fff;">SAPLING (zs...):</span>           <span style="color:#DD9D34;" id="saplingValue">--- ZEC</span> <span style="color:#666;" id="saplingPct">---%</span>
+<span style="color:#fff;">SPROUT (zc...):</span>            <span style="color:#DD9D34;" id="sproutValue">--- ZEC</span> <span style="color:#666;" id="sproutPct">---%</span>
+<span style="color:#fff;">LOCKBOX:</span>                   <span style="color:#DD9D34;" id="lockboxValue">--- ZEC</span> <span style="color:#666;" id="lockboxPct">---%</span>
+
+<span style="color:#888;">► SUMINISTRO BLINDADO</span>
+<span style="color:#fff;">TOTAL BLINDADO:</span>            <span style="color:#DD9D34;" id="shieldedTotal">--- ZEC</span>
+<span style="color:#fff;">% CIRCULANTE:</span>              <span style="color:#DD9D34;" id="shieldedPercent">---%</span> <span class="progress-bar" id="shieldedBar">[----------]</span>
+
+<span style="color:#888;">► HALVING</span>
+<span style="color:#fff;">PROXIMO HALVING:</span>           <span style="color:#DD9D34;" id="halvingDate">---</span>
+<span style="color:#fff;">BLOQUE OBJETIVO:</span>           <span style="color:#DD9D34;">4,406,400</span>
+<span style="color:#fff;">BLOQUES RESTANTES:</span>         <span style="color:#DD9D34;" id="blocksRemaining">---</span> <span class="progress-bar" id="halvingBar">[----------]</span>
+<span style="color:#fff;">TIEMPO ESTIMADO:</span>           <span style="color:#DD9D34;" id="timeToHalving">---</span>
+<span style="color:#fff;">REWARD ACTUAL:</span>             <span style="color:#DD9D34;" id="blockReward">--- ZEC</span>
+
+<span style="color:#888;">► ACTUALIZACIONES ACTIVAS</span>
+<span style="color:#fff;">OVERWINTER:</span>                <span style="color:#DD9D34;" id="overwinter">---</span>
+<span style="color:#fff;">SAPLING:</span>                   <span style="color:#DD9D34;" id="saplingUpgrade">---</span>
+<span style="color:#fff;">BLOSSOM:</span>                   <span style="color:#DD9D34;" id="blossom">---</span>
+<span style="color:#fff;">HEARTWOOD:</span>                 <span style="color:#DD9D34;" id="heartwood">---</span>
+<span style="color:#fff;">CANOPY:</span>                    <span style="color:#DD9D34;" id="canopy">---</span>
+<span style="color:#fff;">NU5:</span>                       <span style="color:#DD9D34;" id="nu5">---</span>
+<span style="color:#fff;">NU6:</span>                       <span style="color:#DD9D34;" id="nu6">---</span>
+<span style="color:#fff;">NU6.1:</span>                     <span style="color:#DD9D34;" id="nu61">---</span>
+<span style="color:#fff;">CONSENSUS CHAINTIP:</span>        <span style="color:#DD9D34;" id="consensusTip">---</span>
+
+<span style="color:#888;">► MEMPOOL</span>
+<span style="color:#fff;">TRANSACCIONES:</span>             <span style="color:#DD9D34;" id="mempoolSize">---</span>
+<span style="color:#fff;">VALOR TOTAL:</span>               <span style="color:#DD9D34;" id="mempoolValue">---</span>
+
+<span style="color:#888;">► ULTIMOS BLOQUES</span>
+<span id="recentBlocks" style="color:#DD9D34;">---</span>
+
+<span style="color:#888;" id="statusMsg"></span>
+<span style="color:#888;">===============================================================</span>
+<span style="color:#fff;">© 2026 Creada con ♥ por cΔrovΣr0 · apoya: t1NxVLsRg4kNqMHE2bqmFL5Qizr2JDtmumU</span>
+</pre>
+</div>
+</div>
+
+<script>
+const STATUS_URL = "https://carover0.xyz/zec/status.json";
+const COINGECKO_URL = "https://api.coingecko.com/api/v3/simple/price?ids=zcash&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true";
+const RPC_URL = "https://carover0.xyz/api/zec/rpc.php";
+const TOKEN = "zec2026";
+
+// Constantes para halving
+const HALVING_BLOCK = 4406400;
+const BLOCKS_PER_DAY = 1152;
+const SECONDS_PER_BLOCK = 75;
+const MAX_SUPPLY = 21000000;
+
+function formatNumber(num, decimals = 0) {
+    if (num === undefined || num === null) return '---';
+    return num.toLocaleString(undefined, { maximumFractionDigits: decimals, useGrouping: true });
+}
+
+function formatLargeNumber(num) {
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+    if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+    if (num === undefined || num === null) return '---';
+    return num.toFixed(2);
+}
+
+function createProgressBar(percent, size = 10) {
+    if (percent === undefined || percent === null) return '[----------]';
+    const filled = Math.min(Math.round((percent / 100) * size), size);
+    return '[' + '#'.repeat(filled) + ' '.repeat(size - filled) + ']';
+}
+
+function formatTimeRemaining(days) {
+    if (days < 0) return '0 días';
+    
+    const years = Math.floor(days / 365);
+    const remainingDays = Math.floor(days % 365);
+    const months = Math.floor(remainingDays / 30);
+    const daysOnly = remainingDays % 30;
+    
+    let result = [];
+    if (years > 0) result.push(years + ' año' + (years > 1 ? 's' : ''));
+    if (months > 0) result.push(months + ' mes' + (months > 1 ? 'es' : ''));
+    if (daysOnly > 0 && years === 0) result.push(daysOnly + ' día' + (daysOnly > 1 ? 's' : ''));
+    
+    return result.join(', ') || 'menos de 1 día';
+}
+
+// Datos de upgrades del getblockchaininfo
+const upgradeNames = {
+    "5ba81b19": "Overwinter",
+    "76b809bb": "Sapling",
+    "2bb40e60": "Blossom",
+    "f5b9230b": "Heartwood",
+    "e9ff75a6": "Canopy",
+    "c2d6d0b4": "NU5",
+    "c8e71055": "NU6",
+    "4dec4df0": "NU6.1"
+};
+
+async function loadData() {
+    document.getElementById('statusMsg').innerHTML = '⌛ Cargando datos...';
+    
+    try {
+        // CoinGecko
+        let zec = { usd: 0, usd_market_cap: 0, usd_24h_vol: 0, usd_24h_change: 0 };
+        try {
+            const cgRes = await fetch(COINGECKO_URL);
+            const cgData = await cgRes.json();
+            zec = cgData.zcash;
+            
+            document.getElementById('price').innerHTML = `$${zec.usd.toFixed(2)}`;
+            
+            const change = zec.usd_24h_change || 0;
+            const changeEl = document.getElementById('priceChange');
+            changeEl.innerHTML = (change >= 0 ? '↑' : '↓') + Math.abs(change).toFixed(2) + '%';
+            changeEl.className = change >= 0 ? 'stat-value-green' : 'stat-value-red';
+            
+            document.getElementById('marketCap').innerHTML = '$' + formatLargeNumber(zec.usd_market_cap);
+            document.getElementById('volume24h').innerHTML = 'vol $' + formatLargeNumber(zec.usd_24h_vol);
+        } catch (e) {
+            console.warn('CoinGecko error:', e);
+            document.getElementById('price').innerHTML = '---';
+        }
+        
+        const nodeRes = await fetch(STATUS_URL);
+        const nodeData = await nodeRes.json();
+        
+        const height = nodeData.chain.height;
+        
+        // MEMPOOL
+        document.getElementById('mempoolSize').innerHTML = nodeData.mempool.size + ' tx';
+        
+        const mempoolValue = nodeData.mempool.transactions?.reduce((sum, tx) => sum + (tx.value_zec || 0), 0) || 0;
+        document.getElementById('mempoolValue').innerHTML = mempoolValue.toFixed(2) + ' ZEC';
+        
+        if (nodeData.recent?.blocks?.length > 0) {
+            const recent = nodeData.recent.blocks.slice(-5).map(b => 
+                `#${b.height} (${b.tx_count} tx)`
+            ).join('  ');
+            document.getElementById('recentBlocks').innerHTML = recent;
+        }
+        
+        const rpcRes = await fetch(`${RPC_URL}?token=${TOKEN}&cmd=getblockchaininfo`);
+        const rpcData = await rpcRes.json();
+        const blockchainInfo = rpcData.result;
+        
+        document.getElementById('blocks').innerHTML = formatNumber(blockchainInfo.blocks);
+        document.getElementById('difficulty').innerHTML = formatLargeNumber(blockchainInfo.difficulty);
+        document.getElementById('bestBlock').innerHTML = blockchainInfo.bestblockhash.substring(0, 16) + '...';
+        
+        const totalSupply = blockchainInfo.chainSupply.chainValue;
+        document.getElementById('totalSupply').innerHTML = formatNumber(totalSupply, 2) + ' ZEC';
+        
+        const minedPercent = (totalSupply / MAX_SUPPLY) * 100;
+        document.getElementById('minedPercent').innerHTML = minedPercent.toFixed(2) + '%';
+        document.getElementById('minedBar').innerHTML = createProgressBar(minedPercent);
+        
+        let transparent = 0, orchard = 0, sapling = 0, sprout = 0, lockbox = 0;
+        blockchainInfo.valuePools.forEach(pool => {
+            switch(pool.id) {
+                case 'transparent': transparent = pool.chainValue; break;
+                case 'orchard': orchard = pool.chainValue; break;
+                case 'sapling': sapling = pool.chainValue; break;
+                case 'sprout': sprout = pool.chainValue; break;
+                case 'lockbox': lockbox = pool.chainValue; break;
+            }
+        });
+        
+        document.getElementById('transparentValue').innerHTML = formatNumber(transparent, 2) + ' ZEC';
+        document.getElementById('transparentPct').innerHTML = ((transparent / totalSupply) * 100).toFixed(1) + '%';
+        
+        document.getElementById('orchardValue').innerHTML = formatNumber(orchard, 2) + ' ZEC';
+        document.getElementById('orchardPct').innerHTML = ((orchard / totalSupply) * 100).toFixed(1) + '%';
+        
+        document.getElementById('saplingValue').innerHTML = formatNumber(sapling, 2) + ' ZEC';
+        document.getElementById('saplingPct').innerHTML = ((sapling / totalSupply) * 100).toFixed(1) + '%';
+        
+        document.getElementById('sproutValue').innerHTML = formatNumber(sprout, 2) + ' ZEC';
+        document.getElementById('sproutPct').innerHTML = ((sprout / totalSupply) * 100).toFixed(1) + '%';
+        
+        document.getElementById('lockboxValue').innerHTML = formatNumber(lockbox, 2) + ' ZEC';
+        document.getElementById('lockboxPct').innerHTML = ((lockbox / totalSupply) * 100).toFixed(1) + '%';
+        
+        const shieldedTotal = orchard + sapling + sprout;
+        document.getElementById('shieldedTotal').innerHTML = formatNumber(shieldedTotal, 2) + ' ZEC';
+        const shieldedPct = (shieldedTotal / totalSupply) * 100;
+        document.getElementById('shieldedPercent').innerHTML = shieldedPct.toFixed(1) + '%';
+        document.getElementById('shieldedBar').innerHTML = createProgressBar(shieldedPct);
+        
+        const upgrades = blockchainInfo.upgrades;
+        document.getElementById('overwinter').innerHTML = 'bloque ' + formatNumber(upgrades["5ba81b19"].activationheight);
+        document.getElementById('saplingUpgrade').innerHTML = 'bloque ' + formatNumber(upgrades["76b809bb"].activationheight);
+        document.getElementById('blossom').innerHTML = 'bloque ' + formatNumber(upgrades["2bb40e60"].activationheight);
+        document.getElementById('heartwood').innerHTML = 'bloque ' + formatNumber(upgrades["f5b9230b"].activationheight);
+        document.getElementById('canopy').innerHTML = 'bloque ' + formatNumber(upgrades["e9ff75a6"].activationheight);
+        document.getElementById('nu5').innerHTML = 'bloque ' + formatNumber(upgrades["c2d6d0b4"].activationheight);
+        document.getElementById('nu6').innerHTML = 'bloque ' + formatNumber(upgrades["c8e71055"].activationheight);
+        document.getElementById('nu61').innerHTML = 'bloque ' + formatNumber(upgrades["4dec4df0"].activationheight);
+        document.getElementById('consensusTip').innerHTML = upgradeNames[blockchainInfo.consensus.chaintip] + ' (' + blockchainInfo.consensus.chaintip + ')';
+        
+        const blocksRemaining = HALVING_BLOCK - blockchainInfo.blocks;
+        document.getElementById('blocksRemaining').innerHTML = formatNumber(blocksRemaining);
+        
+        const blocksSinceLastHalving = blockchainInfo.blocks - 2726400; 
+        const totalBlocksInCycle = 1680000; 
+        const halvingProgress = (blocksSinceLastHalving / totalBlocksInCycle) * 100;
+        document.getElementById('halvingBar').innerHTML = createProgressBar(halvingProgress);
+        
+        const daysRemaining = blocksRemaining / BLOCKS_PER_DAY;
+        document.getElementById('timeToHalving').innerHTML = formatTimeRemaining(daysRemaining);
+        
+        const now = new Date();
+        const halvingDate = new Date(now.getTime() + (daysRemaining * 24 * 60 * 60 * 1000));
+        document.getElementById('halvingDate').innerHTML = halvingDate.toLocaleDateString() + ' (est.)';
+        
+        const currentHeight = blockchainInfo.blocks;
+        let currentReward;
+
+        if (currentHeight >= 4406400) {
+            currentReward = 0.78125; // Tercer halving (2028+)
+        } else if (currentHeight >= 2726400) {
+            currentReward = 1.5625; // Segundo halving (2024-2028) ← Estamos aquí
+        } else if (currentHeight >= 1046400) {
+            currentReward = 3.125; // Primer halving (2020-2024)
+        } else {
+            currentReward = 6.25; // Genesis - 2020
+        }
+
+        document.getElementById('blockReward').innerHTML = currentReward + ' ZEC';
+        
+        document.getElementById('statusMsg').innerHTML = 'Datos actualizados ' + new Date().toLocaleTimeString();
+        
+    } catch(e) {
+        console.error('Error:', e);
+        document.getElementById('statusMsg').innerHTML = '[!] Error de conexión: ' + e.message;
+    }
+}
+
+loadData();
+setInterval(loadData, 30000);
+</script>
+</body>
+</html>
