@@ -130,9 +130,10 @@ try {
     };
     
     const lastBlock = mappedData.last_blocks[0];
-    const donationAddr = "t1NxVLsRg4kNqMHE2bqmFL5Qizr2JDtmumU";
+    const donationAddr = '<a href="https://tipz.cash/carover0">tipz.cash/carover0</a>';
+
     
-    document.getElementById("output-dgb").textContent =
+    document.getElementById("output-dgb").innerHTML =
 `Block Height       : ${mappedData.height}
 Difficulty         : ${lastBlock.difficulty.toFixed(2)}
 Connections        : ${mappedData.connections}
@@ -140,9 +141,11 @@ Mempool TX         : ${mappedData.mempool_tx}
 Node Version       : ${mappedData.version}
 Donation Address   : ${donationAddr}`;
 } catch(err) {
-    document.getElementById("output-dgb").textContent = "[info] en mantenimiento/actualizacion.";
+    document.getElementById("output-dgb").innerHTML = "[info] en mantenimiento/actualizacion.";
     console.error(err);
 }
+
+
     try {
         const r2 = await fetch("https://carover0.xyz/firo/status.json");
         const data2 = await r2.json();
