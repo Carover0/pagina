@@ -138,16 +138,11 @@ a:hover {
 <body>
 
 <div class="terminal">
-<!-- ASCII ART FIRO con MONITOR DE NODO -->
-<div class="ascii-art">
-  ███████╗██╗██████╗  ██████╗  
-  ██╔════╝██║██╔══██╗██╔═══██╗ 
-  █████╗  ██║██████╔╝██║   ██║ 
-  ██╔══╝  ██║██╔══██╗██║   ██║ 
-  ██║     ██║██║  ██║╚██████╔╝ 
-  ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝  M O N I T O R   D E   N O D O
+<div class="terminal">
+cΔrovΣr0 • MONITOR DE NODO<br>
+==========================
 </div>
-<div class="version">[SISTEMA]: NODO PROPIO · ACTUALIZACION CADA 60s · <span class="blink">▶</span> ONLINE</div>
+<a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a> 
 
 <!-- NODO STATUS -->
 <div class="subheader">FIRO NODE · ESTADO</div>
@@ -232,7 +227,7 @@ function formatHash(hash) {
 
 function displayNodeData(data) {
   const uptimeSec = data.node?.uptime_seconds;
-  const isSynced = data.health?.synced ? "SYNCED" : "SYNCING";
+  const isSynced = data.health?.synced ? "SINCRONIZADO" : "SINCRONIZANDO";
   const syncClass = data.health?.synced ? "positive" : "negative";
   const connections = data.network?.connections;
   const inbound = data.peers?.inbound;
