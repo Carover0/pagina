@@ -67,6 +67,22 @@ pre {
     overflow-wrap: break-word;
     max-width: 100%;
 }
+.copy-full-btn {
+    background: #000;
+    border: 1px solid #000;
+    color: #fff;
+    font-family: 'Lucida console', monospace;
+    font-size: 15px;
+    padding: 5px 10px;
+    cursor: pointer;
+    width: 30%;
+    text-align: center;
+    margin-top: 10px;
+}
+.copy-full-btn:hover {
+    border-color: #9B1C2E;
+}
+
 </style>
 </head>
 <body>
@@ -79,11 +95,11 @@ MEMPOOL      : <span id="stat-mempool">---</span> tx
 <br><a href="https://carover0.github.io/pagina/firo-nodo.html">[FIRO]</a> <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a><br>
 <span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash / txid / direccion" autofocus>
 
-<div id="output"></div>
-
+<div id="output"></div></div>
+<pre id="pie" style="display: block;">
 ===============================================================================
-© 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
-</div>
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo</pre>
+
 
 
 
@@ -163,6 +179,7 @@ async function getVinValue(txid, vout) {
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
+    document.getElementById("pie").style.display = "none";
 
     // Si es un hash ambiguo 
     if (q.startsWith('HASH:')) {
@@ -456,19 +473,51 @@ else if (q.includes('getrawtransaction') && data.result?.txid) {
                 res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
             }
         }
-        // ===== CUALQUIER OTRO COMANDO =====
-        else {
-            res += JSON.stringify(data.result || data, null, 2);
-        }
         
-        res += '</pre>';
-        out.innerHTML = res;
+	
+	res += '</pre>';  
+
+	res += `\n<button class="copy-full-btn" id="copyBtn" onclick="copyFullOutput(this)">[COPIAR RESULTADO]</button>`;
+
+	
+res += `<div class="result-footer">\n===============================================================================\n`;
+res += `© 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
+</div>`;
+
+out.innerHTML = res;        
     } catch(e) {
         out.innerHTML = `<pre>error: ${e.message}</pre>`;
     }
     
     document.getElementById('searchInput').value = '';
 }
+
+function copyFullOutput(btn) {
+    const outputDiv = document.getElementById('output');
+    
+    const preElement = outputDiv.querySelector('pre');
+    
+    if (!preElement) {
+        console.error('No hay contenido para copiar');
+        return;
+    }
+    
+    const textToCopy = preElement.innerText || preElement.textContent;
+    
+    const urlPagina = 'https://carover0.github.io/pagina/firo-explorer';
+    const textoCompleto = textToCopy + '\n\n—--\nExplorado con: ' + urlPagina;
+    
+    navigator.clipboard.writeText(textoCompleto).then(() => {
+        const originalText = btn.innerText;
+        btn.innerText = '[♥ COPIADO]';
+        setTimeout(() => {
+            btn.innerText = originalText;
+        }, 1500);
+    }).catch(err => {
+        console.error('Error al copiar:', err);
+    });
+}
+
 
 // ========== EVENTOS ==========
 const searchInput = document.getElementById('searchInput');
