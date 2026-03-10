@@ -296,7 +296,7 @@ async function executeSearch(q) {
                 // Si solo tenemos TXIDs, mostrar TODOS
                 res += `\n▶ TXIDS (${b.tx.length})\n`;
                 b.tx.forEach((txid, i) => {
-                    res += `  ${i+1}. ${txid}\n`;
+                    res += `   ${i+1}. ${txid}\n`;
                 });
             }
         }
