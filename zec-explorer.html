@@ -36,7 +36,7 @@ body {
     width: 60ch;
     outline: none;
     caret-color: #DD9D34;
-    autocomplete: off;
+    
 }
 .footer {
     margin-top: 20px;
@@ -179,11 +179,8 @@ async function getVinValue(txid, voutIndex) {
     
     if (!prevTx || !prevTx.vout || !prevTx.vout[voutIndex]) return null;
     
-    // El valor está en prevTx.vout[voutIndex].value
     return prevTx.vout[voutIndex].value;
 }
-
-
 
 // ========== EJECUCIÓN DE BÚSQUEDA ==========
 async function executeSearch(q) {
@@ -201,7 +198,6 @@ async function executeSearch(q) {
         res += `→ Solo se puede consultar su balance si es una cuenta propia.\n`;
         res += `\n`;
         
-        // Ejecutar z_validateaddress automáticamente
         try {
             const validateCmd = `z_validateaddress ${ua}`;
             const validateRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(validateCmd)}`);
@@ -216,7 +212,6 @@ async function executeSearch(q) {
             res += `Error validando dirección: ${e.message}\n\n`;
         }
         
-        // Ejecutar z_listunifiedreceivers automáticamente
         try {
             const receiversCmd = `z_listunifiedreceivers ${ua}`;
             const receiversRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(receiversCmd)}`);
@@ -237,7 +232,6 @@ async function executeSearch(q) {
         return;
     }
 
-    
     try {
         const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
         const data = await r.json();
@@ -257,8 +251,6 @@ async function executeSearch(q) {
             res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
             if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
             if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
-
-
             if (b.size) res += `tamaño: ${b.size} bytes\n`;
             
             // Mostrar transacciones con detalles si están disponibles
@@ -267,7 +259,6 @@ async function executeSearch(q) {
                 b.tx.forEach((tx, i) => {
                     res += `\n  TX #${i+1}: ${tx.txid}\n`;
                     
-                    // Calcular total de salidas
                     if (tx.vout && tx.vout.length > 0) {
                         let totalOut = 0;
                         tx.vout.forEach(vout => {
@@ -275,7 +266,6 @@ async function executeSearch(q) {
                         });
                         res += `    total salida: ${totalOut.toFixed(8)} ZEC\n`;
                         
-                        // Mostrar todas las salidas
                         tx.vout.forEach((vout, j) => {
                             let addr = 'privada';
                             if (vout.scriptPubKey?.addresses?.[0]) {
@@ -286,14 +276,12 @@ async function executeSearch(q) {
                         });
                     }
                     
-                    // Indicar si es blindada
                     const esBlindada = tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0 || tx.orchard?.actions?.length > 0;
                     if (esBlindada) {
                         res += `    🛡 incluye ${tx.vShieldedSpend?.length || 0} spends, ${tx.vShieldedOutput?.length || 0} outputs\n`;
                     }
                 });
             } else if (b.tx && b.tx.length > 0) {
-                // Si solo tenemos TXIDs, mostrar TODOS
                 res += `\n▶ TXIDS (${b.tx.length})\n`;
                 b.tx.forEach((txid, i) => {
                     res += `   ${i+1}. ${txid}\n`;
@@ -304,7 +292,6 @@ async function executeSearch(q) {
         else if (q.includes('getrawtransaction') && data.result?.txid) {
             const t = data.result;
             
-            // ===== DETECTOR DE TRANSACCIONES BLINDADAS =====
             function esTransaccionBlindada(tx) {
                 if (tx.orchard?.actions?.length > 0) return true;
                 if (tx.vShieldedSpend?.length > 0) return true;
@@ -318,7 +305,6 @@ async function executeSearch(q) {
             
             const esBlindada = esTransaccionBlindada(t);
             
-            // ----- CABECERA -----
             if (esBlindada) {
                 res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
             } else {
@@ -326,34 +312,21 @@ async function executeSearch(q) {
             }
             res += `TXID: ${t.txid}\n`;
             
-            // Bloque
-            const blockHeight = t.blockheight || t.height || 
-                               (t.blockhash ? 'consultar bloque' : 'no confirmada');
+            const blockHeight = t.blockheight || t.height || (t.blockhash ? 'consultar bloque' : 'no confirmada');
             res += `bloque: #${blockHeight}\n`;
             res += `confirmaciones: ${t.confirmations || 0}\n`;
             
-            // Fecha
             if (t.blocktime || t.time) {
                 const ts = t.blocktime || t.time;
                 res += `fecha: ${new Date(ts*1000).toLocaleString()}\n`;
             }
             
-            // Versión y locktime
             res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
-            
-            // Tamaño
             if (t.size) res += `tamaño: ${t.size} bytes\n`;
-            
-            // Expiración
             if (t.expiryheight) {
-                if (esBlindada) {
-                    res += `expira: bloque ${t.expiryheight}\n`;
-                } else {
-                    res += `expira: bloque ${t.expiryheight}\n`;
-                }
+                res += `expira: bloque ${t.expiryheight}\n`;
             }
             
-            // ----- ENTRADAS TRANSPARENTES -----
             let totalIn = 0;
             
             if (t.vin && t.vin.length > 0) {
@@ -386,7 +359,6 @@ async function executeSearch(q) {
                 }
             } 
             
-            // ----- SALIDAS TRANSPARENTES -----
             if (t.vout && t.vout.length > 0) {
                 res += `\n◀ SALIDAS (UTXOs creados: ${t.vout.length})\n`;
                 let totalOut = 0;
@@ -412,7 +384,6 @@ async function executeSearch(q) {
                     });
                 });
                 
-                // Clasificar pagos vs retornos
                 if (pagos.length >= 2) {
                     const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
                     const pagoPrincipal = pagosOrdenados[0];
@@ -434,50 +405,79 @@ async function executeSearch(q) {
                     res += `  total salida: ${totalOut.toFixed(8)} ZEC\n`;
                 }
                 
-                // ----- CÁLCULO DE FEE -----
-                if (totalIn > 0 && totalOut > 0) {
-                    const fee = totalIn - totalOut;
-                    if (fee > 0) {
-                        res += `\n  FEE: ${fee.toFixed(8)} ZEC\n`;
-                    }
-                }
-                
-                // ----- RESUMEN UTXO -----
-                if (totalIn > 0 && totalOut > 0) {
-                    const fee = totalIn - totalOut;
+                if (totalIn > 0) {
+                    let fee = 0;
                     
-                    res += `\nRESUMEN UTXO:\n`;
-                    res += `   ${t.vin.length} UTXOs gastados → ${t.vout.length} UTXOs creados\n`;
+                    if (esBlindada) {
+                        if (t.valueBalance !== undefined) {
+                            fee = Math.abs(t.valueBalance) / 100000000;
+                        } else if (t.orchard?.valueBalance) {
+                            fee = Math.abs(t.orchard.valueBalance) / 100000000;
+                        } else {
+                            fee = (t.size || 0) * 0.00001;
+                        }
+                    } else {
+                        if (totalOut > 0) {
+                            fee = totalIn - totalOut;
+                        }
+                    }
+                    
+                    if (fee > 0) {
+                        res += `\n  FEE: ${fee.toFixed(8)} ZEC (red)\n`;
+                        
+                        if (esBlindada && totalOut > 0 && (totalIn - totalOut) > fee) {
+                            const valorBlindado = (totalIn - totalOut - fee).toFixed(8);
+                            res += `  VALOR BLINDADO: ${valorBlindado} ZEC (a pool privada)\n`;
+                        }
+                    }
+                }                
+           
+                res += `\nRESUMEN:\n`;
+                res += `   ${t.vin?.length || 0} UTXOs transparentes gastados\n`;
+                
+                if (t.vout?.length > 0) {
+                    res += `   ${t.vout.length} UTXOs transparentes creados\n`;
                     
                     if (pagos.length >= 2) {
                         const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
                         const pagoPrincipal = pagosOrdenados[0];
                         const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
-                        res += `   Pago neto: ${pagoPrincipal.value.toFixed(8)} ZEC\n`;
-                        res += `   CAMBIO: ${retornoTotal.toFixed(8)} ZEC (nuevo UTXO para el remitente)\n`;
-                    } else {
-                        res += `   Valor transferido: ${pagos[0].value.toFixed(8)} ZEC\n`;
-                    }
-                    
-                    if (fee > 0) {
-                        res += `   Fee red: ${fee.toFixed(8)} ZEC\n`;
+                        res += `   Pago transparente: ${pagoPrincipal.value.toFixed(8)} ZEC\n`;
+                        res += `   Cambio transparente: ${retornoTotal.toFixed(8)} ZEC\n`;
+                    } else if (pagos.length === 1) {
+                        res += `   Salida transparente: ${pagos[0].value.toFixed(8)} ZEC\n`;
                     }
                 }
-            }
+                
+                let feeReal = 0;
+                if (t.valueBalance !== undefined) {
+                    feeReal = Math.abs(t.valueBalance) / 100000000;
+                } else if (t.orchard?.valueBalance) {
+                    feeReal = Math.abs(t.orchard.valueBalance) / 100000000;
+                }
+                
+                if (feeReal > 0) {
+                    res += `   Fee red: ${feeReal.toFixed(8)} ZEC\n`;
+                }
+                
+                if (esBlindada) {
+                    const totalShielded = t.valueBalance ? Math.abs(t.valueBalance) / 100000000 : 0;
+                    if (totalShielded > 0.0001) {
+                        res += `   Total blindado: ${totalShielded.toFixed(8)} ZEC (privado)\n`;
+                    }
+                }
+            }            
             
-            // ----- SHIELDED SPROUT -----
             if (t.vjoinsplit && t.vjoinsplit.length > 0) {
                 res += `\n🛡 SPROUT SHIELDED (${t.vjoinsplit.length})\n`;
             }
             
-            // ----- SHIELDED SAPLING -----
             if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
                 res += `\n🛡 SAPLING SHIELDED\n`;
                 if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
                 if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
             }
             
-            // ----- SHIELDED ORCHARD -----
             if (t.orchard?.actions?.length > 0) {
                 res += `\n🛡 ORCHARD SHIELDED\n`;
                 res += `  acciones: ${t.orchard.actions.length}\n`;
@@ -499,7 +499,6 @@ async function executeSearch(q) {
                 }
             }
             
-            // ----- BALANCE Y FIRMAS GLOBALES -----
             if (t.valueBalance && t.valueBalance !== 0) {
                 const balanceZec = t.valueBalance / 1e8;
                 const signo = balanceZec > 0 ? '+' : '';
@@ -559,14 +558,12 @@ async function executeSearch(q) {
             res += JSON.stringify(data.result || data, null, 2);
         }
 
-	res += '</pre>'; 
+        res += '</pre>'; 
+        res += `<button class="copy-full-btn" id="copyBtn" onclick="copyFullOutput(this)">[COPIAR RESULTADO]</button>`;
+        res += `<div class="result-footer">\n\n===============================================================================\n`;
+        res += `© 2026 Creada con ♥ por cΔrovΣr0 · apoya: <a href="https://tipz.cash/carover0" target="_blank">tipz.cash/carover0</a></div>`;
 
-	res += `<button class="copy-full-btn" id="copyBtn" onclick="copyFullOutput(this)">[COPIAR RESULTADO]</button>`;
-
-res += `<div class="result-footer">\n\n===============================================================================\n`;
-res += `© 2026 Creada con ♥ por cΔrovΣr0 · apoya: <a href="https://tipz.cash/carover0" target="_blank">tipz.cash/carover0</a></div>`;
-
-out.innerHTML = res;        
+        out.innerHTML = res;        
     } catch(e) {
         out.innerHTML = `<pre>error: ${e.message}</pre>`;
     }
@@ -574,12 +571,8 @@ out.innerHTML = res;
     document.getElementById('searchInput').value = '';
 }
 
-
-
-
 function copyFullOutput(btn) {
     const outputDiv = document.getElementById('output');
-    
     const preElement = outputDiv.querySelector('pre');
     
     if (!preElement) {
@@ -588,7 +581,6 @@ function copyFullOutput(btn) {
     }
     
     const textToCopy = preElement.innerText || preElement.textContent;
-    
     const urlPagina = 'https://carover0.github.io/pagina/zec-explorer';
     const textoCompleto = textToCopy + '\n\n—\nExplorado con: ' + urlPagina;
     
@@ -603,7 +595,6 @@ function copyFullOutput(btn) {
     });
 }
 
-    
 // ========== EVENTOS ==========
 const searchInput = document.getElementById('searchInput');
 // enter
@@ -631,6 +622,7 @@ searchInput.addEventListener('paste', (e) => {
 // ========== INICIO ==========
 loadNetworkStats();
 setInterval(loadNetworkStats, 30000);
+
 </script>
 </body>
 </html>
