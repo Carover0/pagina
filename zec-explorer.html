@@ -1,7 +1,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>ZCASH: TERMINAL EXPLORER 2.01</title>
+<title>ZCASH: TERMINAL EXPLORER 2.02</title>
 <style>
 body {
     background: #000;
@@ -87,6 +87,7 @@ MEMPOOL              : <span id="stat-mempool">---</span> tx
 SERVIDOR LIGHTWALLET : <span id="stat-difficulty">https://carover0.xyz:9067</span>
 <br><a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a><br>
 <span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash de bloque / txid / direccion" autofocus>
+
 
 <div id="output"></div></div>
 <pre id="pie" style="display: block;">
@@ -427,7 +428,9 @@ async function executeSearch(q) {
                         
                         if (esBlindada && totalOut > 0 && (totalIn - totalOut) > fee) {
                             const valorBlindado = (totalIn - totalOut - fee).toFixed(8);
-                            res += `  VALOR BLINDADO: ${valorBlindado} ZEC (a pool privada)\n`;
+                            res += `  VALOR BLINDADO: ${valorBlindado} ZEC \n`;
+                            res += `            └→ Cantidad que pasó de pública a privada\n`;
+
                         }
                     }
                 }                
@@ -503,6 +506,8 @@ async function executeSearch(q) {
                 const balanceZec = t.valueBalance / 1e8;
                 const signo = balanceZec > 0 ? '+' : '';
                 res += `\nbalance blindado neto: ${signo}${balanceZec.toFixed(8)} ZEC\n`;
+                res += `            └→ Neto en privadas (≈0 = fee público)\n`;
+
             }
             
             if (t.bindingSig && !t.orchard?.bindingSig) {
@@ -557,12 +562,11 @@ async function executeSearch(q) {
         else {
             res += JSON.stringify(data.result || data, null, 2);
         }
-
+        
         res += '</pre>'; 
         res += `<button class="copy-full-btn" id="copyBtn" onclick="copyFullOutput(this)">[COPIAR RESULTADO]</button>`;
         res += `<div class="result-footer">\n\n===============================================================================\n`;
         res += `© 2026 Creada con ♥ por cΔrovΣr0 · apoya: <a href="https://tipz.cash/carover0" target="_blank">tipz.cash/carover0</a></div>`;
-
         out.innerHTML = res;        
     } catch(e) {
         out.innerHTML = `<pre>error: ${e.message}</pre>`;
