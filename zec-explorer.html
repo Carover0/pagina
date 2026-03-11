@@ -429,7 +429,7 @@ async function executeSearch(q) {
                         if (esBlindada && totalOut > 0 && (totalIn - totalOut) > fee) {
                             const valorBlindado = (totalIn - totalOut - fee).toFixed(8);
                             res += `  VALOR BLINDADO: ${valorBlindado} ZEC \n`;
-                            res += `            └→ Cantidad que pasó de pública a privada\n`;
+                            //res += `            └→ Cantidad que pasó de pública a privada\n`;
 
                         }
                     }
@@ -505,8 +505,8 @@ async function executeSearch(q) {
             if (t.valueBalance && t.valueBalance !== 0) {
                 const balanceZec = t.valueBalance / 1e8;
                 const signo = balanceZec > 0 ? '+' : '';
-                res += `\nbalance blindado neto: ${signo}${balanceZec.toFixed(8)} ZEC\n`;
-                res += `            └→ Neto en privadas (≈0 = fee público)\n`;
+                res += `\nbalance entre pools: ${signo}${balanceZec.toFixed(8)} ZEC\n`;
+                //res += `            └→ Neto en privadas (≈0 = fee público)\n`;
 
             }
             
