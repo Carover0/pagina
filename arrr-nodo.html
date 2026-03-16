@@ -1,0 +1,311 @@
+<html>
+<!-- 
+  Pirate Chain Monitor - Adaptado por cΔrovΣr0
+  Basado en el monitor de Zcash.
+-->
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIRATE: MONITOR DE NODO</title>
+<style>
+body {
+  background: #000;
+  color: #fff;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 15px;
+  line-height: 1.2;  
+  margin: 0;
+  padding: 20px;
+}
+
+.terminal {
+  max-width: 80ch;
+  width: 100%;
+  margin: 0;
+}
+
+.ascii-art {
+  color: #BB9645;
+  font-size: 12px;
+  line-height: 1.1;  
+  margin: 5px 0 5px 0; 
+  white-space: pre;
+}
+
+.header-gold {
+  color: #BB9645;
+  font-size: 23px;  
+  letter-spacing: 2px;
+  margin: 5px 0 2px 0;
+}
+
+.subheader {
+  color: #BB9645;
+  font-size: 15px;  
+  margin: 15px 0 5px 0;
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 1px 0;  
+  max-width: 80ch;
+  line-height: 1.2;
+}
+
+.label {
+  color: #bbb;
+  width: 18ch;
+}
+
+.value {
+  color: #fff;
+}
+
+.positive { color: #198652; }
+.negative { color: #9B1C2E; }
+
+.footer {
+  margin-top: 20px;
+  padding-top: 5px;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+a, a:visited, a:hover, a:active {
+  color: #BB9645;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.version {
+  color: #777;
+  font-size: 15px;
+  margin-top: 0px;
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 10px 0 5px 0;  
+  max-width: 80ch;
+}
+
+@media (max-width: 600px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+.data-block {
+  margin: 5px 0;  
+}
+
+.small {
+  color: #777;
+  font-size: 15px;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.link-block {
+  margin: 0px 0;  
+  line-height: 1.2;
+}
+
+.link-label {
+  color: #999;
+  font-size: 15px;
+  margin-bottom: 0px;
+  margin-top: 20px;
+  line-height: 1.2;
+}
+</style>
+</head>
+<body>
+
+<div class="terminal"><br>
+cΔrovΣr0 • MONITOR DE NODO PIRATE CHAIN<br>
+========================================<br>
+</div>
+<a href="https://carover0.github.io/pagina/arrr-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/arrr-consola.html">[CONSOLA]</a> <a href="https://carover0.xyz/arrr-info.html">[ESTADISTICAS]</a><br><br>
+
+<!-- NODO STATUS -->
+<div class="subheader">NODO PIRATE · ESTADO</div>
+<div id="node-status" class="data-block">
+  <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
+  <div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
+  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
+  <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
+  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
+</div>
+
+<!-- NODO NETWORK -->
+<div class="subheader">NODO PIRATE · RED</div>
+<div id="node-network" class="data-block">
+  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
+  <div class="row"><span class="label">RECOMPENSA</span><span class="value" id="node-reward">---</span></div>
+  <div class="row"><span class="label">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
+  <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
+</div>
+
+<!-- MARKET DATA -->
+<div class="subheader">PIRATE DATOS DE MERCADO</div>
+<div id="market-content" class="data-block">
+  <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
+</div>
+
+<!-- CONECTAR WALLET 
+<div class="subheader">CONECTAR WALLET</div>
+<div id="wallet-connect" class="data-block">
+  <div class="row"><span class="label">SERVIDOR</span><span class="value">carover0.xyz:45453</span></div>
+  <div class="row"><span class="label">TLS</span><span class="value positive">HABILITADO</span></div>
+  <div class="row"><span class="label">UPTIME 30D</span><span class="value" id="node-uptime30d">---</span></div>
+</div>
+<div class="small" style="margin-top: 4px; color: #BB9645;">
+  Conecta tu wallet a este servidor (puerto RPC, no lightwalletd).
+</div>
+-->
+
+<div class="link-label">► API PUBLICA</div>
+<div class="link-block"><a href="https://carover0.xyz/cacaX/pirate_status_X.json" target="_blank">https://carover0.xyz/cacaX/pirate_status_X.json</a></div>
+
+<!-- FOOTER -->
+<div class="footer">
+<div class="small" id="market-updated">actualizado: <span id="price-time">---</span></div>
+════════════════════════════════════════════════════════════════════════════════<br>
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya:<br> zs1x5w87pa6w676prs88rqshr2fjuvnsw8w3d436mt4xkdtz49enyugs5qqmvmey35twnw4cgx8trr 
+</div>
+
+</div>
+
+<script>
+const NODE_JSON_URL = "https://carover0.xyz/cacaX/pirate_status_X.json";
+
+function formatDifficulty(diff) {
+  if (!diff) return '---';
+  return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatHash(hash) {
+  if (!hash || hash === '0') return '---';
+  return hash.substring(0, 16) + '...' + hash.substring(hash.length - 4);
+}
+
+function formatProtocolVersion(version) {
+  if (!version) return '---';
+  return version.toString();
+}
+
+function displayNodeData(data) {
+  if (!data) return;
+  
+  const version = data.software_subversion || data.subversion;
+  const connections = data.connections;
+  const blockHeight = data.height;
+  const mempoolSize = data.mempool;
+  const difficulty = data.difficulty;
+  const protocolVersion = data.protocolversion;
+  
+  document.getElementById('node-version').innerText = version ? version.replace(/[\/"]/g, '') : '---';
+  
+  document.getElementById('node-state').innerText = "---";
+  document.getElementById('node-state').className = "value positive";
+  
+  document.getElementById('node-blocks').innerText = blockHeight ? Number(blockHeight).toLocaleString() : '---';
+  
+  document.getElementById('node-connections').innerText = connections !== undefined ? connections : '---';
+  
+  document.getElementById('node-mempool').innerText = mempoolSize !== undefined ? `${mempoolSize} TX` : '---';
+  
+  document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
+  
+  document.getElementById('node-reward').innerText = '---';
+  
+  document.getElementById('node-protocol').innerText = formatProtocolVersion(protocolVersion);
+
+  document.getElementById('node-bestblock').innerText = '---';
+  fetchPrice();
+}
+
+async function fetchNodeData() {
+  try {
+    const response = await fetch(NODE_JSON_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const jsonData = await response.json();
+    displayNodeData(jsonData);
+  } catch(err) {
+    console.error("Error de conexion:", err);
+  }
+}
+
+async function fetchPrice() {
+  try {
+    const response = await fetch('https://carover0.xyz/getprice-arrr.php?token=pirate2026');
+    if (!response.ok) throw new Error('No disponible');
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('price-usd').innerText = `$${data.price.toFixed(6)}`;
+    } else {
+      document.getElementById('price-usd').innerText = '---';
+    }
+  } catch (error) {
+    console.error('Error precio:', error);
+    document.getElementById('price-usd').innerHTML = '---';
+  }
+  
+  const now = new Date();
+  document.getElementById('price-time').innerText = now.toLocaleTimeString();
+}
+
+
+fetchNodeData();
+setInterval(fetchNodeData, 60000);
+
+
+async function fetchUptime() {
+  try {
+    const response = await fetch('https://carover0.xyz/uptime-arrr.txt');
+    if (!response.ok) throw new Error('No disponible');
+    const text = await response.text();
+    
+    const matches = text.match(/([0-9.]+)%\s*\((\d+)\/(\d+)\)/);
+    if (matches) {
+      const percent = matches[1];
+      const position = matches[2];
+      const total = matches[3];
+      document.getElementById('node-uptime30d').innerHTML = 
+          `${percent}% <span style="color:#666;">(${position}/${total})</span>`;
+    } else {
+      document.getElementById('node-uptime30d').innerHTML = text || '---';
+    }
+  } catch (error) {
+    console.error('Error uptime:', error);
+    document.getElementById('node-uptime30d').innerHTML = '---';
+  }
+}
+
+fetchUptime();
+setInterval(fetchUptime, 600000);
+</script>
+
+</body>
+</html>
