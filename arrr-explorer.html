@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PIRATE CHAIN: TERMINAL EXPLORER</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", "Monaco", monospace;
+    font-size: 15px;
+    line-height: 1.2;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 80ch;
+    width: 100%;
+    margin: 0;
+    white-space: pre-wrap;
+}
+.prompt {
+    color: #BB9645;
+}
+.input-line {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+#searchInput {
+    background: #000;
+    color: #fff;
+    border: none;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    padding: 4px 0;
+    width: 60ch;
+    outline: none;
+    caret-color: #BB9645;
+}
+a, a:visited {
+    color: #BB9645;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+pre {
+    margin: 10px 0 0 0;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.copy-full-btn {
+    background: #000;
+    border: 1px solid #000;
+    color: #fff;
+    font-family: 'Lucida console', monospace;
+    font-size: 15px;
+    padding: 5px 10px;
+    cursor: pointer;
+    width: 30%;
+    text-align: center;
+    margin-top: 10px;
+}
+.copy-full-btn:hover {
+    border-color: #BB9645;
+}
+</style>
+</head>
+<body>
+<div class="terminal">cΔrovΣr0 • EXPLORADOR DE BLOQUES PIRATE CHAIN
+============================================<br>
+ALTURA               : <span id="stat-height">---</span>
+CONEXIONES           : <span id="stat-connections">---</span>
+MEMPOOL              : <span id="stat-mempool">---</span> tx
+<br><a href="https://carover0.github.io/pagina/arrr-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/arrr-consola.html">[CONSOLA]</a> <a href="https://carover0.xyz/arrr-stats.html">[ESTADISTICAS]</a><br>
+<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash / txid / dirección zs / R..." autofocus>
+
+<div id="output"></div></div>
+<pre id="pie" style="display: block;">
+===============================================================================
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya:<br>zs1x5w87pa6w676prs88rqshr2fjuvnsw8w3d436mt4xkdtz49enyugs5qqmvmey35twnw4cgx8trr </pre>
+
+<script>
+const API_URL = "https://carover0.xyz/api/pirate/rpc.php";
+const TOKEN = "pirate2026";
+
+// ========== DETECCIÓN AUTOMÁTICA ==========
+function detectCommand(input) {
+    input = input.trim();
+
+    if (input.startsWith('getblock ') || 
+        input.startsWith('getrawtransaction ') || 
+        input.startsWith('validateaddress ') || 
+        input.startsWith('z_validateaddress ') ||
+        input.startsWith('z_getbalance ')) {
+        return input;
+    }
+    
+    if (/^\d+$/.test(input)) {
+        return `getblock ${input}`;
+    }
+    
+    if (/^[a-fA-F0-9]{64}$/.test(input)) {
+        return `getblock ${input}`;
+    }
+    
+    if (input.startsWith('zs') && input.length > 50) {
+        return `z_getbalance ${input}`;
+    }
+    
+    if ((input.startsWith('R') || input.startsWith('t1')) && input.length > 25) {
+        return `validateaddress ${input}`;
+    }
+    
+    if (input.length > 50) {
+        return `z_validateaddress ${input}`;
+    }
+    
+    return input;
+}
+
+// ========== CARGA DE ESTADOS ==========
+async function loadNetworkStats() {
+    try {
+        const info = await callRPC('getblockchaininfo');
+        const mempool = await callRPC('getrawmempool') || [];
+        const peerinfo = await callRPC('getpeerinfo') || [];
+        
+        document.getElementById('stat-height').innerText = info?.blocks?.toLocaleString() || '---';
+        document.getElementById('stat-connections').innerText = peerinfo?.length || '---';
+        document.getElementById('stat-mempool').innerText = mempool?.length || '0';
+    } catch(e) {
+        console.error('Error stats:', e);
+    }
+}
+
+async function callRPC(method, params = []) {
+    try {
+        const url = `${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(method + (params.length ? ' ' + params.join(' ') : ''))}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        return data.result;
+    } catch(e) {
+        console.error(`RPC error ${method}:`, e);
+        return null;
+    }
+}
+
+// ========== EJECUCIÓN DE BÚSQUEDA ==========
+async function executeSearch(q) {
+    const out = document.getElementById('output');
+    out.innerHTML = '<pre>Ejecutando...</pre>';
+    document.getElementById("pie").style.display = "none";
+
+    let rawParam = '';
+    if (q.startsWith('getblock ')) rawParam = q.replace('getblock ', '');
+    else if (q.startsWith('getrawtransaction ')) rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
+    else if (q.startsWith('z_getbalance ')) rawParam = q.replace('z_getbalance ', '');
+    else if (q.startsWith('validateaddress ') || q.startsWith('z_validateaddress ')) rawParam = q.split(' ')[1];
+    
+    // Actualizar URL con parámetro para compartir
+    if (rawParam) {
+        const url = new URL(window.location);
+        url.searchParams.set('q', rawParam);
+        window.history.replaceState({}, '', url);
+    }
+
+    try {
+        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
+        const data = await r.json();
+        
+        let res = `<pre><span style="color:#BB9645;">pirate> ${q}</span>\n\n`;
+        
+        if (data.error) {
+            res += `Error: ${JSON.stringify(data.error)}`;
+            
+            if (q.startsWith('getblock ') && /^[a-fA-F0-9]{64}$/.test(rawParam)) {
+                res += `\n\nNo es un bloque válido. Intentando como transacción...\n`;
+                setTimeout(() => {
+                    executeSearch(`getrawtransaction ${rawParam} 1`);
+                }, 100);
+                out.innerHTML = res;
+                return;
+            }
+        } 
+        // ===== BLOQUES =====
+        else if (q.includes('getblock') && data.result?.hash) {
+            const b = data.result;
+            res += `==== BLOQUE #${b.height} ======================================\n\n`;
+            res += `  hash:        ${b.hash}\n`;
+            res += `  fecha:       ${b.time ? new Date(b.time*1000).toLocaleString() : '---'}\n`;
+            res += `  transacciones: ${b.tx?.length || 0}\n`;
+            res += `  dificultad:  ${typeof b.difficulty === 'number' ? b.difficulty.toFixed(2) : b.difficulty}\n`;
+            res += `  tamaño:      ${b.size || 0} bytes\n`;
+            if (b.previousblockhash) res += `  anterior:    ${b.previousblockhash}\n`;
+            if (b.nextblockhash) res += `  siguiente:   ${b.nextblockhash}\n`;
+            
+            if (b.tx && b.tx.length > 0) {
+                res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
+                b.tx.forEach((tx, i) => {
+                    const txid = typeof tx === 'string' ? tx : tx.txid;
+                    res += `  ${i+1}. ${txid}\n`;
+                });
+            }
+        }
+// ===== TRANSACCIONES =====
+else if (q.includes('getrawtransaction') && data.result?.txid) {
+    const t = data.result;
+    const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0;
+    
+    res += `${esBlindada ? '🛡' : '█'} TRANSACCIÓN ${esBlindada ? 'PRIVADA (SHIELDED)' : 'TRANSPARENTE'}\n`;
+    res += `═══════════════════════════════════════════════════════════\n\n`;
+    res += `  TXID:        ${t.txid}\n`;
+    res += `  bloque:      #${t.height || t.blockheight || '---'}\n`;
+    res += `  confirmaciones: ${t.confirmations || 0}\n`;
+    
+    if (t.blocktime || t.time) {
+        res += `  fecha:       ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
+    }
+    
+    // ENTRADAS
+    if (t.vin && t.vin.length > 0) {
+        res += `\n▶ ENTRADAS (${t.vin.length})\n`;
+        t.vin.forEach((vin, i) => {
+            if (vin.coinbase) {
+                res += `  [#${i}] COINBASE (nuevos ARRR)\n`;
+            } else if (vin.txid) {
+                res += `  [#${i}] desde ${vin.txid.substring(0,24)}...:${vin.vout}\n`;
+            }
+        });
+    }
+    
+    // SALIDAS
+    let totalOut = 0;
+    let pagos = [];
+    
+    if (t.vout && t.vout.length > 0) {
+        res += `\n◀ SALIDAS TRANSPARENTES (${t.vout.length})\n`;
+        
+        t.vout.forEach((vout, i) => {
+            totalOut += vout.value || 0;
+            let addr = 'privada/OP_RETURN';
+            if (vout.scriptPubKey?.addresses?.[0]) {
+                addr = vout.scriptPubKey.addresses[0];
+            } else if (vout.scriptPubKey?.address) {
+                addr = vout.scriptPubKey.address;
+            }
+            if (addr.length > 64) {
+                addr = addr.substring(0,64) + '...';
+            }
+            
+            pagos.push({
+                index: i,
+                value: vout.value,
+                address: addr,
+                raw: `  [#${i}] ${vout.value.toFixed(6)} ARRR → ${addr}`
+            });
+        });
+        
+        if (pagos.length >= 2) {
+            const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+            const pagoPrincipal = pagosOrdenados[0];
+            
+            pagos.forEach(p => {
+                if (p.index === pagoPrincipal.index) {
+                    res += `  PAGO:      ${p.raw}\n`;
+                } else {
+                    res += `  RETORNO:   ${p.raw}\n`;
+                }
+            });
+        } else {
+            pagos.forEach(p => {
+                res += `  ${p.raw}\n`;
+            });
+        }
+        
+        res += `  total salida: ${totalOut.toFixed(6)} ARRR\n`;
+    }
+    
+    // PARTES BLINDADAS
+    if (t.vShieldedSpend?.length > 0) {
+        res += `\n🛡 SAPLING SPENDS (${t.vShieldedSpend.length})\n`;
+    }
+    if (t.vShieldedOutput?.length > 0) {
+        res += `\n🛡 SAPLING OUTPUTS (${t.vShieldedOutput.length})\n`;
+    }
+    if (t.valueBalance && t.valueBalance !== 0) {
+        res += `\n  balance entre pools: ${(t.valueBalance / 1e8).toFixed(6)} ARRR\n`;
+    }
+    
+    // ===== RESUMEN ESTILO ZCASH =====
+    res += `\nRESUMEN:\n`;
+    res += `   ${t.vin?.length || 0} UTXOs transparentes gastados\n`;
+    
+    if (t.vout?.length > 0) {
+        res += `   ${t.vout.length} UTXOs transparentes creados\n`;
+        
+        if (pagos.length >= 2) {
+            const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+            const pagoPrincipal = pagosOrdenados[0];
+            const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
+            res += `   Pago transparente: ${pagoPrincipal.value.toFixed(6)} ARRR\n`;
+            res += `   Cambio transparente: ${retornoTotal.toFixed(6)} ARRR\n`;
+        } else if (pagos.length === 1) {
+            res += `   Salida transparente: ${pagos[0].value.toFixed(6)} ARRR\n`;
+        }
+    }
+    
+    // Fee
+    if (t.valueBalance && t.valueBalance !== 0) {
+        const fee = Math.abs(t.valueBalance) / 1e8;
+        if (fee > 0) {
+            res += `   Fee red: ${fee.toFixed(6)} ARRR\n`;
+        }
+    }
+    
+    if (esBlindada) {
+        res += `   Total blindado: privado\n`;
+    }
+}
+        // ===== DIRECCIONES =====
+        else if ((q.includes('z_getbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
+            
+            const esBalance = q.includes('z_getbalance');
+            const esValidate = q.includes('validateaddress');
+            const direccion = q.split(' ')[1] || '';
+            
+            if (esBalance) {
+                const balance = data.result;
+                res += `DIRECCIÓN SHIELDED (SAPLING)\n`;
+                res += `═══════════════════════════════════════════════════════════\n\n`;
+                res += `  dirección: ${direccion}\n`;
+                res += `  balance:   ${balance} ARRR\n`;
+                res += `\n📝 Las direcciones zs... son completamente privadas.\n`;
+            }
+            else if (esValidate) {
+                const v = data.result;
+                res += `DIRECCIÓN TRANSPARENTE\n`;
+                res += `═══════════════════════════════════════════════════════════\n\n`;
+                res += `  dirección: ${direccion}\n`;
+                res += `  válida:    ${v.isvalid ? '✅ SÍ' : '❌ NO'}\n`;
+                
+                if (v.isvalid) {
+                    if (v.ismine !== undefined) {
+                        res += `  en wallet:  ${v.ismine ? '✅ sí' : '❌ no'}\n`;
+                    }
+                    res += `\n⚠️ Las direcciones R... no tienen balance consultable.\n`;
+                    res += `   Los fondos reales están en direcciones zs...\n`;
+                }
+            }
+        }
+        
+        // ===== CUALQUIER OTRO COMANDO =====
+        else {
+            res += JSON.stringify(data.result || data, null, 2);
+        }
+        
+        res += '</pre><br><br>'; 
+        res += `<div>[F8 copiar] [F9 Limpiar]</div>`;
+        res += `<div class="result-footer">\n\n===============================================================================\n`;
+        res += `© 2026 Creada con ♥ por cΔrovΣr0 • apoya: zs1x5w87pa6w676prs88rqshr2fjuvnsw8w3d436mt4xkdtz49enyugs5qqmvmey35twnw4cgx8trr</div>`;
+        out.innerHTML = res;        
+    } catch(e) {
+        out.innerHTML = `<pre>error: ${e.message}</pre>`;
+    }
+    
+    document.getElementById('searchInput').value = '';
+}
+
+
+// ========== TECLAS DE ACCESO RÁPIDO ==========
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F8') {
+        e.preventDefault();
+        const btn = document.querySelector('.copy-full-btn');
+        if (btn) {
+            copyFullOutput(btn);
+        } else {
+            const outputPre = document.querySelector('#output pre');
+            if (outputPre) {
+                const textToCopy = outputPre.innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalPrompt = document.querySelector('.prompt').innerHTML;
+                    
+                    setTimeout(() => {
+                        document.querySelector('.prompt').innerHTML = originalPrompt;
+                    }, 1000);
+                });
+            }
+        }
+    }
+    
+    // F9 - LIMPIAR TODO 
+    if (e.key === 'F9') {
+        e.preventDefault();
+        document.getElementById('searchInput').value = '';
+        document.getElementById('output').innerHTML = '';
+        document.getElementById('pie').style.display = 'block';
+        loadNetworkStats();
+        const url = new URL(window.location);
+        url.searchParams.delete('q');
+        window.history.replaceState({}, '', url);
+        const originalPrompt = document.querySelector('.prompt').innerHTML;
+        document.querySelector('.prompt').innerHTML = '♥ LIMPIADO ♥';
+        setTimeout(() => {
+            document.querySelector('.prompt').innerHTML = originalPrompt;
+        }, 1000);
+    }
+});
+
+// ========== EVENTOS ==========
+const searchInput = document.getElementById('searchInput');
+
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const raw = searchInput.value.trim();
+        if (raw) executeSearch(detectCommand(raw));
+    }
+});
+
+searchInput.addEventListener('paste', () => {
+    setTimeout(() => {
+        const raw = searchInput.value;
+        const cmd = detectCommand(raw);
+        if (cmd !== raw) searchInput.value = cmd;
+    }, 10);
+});
+
+// ========== DETECTAR DESDE URL ==========
+(function detectFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get('q');
+    
+    if (q) {
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                searchInput.value = q;
+                executeSearch(detectCommand(q));
+            }, 300);
+        });
+    }
+})();
+
+// ========== INICIO ==========
+loadNetworkStats();
+setInterval(loadNetworkStats, 30000);
+</script>
+</body>
+</html>
