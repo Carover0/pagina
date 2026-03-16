@@ -604,7 +604,7 @@ async function executeSearch(q) {
         }
        
         res += '</pre><br><br>'; 
-        res += `<div>[F8 copiar] [F9 limpiar]</div>`;
+        res += `<div>[F8 copiar] [F9 Limpiar]</div>`;
         res += `<div class="result-footer">\n\n===============================================================================\n`;
         res += `© 2026 Creada con ♥ por cΔrovΣr0 · apoya: <a href="https://tipz.cash/carover0" target="_blank">tipz.cash/carover0</a></div>`;
         out.innerHTML = res;        
@@ -651,16 +651,19 @@ function updateUrlWithSearch(parametro, tipo) {
 
 // ========== TECLAS DE ACCESO RÁPIDO ==========
 document.addEventListener('keydown', function(e) {
+    // F8 - SOLO COPIAR (no limpia, no modifica nada)
     if (e.key === 'F8') {
         e.preventDefault();
         const btn = document.querySelector('.copy-full-btn');
         if (btn) {
             copyFullOutput(btn);
         } else {
+            // Si no hay botón, copiar el contenido del output directamente
             const outputPre = document.querySelector('#output pre');
             if (outputPre) {
                 const textToCopy = outputPre.innerText;
                 navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Feedback visual sin modificar el contenido
                     const originalPrompt = document.querySelector('.prompt').innerHTML;
                     
                     setTimeout(() => {
@@ -674,13 +677,19 @@ document.addEventListener('keydown', function(e) {
     // F9 - LIMPIAR TODO 
     if (e.key === 'F9') {
         e.preventDefault();
+        // Limpiar campo de búsqueda
         document.getElementById('searchInput').value = '';
+        // Limpiar output completamente
         document.getElementById('output').innerHTML = '';
+        // Mostrar el pie de página
         document.getElementById('pie').style.display = 'block';
+        // Refrescar estadísticas del nodo
         loadNetworkStats();
+        // Quitar el parámetro q de la URL
         const url = new URL(window.location);
         url.searchParams.delete('q');
         window.history.replaceState({}, '', url);
+        // Feedback visual
         const originalPrompt = document.querySelector('.prompt').innerHTML;
         document.querySelector('.prompt').innerHTML = '♥ LIMPIADO ♥';
         setTimeout(() => {
@@ -688,6 +697,7 @@ document.addEventListener('keydown', function(e) {
         }, 1000);
     }
 });
+
 
     
     const textToCopy = preElement.innerText || preElement.textContent;
