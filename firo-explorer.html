@@ -181,6 +181,38 @@ async function executeSearch(q) {
     out.innerHTML = '<pre>Ejecutando...</pre>';
     document.getElementById("pie").style.display = "none";
 
+    // --- ACTUALIZAR URL PARA COMPARTIR ---
+    let rawParam = '';
+    
+    // Extraer el parámetro real según el comando
+    if (q.startsWith('getblock ')) {
+        rawParam = q.replace('getblock ', '');
+    } else if (q.startsWith('getblockhash ')) {
+        rawParam = q.replace('getblockhash ', '');
+    } else if (q.startsWith('getrawtransaction ')) {
+        rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
+    } else if (q.startsWith('validateaddress ') || q.startsWith('getaddressbalance ')) {
+        rawParam = q.split(' ')[1];
+    } else if (q.startsWith('HASH:')) {
+        rawParam = q.substring(5);
+    } else {
+        // Detección directa por formato
+        if (/^\d+$/.test(q)) {
+            rawParam = q; // Altura de bloque
+        } else if (/^[a-fA-F0-9]{64}$/.test(q)) {
+            rawParam = q; // Hash de 64 caracteres
+        } else if (q.startsWith('F') || q.startsWith('a') || q.startsWith('A')) {
+            rawParam = q; // Dirección
+        }
+    }
+    
+    // Actualizar la URL si tenemos un parámetro válido
+    if (rawParam) {
+        const url = new URL(window.location);
+        url.searchParams.set('q', rawParam);
+        window.history.replaceState({}, '', url);
+    }
+
     // Si es un hash ambiguo 
     if (q.startsWith('HASH:')) {
         const hash = q.substring(5);
@@ -555,7 +587,14 @@ searchInput.addEventListener('paste', (e) => {
     }, 10);
 });
 
-
+// ========== ACTUALIZAR URL PARA COMPARTIR ==========
+function updateUrlWithSearch(parametro) {
+    const url = new URL(window.location);
+    url.searchParams.set('q', parametro);
+    window.history.replaceState({}, '', url);
+    console.log('🔗 URL actualizada:', url.toString());
+}
+	
 // ========== DETECTAR DESDE URL ==========
 (function detectFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
