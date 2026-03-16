@@ -75,11 +75,12 @@ Operación continua y estable.
 <pre id="output-firo">Fetching FIRO data...</pre>
 <span class="separator" style="color:#fff;">------------------------------------------------</span>
 
-<span style="color:#fff;">FIRO FULL NODO (ARGENTINA)</span><br><span class="small">Fuente: <a href="https://carover0.xyz/cacaX/firo_status_X.json" style="color:#888;" target="_blank" >https://carover0.xyz/cacaX/firo_status_X.json</a></span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0902-firo.mp4" target="_blank">Video</a>
-<pre id="output-firo-home">Fetching FIRO data...</pre>
+<span style="color:#fff;">PIRATE CHAIN FULL NODO (HOME-ARGENTINA)</span><br><span class="small">Fuente: <a href="https://carover0.xyz/cacaX/pirate_status_X.json" style="color:#888;" target="_blank">https://carover0.xyz/cacaX/pirate_status_X.json</a></span>
+<a href="https://carover0.github.io/pagina/arrr-nodo.html" target="_blank">Pirate chain nodo</a>
+<pre id="output-firo-home">Fetching PIRATE data...</pre>
 <span class="separator" style="color:#fff;">------------------------------------------------</span>
 
-<span style="color:#fff;">PIVX FULL NODO (ARGENTINA)</span><br><span class="small">Fuente: <a href="https://carover0.xyz/cacaX/pivx_status_X.json" style="color:#888;" target="_blank" >https://carover0.xyz/cacaX/pivx_status_X.json</a></span>
+<span style="color:#fff;">PIVX FULL NODO (HOME-ARGENTINA)</span><br><span class="small">Fuente: <a href="https://carover0.xyz/cacaX/pivx_status_X.json" style="color:#888;" target="_blank">https://carover0.xyz/cacaX/pivx_status_X.json</a></span>
 <pre id="output-pivx-home">Fetching PIVX data...</pre>
 <span class="separator" style="color:#fff;">------------------------------------------------</span>
 
@@ -162,7 +163,7 @@ Donation Address   : carover0.firo`;
     }
 
     try {
-        const r3 = await fetch('https://carover0.xyz/cacaX/firo_status_X.json');
+        const r3 = await fetch('https://carover0.xyz/cacaX/pirate_status_X.json');
         const data3 = await r3.json();
         document.getElementById('output-firo-home').textContent =
 `Block Height       : ${data3.height}
@@ -170,7 +171,8 @@ Difficulty         : ${data3.difficulty ? data3.difficulty.toFixed(2) : "N/A"}
 Connections        : ${data3.connections}
 Mempool TX         : ${data3.mempool}
 Node Version       : ${data3.subversion}
-Donation Address   : carover0.firo`;
+Donation Address   : 
+zs1x5w87pa6w676prs88rqshr2fjuvnsw8w3d436mt4xkdtz49enyugs5qqmvmey35twnw4cgx8trr`;
     } catch (err) {
         document.getElementById("output-firo-home").textContent = "[info] en mantenimiento/actualizacion.";
         console.error(err);
