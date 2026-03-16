@@ -699,22 +699,6 @@ document.addEventListener('keydown', function(e) {
 });
 
 
-    
-    const textToCopy = preElement.innerText || preElement.textContent;
-    const urlPagina = 'https://carover0.github.io/pagina/zec-explorer';
-    const textoCompleto = textToCopy + '\n\n—\nExplorado con: ' + urlPagina;
-    
-    navigator.clipboard.writeText(textoCompleto).then(() => {
-        const originalText = btn.innerText;
-        btn.innerText = '[♥ COPIADO]';
-        setTimeout(() => {
-            btn.innerText = originalText;
-        }, 1500);
-    }).catch(err => {
-        console.error('Error al copiar:', err);
-    });
-}
-
 // ========== EVENTOS ==========
 const searchInput = document.getElementById('searchInput');
 // enter
