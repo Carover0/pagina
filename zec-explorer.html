@@ -183,11 +183,55 @@ async function getVinValue(txid, voutIndex) {
     return prevTx.vout[voutIndex].value;
 }
 
+
 // ========== EJECUCIÓN DE BÚSQUEDA ==========
 async function executeSearch(q) {
+
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
     document.getElementById("pie").style.display = "none";
+
+    // Detectar qué tipo de búsqueda es para la URL
+    // Usamos el parámetro q que ya viene procesado por detectCommand
+    let tipoBusqueda = 'desconocido';
+    let rawParam = '';
+    
+    // Extraer el valor real del comando
+    if (q.startsWith('getblock ')) {
+        tipoBusqueda = 'block';
+        rawParam = q.replace('getblock ', '');
+    } else if (q.startsWith('getrawtransaction ')) {
+        tipoBusqueda = 'tx';
+        rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
+    } else if (q.startsWith('getaddressbalance ')) {
+        tipoBusqueda = 'address';
+        rawParam = q.replace('getaddressbalance ', '');
+    } else if (q.startsWith('validateaddress ') || q.startsWith('z_validateaddress ')) {
+        tipoBusqueda = 'address';
+        rawParam = q.split(' ')[1];
+    } else if (q.startsWith('UA:')) {
+        tipoBusqueda = 'address';
+        rawParam = q.substring(3);
+    } else {
+        // Detección directa por formato
+        if (/^[a-fA-F0-9]{64}$/.test(q)) {
+            tipoBusqueda = 'tx';
+            rawParam = q;
+        } else if (/^\d+$/.test(q)) {
+            tipoBusqueda = 'block';
+            rawParam = q;
+        } else if (q.startsWith('t1') || q.startsWith('zs') || q.startsWith('u1')) {
+            tipoBusqueda = 'address';
+            rawParam = q;
+        }
+    }
+    
+    // Actualizar la URL para compartir (solo si tenemos un tipo válido)
+    if (tipoBusqueda !== 'desconocido' && rawParam) {
+        updateUrlWithSearch(rawParam, tipoBusqueda);
+    }
+
+ 
 
     if (q.startsWith('UA:')) {
         const ua = q.substring(3); 
@@ -429,8 +473,6 @@ async function executeSearch(q) {
                         if (esBlindada && totalOut > 0 && (totalIn - totalOut) > fee) {
                             const valorBlindado = (totalIn - totalOut - fee).toFixed(8);
                             res += `  VALOR BLINDADO: ${valorBlindado} ZEC \n`;
-                            //res += `            └→ Cantidad que pasó de pública a privada\n`;
-
                         }
                     }
                 }                
@@ -506,8 +548,6 @@ async function executeSearch(q) {
                 const balanceZec = t.valueBalance / 1e8;
                 const signo = balanceZec > 0 ? '+' : '';
                 res += `\nbalance entre pools: ${signo}${balanceZec.toFixed(8)} ZEC\n`;
-                //res += `            └→ Neto en privadas (≈0 = fee público)\n`;
-
             }
             
             if (t.bindingSig && !t.orchard?.bindingSig) {
@@ -562,7 +602,7 @@ async function executeSearch(q) {
         else {
             res += JSON.stringify(data.result || data, null, 2);
         }
-        
+       
         res += '</pre>'; 
         res += `<button class="copy-full-btn" id="copyBtn" onclick="copyFullOutput(this)">[COPIAR RESULTADO]</button>`;
         res += `<div class="result-footer">\n\n===============================================================================\n`;
@@ -574,6 +614,40 @@ async function executeSearch(q) {
     
     document.getElementById('searchInput').value = '';
 }
+
+// ========== ACTUALIZAR URL PARA COMPARTIR ==========
+function updateUrlWithSearch(parametro, tipo) {
+    // Crear nueva URL con el parámetro q
+    const url = new URL(window.location);
+    url.searchParams.set('q', parametro);
+    
+    // Actualizar la URL sin recargar la página
+    window.history.replaceState({}, '', url);
+    
+    console.log('🔗 URL actualizada:', url.toString());
+}
+
+// ========== DETECTAR BÚSQUEDA DESDE URL COMPARTIDA ==========
+(function detectFromSharedUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('q');
+    
+    if (searchParam) {
+        console.log('🔍 Compartido desde URL:', searchParam);
+        // Esperar a que cargue la página
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    input.value = searchParam;
+                    const cmd = detectCommand(searchParam);
+                    executeSearch(cmd);
+                }
+            }, 500);
+        });
+    }
+})();
+
 
 function copyFullOutput(btn) {
     const outputDiv = document.getElementById('output');
@@ -622,6 +696,7 @@ searchInput.addEventListener('paste', (e) => {
         }
     }, 10);
 });
+
 
 // ========== INICIO ==========
 loadNetworkStats();
