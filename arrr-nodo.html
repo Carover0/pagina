@@ -1,7 +1,7 @@
 <html>
 <!-- 
   Pirate Chain Monitor - Adaptado por cΔrovΣr0
-  Basado en el monitor de Zcash.
+  Datos 100% reales desde el nodo RPC.
 -->
 
 <head>
@@ -23,21 +23,6 @@ body {
   max-width: 80ch;
   width: 100%;
   margin: 0;
-}
-
-.ascii-art {
-  color: #BB9645;
-  font-size: 12px;
-  line-height: 1.1;  
-  margin: 5px 0 5px 0; 
-  white-space: pre;
-}
-
-.header-gold {
-  color: #BB9645;
-  font-size: 23px;  
-  letter-spacing: 2px;
-  margin: 5px 0 2px 0;
 }
 
 .subheader {
@@ -83,42 +68,6 @@ a:hover {
   text-decoration: underline;
 }
 
-.blink {
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  from, to { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.version {
-  color: #777;
-  font-size: 15px;
-  margin-top: 0px;
-  margin-bottom: 5px;
-  line-height: 1.2;
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin: 10px 0 5px 0;  
-  max-width: 80ch;
-}
-
-@media (max-width: 600px) {
-  .grid-2 {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-}
-
-.data-block {
-  margin: 5px 0;  
-}
-
 .small {
   color: #777;
   font-size: 15px;
@@ -146,7 +95,7 @@ a:hover {
 cΔrovΣr0 • MONITOR DE NODO PIRATE CHAIN<br>
 ========================================<br>
 </div>
-<a href="https://carover0.github.io/pagina/arrr-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/arrr-consola.html">[CONSOLA]</a> <a href="https://carover0.xyz/arrr-info.html">[ESTADISTICAS]</a><br><br>
+<a href="https://carover0.github.io/pagina/arrr-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/arrr-consola.html">[CONSOLA]</a> <a href="https://carover0.xyz/arrr-stats.html">[ESTADISTICAS]</a><br><br>
 
 <!-- NODO STATUS -->
 <div class="subheader">NODO PIRATE · ESTADO</div>
@@ -173,18 +122,7 @@ cΔrovΣr0 • MONITOR DE NODO PIRATE CHAIN<br>
   <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
 </div>
 
-<!-- CONECTAR WALLET 
-<div class="subheader">CONECTAR WALLET</div>
-<div id="wallet-connect" class="data-block">
-  <div class="row"><span class="label">SERVIDOR</span><span class="value">carover0.xyz:45453</span></div>
-  <div class="row"><span class="label">TLS</span><span class="value positive">HABILITADO</span></div>
-  <div class="row"><span class="label">UPTIME 30D</span><span class="value" id="node-uptime30d">---</span></div>
-</div>
-<div class="small" style="margin-top: 4px; color: #BB9645;">
-  Conecta tu wallet a este servidor (puerto RPC, no lightwalletd).
-</div>
--->
-
+<!-- API PUBLICA -->
 <div class="link-label">► API PUBLICA</div>
 <div class="link-block"><a href="https://carover0.xyz/cacaX/pirate_status_X.json" target="_blank">https://carover0.xyz/cacaX/pirate_status_X.json</a></div>
 
@@ -198,8 +136,11 @@ cΔrovΣr0 • MONITOR DE NODO PIRATE CHAIN<br>
 </div>
 
 <script>
-const NODE_JSON_URL = "https://carover0.xyz/cacaX/pirate_status_X.json";
+const RPC_URL = "https://carover0.xyz/api/pirate/rpc.php";
+const TOKEN = "pirate2026";
+const STATUS_URL = "https://carover0.xyz/cacaX/pirate_status_X.json";
 
+// ========== FUNCIONES AUXILIARES ==========
 function formatDifficulty(diff) {
   if (!diff) return '---';
   return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -207,56 +148,76 @@ function formatDifficulty(diff) {
 
 function formatHash(hash) {
   if (!hash || hash === '0') return '---';
-  return hash.substring(0, 16) + '...' + hash.substring(hash.length - 4);
+  return hash.substring(0, 16) + '...' + hash.substring(hash.length - 8);
 }
 
-function formatProtocolVersion(version) {
-  if (!version) return '---';
-  return version.toString();
+function formatNumber(num) {
+  if (num === undefined || num === null) return '---';
+  return Number(num).toLocaleString();
 }
 
-function displayNodeData(data) {
-  if (!data) return;
-  
-  const version = data.software_subversion || data.subversion;
-  const connections = data.connections;
-  const blockHeight = data.height;
-  const mempoolSize = data.mempool;
-  const difficulty = data.difficulty;
-  const protocolVersion = data.protocolversion;
-  
-  document.getElementById('node-version').innerText = version ? version.replace(/[\/"]/g, '') : '---';
-  
-  document.getElementById('node-state').innerText = "---";
-  document.getElementById('node-state').className = "value positive";
-  
-  document.getElementById('node-blocks').innerText = blockHeight ? Number(blockHeight).toLocaleString() : '---';
-  
-  document.getElementById('node-connections').innerText = connections !== undefined ? connections : '---';
-  
-  document.getElementById('node-mempool').innerText = mempoolSize !== undefined ? `${mempoolSize} TX` : '---';
-  
-  document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
-  
-  document.getElementById('node-reward').innerText = '---';
-  
-  document.getElementById('node-protocol').innerText = formatProtocolVersion(protocolVersion);
-
-  document.getElementById('node-bestblock').innerText = '---';
-  fetchPrice();
-}
-
-async function fetchNodeData() {
+// ========== LLAMADAS RPC DIRECTAS ==========
+async function callRPC(method, params = []) {
   try {
-    const response = await fetch(NODE_JSON_URL);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const jsonData = await response.json();
-    displayNodeData(jsonData);
-  } catch(err) {
-    console.error("Error de conexion:", err);
+    const url = `${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(method + (params.length ? ' ' + params.join(' ') : ''))}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.result;
+  } catch(e) {
+    console.error(`RPC error ${method}:`, e);
+    return null;
   }
 }
 
+// ========== OBTENER DATOS DEL NODO ==========
+async function fetchNodeData() {
+  try {
+    // 1. Datos básicos desde status.json
+    const statusRes = await fetch(STATUS_URL);
+    const status = await statusRes.json();
+    
+    // 2. Información adicional vía RPC
+    const blockchainInfo = await callRPC('getblockchaininfo');
+    const networkInfo = await callRPC('getnetworkinfo');
+    const mempool = await callRPC('getrawmempool');
+    const peerinfo = await callRPC('getpeerinfo');
+    
+    // Extraer datos
+    const version = status.software_subversion || status.subversion || '---';
+    const connections = status.connections || peerinfo?.length || 0;
+    const blockHeight = status.height || blockchainInfo?.blocks || 0;
+    const mempoolSize = mempool?.length || status.mempool || 0;
+    const difficulty = status.difficulty || blockchainInfo?.difficulty || 0;
+    const protocolVersion = status.protocolversion || networkInfo?.protocolversion || '---';
+    
+    // Estado de sincronización
+    const synced = blockchainInfo?.blocks >= blockchainInfo?.headers;
+    const bestBlockHash = blockchainInfo?.bestblockhash || '---';
+    
+    // Recompensa actual (Pirate: fija 16 ARRR por bloque)
+    // Si querés calcular según la altura (si cambia en el futuro)
+    let blockReward = 16; // Valor fijo actual de Pirate Chain
+    
+    // Actualizar DOM
+    document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
+    
+    document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
+    document.getElementById('node-state').className = `value ${synced ? 'positive' : 'negative'}`;
+    
+    document.getElementById('node-blocks').innerText = formatNumber(blockHeight);
+    document.getElementById('node-connections').innerText = connections;
+    document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
+    document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
+    document.getElementById('node-reward').innerText = blockReward + ' ARRR';
+    document.getElementById('node-protocol').innerText = protocolVersion;
+    document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
+    
+  } catch(err) {
+    console.error("Error cargando datos:", err);
+  }
+}
+
+// ========== PRECIO ==========
 async function fetchPrice() {
   try {
     const response = await fetch('https://carover0.xyz/getprice-arrr.php?token=pirate2026');
@@ -276,35 +237,13 @@ async function fetchPrice() {
   document.getElementById('price-time').innerText = now.toLocaleTimeString();
 }
 
-
+// ========== INICIO ==========
 fetchNodeData();
-setInterval(fetchNodeData, 60000);
+fetchPrice();
 
-
-async function fetchUptime() {
-  try {
-    const response = await fetch('https://carover0.xyz/uptime-arrr.txt');
-    if (!response.ok) throw new Error('No disponible');
-    const text = await response.text();
-    
-    const matches = text.match(/([0-9.]+)%\s*\((\d+)\/(\d+)\)/);
-    if (matches) {
-      const percent = matches[1];
-      const position = matches[2];
-      const total = matches[3];
-      document.getElementById('node-uptime30d').innerHTML = 
-          `${percent}% <span style="color:#666;">(${position}/${total})</span>`;
-    } else {
-      document.getElementById('node-uptime30d').innerHTML = text || '---';
-    }
-  } catch (error) {
-    console.error('Error uptime:', error);
-    document.getElementById('node-uptime30d').innerHTML = '---';
-  }
-}
-
-fetchUptime();
-setInterval(fetchUptime, 600000);
+// Actualizar cada 30 segundos
+setInterval(fetchNodeData, 30000);
+setInterval(fetchPrice, 60000);
 </script>
 
 </body>
