@@ -474,11 +474,8 @@ else if (q.includes('getrawtransaction') && data.result?.txid) {
             }
         }
         
-	
-	res += '</pre>';  
-
-	res += `\n<button class="copy-full-btn" id="copyBtn" onclick="copyFullOutput(this)">[COPIAR RESULTADO]</button>`;
-
+        res += '</pre><br><br>'; 
+        res += `<div>[F8 copiar] [F9 Limpiar]</div>`;
 	
 res += `<div class="result-footer">\n===============================================================================\n`;
 res += `© 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
@@ -492,31 +489,46 @@ out.innerHTML = res;
     document.getElementById('searchInput').value = '';
 }
 
-function copyFullOutput(btn) {
-    const outputDiv = document.getElementById('output');
-    
-    const preElement = outputDiv.querySelector('pre');
-    
-    if (!preElement) {
-        console.error('No hay contenido para copiar');
-        return;
+// ========== TECLAS DE ACCESO RÁPIDO ==========
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F8') {
+        e.preventDefault();
+        const btn = document.querySelector('.copy-full-btn');
+        if (btn) {
+            copyFullOutput(btn);
+        } else {
+            const outputPre = document.querySelector('#output pre');
+            if (outputPre) {
+                const textToCopy = outputPre.innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalPrompt = document.querySelector('.prompt').innerHTML;
+                    
+                    setTimeout(() => {
+                        document.querySelector('.prompt').innerHTML = originalPrompt;
+                    }, 1000);
+                });
+            }
+        }
     }
     
-    const textToCopy = preElement.innerText || preElement.textContent;
-    
-    const urlPagina = 'https://carover0.github.io/pagina/firo-explorer';
-    const textoCompleto = textToCopy + '\n\n—--\nExplorado con: ' + urlPagina;
-    
-    navigator.clipboard.writeText(textoCompleto).then(() => {
-        const originalText = btn.innerText;
-        btn.innerText = '[♥ COPIADO]';
+    // F9 - LIMPIAR TODO 
+    if (e.key === 'F9') {
+        e.preventDefault();
+        document.getElementById('searchInput').value = '';
+        document.getElementById('output').innerHTML = '';
+        document.getElementById('pie').style.display = 'block';
+        loadNetworkStats();
+        const url = new URL(window.location);
+        url.searchParams.delete('q');
+        window.history.replaceState({}, '', url);
+        const originalPrompt = document.querySelector('.prompt').innerHTML;
+        document.querySelector('.prompt').innerHTML = '♥ LIMPIADO ♥';
         setTimeout(() => {
-            btn.innerText = originalText;
-        }, 1500);
-    }).catch(err => {
-        console.error('Error al copiar:', err);
-    });
-}
+            document.querySelector('.prompt').innerHTML = originalPrompt;
+        }, 1000);
+    }
+});
+
 
 
 // ========== EVENTOS ==========
@@ -543,6 +555,23 @@ searchInput.addEventListener('paste', (e) => {
     }, 10);
 });
 
+
+// ========== DETECTAR DESDE URL ==========
+(function detectFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get('q');
+    
+    if (q) {
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                searchInput.value = q;
+                executeSearch(detectCommand(q));
+            }, 300);
+        });
+    }
+})();
+
+	
 // ========== INICIALIZACIÓN ==========
 loadNetworkStats();
 setInterval(loadNetworkStats, 30000);
