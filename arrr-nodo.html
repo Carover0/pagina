@@ -194,8 +194,6 @@ async function fetchNodeData() {
     const synced = blockchainInfo?.blocks >= blockchainInfo?.headers;
     const bestBlockHash = blockchainInfo?.bestblockhash || '---';
     
-    // Recompensa actual (Pirate: fija 16 ARRR por bloque)
-    // Si querés calcular según la altura (si cambia en el futuro)
     let blockReward = 16; // Valor fijo actual de Pirate Chain
     
     // Actualizar DOM
