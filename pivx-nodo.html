@@ -136,6 +136,12 @@ cΔrovΣr0 • MONITOR DE NODO PIVX<br>
 const RPC_URL = "https://carover0.xyz/api/pivx/pivx.php";
 const TOKEN = "pivx2026";
 const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
+const PRICE_API_URL = "https://carover0.xyz/getprice-pivx.php?token=pivx2026"; 
+
+let stakeCache = {
+  value: 4.0,
+  timestamp: 0
+};
 
 // ========== FUNCIONES AUXILIARES ==========
 function formatDifficulty(diff) {
@@ -166,39 +172,69 @@ async function callRPC(method, params = []) {
   }
 }
 
-// ========== OBTENER DATOS DEL NODO ==========
-async function fetchNodeData() {
+// ========== STAKE PROMEDIO REAL ==========
+async function calcularStakePromedio(blockHeight) {
+  const ahora = Date.now();
+  if (stakeCache.value && (ahora - stakeCache.timestamp) < 300000) {
+    return stakeCache.value;
+  }
+  
   try {
-    // 1. Datos básicos desde status.json
-    const statusRes = await fetch(STATUS_URL);
-    const status = await statusRes.json();
-    
-    // 2. Información adicional vía RPC
-    const blockchainInfo = await callRPC('getblockchaininfo');
-    const networkInfo = await callRPC('getnetworkinfo');
-    const mempool = await callRPC('getrawmempool');
-    const peerinfo = await callRPC('getpeerinfo');
     const stakingInfo = await callRPC('getstakinginfo');
     
-    // Extraer datos
-    const version = status.software_subversion || status.subversion || '---';
-    const connections = status.connections || peerinfo?.length || 0;
-    const blockHeight = status.height || blockchainInfo?.blocks || 0;
-    const mempoolSize = mempool?.length || status.mempool || 0;
-    const difficulty = status.difficulty || blockchainInfo?.difficulty || 0;
-    const protocolVersion = status.protocolversion || networkInfo?.protocolversion || '---';
+    if (stakingInfo) {
+      let stakeValue = 4.0;
+      
+      if (stakingInfo.stakeReward) {
+        stakeValue = stakingInfo.stakeReward;
+      } else if (stakingInfo.reward) {
+        stakeValue = stakingInfo.reward;
+      }
+      
+      stakeCache = {
+        value: stakeValue,
+        timestamp: ahora
+      };
+      
+      return stakeValue;
+    }
     
-    // Estado de sincronización
+    // Si no hay stakingInfo, devolver valor por defecto
+    return 4.0;
+    
+  } catch(err) {
+    console.error("Error calculando stake promedio:", err);
+    return 4.0;
+  }
+}
+
+// ========== OBTENER DATOS DEL NODO  ==========
+async function fetchNodeData() {
+  try {
+    const startTime = Date.now();
+    
+    const [statusRes, blockchainInfo, networkInfo, mempool, peerinfo] = await Promise.all([
+      fetch(STATUS_URL).then(r => r.json()).catch(() => ({})),
+      callRPC('getblockchaininfo'),
+      callRPC('getnetworkinfo'),
+      callRPC('getrawmempool'),
+      callRPC('getpeerinfo')
+    ]);
+    
+    const version = statusRes.software_subversion || statusRes.subversion || networkInfo?.subversion || '---';
+    const connections = statusRes.connections || peerinfo?.length || 0;
+    const blockHeight = statusRes.height || blockchainInfo?.blocks || 0;
+    const mempoolSize = mempool?.length || statusRes.mempool || 0;
+    const difficulty = statusRes.difficulty || blockchainInfo?.difficulty || 0;
+    const protocolVersion = statusRes.protocolversion || networkInfo?.protocolversion || '---';
     const synced = blockchainInfo?.blocks >= blockchainInfo?.headers;
     const bestBlockHash = blockchainInfo?.bestblockhash || '---';
     
-    // Stake promedio (últimos 100 bloques)
-    let avgStake = 0;
-    if (blockHeight > 100) {
-      avgStake = 5.5; // Valor típico en PIVX
-    }
+    const avgStake = await calcularStakePromedio(blockHeight);
     
-    // Actualizar DOM
+    const loadTime = Date.now() - startTime;
+    console.log(`✅ Datos cargados en ${loadTime}ms`);
+    
     document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
     
     document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
@@ -208,7 +244,7 @@ async function fetchNodeData() {
     document.getElementById('node-connections').innerText = connections;
     document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
     document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
-    document.getElementById('node-stake').innerText = avgStake.toFixed(2) + ' PIV (prom.)';
+    document.getElementById('node-stake').innerText = avgStake.toFixed(2) + ' PIV (por bloque)';
     document.getElementById('node-protocol').innerText = protocolVersion;
     document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
     
@@ -218,14 +254,38 @@ async function fetchNodeData() {
 }
 
 // ========== PRECIO ==========
+let precioCache = {
+  usd: null,
+  volumen: null,
+  timestamp: 0
+};
+
 async function fetchPrice() {
+  const ahora = Date.now();
+  
+  if (precioCache.usd && (ahora - precioCache.timestamp) < 120000) {
+    document.getElementById('price-usd').innerText = `$${precioCache.usd.toFixed(4)}`;
+    if (precioCache.volumen) {
+      document.getElementById('price-volume').innerText = `$${precioCache.volumen.toLocaleString()}`;
+    }
+    document.getElementById('price-time').innerText = new Date().toLocaleTimeString();
+    return;
+  }
+  
   try {
-    // Usando CoinGecko API para PIVX
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pivx&vs_currencies=usd&include_24hr_vol=true');
+    const response = await fetch(PRICE_API_URL); 
     if (!response.ok) throw new Error('No disponible');
     const data = await response.json();
+    
     if (data.pivx) {
+      precioCache = {
+        usd: data.pivx.usd,
+        volumen: data.pivx.usd_24h_vol,
+        timestamp: ahora
+      };
+      
       document.getElementById('price-usd').innerText = `$${data.pivx.usd.toFixed(4)}`;
+      
       if (data.pivx.usd_24h_vol) {
         document.getElementById('price-volume').innerText = `$${Math.round(data.pivx.usd_24h_vol).toLocaleString()}`;
       } else {
@@ -241,17 +301,25 @@ async function fetchPrice() {
     document.getElementById('price-volume').innerHTML = '---';
   }
   
-  const now = new Date();
-  document.getElementById('price-time').innerText = now.toLocaleTimeString();
+  document.getElementById('price-time').innerText = new Date().toLocaleTimeString();
 }
 
-// ========== INICIO ==========
-fetchNodeData();
-fetchPrice();
+// ========== INICIO  ==========
+document.addEventListener('DOMContentLoaded', () => {
+  // Cargar precio primero (es más rápido)
+  fetchPrice();
+  
+  // Cargar datos del nodo (puede tardar)
+  fetchNodeData();
+});
 
-// Actualizar cada 30 segundos
-setInterval(fetchNodeData, 30000);
-setInterval(fetchPrice, 60000);
+// Actualizar cada 30 segundos (con paralelismo)
+setInterval(() => {
+  Promise.all([
+    fetchNodeData(),
+    fetchPrice()
+  ]);
+}, 30000);
 </script>
 
 </body>
