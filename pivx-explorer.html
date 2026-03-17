@@ -19,7 +19,7 @@ body {
     white-space: pre-wrap;
 }
 .prompt {
-    color: #A044FF; 
+    color: #A044FF;
 }
 #searchInput {
     background: #000;
@@ -78,7 +78,7 @@ function formatAddress(addr) {
     return addr.substring(0, 10) + '...' + addr.substring(addr.length - 8);
 }
 
-// ========== DETECTAR BÚSQUEDA DESDE URL ==========
+// ========== DETECTAR BUSQUEDA DESDE URL ==========
 function detectSearchFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     const queryParam = urlParams.get('q');
@@ -107,7 +107,7 @@ function updateUrlWithSearch(parametro, tipo) {
     console.log('🔗 URL actualizada:', newUrl);
 }
 
-// ========== DETECCIÓN AUTOMÁTICA ==========
+// ========== DETECCION AUTOMATICA ==========
 async function detectCommand(input) {
     input = input.trim();
 
@@ -161,7 +161,7 @@ async function loadNetworkStats() {
     } catch(e) {}
 }
 
-// Función para obtener el valor de un UTXO específico
+// obtener el valor de un UTXO específico
 async function getVinValue(txid, voutIndex) {
     try {
         const url = `${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`;
@@ -177,7 +177,7 @@ async function getVinValue(txid, voutIndex) {
     return null;
 }
 
-// ========== EJECUCIÓN DE BÚSQUEDA ==========
+// ========== EJECUCION DE BUSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
@@ -259,16 +259,22 @@ async function executeSearch(q) {
             const hasVoutZero = t.vout && t.vout.length > 0 && t.vout[0].value === 0;
             const isOnlyZeroOutput = t.vout && t.vout.length === 1 && t.vout[0].value === 0;
             
+            // Detectar CoinStake 
             const isCoinStake = !hasCoinbase && hasTransparentIn && hasVoutZero && t.vout && t.vout.length >= 2;
             
+            // Detectar Coinbase dummy de PIVX 
             const isDummyCoinbase = hasCoinbase && isOnlyZeroOutput;
             
+            // Detectar transacción SHIELDED (solo actividad privada)
             const isShielded = !hasTransparentIn && !hasTransparentOut && (hasShieldedSpend || hasShieldedOutput);
             
+            // Detectar Shielding (transparente → shielded)
             const isShielding = hasTransparentIn && !hasTransparentOut && hasShieldedOutput && !hasShieldedSpend;
             
+            // Detectar Deshielding (shielded → transparente)
             const isDeshielding = hasShieldedSpend && !hasShieldedOutput && hasTransparentOut && !hasTransparentIn;
             
+            // Detectar Cold Staking por tipo de script
             let isColdStaking = false;
             let coldStakeOwner = null;
             let coldStakeStaker = null;
@@ -318,15 +324,15 @@ async function executeSearch(q) {
             
             // ========== CABECERA SIMPLIFICADA ==========
             if (isShielded) {
-                res += `[PRIV] TRANSACCIÓN PRIVADA (SHIELDED)\n`;
+                res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
             } else if (isShielding) {
-                res += `[PRIV] SHIELDING (TRANSPARENTE → SHIELDED)\n`;
+                res += `🛡 SHIELDING (TRANSPARENTE → SHIELDED)\n`;
             } else if (isDeshielding) {
-                res += `[PRIV] DESHIELDING (SHIELDED → TRANSPARENTE)\n`;
+                res += `🛡 DESHIELDING (SHIELDED → TRANSPARENTE)\n`;
             } else if (isCoinStake) {
-                res += `[POS] COINSTAKE (GENERACIÓN DE BLOQUE PoS)\n`;
+                res += `⚡️ COINSTAKE (GENERACIÓN DE BLOQUE PoS)\n`;
             } else {
-                res += `[PUB] TRANSACCIÓN TRANSPARENTE\n\n\n`;
+                res += `[PUB] TRANSACCIÓN TRANSPARENTE\n`;
             }
             res += `  TXID: ${t.txid}\n`;
             res += `  bloque: #${t.blockheight || t.height || (t.blockhash ? 'en bloque' : 'no confirmada')}\n`;
@@ -397,7 +403,7 @@ async function executeSearch(q) {
                         addr = formatAddress(vout.scriptPubKey.address);
                     }
                     
-                    // Determinar tipo de salida segun contexto
+                    // Determinar tipo de salida según contexto
                     let tipo = '';
                     
                     if (isDummyCoinbase) {
@@ -410,9 +416,12 @@ async function executeSearch(q) {
                             tipo = ' [coinstake marker]';
                             addr = '';
                         } else if (i === 1 && vout.value > 0) {
-                            tipo = ' ← stake + recompensa reinvertida';
-                        } else if (i >= 2 && vout.value > 0) {
-                            tipo = ' [recompensa distribuida]';
+                            // Detectar si es split staking 
+                            tipo = ' ← stake (parte 1/2)';
+                        } else if (i === 2 && vout.value > 0) {
+                            tipo = ' ← stake (parte 2/2)';
+                        } else if (i >= 3 && vout.value > 0) {
+                            tipo = ' [recompensa]';
                         }
                     } else if (isColdStaking) {
                         if (vout.scriptPubKey && vout.scriptPubKey.type === 'coldstake') {
@@ -466,7 +475,7 @@ async function executeSearch(q) {
             
             // ========== ACTIVIDAD SHIELDED  ==========
             if (hasShieldedSpend || hasShieldedOutput) {
-                res += `\n[PRIV] SHIELDED (SAPLING)\n\n`;
+                res += `\n🛡 SHIELDED (SAPLING)\n\n`;
                 
                 // ===== SPENDS =====
                 if (hasShieldedSpend) {
@@ -516,7 +525,7 @@ async function executeSearch(q) {
                     const fee = Math.abs(parseFloat(t.valueBalance));
                     res += `  fee (pool shielded): ${fee.toFixed(6)} PIV\n`;
                 }
-                res += `  privacidad: [PRIV] completa (montos ocultos)\n`;
+                res += `  privacidad: 🛡 completa (montos ocultos)\n`;
             }
             
             // ========== RESUMEN Y ANALISIS ==========
@@ -525,7 +534,7 @@ async function executeSearch(q) {
             res += `  salidas transparentes: ${t.vout?.length || 0}\n`;
             
             if (isShielded) {
-                res += `  actividad shielded: sí [PRIV]\n`;
+                res += `  actividad shielded: sí 🛡\n`;
             }
             
             if (isColdStaking && !isCoinStake) {
@@ -537,7 +546,7 @@ async function executeSearch(q) {
             // CLASIFICACION 
             if (isDummyCoinbase) {
                 res += `  tipo: coinbase (bloque PoS - sin recompensa)\n`;
-                res += `  ⚠ transacción estructural\n`;
+                res += `  [!] transacción estructural\n`;
             } else if (hasCoinbase && !isDummyCoinbase) {
                 res += `  tipo: coinbase (PoW - no aplica en PIVX)\n`;
             } else if (isCoinStake) {
@@ -549,6 +558,28 @@ async function executeSearch(q) {
                 }
                 
                 if (totalIn > 0 && t.vout && t.vout.length >= 2) {
+                    // Detectar split staking (dos salidas iguales a la misma dirección)
+                    let isSplitStake = false;
+                    let splitAmount = 0;
+                    
+                    if (t.vout.length >= 3) {
+                        const out1 = t.vout[1];
+                        const out2 = t.vout[2];
+                        
+                        if (out1 && out2) {
+                            const addr1 = out1.scriptPubKey?.addresses?.[0];
+                            const addr2 = out2.scriptPubKey?.addresses?.[0];
+                            
+                            if (addr1 && addr2 && addr1 === addr2) {
+                                const diff = Math.abs(out1.value - out2.value);
+                                if (diff < 0.000001) {
+                                    isSplitStake = true;
+                                    splitAmount = out1.value;
+                                }
+                            }
+                        }
+                    }
+                    
                     const stakeFinal = t.vout[1]?.value || 0;
                     const recompensaDistribuida = t.vout.slice(2).reduce((sum, v) => sum + (v.value || 0), 0);
                     const recompensaTotal = totalOut - totalIn;
@@ -556,7 +587,16 @@ async function executeSearch(q) {
                     
                     res += `  ───────────────────────────────────────\n`;
                     res += `  stake activo previo: ${totalIn.toFixed(6)} PIV\n`;
-                    res += `  stake final: ${stakeFinal.toFixed(6)} PIV\n`;
+                    
+                    if (isSplitStake) {
+                        res += `\n  stake resultante (división):\n`;
+                        res += `    ├─ ${splitAmount.toFixed(6)} PIV\n`;
+                        res += `    └─ ${splitAmount.toFixed(6)} PIV\n`;
+                        res += `    (split staking - optimización de UTXOs)\n\n`;
+                    } else {
+                        res += `  stake final: ${stakeFinal.toFixed(6)} PIV\n`;
+                    }
+                    
                     res += `  recompensa total: +${recompensaTotal.toFixed(6)} PIV\n`;
                     res += `    ├─ reinvertida: +${recompensaReinvertida.toFixed(6)} PIV\n`;
                     res += `    └─ distribuida: ${recompensaDistribuida.toFixed(6)} PIV\n`;
@@ -564,7 +604,7 @@ async function executeSearch(q) {
                 res += `  fee: 0 PIV (generación de bloques)\n`;
             } else if (isShielded) {
                 res += `  tipo: transacción privada (sapling)\n`;
-                res += `  privacidad: [PRIV] total (datos ocultos)\n`;
+                res += `  privacidad: 🔒 total (datos ocultos)\n`;
                 if (hasShieldedSpend) {
                     res += `  notas consumidas: ${t.vShieldSpend.length}\n`;
                 }
