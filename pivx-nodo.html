@@ -197,7 +197,6 @@ async function calcularStakePromedio(blockHeight) {
       
       return stakeValue;
     }
-    
     // Si no hay stakingInfo, devolver valor por defecto
     return 4.0;
     
@@ -305,14 +304,12 @@ async function fetchPrice() {
 
 // ========== INICIO  ==========
 document.addEventListener('DOMContentLoaded', () => {
-  // Cargar precio primero (es más rápido)
   fetchPrice();
   
-  // Cargar datos del nodo (puede tardar)
   fetchNodeData();
 });
 
-// Actualizar cada 30 segundos (con paralelismo)
+// Actualizar cada 30 segundos 
 setInterval(() => {
   Promise.all([
     fetchNodeData(),
