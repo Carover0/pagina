@@ -1,6 +1,6 @@
 <html lang="es">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>PIVX: TERMINAL EXPLORER</title>
 <style>
 body {
@@ -19,7 +19,7 @@ body {
     white-space: pre-wrap;
 }
 .prompt {
-    color: #A044FF; /* Morado oficial PIVX */
+    color: #A044FF; 
 }
 #searchInput {
     background: #000;
@@ -65,7 +65,18 @@ MEMPOOL              : <span id="stat-mempool">---</span> tx
 <script>
 const API_URL = "https://carover0.xyz/api/pivx/pivx.php"; 
 const TOKEN = "pivx2026";
-const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json"; // ← ACTUALIZADO
+const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
+
+// ========== FUNCIONES DE FORMATEO GLOBALES ==========
+function formatTxid(txid) {
+    if (!txid || txid.length < 20) return txid;
+    return txid.substring(0, 12) + '...' + txid.substring(txid.length - 12);
+}
+
+function formatAddress(addr) {
+    if (!addr || addr.length < 20) return addr;
+    return addr.substring(0, 10) + '...' + addr.substring(addr.length - 8);
+}
 
 // ========== DETECTAR BÚSQUEDA DESDE URL ==========
 function detectSearchFromUrl() {
@@ -150,8 +161,6 @@ async function loadNetworkStats() {
     } catch(e) {}
 }
 
-
-
 // Función para obtener el valor de un UTXO específico
 async function getVinValue(txid, voutIndex) {
     try {
@@ -167,7 +176,6 @@ async function getVinValue(txid, voutIndex) {
     }
     return null;
 }
-
 
 // ========== EJECUCIÓN DE BÚSQUEDA ==========
 async function executeSearch(q) {
@@ -215,331 +223,419 @@ async function executeSearch(q) {
         if (data.error) {
             res += `error: ${JSON.stringify(data.error)}`;
         } 
-else if (q.includes('getblock') && data.result?.hash) {
-    const b = data.result;
-    res += `BLOQUE #${b.height}\n`;
-    res += `hash: ${b.hash}\n`;
-    res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
-    res += `transacciones: ${b.tx?.length || 0}\n`;
-    res += `tamaño: ${b.size || 0} bytes\n`;
-    if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
-    if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
-    
-    // Mostrar transacciones como TXIDs (si existen)
-    if (b.tx && b.tx.length > 0) {
-        res += `\n▶ TXIDS (${b.tx.length})\n`;
-        
-        // Si son objetos completos (verbosidad 2/3)
-        if (typeof b.tx[0] === 'object') {
-            b.tx.forEach((tx, i) => {
-                const txid = tx.txid || tx;
-                res += `   ${i+1}. ${txid}\n`;
-            });
-        } 
-        // Si solo son strings (verbosidad 1)
-        else {
-            b.tx.forEach((txid, i) => {
-                res += `   ${i+1}. ${txid}\n`;
-            });
-        }
-    }
-}
-
-
-
-
-
-
-
-else if (q.includes('getrawtransaction') && data.result?.txid) {
-    const t = data.result;
-    
-    // ========== FUNCIONES DE FORMATEO ==========
-    function formatTxid(txid) {
-        if (!txid || txid.length < 20) return txid;
-        return txid.substring(0, 12) + '...' + txid.substring(txid.length - 12);
-    }
-    
-    function formatAddress(addr) {
-        if (!addr || addr.length < 20) return addr;
-        return addr.substring(0, 10) + '...' + addr.substring(addr.length - 8);
-    }
-    
-    // ========== DETECCIÓN DE TIPO DE TRANSACCIÓN PIVX ==========
-    const hasCoinbase = t.vin && t.vin.length > 0 && t.vin[0].coinbase !== undefined;
-    const hasVoutZero = t.vout && t.vout.length > 0 && t.vout[0].value === 0;
-    const isOnlyZeroOutput = t.vout && t.vout.length === 1 && t.vout[0].value === 0;
-    
-    // Detectar CoinStake (PoS real)
-    const isCoinStake = !hasCoinbase && hasVoutZero && t.vout && t.vout.length >= 2;
-    
-    // Detectar Coinbase dummy de PIVX (PoS)
-    const isDummyCoinbase = hasCoinbase && isOnlyZeroOutput;
-    
-    // Detectar Cold Staking por tipo de script
-    let isColdStaking = false;
-    let coldStakeOwner = null;
-    let coldStakeStaker = null;
-    
-    if (t.vout && t.vout.length > 0) {
-        t.vout.forEach(vout => {
-            if (vout.scriptPubKey && vout.scriptPubKey.type === 'coldstake') {
-                isColdStaking = true;
-                if (vout.scriptPubKey.addresses && vout.scriptPubKey.addresses.length >= 2) {
-                    // En cold staking, la primera dirección suele ser el staker, la segunda el owner
-                    // Pero depende de la implementación
-                    coldStakeStaker = vout.scriptPubKey.addresses[0];
-                    coldStakeOwner = vout.scriptPubKey.addresses[1];
-                }
-            }
-        });
-    }
-    
-    // Determinar si es auto-delegación (owner = staker)
-    const isSelfDelegation = isColdStaking && coldStakeOwner && coldStakeStaker && 
-                             coldStakeOwner === coldStakeStaker;
-    
-    // ========== OBTENER VALORES REALES DE LOS INPUTS ==========
-    let totalIn = 0;
-    let inputValues = [];
-    
-    if (t.vin && t.vin.length > 0 && !hasCoinbase) {
-        const vinPromises = t.vin.map(async (vin, index) => {
-            const value = await getVinValue(vin.txid, vin.vout);
-            return { index, value };
-        });
-        
-        const results = await Promise.all(vinPromises);
-        results.forEach(r => {
-            if (r.value !== null) {
-                totalIn += r.value;
-                inputValues[r.index] = r.value;
-            }
-        });
-    }
-    
-    // ========== CALCULAR TOTAL DE SALIDAS ==========
-    let totalOut = 0;
-    if (t.vout) {
-        t.vout.forEach(vout => {
-            totalOut += vout.value || 0;
-        });
-    }
-    
-    // ========== CABECERA ==========
-    res += `  TXID: ${t.txid}\n`;
-    res += `  bloque: #${t.blockheight || t.height || (t.blockhash ? 'en bloque' : 'no confirmada')}\n`;
-    if (t.blockheight || t.height) {
-        res += `  altura: ${t.blockheight || t.height}\n`;
-    }
-    res += `  confirmaciones: ${t.confirmations || 0}\n`;
-    if (t.time || t.blocktime) {
-        const ts = t.time || t.blocktime;
-        res += `  fecha: ${new Date(ts*1000).toLocaleString()}\n`;
-    }
-    if (t.size) res += `  tamaño: ${t.size} bytes\n`;
-    
-    // ========== ENTRADAS ==========
-    if (t.vin && t.vin.length > 0) {
-        res += `\n▶ ENTRADAS (${t.vin.length})\n`;
-        
-        t.vin.forEach((vin, i) => {
-            if (vin.coinbase !== undefined) {
-                if (isDummyCoinbase) {
-                    res += `  [#${i}] COINBASE (dummy - bloque PoS)\n`;
+        else if (q.includes('getblock') && data.result?.hash) {
+            const b = data.result;
+            res += `BLOQUE #${b.height}\n`;
+            res += `hash: ${b.hash}\n`;
+            res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
+            res += `transacciones: ${b.tx?.length || 0}\n`;
+            res += `tamaño: ${b.size || 0} bytes\n`;
+            if (b.previousblockhash) res += `anterior: ${formatTxid(b.previousblockhash)}\n`;
+            if (b.nextblockhash) res += `siguiente: ${formatTxid(b.nextblockhash)}\n`;
+            
+            if (b.tx && b.tx.length > 0) {
+                res += `\n▶ TXIDS (${b.tx.length})\n`;
+                if (typeof b.tx[0] === 'object') {
+                    b.tx.forEach((tx, i) => {
+                        const txid = tx.txid || tx;
+                        res += `   ${i+1}. ${formatTxid(txid)}\n`;
+                    });
                 } else {
-                    res += `  [#${i}] COINBASE\n`;
+                    b.tx.forEach((txid, i) => {
+                        res += `   ${i+1}. ${formatTxid(txid)}\n`;
+                    });
                 }
-            } else if (vin.txid) {
-                const txidTrunc = formatTxid(vin.txid);
-                const valorInput = inputValues[i] !== undefined ? inputValues[i].toFixed(6) : null;
-                let valorStr = '';
-                
-                if (valorInput) {
-                    valorStr = ` ${valorInput} PIV`;
-                    if (isCoinStake) {
-                        valorStr += ` (stake activo)`;
-                    } else if (isColdStaking) {
-                        valorStr += ` (fondos a delegar)`;
-                    }
-                }
-                
-                res += `  [#${i}] desde ${txidTrunc}:${vin.vout}${valorStr}\n`;
             }
-        });
-        
-        if (totalIn > 0) {
-            res += `  total entrada: ${totalIn.toFixed(6)} PIV\n`;
         }
-    }
-    
-    // ========== SALIDAS ==========
-    if (t.vout && t.vout.length > 0) {
-        res += `\n◀ SALIDAS (${t.vout.length})\n`;
-        
-        t.vout.forEach((vout, i) => {
-            let addr = '';
-            let extraInfo = '';
+        else if (q.includes('getrawtransaction') && data.result?.txid) {
+            const t = data.result;
             
-            if (vout.scriptPubKey?.addresses?.[0]) {
-                addr = formatAddress(vout.scriptPubKey.addresses[0]);
-                if (vout.scriptPubKey.addresses.length > 1) {
-                    extraInfo = ` (multi-address)`;
-                }
-            } else if (vout.scriptPubKey?.address) {
-                addr = formatAddress(vout.scriptPubKey.address);
+            // ========== DETECCIÓN DE TIPO DE TRANSACCIÓN PIVX (CORREGIDA) ==========
+            const hasCoinbase = t.vin && t.vin.length > 0 && t.vin[0].coinbase !== undefined;
+            const hasTransparentIn = t.vin && t.vin.length > 0;
+            const hasTransparentOut = t.vout && t.vout.length > 0;
+            const hasShieldedSpend = t.vShieldSpend && t.vShieldSpend.length > 0;
+            const hasShieldedOutput = t.vShieldOutput && t.vShieldOutput.length > 0;
+            const hasVoutZero = t.vout && t.vout.length > 0 && t.vout[0].value === 0;
+            const isOnlyZeroOutput = t.vout && t.vout.length === 1 && t.vout[0].value === 0;
+            
+            const isCoinStake = !hasCoinbase && hasTransparentIn && hasVoutZero && t.vout && t.vout.length >= 2;
+            
+            const isDummyCoinbase = hasCoinbase && isOnlyZeroOutput;
+            
+            const isShielded = !hasTransparentIn && !hasTransparentOut && (hasShieldedSpend || hasShieldedOutput);
+            
+            const isShielding = hasTransparentIn && !hasTransparentOut && hasShieldedOutput && !hasShieldedSpend;
+            
+            const isDeshielding = hasShieldedSpend && !hasShieldedOutput && hasTransparentOut && !hasTransparentIn;
+            
+            let isColdStaking = false;
+            let coldStakeOwner = null;
+            let coldStakeStaker = null;
+            
+            if (t.vout && t.vout.length > 0) {
+                t.vout.forEach(vout => {
+                    if (vout.scriptPubKey && vout.scriptPubKey.type === 'coldstake') {
+                        isColdStaking = true;
+                        if (vout.scriptPubKey.addresses && vout.scriptPubKey.addresses.length >= 2) {
+                            coldStakeStaker = vout.scriptPubKey.addresses[0];
+                            coldStakeOwner = vout.scriptPubKey.addresses[1];
+                        }
+                    }
+                });
             }
             
-            // Determinar tipo de salida según contexto
-            let tipo = '';
+            // Determinar si es auto-delegación (owner = staker)
+            const isSelfDelegation = isColdStaking && coldStakeOwner && coldStakeStaker && 
+                                     coldStakeOwner === coldStakeStaker;
             
-            if (isDummyCoinbase) {
-                if (vout.value === 0) {
-                    tipo = ' [salida nula - coinbase PoS]';
-                    addr = '';
-                }
+            // ========== OBTENER VALORES REALES DE LOS INPUTS ==========
+            let totalIn = 0;
+            let inputValues = [];
+            
+            if (t.vin && t.vin.length > 0 && !hasCoinbase) {
+                const vinPromises = t.vin.map(async (vin, index) => {
+                    const value = await getVinValue(vin.txid, vin.vout);
+                    return { index, value };
+                });
+                
+                const results = await Promise.all(vinPromises);
+                results.forEach(r => {
+                    if (r.value !== null) {
+                        totalIn += r.value;
+                        inputValues[r.index] = r.value;
+                    }
+                });
+            }
+            
+            // ========== CALCULAR TOTAL DE SALIDAS ==========
+            let totalOut = 0;
+            if (t.vout) {
+                t.vout.forEach(vout => {
+                    totalOut += vout.value || 0;
+                });
+            }
+            
+            // ========== CABECERA SIMPLIFICADA ==========
+            if (isShielded) {
+                res += `[PRIV] TRANSACCIÓN PRIVADA (SHIELDED)\n`;
+            } else if (isShielding) {
+                res += `[PRIV] SHIELDING (TRANSPARENTE → SHIELDED)\n`;
+            } else if (isDeshielding) {
+                res += `[PRIV] DESHIELDING (SHIELDED → TRANSPARENTE)\n`;
             } else if (isCoinStake) {
-                if (i === 0 && vout.value === 0) {
-                    tipo = ' [coinstake marker]';
-                    addr = '';
-                } else if (i === 1 && vout.value > 0) {
-                    tipo = ' ← stake + recompensa reinvertida';
-                } else if (i >= 2 && vout.value > 0) {
-                    tipo = ' [recompensa distribuida]';
-                }
-            } else if (isColdStaking) {
-                // Transacción de delegación a cold staking
-                if (vout.scriptPubKey && vout.scriptPubKey.type === 'coldstake') {
-                    tipo = ' [CONTRATO COLD STAKING]';
-                    if (coldStakeStaker && coldStakeOwner) {
-                        const relacion = isSelfDelegation ? ' (auto-delegación)' : ' (delegado a tercero)';
-                        extraInfo = `\n       dueño: ${coldStakeOwner}\n       staker: ${coldStakeStaker}${relacion}`;
-                    }
-                } else {
-                    if (vout.value === 0) {
-                        tipo = ' [salida nula]';
-                        addr = '';
-                    } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value || 0))) {
-                        tipo = ' ← PAGO PRINCIPAL';
-                    } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value || 0))) {
-                        tipo = ' [cambio]';
-                    }
-                }
+                res += `[POS] COINSTAKE (GENERACIÓN DE BLOQUE PoS)\n`;
             } else {
-                // Transacciones normales
-                if (vout.value === 0) {
-                    tipo = ' [salida nula]';
-                    addr = '';
-                } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value || 0))) {
-                    tipo = ' ← PAGO PRINCIPAL';
-                } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value || 0))) {
-                    tipo = ' [cambio]';
+                res += `[PUB] TRANSACCIÓN TRANSPARENTE\n\n\n`;
+            }
+            res += `  TXID: ${t.txid}\n`;
+            res += `  bloque: #${t.blockheight || t.height || (t.blockhash ? 'en bloque' : 'no confirmada')}\n`;
+            if (t.blockheight || t.height) {
+                res += `  altura: ${t.blockheight || t.height}\n`;
+            }
+            res += `  confirmaciones: ${t.confirmations || 0}\n`;
+            if (t.time || t.blocktime) {
+                const ts = t.time || t.blocktime;
+                res += `  fecha: ${new Date(ts*1000).toLocaleString()}\n`;
+            }
+            if (t.size) res += `  tamaño: ${t.size} bytes\n`;
+            if (t.version) res += `  versión: ${t.version}\n`;
+            if (t.expiryheight) res += `  expira: bloque ${t.expiryheight}\n`;
+            
+            // ========== ENTRADAS ==========
+            if (t.vin && t.vin.length > 0) {
+                res += `\n▶ ENTRADAS (${t.vin.length})\n`;
+                
+                t.vin.forEach((vin, i) => {
+                    if (vin.coinbase !== undefined) {
+                        if (isDummyCoinbase) {
+                            res += `  [#${i}] COINBASE (dummy - bloque PoS)\n`;
+                        } else {
+                            res += `  [#${i}] COINBASE\n`;
+                        }
+                    } else if (vin.txid) {
+                        const txidTrunc = formatTxid(vin.txid);
+                        const valorInput = inputValues[i] !== undefined ? inputValues[i].toFixed(6) : null;
+                        let valorStr = '';
+                        
+                        if (valorInput) {
+                            valorStr = ` ${valorInput} PIV`;
+                            if (isCoinStake) {
+                                valorStr += ` (stake activo)`;
+                            } else if (isColdStaking) {
+                                valorStr += ` (fondos a delegar)`;
+                            } else if (isShielding) {
+                                valorStr += ` (a blindar)`;
+                            }
+                        }
+                        
+                        res += `  [#${i}] desde ${txidTrunc}:${vin.vout}${valorStr}\n`;
+                    }
+                });
+                
+                if (totalIn > 0) {
+                    res += `  total entrada: ${totalIn.toFixed(6)} PIV\n`;
                 }
+            } else if (!hasTransparentIn && (hasShieldedSpend || hasShieldedOutput)) {
+                res += `\n▶ ENTRADAS (0) - No hay entradas transparentes\n`;
             }
             
-            const addrMostrar = addr ? ` → ${addr}` : '';
-            res += `  [#${i}] ${vout.value.toFixed(6)} PIV${addrMostrar}${tipo}${extraInfo}\n`;
-        });
-        
-        if (totalOut > 0) {
+            // ========== SALIDAS ==========
+            if (t.vout && t.vout.length > 0) {
+                res += `\n◀ SALIDAS (${t.vout.length})\n`;
+                
+                t.vout.forEach((vout, i) => {
+                    let addr = '';
+                    let extraInfo = '';
+                    
+                    if (vout.scriptPubKey?.addresses?.[0]) {
+                        addr = formatAddress(vout.scriptPubKey.addresses[0]);
+                        if (vout.scriptPubKey.addresses.length > 1) {
+                            extraInfo = ` (multi-address)`;
+                        }
+                    } else if (vout.scriptPubKey?.address) {
+                        addr = formatAddress(vout.scriptPubKey.address);
+                    }
+                    
+                    // Determinar tipo de salida segun contexto
+                    let tipo = '';
+                    
+                    if (isDummyCoinbase) {
+                        if (vout.value === 0) {
+                            tipo = ' [salida nula - coinbase PoS]';
+                            addr = '';
+                        }
+                    } else if (isCoinStake) {
+                        if (i === 0 && vout.value === 0) {
+                            tipo = ' [coinstake marker]';
+                            addr = '';
+                        } else if (i === 1 && vout.value > 0) {
+                            tipo = ' ← stake + recompensa reinvertida';
+                        } else if (i >= 2 && vout.value > 0) {
+                            tipo = ' [recompensa distribuida]';
+                        }
+                    } else if (isColdStaking) {
+                        if (vout.scriptPubKey && vout.scriptPubKey.type === 'coldstake') {
+                            tipo = ' [CONTRATO COLD STAKING]';
+                            if (coldStakeStaker && coldStakeOwner) {
+                                const relacion = isSelfDelegation ? ' (auto-delegación)' : ' (delegado a tercero)';
+                                extraInfo = `\n       dueño: ${formatAddress(coldStakeOwner)}\n       staker: ${formatAddress(coldStakeStaker)}${relacion}`;
+                            }
+                        } else {
+                            if (vout.value === 0) {
+                                tipo = ' [salida nula]';
+                                addr = '';
+                            } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value || 0))) {
+                                tipo = ' ← destinatario (pago)';
+                            } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value || 0))) {
+                                tipo = ' [cambio]';
+                            }
+                        }
+                    } else if (isShielded || isShielding || isDeshielding) {
+                        if (vout.value === 0 && i === 0) {
+                            tipo = ' [marcador]';
+                            addr = '';
+                        }
+                    } else {
+                        if (vout.value === 0) {
+                            tipo = ' [salida nula]';
+                            addr = '';
+                        } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value || 0))) {
+                            tipo = ' ← destinatario (pago)';
+                        } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value || 0))) {
+                            tipo = ' [cambio]';
+                        }
+                    }
+                    
+                    const addrMostrar = addr ? ` → ${addr}` : '';
+                    res += `  [#${i}] ${vout.value.toFixed(6)} PIV${addrMostrar}${tipo}${extraInfo}\n`;
+                });
+                
+                if (totalOut > 0) {
+                    if (isColdStaking && !isCoinStake) {
+                        res += `  total delegado: ${totalOut.toFixed(6)} PIV\n`;
+                    } else if (isCoinStake) {
+                        res += `  total generado: ${totalOut.toFixed(6)} PIV\n`;
+                    } else {
+                        res += `  total salida: ${totalOut.toFixed(6)} PIV\n`;
+                    }
+                }
+            } else if (!hasTransparentOut && (hasShieldedSpend || hasShieldedOutput)) {
+                res += `\n◀ SALIDAS (0) - No hay salidas transparentes\n`;
+            }
+            
+            // ========== ACTIVIDAD SHIELDED  ==========
+            if (hasShieldedSpend || hasShieldedOutput) {
+                res += `\n[PRIV] SHIELDED (SAPLING)\n\n`;
+                
+                // ===== SPENDS =====
+                if (hasShieldedSpend) {
+                    res += `\n▶ GASTOS SHIELDED (${t.vShieldSpend.length})\n`;
+                    t.vShieldSpend.forEach((spend, i) => {
+                        res += `  [#${i}] nullifier: ${spend.nullifier}\n`;
+                        if (spend.cv) res += `       cv: ${spend.cv}\n`;
+                        if (spend.rk) res += `       rk: ${spend.rk}\n`;
+                        if (spend.anchor) res += `       anchor: ${spend.anchor}\n`;
+                        if (spend.proof) res += `       proof: ${formatTxid(spend.proof)}\n`;
+                        if (spend.spendAuthSig) res += `       sig: ${formatTxid(spend.spendAuthSig)}\n`;
+                    });
+                }
+                
+                // ===== OUTPUTS =====
+                if (hasShieldedOutput) {
+                    res += `\n▶ OUTPUTS SHIELDED (${t.vShieldOutput.length})\n`;
+                    t.vShieldOutput.forEach((output, i) => {
+                        res += `  [#${i}] cmu: ${output.cmu}\n`;
+                        if (output.cv) res += `       cv: ${output.cv}\n`;
+                        if (output.ephemeralKey) res += `       ephemeralKey: ${output.ephemeralKey}\n`;
+                        if (output.encCiphertext) res += `       encCiphertext: ${formatTxid(output.encCiphertext)}\n`;
+                        if (output.outCiphertext) res += `       outCiphertext: ${formatTxid(output.outCiphertext)}\n`;
+                        if (output.proof) res += `       proof: ${formatTxid(output.proof)}\n`;
+                    });
+                }
+                
+                // ===== BALANCE Y FIRMAS =====
+                if (t.valueBalance !== undefined) {
+                    const balanceZec = parseFloat(t.valueBalance);
+                    res += `\n  valueBalance: ${balanceZec.toFixed(6)} PIV`;
+                    if (t.valueBalanceSat !== undefined) {
+                        res += ` (${t.valueBalanceSat} satoshis)`;
+                    }
+                    res += `\n`;
+                }
+                
+                if (t.bindingSig) {
+                    res += `\n  bindingSig: ${t.bindingSig}\n`;
+                }
+                
+                // ===== RESUMEN SHIELDED =====
+                res += `\n■ RESUMEN SHIELDED\n`;
+                res += `  notas consumidas: ${t.vShieldSpend?.length || 0}\n`;
+                res += `  notas creadas: ${t.vShieldOutput?.length || 0}\n`;
+                if (t.valueBalance) {
+                    const fee = Math.abs(parseFloat(t.valueBalance));
+                    res += `  fee (pool shielded): ${fee.toFixed(6)} PIV\n`;
+                }
+                res += `  privacidad: [PRIV] completa (montos ocultos)\n`;
+            }
+            
+            // ========== RESUMEN Y ANALISIS ==========
+            res += `\n■ RESUMEN\n`;
+            res += `  entradas transparentes: ${t.vin?.length || 0}\n`;
+            res += `  salidas transparentes: ${t.vout?.length || 0}\n`;
+            
+            if (isShielded) {
+                res += `  actividad shielded: sí [PRIV]\n`;
+            }
+            
             if (isColdStaking && !isCoinStake) {
                 res += `  total delegado: ${totalOut.toFixed(6)} PIV\n`;
+            } else if (totalOut > 0) {
+                res += `  total: ${totalOut.toFixed(6)} PIV\n`;
+            }
+            
+            // CLASIFICACION 
+            if (isDummyCoinbase) {
+                res += `  tipo: coinbase (bloque PoS - sin recompensa)\n`;
+                res += `  ⚠ transacción estructural\n`;
+            } else if (hasCoinbase && !isDummyCoinbase) {
+                res += `  tipo: coinbase (PoW - no aplica en PIVX)\n`;
             } else if (isCoinStake) {
-                res += `  total generado: ${totalOut.toFixed(6)} PIV\n`;
+                res += `  tipo: coinstake (generación de bloque PoS)\n`;
+                if (isColdStaking) {
+                    res += `  modo: cold staking\n`;
+                } else {
+                    res += `  modo: hot staking\n`;
+                }
+                
+                if (totalIn > 0 && t.vout && t.vout.length >= 2) {
+                    const stakeFinal = t.vout[1]?.value || 0;
+                    const recompensaDistribuida = t.vout.slice(2).reduce((sum, v) => sum + (v.value || 0), 0);
+                    const recompensaTotal = totalOut - totalIn;
+                    const recompensaReinvertida = stakeFinal - totalIn;
+                    
+                    res += `  ───────────────────────────────────────\n`;
+                    res += `  stake activo previo: ${totalIn.toFixed(6)} PIV\n`;
+                    res += `  stake final: ${stakeFinal.toFixed(6)} PIV\n`;
+                    res += `  recompensa total: +${recompensaTotal.toFixed(6)} PIV\n`;
+                    res += `    ├─ reinvertida: +${recompensaReinvertida.toFixed(6)} PIV\n`;
+                    res += `    └─ distribuida: ${recompensaDistribuida.toFixed(6)} PIV\n`;
+                }
+                res += `  fee: 0 PIV (generación de bloques)\n`;
+            } else if (isShielded) {
+                res += `  tipo: transacción privada (sapling)\n`;
+                res += `  privacidad: [PRIV] total (datos ocultos)\n`;
+                if (hasShieldedSpend) {
+                    res += `  notas consumidas: ${t.vShieldSpend.length}\n`;
+                }
+                if (hasShieldedOutput) {
+                    res += `  notas creadas: ${t.vShieldOutput.length}\n`;
+                }
+                if (t.valueBalance) {
+                    const fee = Math.abs(parseFloat(t.valueBalance));
+                    res += `  fee: ${fee.toFixed(6)} PIV (pool shielded)\n`;
+                }
+            } else if (isShielding) {
+                res += `  tipo: shielding (transparente → shielded)\n`;
+                if (totalIn > 0) {
+                    res += `  fondos blindados: ${totalIn.toFixed(6)} PIV\n`;
+                }
+                if (t.valueBalance) {
+                    const fee = Math.abs(parseFloat(t.valueBalance));
+                    res += `  fee: ${fee.toFixed(6)} PIV\n`;
+                }
+            } else if (isDeshielding) {
+                res += `  tipo: deshielding (shielded → transparente)\n`;
+                if (totalOut > 0) {
+                    res += `  fondos visibles: ${totalOut.toFixed(6)} PIV\n`;
+                }
+                if (t.valueBalance) {
+                    const fee = Math.abs(parseFloat(t.valueBalance));
+                    res += `  fee: ${fee.toFixed(6)} PIV (pool shielded)\n`;
+                }
+            } else if (isColdStaking && !isCoinStake) {
+                res += `  tipo: delegación a cold staking\n`;
+                if (coldStakeOwner && coldStakeStaker) {
+                    const relacion = isSelfDelegation ? 'auto-delegación' : 'delegado a tercero';
+                    res += `  ───────────────────────────────────────\n`;
+                    res += `  dueño: ${formatAddress(coldStakeOwner)}\n`;
+                    res += `  staker: ${formatAddress(coldStakeStaker)}\n`;
+                    res += `  relación: ${relacion}\n`;
+                    res += `  estado: fondos bloqueados\n`;
+                }
+                if (totalIn > 0) {
+                    const fee = (totalIn - totalOut).toFixed(6);
+                    res += `  fee: ${fee} PIV\n`;
+                }
             } else {
-                res += `  total salida: ${totalOut.toFixed(6)} PIV\n`;
+                // TRANSACCIONES NORMALES 
+                if (t.vin && t.vout) {
+                    const numEntradas = t.vin.length;
+                    const numSalidas = t.vout.length;
+                    
+                    if (totalIn > 0) {
+                        const fee = (totalIn - totalOut).toFixed(6);
+                        res += `  fee: ${fee} PIV\n`;
+                    }
+                    
+                    if (numEntradas === 1 && numSalidas === 1) {
+                        res += `  tipo: transferencia directa (1→1)\n`;
+                        res += `  patrón: gasto completo de UTXO\n`;
+                    } else if (numEntradas === 1 && numSalidas === 2) {
+                        res += `  tipo: transferencia con cambio\n`;
+                        res += `  patrón: pago + cambio\n`;
+                    } else if (numEntradas > 1 && numSalidas === 1) {
+                        res += `  tipo: consolidación (${numEntradas}→1)\n`;
+                        res += `  patrón: múltiples UTXOs → una salida\n`;
+                    } else if (numEntradas === 1 && numSalidas > 2) {
+                        res += `  tipo: dispersión (1→${numSalidas})\n`;
+                        res += `  patrón: pago a múltiples destinatarios\n`;
+                    } else {
+                        res += `  tipo: transacción múltiple\n`;
+                    }
+                }
             }
         }
-    }
-    
-    // ========== RESUMEN Y ANÁLISIS ==========
-    res += `\n■ RESUMEN\n`;
-    res += `  entradas: ${t.vin?.length || 0}\n`;
-    res += `  salidas: ${t.vout?.length || 0}\n`;
-    
-    if (isColdStaking && !isCoinStake) {
-        res += `  total delegado: ${totalOut.toFixed(6)} PIV\n`;
-    } else {
-        res += `  total: ${totalOut.toFixed(6)} PIV\n`;
-    }
-    
-    // CLASIFICACIÓN CORREGIDA PARA PIVX
-    if (isDummyCoinbase) {
-        res += `  tipo: COINBASE (bloque PoS - sin recompensa)\n`;
-        res += `  ⚠ transacción estructural (no mueve fondos)\n`;
-    } else if (hasCoinbase && !isDummyCoinbase) {
-        res += `  tipo: COINBASE (PoW - no aplica en PIVX)\n`;
-    } else if (isCoinStake) {
-        res += `  tipo: COINSTAKE (generación de bloque PoS)\n`;
-        if (isColdStaking) {
-            res += `  modo: COLD STAKING\n`;
-        } else {
-            res += `  modo: HOT STAKING\n`;
-        }
-        
-        if (totalIn > 0 && t.vout && t.vout.length >= 2) {
-            const stakeFinal = t.vout[1]?.value || 0;
-            const recompensaDistribuida = t.vout.slice(2).reduce((sum, v) => sum + (v.value || 0), 0);
-            const recompensaTotal = totalOut - totalIn;
-            const recompensaReinvertida = stakeFinal - totalIn;
-            
-            res += `  ───────────────────────────────────────\n`;
-            res += `  stake activo previo: ${totalIn.toFixed(6)} PIV\n`;
-            res += `  stake final: ${stakeFinal.toFixed(6)} PIV\n`;
-            res += `  recompensa total: +${recompensaTotal.toFixed(6)} PIV\n`;
-            res += `    ├─ reinvertida en stake: +${recompensaReinvertida.toFixed(6)} PIV\n`;
-            res += `    └─ distribuida: ${recompensaDistribuida.toFixed(6)} PIV\n`;
-        }
-        res += `  fee: 0 PIV (generación de bloques)\n`;
-    } else if (isColdStaking && !isCoinStake) {
-        // Transacción de delegación a cold staking (no es coinstake)
-        res += `  tipo: DELEGACIÓN A COLD STAKING\n`;
-        if (coldStakeOwner && coldStakeStaker) {
-            const relacion = isSelfDelegation ? 'auto-delegación' : 'delegado a tercero';
-            res += `  ───────────────────────────────────────\n`;
-            res += `  dueño (owner): ${coldStakeOwner}\n`;
-            res += `  staker: ${coldStakeStaker}\n`;
-            res += `  relación: ${relacion}\n`;
-            res += `  estado: fondos bloqueados para staking delegado\n`;
-        }
-        if (totalIn > 0) {
-            const fee = (totalIn - totalOut).toFixed(6);
-            res += `  fee: ${fee} PIV\n`;
-        }
-    } else {
-        // TRANSACCIONES NORMALES (UTXO)
-        if (t.vin && t.vout) {
-            const numEntradas = t.vin.length;
-            const numSalidas = t.vout.length;
-            
-            if (totalIn > 0) {
-                const fee = (totalIn - totalOut).toFixed(6);
-                res += `  fee: ${fee} PIV\n`;
-            }
-            
-            if (numEntradas === 1 && numSalidas === 1) {
-                res += `  tipo: transferencia directa (1→1)\n`;
-                res += `  patrón: gasto completo de UTXO (sin cambio)\n`;
-            } else if (numEntradas === 1 && numSalidas === 2) {
-                res += `  tipo: transferencia con cambio\n`;
-                res += `  patrón: pago + cambio a misma wallet\n`;
-            } else if (numEntradas > 1 && numSalidas === 1) {
-                res += `  tipo: consolidación (${numEntradas}→1)\n`;
-                res += `  patrón: múltiples UTXOs → una salida\n`;
-            } else if (numEntradas === 1 && numSalidas > 2) {
-                res += `  tipo: dispersión (1→${numSalidas})\n`;
-                res += `  patrón: pago a múltiples destinatarios\n`;
-            } else {
-                res += `  tipo: transacción múltiple\n`;
-            }
-        }
-    }
-}
-
-
-
-
-
         
         res += '</pre><br>[F8 copiar] [F9 limpiar]\n';
         res += `\n===============================================================================\n`;
