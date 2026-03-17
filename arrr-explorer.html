@@ -1,8 +1,8 @@
-<html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>PIRATE CHAIN: TERMINAL EXPLORER</title>
+<title>PIRATE CHAIN: TERMINAL EXPLORER 2</title>
 <style>
 body {
     background: #000;
@@ -129,6 +129,8 @@ async function callRPC(method, params = []) {
 function calcularMontoReal(t) {
     if (!t.vin || t.vin.length === 0) return null;
     
+    // Para t→z, el monto blindado es abs(valueBalance)
+    // valueBalance YA viene en ARRR en este RPC
     if (t.valueBalance !== undefined && t.valueBalance < 0) {
         return Math.abs(t.valueBalance);
     }
@@ -153,10 +155,13 @@ function analizarTransaccion(t) {
     const direccionesUnicas = new Set();
     if (t.vin) t.vin.forEach(v => { if (v.address) direccionesUnicas.add(v.address); });
     
-    return { tipo, direccionesUnicas: [...direccionesUnicas] };
+    // Detectar consolidación
+    const esConsolidacion = direccionesUnicas.size === 1 && t.vin.length > 1 && hasZOutput && !hasTOut;
+    
+    return { tipo, direccionesUnicas: [...direccionesUnicas], esConsolidacion };
 }
 
-// ========== EJECUTAR BUSQUEDA ==========
+// ========== EJECUTAR BÚSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
@@ -228,7 +233,7 @@ async function executeSearch(q) {
             if (t.version) res += `\n  versión:     ${t.version}${t.overwintered ? ' (Overwinter)' : ''}`;
             if (t.expiryheight) res += `\n  expira:      bloque #${t.expiryheight}`;
             
-            // ===== ENTRADAS =====
+            // ===== ENTRADAS COMPACTAS =====
             if (t.vin && t.vin.length > 0) {
                 res += `\n\n▶ ENTRADAS (${t.vin.length})\n`;
                 const entradasUnicas = {};
@@ -245,7 +250,7 @@ async function executeSearch(q) {
                     }
                 });
                 
-                // Mostrar entradas unicas
+                // Mostrar entradas únicas
                 Object.entries(entradasUnicas).forEach(([key, info], i) => {
                     const [txid, vout] = key.split(':');
                     const contador = info.count > 1 ? ` x${info.count}` : '';
@@ -253,10 +258,10 @@ async function executeSearch(q) {
                 });
             }
             
-            // ===== MONTO REAL =====
+            // ===== MONTO REAL (CORREGIDO) =====
             const montoReal = calcularMontoReal(t);
             if (montoReal && analisis.tipo === 't→z (blindaje)') {
-                res += `\n  • MONTO BLINDADO: ${montoReal.toFixed(6)} ARRR \n`;
+                res += `\n  • MONTO BLINDADO: ${montoReal.toFixed(6)} ARRR (no visible, cifrado)\n`;
             }
             
             // ===== SALIDAS TRANSPARENTES =====
@@ -279,24 +284,20 @@ async function executeSearch(q) {
             }
             
             if (t.vShieldedOutput?.length > 0) {
-                res += `\n🛡 SALIDAS BLINDADAS (${t.vShieldedOutput.length} nota${t.vShieldedOutput.length > 1 ? 's' : ''})\n`;
-                t.vShieldedOutput.forEach((output, i) => {
-                    res += `  [#${i}] cmu: ${output.cmu} (monto cifrado)\n`;
-                });
+                res += `\n🛡 SALIDAS BLINDADAS\n`;
+                res += `  ${t.vShieldedOutput.length} nota Sapling (destino privado, monto cifrado)\n`;
             }
             
- // ===== BALANCES Y FEES =====
-if (t.valueBalance !== undefined) {
-    const balanceARRR = t.valueBalance.toFixed(6);
-
-    const direccion = t.valueBalance < 0 
-        ? '(flujo neto hacia pool blindado)' 
-        : '(flujo neto desde pool blindado)';
-
-    res += `\n  balance pools: ${balanceARRR} ARRR ${direccion}\n`;
-}
+            // ===== BALANCES Y FEES =====
+            if (t.valueBalance !== undefined) {
+                const balanceARRR = t.valueBalance.toFixed(6);
+                const direccion = t.valueBalance < 0 
+                    ? '(flujo neto hacia pool blindado)' 
+                    : '(flujo neto desde pool blindado)';
+                res += `\n  balance pools: ${balanceARRR} ARRR ${direccion}\n`;
+            }
             
-            // BindingSig 
+            // BindingSig completo (sin truncar)
             if (t.bindingSig) {
                 res += `\n  bindingSig:    ${t.bindingSig}\n`;
             }
@@ -314,8 +315,11 @@ if (t.valueBalance !== undefined) {
             res += `\n└→ ANÁLISIS\n`;
             res += `  tipo: ${analisis.tipo}\n`;
             if (analisis.direccionesUnicas.length === 1 && t.vin?.length > 0) {
-                res += `  desde:  ${analisis.direccionesUnicas[0]}\n`;
+                res += `  desde:  ${formatAddress(analisis.direccionesUnicas[0])}\n`;
                 res += `  inputs: ${t.vin.length} UTXOs\n`;
+                if (analisis.esConsolidacion) {
+                    res += `  consolidación: sí (${t.vin.length} → ${t.vShieldedOutput?.length || 0})\n`;
+                }
             }
             if (t.vShieldedOutput?.length > 0) {
                 res += `  destino: privado (${t.vShieldedOutput.length} nota${t.vShieldedOutput.length > 1 ? 's' : ''})\n`;
