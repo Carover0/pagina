@@ -230,19 +230,19 @@ async function executeSearch(q) {
             res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
             res += `transacciones: ${b.tx?.length || 0}\n`;
             res += `tamaño: ${b.size || 0} bytes\n`;
-            if (b.previousblockhash) res += `anterior: ${formatTxid(b.previousblockhash)}\n`;
-            if (b.nextblockhash) res += `siguiente: ${formatTxid(b.nextblockhash)}\n`;
+            if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
+            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
             
             if (b.tx && b.tx.length > 0) {
                 res += `\n▶ TXIDS (${b.tx.length})\n`;
                 if (typeof b.tx[0] === 'object') {
                     b.tx.forEach((tx, i) => {
                         const txid = tx.txid || tx;
-                        res += `   ${i+1}. ${formatTxid(txid)}\n`;
+                        res += `   ${i+1}. ${txid}\n`;
                     });
                 } else {
                     b.tx.forEach((txid, i) => {
-                        res += `   ${i+1}. ${formatTxid(txid)}\n`;
+                        res += `   ${i+1}. ${txid}\n`;
                     });
                 }
             }
@@ -250,7 +250,7 @@ async function executeSearch(q) {
         else if (q.includes('getrawtransaction') && data.result?.txid) {
             const t = data.result;
             
-            // ========== DETECCIÓN DE TIPO DE TRANSACCIÓN PIVX (CORREGIDA) ==========
+            // ========== DETECCION DE TIPO DE TRANSACCION ==========
             const hasCoinbase = t.vin && t.vin.length > 0 && t.vin[0].coinbase !== undefined;
             const hasTransparentIn = t.vin && t.vin.length > 0;
             const hasTransparentOut = t.vout && t.vout.length > 0;
