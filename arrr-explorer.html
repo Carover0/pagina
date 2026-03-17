@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>PIRATE CHAIN: TERMINAL EXPLORER 2</title>
+<title>PIRATE CHAIN: TERMINAL EXPLORER</title>
 <style>
 body {
     background: #000;
@@ -197,13 +197,13 @@ async function executeSearch(q) {
         else if (q.includes('getblock') && data.result?.hash) {
             const b = data.result;
             res += `==== BLOQUE #${b.height} ======================================\n\n`;
-            res += `  hash:           ${b.hash}\n`;
-            res += `  confirmaciones: ${b.confirmations || 0}\n`;
-            res += `  fecha:          ${b.time ? new Date(b.time*1000).toLocaleString() : '---'}\n`;
-            res += `  transacciones:  ${b.tx?.length || 0}\n`;
-            res += `  tamaño:         ${b.size || 0} bytes\n`;
-            if (b.previousblockhash) res += `  anterior:       ${b.previousblockhash}\n`;
-            if (b.nextblockhash) res += `  siguiente:      ${b.nextblockhash}\n`;
+            res += `  hash: ${b.hash}\n`;
+            res += `  conf: ${b.confirmations || 0}\n`;
+            res += `  fecha: ${b.time ? new Date(b.time*1000).toLocaleString() : '---'}\n`;
+            res += `  transacciones: ${b.tx?.length || 0}\n`;
+            res += `  tamaño: ${b.size || 0} bytes\n`;
+            if (b.previousblockhash) res += `  anterior: ${b.previousblockhash}\n`;
+            if (b.nextblockhash) res += `  siguiente: ${b.nextblockhash}\n`;
             
             if (b.tx && b.tx.length > 0) {
                 res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
@@ -277,7 +277,7 @@ async function executeSearch(q) {
             
             // ===== PARTES BLINDADAS =====
             if (t.vShieldedSpend?.length > 0) {
-                res += `\n🛡 SPENDS (${t.vShieldedSpend.length})\n`;
+                res += `\n\n🛡 GASTOS BLINDADOS (${t.vShieldedSpend.length})\n`;
                 t.vShieldedSpend.forEach((spend, i) => {
                     res += `  [#${i}] nullifier: ${spend.nullifier}\n`;
                 });
@@ -312,7 +312,7 @@ async function executeSearch(q) {
             }
             
             // ===== ANÁLISIS =====
-            res += `\n└→ ANÁLISIS\n`;
+            res += `\n■ ANÁLISIS\n`;
             res += `  tipo: ${analisis.tipo}\n`;
             if (analisis.direccionesUnicas.length === 1 && t.vin?.length > 0) {
                 res += `  desde:  ${formatAddress(analisis.direccionesUnicas[0])}\n`;
