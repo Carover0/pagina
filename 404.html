@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redirigiendo...</title>
+    <script>
+        // Extraer la ruta después del nombre del archivo
+        const path = window.location.pathname;
+        const match = path.match(/\/([^\/]+\.html)\/(.+)$/);
+        
+        if (match) {
+            const htmlFile = match[1];
+            const searchParam = match[2];
+            // Redirigir al archivo con el parámetro en query string
+            window.location.replace(`/${htmlFile}?q=${encodeURIComponent(searchParam)}`);
+        } else {
+            // Si no hay parámetro, ir al explorador principal
+            window.location.replace('/pagina/zec-explorer.html');
+        }
+    </script>
+</head>
+<body>
+    <p>Redirigiendo...</p>
+</body>
+</html>
