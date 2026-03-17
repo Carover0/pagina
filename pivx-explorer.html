@@ -1,0 +1,612 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PIVX: TERMINAL EXPLORER</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", "Monaco", monospace;
+    font-size: 15px;
+    line-height: 1.2;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 80ch;
+    width: 100%;
+    margin: 0;
+    white-space: pre-wrap;
+}
+.prompt {
+    color: #A044FF; /* Morado oficial PIVX */
+}
+#searchInput {
+    background: #000;
+    color: #fff;
+    border: none;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    padding: 4px 0;
+    width: 60ch;
+    outline: none;
+    caret-color: #A044FF;
+}
+a, a:visited {
+    color: #A044FF;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+pre {
+    margin: 10px 0 0 0;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+</style>
+</head>
+<body>
+<div class="terminal">cΔrovΣr0 • EXPLORADOR DE BLOQUES PIVX
+======================================<br>
+ALTURA               : <span id="stat-height">---</span>
+CONEXIONES           : <span id="stat-connections">---</span>
+MEMPOOL              : <span id="stat-mempool">---</span> tx
+<br><a href="https://carover0.github.io/pagina/pivx-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/pivx-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/pivx-info.html">[PIVX]</a><br>
+<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash / txid / dirección" autofocus>
+
+<div id="output"></div></div>
+<pre id="pie" style="display: block;">
+===============================================================================
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya: PIVX donations</pre>
+
+<script>
+const API_URL = "https://carover0.xyz/api/pivx/pivx.php"; 
+const TOKEN = "pivx2026";
+const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json"; // ← ACTUALIZADO
+
+// ========== DETECTAR BÚSQUEDA DESDE URL ==========
+function detectSearchFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    
+    if (queryParam) {
+        console.log('🔍 Desde query string:', queryParam);
+        return queryParam;
+    }
+    
+    const path = window.location.pathname;
+    const match = path.match(/\/pivx-explorer\/(.+)$/);
+    
+    if (match && match[1]) {
+        const cleanParam = match[1];
+        console.log('🔍 Desde ruta /pivx-explorer/:', cleanParam);
+        return cleanParam;
+    }
+    
+    return null;
+}
+
+// ========== ACTUALIZAR URL PARA COMPARTIR ==========
+function updateUrlWithSearch(parametro, tipo) {
+    const newUrl = window.location.origin + '/pagina/pivx-explorer/' + encodeURIComponent(parametro);
+    window.history.replaceState({}, '', newUrl);
+    console.log('🔗 URL actualizada:', newUrl);
+}
+
+// ========== DETECCIÓN AUTOMÁTICA ==========
+async function detectCommand(input) {
+    input = input.trim();
+
+    if (input.startsWith('getblock ') || 
+        input.startsWith('getrawtransaction ') || 
+        input.startsWith('validateaddress ') || 
+        input.startsWith('getaddressbalance ')) {
+        return input;
+    }
+    
+    if (/^\d+$/.test(input)) {
+        try {
+            const url = `${API_URL}?token=${TOKEN}&cmd=getblockhash ${input}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.result) {
+                return `getblock ${data.result}`;
+            } else {
+                return `getblock ${input}`;
+            }
+        } catch(e) {
+            return `getblock ${input}`;
+        }
+    }
+    
+    if (/^[a-fA-F0-9]{64}$/.test(input)) {
+        if (/^0{4,}[a-fA-F0-9]*$/.test(input)) {
+            return `getblock ${input}`;
+        } else {
+            return `getrawtransaction ${input} 1`;
+        }
+    }
+    
+    if (input.startsWith('D') && input.length > 25) {
+        return `getaddressbalance ${input}`;
+    }
+    
+    return input;
+}
+
+// ========== CARGA DE ESTADOS ==========
+async function loadNetworkStats() {
+    try {
+        const r = await fetch(STATUS_URL);
+        const d = await r.json();
+        
+        document.getElementById('stat-height').innerText = d.height?.toLocaleString() || '---';
+        document.getElementById('stat-connections').innerText = d.connections || '---';
+        document.getElementById('stat-mempool').innerText = d.mempool || '0';
+    } catch(e) {}
+}
+
+
+
+// Función para obtener el valor de un UTXO específico
+async function getVinValue(txid, voutIndex) {
+    try {
+        const url = `${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.result && data.result.vout && data.result.vout[voutIndex]) {
+            return data.result.vout[voutIndex].value;
+        }
+    } catch(e) {
+        console.log('Error obteniendo valor del input:', e);
+    }
+    return null;
+}
+
+
+// ========== EJECUCIÓN DE BÚSQUEDA ==========
+async function executeSearch(q) {
+    const out = document.getElementById('output');
+    out.innerHTML = '<pre>Ejecutando...</pre>';
+    document.getElementById("pie").style.display = "none";
+
+    let tipoBusqueda = 'desconocido';
+    let rawParam = '';
+    
+    if (q.startsWith('getblock ')) {
+        tipoBusqueda = 'block';
+        rawParam = q.replace('getblock ', '');
+    } else if (q.startsWith('getrawtransaction ')) {
+        tipoBusqueda = 'tx';
+        rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
+    } else if (q.startsWith('getaddressbalance ')) {
+        tipoBusqueda = 'address';
+        rawParam = q.replace('getaddressbalance ', '');
+    } else if (q.startsWith('validateaddress ')) {
+        tipoBusqueda = 'address';
+        rawParam = q.split(' ')[1];
+    } else {
+        if (/^[a-fA-F0-9]{64}$/.test(q)) {
+            tipoBusqueda = 'tx';
+            rawParam = q;
+        } else if (/^\d+$/.test(q)) {
+            tipoBusqueda = 'block';
+            rawParam = q;
+        } else if (q.startsWith('D')) {
+            tipoBusqueda = 'address';
+            rawParam = q;
+        }
+    }
+    
+    if (tipoBusqueda !== 'desconocido' && rawParam) {
+        updateUrlWithSearch(rawParam, tipoBusqueda);
+    }
+
+    try {
+        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
+        const data = await r.json();
+        let res = `<pre><span style="color:#A044FF;">pivx> ${q}</span>\n\n`;
+        
+        if (data.error) {
+            res += `error: ${JSON.stringify(data.error)}`;
+        } 
+else if (q.includes('getblock') && data.result?.hash) {
+    const b = data.result;
+    res += `BLOQUE #${b.height}\n`;
+    res += `hash: ${b.hash}\n`;
+    res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
+    res += `transacciones: ${b.tx?.length || 0}\n`;
+    res += `tamaño: ${b.size || 0} bytes\n`;
+    if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
+    if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
+    
+    // Mostrar transacciones como TXIDs (si existen)
+    if (b.tx && b.tx.length > 0) {
+        res += `\n▶ TXIDS (${b.tx.length})\n`;
+        
+        // Si son objetos completos (verbosidad 2/3)
+        if (typeof b.tx[0] === 'object') {
+            b.tx.forEach((tx, i) => {
+                const txid = tx.txid || tx;
+                res += `   ${i+1}. ${txid}\n`;
+            });
+        } 
+        // Si solo son strings (verbosidad 1)
+        else {
+            b.tx.forEach((txid, i) => {
+                res += `   ${i+1}. ${txid}\n`;
+            });
+        }
+    }
+}
+
+
+
+
+
+
+
+else if (q.includes('getrawtransaction') && data.result?.txid) {
+    const t = data.result;
+    
+    // ========== FUNCIONES DE FORMATEO ==========
+    function formatTxid(txid) {
+        if (!txid || txid.length < 20) return txid;
+        return txid.substring(0, 12) + '...' + txid.substring(txid.length - 12);
+    }
+    
+    function formatAddress(addr) {
+        if (!addr || addr.length < 20) return addr;
+        return addr.substring(0, 10) + '...' + addr.substring(addr.length - 8);
+    }
+    
+    // ========== DETECCIÓN DE TIPO DE TRANSACCIÓN PIVX ==========
+    const hasCoinbase = t.vin && t.vin.length > 0 && t.vin[0].coinbase !== undefined;
+    const hasVoutZero = t.vout && t.vout.length > 0 && t.vout[0].value === 0;
+    const isOnlyZeroOutput = t.vout && t.vout.length === 1 && t.vout[0].value === 0;
+    
+    // Detectar CoinStake (PoS real)
+    const isCoinStake = !hasCoinbase && hasVoutZero && t.vout && t.vout.length >= 2;
+    
+    // Detectar Coinbase dummy de PIVX (PoS)
+    const isDummyCoinbase = hasCoinbase && isOnlyZeroOutput;
+    
+    // Detectar Cold Staking por tipo de script
+    let isColdStaking = false;
+    let coldStakeOwner = null;
+    let coldStakeStaker = null;
+    
+    if (t.vout && t.vout.length > 0) {
+        t.vout.forEach(vout => {
+            if (vout.scriptPubKey && vout.scriptPubKey.type === 'coldstake') {
+                isColdStaking = true;
+                if (vout.scriptPubKey.addresses && vout.scriptPubKey.addresses.length >= 2) {
+                    // En cold staking, la primera dirección suele ser el staker, la segunda el owner
+                    // Pero depende de la implementación
+                    coldStakeStaker = vout.scriptPubKey.addresses[0];
+                    coldStakeOwner = vout.scriptPubKey.addresses[1];
+                }
+            }
+        });
+    }
+    
+    // Determinar si es auto-delegación (owner = staker)
+    const isSelfDelegation = isColdStaking && coldStakeOwner && coldStakeStaker && 
+                             coldStakeOwner === coldStakeStaker;
+    
+    // ========== OBTENER VALORES REALES DE LOS INPUTS ==========
+    let totalIn = 0;
+    let inputValues = [];
+    
+    if (t.vin && t.vin.length > 0 && !hasCoinbase) {
+        const vinPromises = t.vin.map(async (vin, index) => {
+            const value = await getVinValue(vin.txid, vin.vout);
+            return { index, value };
+        });
+        
+        const results = await Promise.all(vinPromises);
+        results.forEach(r => {
+            if (r.value !== null) {
+                totalIn += r.value;
+                inputValues[r.index] = r.value;
+            }
+        });
+    }
+    
+    // ========== CALCULAR TOTAL DE SALIDAS ==========
+    let totalOut = 0;
+    if (t.vout) {
+        t.vout.forEach(vout => {
+            totalOut += vout.value || 0;
+        });
+    }
+    
+    // ========== CABECERA ==========
+    res += `  TXID: ${t.txid}\n`;
+    res += `  bloque: #${t.blockheight || t.height || (t.blockhash ? 'en bloque' : 'no confirmada')}\n`;
+    if (t.blockheight || t.height) {
+        res += `  altura: ${t.blockheight || t.height}\n`;
+    }
+    res += `  confirmaciones: ${t.confirmations || 0}\n`;
+    if (t.time || t.blocktime) {
+        const ts = t.time || t.blocktime;
+        res += `  fecha: ${new Date(ts*1000).toLocaleString()}\n`;
+    }
+    if (t.size) res += `  tamaño: ${t.size} bytes\n`;
+    
+    // ========== ENTRADAS ==========
+    if (t.vin && t.vin.length > 0) {
+        res += `\n▶ ENTRADAS (${t.vin.length})\n`;
+        
+        t.vin.forEach((vin, i) => {
+            if (vin.coinbase !== undefined) {
+                if (isDummyCoinbase) {
+                    res += `  [#${i}] COINBASE (dummy - bloque PoS)\n`;
+                } else {
+                    res += `  [#${i}] COINBASE\n`;
+                }
+            } else if (vin.txid) {
+                const txidTrunc = formatTxid(vin.txid);
+                const valorInput = inputValues[i] !== undefined ? inputValues[i].toFixed(6) : null;
+                let valorStr = '';
+                
+                if (valorInput) {
+                    valorStr = ` ${valorInput} PIV`;
+                    if (isCoinStake) {
+                        valorStr += ` (stake activo)`;
+                    } else if (isColdStaking) {
+                        valorStr += ` (fondos a delegar)`;
+                    }
+                }
+                
+                res += `  [#${i}] desde ${txidTrunc}:${vin.vout}${valorStr}\n`;
+            }
+        });
+        
+        if (totalIn > 0) {
+            res += `  total entrada: ${totalIn.toFixed(6)} PIV\n`;
+        }
+    }
+    
+    // ========== SALIDAS ==========
+    if (t.vout && t.vout.length > 0) {
+        res += `\n◀ SALIDAS (${t.vout.length})\n`;
+        
+        t.vout.forEach((vout, i) => {
+            let addr = '';
+            let extraInfo = '';
+            
+            if (vout.scriptPubKey?.addresses?.[0]) {
+                addr = formatAddress(vout.scriptPubKey.addresses[0]);
+                if (vout.scriptPubKey.addresses.length > 1) {
+                    extraInfo = ` (multi-address)`;
+                }
+            } else if (vout.scriptPubKey?.address) {
+                addr = formatAddress(vout.scriptPubKey.address);
+            }
+            
+            // Determinar tipo de salida según contexto
+            let tipo = '';
+            
+            if (isDummyCoinbase) {
+                if (vout.value === 0) {
+                    tipo = ' [salida nula - coinbase PoS]';
+                    addr = '';
+                }
+            } else if (isCoinStake) {
+                if (i === 0 && vout.value === 0) {
+                    tipo = ' [coinstake marker]';
+                    addr = '';
+                } else if (i === 1 && vout.value > 0) {
+                    tipo = ' ← stake + recompensa reinvertida';
+                } else if (i >= 2 && vout.value > 0) {
+                    tipo = ' [recompensa distribuida]';
+                }
+            } else if (isColdStaking) {
+                // Transacción de delegación a cold staking
+                if (vout.scriptPubKey && vout.scriptPubKey.type === 'coldstake') {
+                    tipo = ' [CONTRATO COLD STAKING]';
+                    if (coldStakeStaker && coldStakeOwner) {
+                        const relacion = isSelfDelegation ? ' (auto-delegación)' : ' (delegado a tercero)';
+                        extraInfo = `\n       dueño: ${coldStakeOwner}\n       staker: ${coldStakeStaker}${relacion}`;
+                    }
+                } else {
+                    if (vout.value === 0) {
+                        tipo = ' [salida nula]';
+                        addr = '';
+                    } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value || 0))) {
+                        tipo = ' ← PAGO PRINCIPAL';
+                    } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value || 0))) {
+                        tipo = ' [cambio]';
+                    }
+                }
+            } else {
+                // Transacciones normales
+                if (vout.value === 0) {
+                    tipo = ' [salida nula]';
+                    addr = '';
+                } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value || 0))) {
+                    tipo = ' ← PAGO PRINCIPAL';
+                } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value || 0))) {
+                    tipo = ' [cambio]';
+                }
+            }
+            
+            const addrMostrar = addr ? ` → ${addr}` : '';
+            res += `  [#${i}] ${vout.value.toFixed(6)} PIV${addrMostrar}${tipo}${extraInfo}\n`;
+        });
+        
+        if (totalOut > 0) {
+            if (isColdStaking && !isCoinStake) {
+                res += `  total delegado: ${totalOut.toFixed(6)} PIV\n`;
+            } else if (isCoinStake) {
+                res += `  total generado: ${totalOut.toFixed(6)} PIV\n`;
+            } else {
+                res += `  total salida: ${totalOut.toFixed(6)} PIV\n`;
+            }
+        }
+    }
+    
+    // ========== RESUMEN Y ANÁLISIS ==========
+    res += `\n📊 RESUMEN\n`;
+    res += `  entradas: ${t.vin?.length || 0}\n`;
+    res += `  salidas: ${t.vout?.length || 0}\n`;
+    
+    if (isColdStaking && !isCoinStake) {
+        res += `  total delegado: ${totalOut.toFixed(6)} PIV\n`;
+    } else {
+        res += `  total: ${totalOut.toFixed(6)} PIV\n`;
+    }
+    
+    // CLASIFICACIÓN CORREGIDA PARA PIVX
+    if (isDummyCoinbase) {
+        res += `  tipo: COINBASE (bloque PoS - sin recompensa)\n`;
+        res += `  ⚠ transacción estructural (no mueve fondos)\n`;
+    } else if (hasCoinbase && !isDummyCoinbase) {
+        res += `  tipo: COINBASE (PoW - no aplica en PIVX)\n`;
+    } else if (isCoinStake) {
+        res += `  tipo: COINSTAKE (generación de bloque PoS)\n`;
+        if (isColdStaking) {
+            res += `  modo: COLD STAKING\n`;
+        } else {
+            res += `  modo: HOT STAKING\n`;
+        }
+        
+        if (totalIn > 0 && t.vout && t.vout.length >= 2) {
+            const stakeFinal = t.vout[1]?.value || 0;
+            const recompensaDistribuida = t.vout.slice(2).reduce((sum, v) => sum + (v.value || 0), 0);
+            const recompensaTotal = totalOut - totalIn;
+            const recompensaReinvertida = stakeFinal - totalIn;
+            
+            res += `  ───────────────────────────────────────\n`;
+            res += `  stake activo previo: ${totalIn.toFixed(6)} PIV\n`;
+            res += `  stake final: ${stakeFinal.toFixed(6)} PIV\n`;
+            res += `  recompensa total: +${recompensaTotal.toFixed(6)} PIV\n`;
+            res += `    ├─ reinvertida en stake: +${recompensaReinvertida.toFixed(6)} PIV\n`;
+            res += `    └─ distribuida: ${recompensaDistribuida.toFixed(6)} PIV\n`;
+        }
+        res += `  fee: 0 PIV (generación de bloques)\n`;
+    } else if (isColdStaking && !isCoinStake) {
+        // Transacción de delegación a cold staking (no es coinstake)
+        res += `  tipo: DELEGACIÓN A COLD STAKING\n`;
+        if (coldStakeOwner && coldStakeStaker) {
+            const relacion = isSelfDelegation ? 'auto-delegación' : 'delegado a tercero';
+            res += `  ───────────────────────────────────────\n`;
+            res += `  dueño (owner): ${coldStakeOwner}\n`;
+            res += `  staker: ${coldStakeStaker}\n`;
+            res += `  relación: ${relacion}\n`;
+            res += `  estado: fondos bloqueados para staking delegado\n`;
+        }
+        if (totalIn > 0) {
+            const fee = (totalIn - totalOut).toFixed(6);
+            res += `  fee: ${fee} PIV\n`;
+        }
+    } else {
+        // TRANSACCIONES NORMALES (UTXO)
+        if (t.vin && t.vout) {
+            const numEntradas = t.vin.length;
+            const numSalidas = t.vout.length;
+            
+            if (totalIn > 0) {
+                const fee = (totalIn - totalOut).toFixed(6);
+                res += `  fee: ${fee} PIV\n`;
+            }
+            
+            if (numEntradas === 1 && numSalidas === 1) {
+                res += `  tipo: transferencia directa (1→1)\n`;
+                res += `  patrón: gasto completo de UTXO (sin cambio)\n`;
+            } else if (numEntradas === 1 && numSalidas === 2) {
+                res += `  tipo: transferencia con cambio\n`;
+                res += `  patrón: pago + cambio a misma wallet\n`;
+            } else if (numEntradas > 1 && numSalidas === 1) {
+                res += `  tipo: consolidación (${numEntradas}→1)\n`;
+                res += `  patrón: múltiples UTXOs → una salida\n`;
+            } else if (numEntradas === 1 && numSalidas > 2) {
+                res += `  tipo: dispersión (1→${numSalidas})\n`;
+                res += `  patrón: pago a múltiples destinatarios\n`;
+            } else {
+                res += `  tipo: transacción múltiple\n`;
+            }
+        }
+    }
+}
+
+
+
+
+
+        
+        res += '</pre><br>[F8 copiar] [F9 limpiar]\n';
+        res += `\n===============================================================================\n`;
+        res += `© 2026 Creada con ♥ por cΔrovΣr0 · apoya: PIVX donations`;
+        out.innerHTML = res;
+    } catch(e) {
+        out.innerHTML = `<pre>error: ${e.message}</pre>`;
+    }
+    document.getElementById('searchInput').value = '';
+}
+
+// ========== DETECTAR DESDE URL ==========
+(async function() {
+    const searchParam = detectSearchFromUrl();
+    if (searchParam) {
+        window.addEventListener('load', async () => {
+            setTimeout(async () => {
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    input.value = searchParam;
+                    const cmd = await detectCommand(searchParam);
+                    executeSearch(cmd);
+                }
+            }, 500);
+        });
+    }
+})();
+
+// ========== TECLAS ==========
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F8') {
+        e.preventDefault();
+        const outputPre = document.querySelector('#output pre');
+        if (outputPre) {
+            navigator.clipboard.writeText(outputPre.innerText);
+            document.querySelector('.prompt').innerHTML = '✓ COPIADO ✓';
+            setTimeout(() => document.querySelector('.prompt').innerHTML = 'Buscar por ->', 1000);
+        }
+    }
+    if (e.key === 'F9') {
+        e.preventDefault();
+        document.getElementById('searchInput').value = '';
+        document.getElementById('output').innerHTML = '';
+        document.getElementById('pie').style.display = 'block';
+        loadNetworkStats();
+        const baseUrl = window.location.origin + '/pagina/pivx-explorer';
+        window.history.replaceState({}, '', baseUrl);
+        document.querySelector('.prompt').innerHTML = '♥ LIMPIADO ♥';
+        setTimeout(() => document.querySelector('.prompt').innerHTML = 'Buscar por ->', 1000);
+    }
+});
+
+// ========== EVENTOS ==========
+document.getElementById('searchInput').addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const raw = e.target.value.trim();
+        if (raw) {
+            const cmd = await detectCommand(raw);
+            executeSearch(cmd);
+        }
+    }
+});
+
+// ========== INICIO ==========
+loadNetworkStats();
+setInterval(loadNetworkStats, 30000);
+</script>
+</body>
+</html>
