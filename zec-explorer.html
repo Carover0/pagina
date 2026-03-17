@@ -1,7 +1,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>ZCASH: TERMINAL EXPLORER 2.03</title>
+<title>ZCASH: TERMINAL EXPLORER 2.02</title>
 <style>
 body {
     background: #000;
@@ -110,20 +110,25 @@ function detectSearchFromUrl() {
     }
     
     const path = window.location.pathname;
-    const htmlIndex = path.lastIndexOf('.html');
+    const match = path.match(/\/zec-explorer\/(.+)$/);
     
-    if (htmlIndex !== -1) {
-        const afterHtml = path.substring(htmlIndex + 5); // +5 para saltar '.html'
-        if (afterHtml && afterHtml.length > 0) {
-            const cleanParam = afterHtml.replace(/^\//, '');
-            if (cleanParam.length > 0) {
-                console.log('🔍 Desde ruta después de .html:', cleanParam);
-                return cleanParam;
-            }
-        }
+    if (match && match[1]) {
+        const cleanParam = match[1];
+        console.log('🔍 Desde ruta /zec-explorer/:', cleanParam);
+        return cleanParam;
     }
     
     return null;
+}
+
+// ========== ACTUALIZAR URL PARA COMPARTIR ==========
+function updateUrlWithSearch(parametro, tipo) {
+    const basePath = window.location.origin + '/pagina';
+    const newUrl = basePath + '/zec-explorer/' + encodeURIComponent(parametro);
+    
+    window.history.replaceState({}, '', newUrl);
+    
+    console.log('🔗 URL actualizada:', newUrl);
 }
 
 // ========== DETECCION AUTOMATICA ==========
@@ -189,9 +194,7 @@ async function loadNetworkStats() {
     }
 }
 
-
 async function getVinValue(txid, voutIndex) {
-
     const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
         .then(r => r.json())
         .then(r => r.result);
@@ -199,20 +202,6 @@ async function getVinValue(txid, voutIndex) {
     if (!prevTx || !prevTx.vout || !prevTx.vout[voutIndex]) return null;
     
     return prevTx.vout[voutIndex].value;
-}
-
-// ========== ACTUALIZAR URL PARA COMPARTIR ==========
-function updateUrlWithSearch(parametro, tipo) {
-
-    const baseUrl = window.location.origin + window.location.pathname;
-
-    const cleanBaseUrl = baseUrl.replace(/\/[^\/]*$/, ''); 
-    const newUrl = cleanBaseUrl + '/' + encodeURIComponent(parametro);
-    
-
-    window.history.replaceState({}, '', newUrl);
-    
-    console.log('🔗 URL actualizada:', newUrl);
 }
 
 // ========== EJECUCION DE BUSQUEDA ==========
@@ -225,7 +214,6 @@ async function executeSearch(q) {
     let tipoBusqueda = 'desconocido';
     let rawParam = '';
     
-    // Extraer el valor real del comando
     if (q.startsWith('getblock ')) {
         tipoBusqueda = 'block';
         rawParam = q.replace('getblock ', '');
@@ -255,12 +243,10 @@ async function executeSearch(q) {
         }
     }
     
-    // Actualizar la URL para compartir 
+    // Actualizar la URL para compartir
     if (tipoBusqueda !== 'desconocido' && rawParam) {
         updateUrlWithSearch(rawParam, tipoBusqueda);
     }
-
- 
 
     if (q.startsWith('UA:')) {
         const ua = q.substring(3); 
@@ -666,23 +652,19 @@ async function executeSearch(q) {
 
 // ========== TECLAS DE ACCESO RAPIDO ==========
 document.addEventListener('keydown', function(e) {
+    // F8 - SOLO COPIAR
     if (e.key === 'F8') {
         e.preventDefault();
-        const btn = document.querySelector('.copy-full-btn');
-        if (btn) {
-            copyFullOutput(btn);
-        } else {
-            const outputPre = document.querySelector('#output pre');
-            if (outputPre) {
-                const textToCopy = outputPre.innerText;
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    const originalPrompt = document.querySelector('.prompt').innerHTML;
-                    
-                    setTimeout(() => {
-                        document.querySelector('.prompt').innerHTML = originalPrompt;
-                    }, 1000);
-                });
-            }
+        const outputPre = document.querySelector('#output pre');
+        if (outputPre) {
+            const textToCopy = outputPre.innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalPrompt = document.querySelector('.prompt').innerHTML;
+                document.querySelector('.prompt').innerHTML = '✓ COPIADO ✓';
+                setTimeout(() => {
+                    document.querySelector('.prompt').innerHTML = originalPrompt;
+                }, 1000);
+            });
         }
     }
     
@@ -693,7 +675,7 @@ document.addEventListener('keydown', function(e) {
         document.getElementById('output').innerHTML = '';
         document.getElementById('pie').style.display = 'block';
         loadNetworkStats();
-        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+        const baseUrl = window.location.origin + '/pagina/zec-explorer';
         window.history.replaceState({}, '', baseUrl);
         const originalPrompt = document.querySelector('.prompt').innerHTML;
         document.querySelector('.prompt').innerHTML = '♥ LIMPIADO ♥';
