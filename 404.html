@@ -4,23 +4,41 @@
     <meta charset="UTF-8">
     <title>Redirigiendo...</title>
     <script>
-        // Extraer la ruta después de /zec-explorer/
+        // Obtener la ruta completa
         const path = window.location.pathname;
         
-        // Buscar el patrón /zec-explorer/ALGO
-        const match = path.match(/\/zec-explorer\/(.+)$/);
+        // Detectar qué explorer están usando
+        let explorer = null;
+        let searchParam = null;
         
-        if (match && match[1]) {
-            const searchParam = match[1];
-            // Redirigir a zec-explorer con query string
-            window.location.replace('/pagina/zec-explorer?q=' + encodeURIComponent(searchParam));
+        // Buscar patrones para cada explorer
+        const explorers = [
+            { name: 'zec-explorer', pattern: /\/zec-explorer\/(.+)$/ },
+            { name: 'pivx-explorer', pattern: /\/pivx-explorer\/(.+)$/ },
+            { name: 'pirate-explorer', pattern: /\/pirate-explorer\/(.+)$/ },
+            { name: 'komodo-explorer', pattern: /\/komodo-explorer\/(.+)$/ }
+            // Agrega más aquí cuando los necesites
+        ];
+        
+        for (let exp of explorers) {
+            const match = path.match(exp.pattern);
+            if (match && match[1]) {
+                explorer = exp.name;
+                searchParam = match[1];
+                break;
+            }
+        }
+        
+        if (explorer && searchParam) {
+            // Redirigir al explorer correspondiente
+            window.location.replace('/pagina/' + explorer + '?q=' + encodeURIComponent(searchParam));
         } else {
-            // Si no hay parámetro, ir al explorador principal
+            // Si no hay parámetro, ir al explorer por defecto (cambia esto según tu preferencia)
             window.location.replace('/pagina/zec-explorer');
         }
     </script>
 </head>
 <body>
-    <p>Redirigiendo...</p>
+    <p>Redirigiendo al explorer correcto...</p>
 </body>
 </html>
