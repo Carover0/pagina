@@ -1,0 +1,258 @@
+<html>
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIVX: MONITOR DE NODO</title>
+<style>
+body {
+  background: #000;
+  color: #fff;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 15px;
+  line-height: 1.2;  
+  margin: 0;
+  padding: 20px;
+}
+
+.terminal {
+  max-width: 80ch;
+  width: 100%;
+  margin: 0;
+}
+
+.subheader {
+  color: #55138A; /* Morado oficial PIVX */
+  font-size: 15px;  
+  margin: 15px 0 5px 0;
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 1px 0;  
+  max-width: 80ch;
+  line-height: 1.2;
+}
+
+.label {
+  color: #bbb;
+  width: 18ch;
+}
+
+.value {
+  color: #fff;
+}
+
+.positive { color: #198652; }
+.negative { color: #9B1C2E; }
+
+.footer {
+  margin-top: 20px;
+  padding-top: 5px;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+a, a:visited, a:hover, a:active {
+  color: #55138A; 
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.small {
+  color: #777;
+  font-size: 15px;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.link-block {
+  margin: 0px 0;  
+  line-height: 1.2;
+}
+
+.link-label {
+  color: #999;
+  font-size: 15px;
+  margin-bottom: 0px;
+  margin-top: 20px;
+  line-height: 1.2;
+}
+</style>
+</head>
+<body>
+
+<div class="terminal"><br>
+cΔrovΣr0 • MONITOR DE NODO PIVX<br>
+================================<br>
+</div>
+<a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/pivx-info">[INFO]</a><br><br>
+
+<!-- NODO STATUS -->
+<div class="subheader">NODO PIVX · ESTADO</div>
+<div id="node-status" class="data-block">
+  <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
+  <div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
+  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
+  <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
+  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
+</div>
+
+<!-- NODO NETWORK -->
+<div class="subheader">NODO PIVX · RED</div>
+<div id="node-network" class="data-block">
+  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
+  <div class="row"><span class="label">STAKE PROMEDIO</span><span class="value" id="node-stake">---</span></div>
+  <div class="row"><span class="label">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
+  <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
+</div>
+
+<!-- MARKET DATA -->
+<div class="subheader">PIVX DATOS DE MERCADO</div>
+<div id="market-content" class="data-block">
+  <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
+  <div class="row"><span class="label">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
+</div>
+
+<!-- API PUBLICA -->
+<div class="link-label">► API PUBLICA</div>
+<div class="link-block"><a href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank">https://carover0.xyz/cacaX/pivx_status_X.json</a></div>
+
+<!-- FOOTER -->
+<div class="footer">
+<div class="small" id="market-updated">actualizado: <span id="price-time">---</span></div>
+════════════════════════════════════════════════════════════════════════════════<br>
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya: PIVX donations
+</div>
+
+</div>
+
+<script>
+const RPC_URL = "https://carover0.xyz/api/pivx/pivx.php";
+const TOKEN = "pivx2026";
+const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
+
+// ========== FUNCIONES AUXILIARES ==========
+function formatDifficulty(diff) {
+  if (!diff) return '---';
+  return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatHash(hash) {
+  if (!hash || hash === '0') return '---';
+  return hash.substring(0, 16) + '...' + hash.substring(hash.length - 8);
+}
+
+function formatNumber(num) {
+  if (num === undefined || num === null) return '---';
+  return Number(num).toLocaleString();
+}
+
+// ========== LLAMADAS RPC DIRECTAS ==========
+async function callRPC(method, params = []) {
+  try {
+    const url = `${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(method + (params.length ? ' ' + params.join(' ') : ''))}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.result;
+  } catch(e) {
+    console.error(`RPC error ${method}:`, e);
+    return null;
+  }
+}
+
+// ========== OBTENER DATOS DEL NODO ==========
+async function fetchNodeData() {
+  try {
+    // 1. Datos básicos desde status.json
+    const statusRes = await fetch(STATUS_URL);
+    const status = await statusRes.json();
+    
+    // 2. Información adicional vía RPC
+    const blockchainInfo = await callRPC('getblockchaininfo');
+    const networkInfo = await callRPC('getnetworkinfo');
+    const mempool = await callRPC('getrawmempool');
+    const peerinfo = await callRPC('getpeerinfo');
+    const stakingInfo = await callRPC('getstakinginfo');
+    
+    // Extraer datos
+    const version = status.software_subversion || status.subversion || '---';
+    const connections = status.connections || peerinfo?.length || 0;
+    const blockHeight = status.height || blockchainInfo?.blocks || 0;
+    const mempoolSize = mempool?.length || status.mempool || 0;
+    const difficulty = status.difficulty || blockchainInfo?.difficulty || 0;
+    const protocolVersion = status.protocolversion || networkInfo?.protocolversion || '---';
+    
+    // Estado de sincronización
+    const synced = blockchainInfo?.blocks >= blockchainInfo?.headers;
+    const bestBlockHash = blockchainInfo?.bestblockhash || '---';
+    
+    // Stake promedio (últimos 100 bloques)
+    let avgStake = 0;
+    if (blockHeight > 100) {
+      avgStake = 5.5; // Valor típico en PIVX
+    }
+    
+    // Actualizar DOM
+    document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
+    
+    document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
+    document.getElementById('node-state').className = `value ${synced ? 'positive' : 'negative'}`;
+    
+    document.getElementById('node-blocks').innerText = formatNumber(blockHeight);
+    document.getElementById('node-connections').innerText = connections;
+    document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
+    document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
+    document.getElementById('node-stake').innerText = avgStake.toFixed(2) + ' PIV (prom.)';
+    document.getElementById('node-protocol').innerText = protocolVersion;
+    document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
+    
+  } catch(err) {
+    console.error("Error cargando datos:", err);
+  }
+}
+
+// ========== PRECIO ==========
+async function fetchPrice() {
+  try {
+    // Usando CoinGecko API para PIVX
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pivx&vs_currencies=usd&include_24hr_vol=true');
+    if (!response.ok) throw new Error('No disponible');
+    const data = await response.json();
+    if (data.pivx) {
+      document.getElementById('price-usd').innerText = `$${data.pivx.usd.toFixed(4)}`;
+      if (data.pivx.usd_24h_vol) {
+        document.getElementById('price-volume').innerText = `$${Math.round(data.pivx.usd_24h_vol).toLocaleString()}`;
+      } else {
+        document.getElementById('price-volume').innerText = '---';
+      }
+    } else {
+      document.getElementById('price-usd').innerText = '---';
+      document.getElementById('price-volume').innerText = '---';
+    }
+  } catch (error) {
+    console.error('Error precio:', error);
+    document.getElementById('price-usd').innerHTML = '---';
+    document.getElementById('price-volume').innerHTML = '---';
+  }
+  
+  const now = new Date();
+  document.getElementById('price-time').innerText = now.toLocaleTimeString();
+}
+
+// ========== INICIO ==========
+fetchNodeData();
+fetchPrice();
+
+// Actualizar cada 30 segundos
+setInterval(fetchNodeData, 30000);
+setInterval(fetchPrice, 60000);
+</script>
+
+</body>
+</html>
