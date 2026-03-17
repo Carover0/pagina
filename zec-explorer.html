@@ -1,7 +1,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>ZCASH: TERMINAL EXPLORER 2.02</title>
+<title>ZCASH: TERMINAL EXPLORER 2.03</title>
 <style>
 body {
     background: #000;
@@ -99,17 +99,41 @@ const API_URL = "https://carover0.xyz/api/zec/rpc.php";
 const TOKEN = "zec2026";
 const STATUS_URL = "https://carover0.xyz/zec/status.json";
 
+// ========== DETECTAR BUSQUEDA DESDE URL ==========
+function detectSearchFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    
+    if (queryParam) {
+        console.log('🔍 Desde query string:', queryParam);
+        return queryParam;
+    }
+    
+    const path = window.location.pathname;
+    const htmlIndex = path.lastIndexOf('.html');
+    
+    if (htmlIndex !== -1) {
+        const afterHtml = path.substring(htmlIndex + 5); // +5 para saltar '.html'
+        if (afterHtml && afterHtml.length > 0) {
+            const cleanParam = afterHtml.replace(/^\//, '');
+            if (cleanParam.length > 0) {
+                console.log('🔍 Desde ruta después de .html:', cleanParam);
+                return cleanParam;
+            }
+        }
+    }
+    
+    return null;
+}
 
-// ========== DETECCIÓN AUTOMÁTICA ==========
+// ========== DETECCION AUTOMATICA ==========
 function detectCommand(input) {
     input = input.trim();
 
-    // 0. Si ya tiene prefijo UA:, devolverlo directamente
     if (input.startsWith('UA:')) {
         return input;
     }
 
-    // 1. Comandos explícitos
     if (input.startsWith('getblock') || 
         input.startsWith('getrawtransaction') || 
         input.startsWith('validateaddress') || 
@@ -119,17 +143,14 @@ function detectCommand(input) {
         return input;
     }
     
-    // 2. Detectar UA (unified address) - PRIORIDAD ALTA
     if (input.startsWith('u1') && input.length > 100) {
         return `UA:${input}`;  // Solo UAs con prefijo u1 y largas
     }
     
-    // 3. Bloque por altura
     if (/^\d+$/.test(input)) {
         return `getblock ${input}`;
     }
     
-    // 4. Hash de 64 caracteres
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         if (/^0{4,}[a-fA-F0-9]*$/.test(input)) {
             return `getblock ${input}`;
@@ -138,17 +159,14 @@ function detectCommand(input) {
         }
     }
     
-    // 5. Dirección transparente (t1)
     if (/^t1[a-zA-Z0-9]{33}$/.test(input)) {
         return `getaddressbalance ${input}`;
     }
     
-    // 6. Dirección Sapling (zs) - larga
     if (input.startsWith('zs') && input.length > 50) {
         return `z_getbalance ${input}`;
     }
     
-    // 7. Cualquier otra cosa larga que parezca dirección
     if (input.length > 50) {
         return `validateaddress ${input}`;
     }
@@ -173,7 +191,7 @@ async function loadNetworkStats() {
 
 
 async function getVinValue(txid, voutIndex) {
-    // Pedir la transacción anterior con verbosidad 1 (para tener vouts)
+
     const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
         .then(r => r.json())
         .then(r => r.result);
@@ -183,16 +201,27 @@ async function getVinValue(txid, voutIndex) {
     return prevTx.vout[voutIndex].value;
 }
 
+// ========== ACTUALIZAR URL PARA COMPARTIR ==========
+function updateUrlWithSearch(parametro, tipo) {
 
-// ========== EJECUCIÓN DE BÚSQUEDA ==========
+    const baseUrl = window.location.origin + window.location.pathname;
+
+    const cleanBaseUrl = baseUrl.replace(/\/[^\/]*$/, ''); 
+    const newUrl = cleanBaseUrl + '/' + encodeURIComponent(parametro);
+    
+
+    window.history.replaceState({}, '', newUrl);
+    
+    console.log('🔗 URL actualizada:', newUrl);
+}
+
+// ========== EJECUCION DE BUSQUEDA ==========
 async function executeSearch(q) {
 
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
     document.getElementById("pie").style.display = "none";
 
-    // Detectar qué tipo de búsqueda es para la URL
-    // Usamos el parámetro q que ya viene procesado por detectCommand
     let tipoBusqueda = 'desconocido';
     let rawParam = '';
     
@@ -226,7 +255,7 @@ async function executeSearch(q) {
         }
     }
     
-    // Actualizar la URL para compartir (solo si tenemos un tipo válido)
+    // Actualizar la URL para compartir 
     if (tipoBusqueda !== 'desconocido' && rawParam) {
         updateUrlWithSearch(rawParam, tipoBusqueda);
     }
@@ -554,7 +583,7 @@ async function executeSearch(q) {
                 res += `bindingSig: ${t.bindingSig}\n`;
             }
         }
-        // ===== INFORMACIÓN DE DIRECCIÓN =====
+        // ===== INFORMACION DE DIRECCION =====
         else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
             
             const esBalance = q.includes('getaddressbalance');
@@ -602,7 +631,7 @@ async function executeSearch(q) {
         else {
             res += JSON.stringify(data.result || data, null, 2);
         }
-       
+        
         res += '</pre><br><br>'; 
         res += `<div>[F8 copiar] [F9 Limpiar]</div>`;
         res += `<div class="result-footer">\n\n===============================================================================\n`;
@@ -615,26 +644,13 @@ async function executeSearch(q) {
     document.getElementById('searchInput').value = '';
 }
 
-// ========== ACTUALIZAR URL PARA COMPARTIR ==========
-function updateUrlWithSearch(parametro, tipo) {
-    // Crear nueva URL con el parámetro q
-    const url = new URL(window.location);
-    url.searchParams.set('q', parametro);
-    
-    // Actualizar la URL sin recargar la página
-    window.history.replaceState({}, '', url);
-    
-    console.log('🔗 URL actualizada:', url.toString());
-}
 
-// ========== DETECTAR BÚSQUEDA DESDE URL COMPARTIDA ==========
-(function detectFromSharedUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchParam = urlParams.get('q');
+// ========== DETECTAR BUSQUEDA DESDE URL ==========
+(function() {
+    const searchParam = detectSearchFromUrl();
     
     if (searchParam) {
-        console.log('🔍 Compartido desde URL:', searchParam);
-        // Esperar a que cargue la página
+        console.log('🔍 Buscando:', searchParam);
         window.addEventListener('load', function() {
             setTimeout(() => {
                 const input = document.getElementById('searchInput');
@@ -648,22 +664,18 @@ function updateUrlWithSearch(parametro, tipo) {
     }
 })();
 
-
-// ========== TECLAS DE ACCESO RÁPIDO ==========
+// ========== TECLAS DE ACCESO RAPIDO ==========
 document.addEventListener('keydown', function(e) {
-    // F8 - SOLO COPIAR (no limpia, no modifica nada)
     if (e.key === 'F8') {
         e.preventDefault();
         const btn = document.querySelector('.copy-full-btn');
         if (btn) {
             copyFullOutput(btn);
         } else {
-            // Si no hay botón, copiar el contenido del output directamente
             const outputPre = document.querySelector('#output pre');
             if (outputPre) {
                 const textToCopy = outputPre.innerText;
                 navigator.clipboard.writeText(textToCopy).then(() => {
-                    // Feedback visual sin modificar el contenido
                     const originalPrompt = document.querySelector('.prompt').innerHTML;
                     
                     setTimeout(() => {
@@ -677,19 +689,12 @@ document.addEventListener('keydown', function(e) {
     // F9 - LIMPIAR TODO 
     if (e.key === 'F9') {
         e.preventDefault();
-        // Limpiar campo de búsqueda
         document.getElementById('searchInput').value = '';
-        // Limpiar output completamente
         document.getElementById('output').innerHTML = '';
-        // Mostrar el pie de página
         document.getElementById('pie').style.display = 'block';
-        // Refrescar estadísticas del nodo
         loadNetworkStats();
-        // Quitar el parámetro q de la URL
-        const url = new URL(window.location);
-        url.searchParams.delete('q');
-        window.history.replaceState({}, '', url);
-        // Feedback visual
+        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+        window.history.replaceState({}, '', baseUrl);
         const originalPrompt = document.querySelector('.prompt').innerHTML;
         document.querySelector('.prompt').innerHTML = '♥ LIMPIADO ♥';
         setTimeout(() => {
@@ -697,7 +702,6 @@ document.addEventListener('keydown', function(e) {
         }, 1000);
     }
 });
-
 
 // ========== EVENTOS ==========
 const searchInput = document.getElementById('searchInput');
@@ -722,7 +726,6 @@ searchInput.addEventListener('paste', (e) => {
         }
     }, 10);
 });
-
 
 // ========== INICIO ==========
 loadNetworkStats();
