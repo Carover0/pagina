@@ -111,13 +111,14 @@ function updateUrlWithSearch(parametro, tipo) {
 async function detectCommand(input) {
     input = input.trim();
 
+    // Comandos directos
     if (input.startsWith('getblock ') || 
         input.startsWith('getrawtransaction ') || 
-        input.startsWith('validateaddress ') || 
-        input.startsWith('getaddressbalance ')) {
+        input.startsWith('validateaddress ')) { 
         return input;
     }
     
+    // Altura de bloque (números)
     if (/^\d+$/.test(input)) {
         try {
             const url = `${API_URL}?token=${TOKEN}&cmd=getblockhash ${input}`;
@@ -134,18 +135,25 @@ async function detectCommand(input) {
         }
     }
     
+    // Hash de 64 caracteres (txid o bloque)
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
         if (/^0{4,}[a-fA-F0-9]*$/.test(input)) {
-            return `getblock ${input}`;
+            return `getblock ${input}`; 
         } else {
-            return `getrawtransaction ${input} 1`;
+            return `getrawtransaction ${input} 1`;  // TxID normal
         }
     }
     
-    if (input.startsWith('D') && input.length > 25) {
-        return `getaddressbalance ${input}`;
+    // DIRECCIONES
+    if (input.startsWith('D') && input.length === 34) {
+        return `validateaddress ${input}`;
     }
     
+    if (input.startsWith('p') && input.length === 78) {
+        return `validateaddress ${input}`;  
+    }
+
+    // Si nada coincide, devolver el input original
     return input;
 }
 
@@ -676,7 +684,44 @@ async function executeSearch(q) {
                 }
             }
         }
+        //// DIRECCIONES
+
+else if (q.includes('validateaddress') && data.result) {
+    const v = data.result;
+    
+    let emoji = '🔓'; // Por defecto transparente
+    if (v.address.startsWith('p') || v.address.startsWith('z')) {
+        emoji = '🔒'; // Blindada
+    }
+    
+    res += `■ DIRECCIÓN ${v.address} ${v.address.startsWith('p') ? `${emoji} BLINDADA` : `${emoji} transparente`}\n`;
+    res += `  válida: ${v.isvalid ? 'sí' : 'no'}\n`;
+    
+    if (v.isvalid) {
+        if (v.address.startsWith('D')) {
+            res += `  tipo: transparente\n`;
+        } else if (v.address.startsWith('p')) {
+            res += `  tipo: shielded (Sapling)\n`;
+            if (v.diversifier) {
+                res += `  diversifier: ${v.diversifier}\n`;
+            }
+            if (v.diversifiedtransmissionkey) {
+                res += `  transmission key: ${v.diversifiedtransmissionkey}...\n`;
+            }
+        } else if (v.address.startsWith('z')) {
+            res += `  tipo: shielded (Sprout)\n`;
+        }
         
+        if (v.ismine !== undefined) {
+            res += `  pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
+        }
+        
+        if (v.isstaking !== undefined) {
+            res += `  staking: ${v.isstaking ? 'sí' : 'no'}\n`;
+        }
+    }
+}
+
         res += '</pre><br>[F8 copiar] [F9 limpiar]\n';
         res += `\n===============================================================================\n`;
         res += `© 2026 Creada con ♥ por cΔrovΣr0 · apoya: PIVX donations`;
