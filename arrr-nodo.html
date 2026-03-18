@@ -1,5 +1,4 @@
 <html>
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -91,7 +90,7 @@ a:hover {
 cΔrovΣr0 • MONITOR DE NODO PIRATE CHAIN<br>
 ========================================<br>
 </div>
-<a href="https://carover0.github.io/pagina/arrr-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/arrr-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
+<a href="https://carover0.github.io/pagina/arrr-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/arrr-consola.html">[CONSOLA]</a> <a href="https://carover0.xyz/arrr-stats.html">[ESTADISTICAS]</a><br><br>
 
 <!-- NODO STATUS -->
 <div class="subheader">NODO PIRATE · ESTADO</div>
@@ -112,10 +111,20 @@ cΔrovΣr0 • MONITOR DE NODO PIRATE CHAIN<br>
   <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
 </div>
 
+<!-- NUEVO: SUPPLY -->
+<div class="subheader">PIRATE SUPPLY</div>
+<div id="node-supply" class="data-block">
+  <div class="row"><span class="label">TOTAL</span><span class="value" id="supply-total">---</span></div>
+  <div class="row"><span class="label">SHIELDED</span><span class="value" id="supply-shielded">---</span></div>
+  <div class="row"><span class="label">TRANSPARENTE</span><span class="value" id="supply-transparent">---</span></div>
+  <div class="row"><span class="label">PRIVACIDAD</span><span class="value" id="supply-percent">---</span></div>
+</div>
+
 <!-- MARKET DATA -->
 <div class="subheader">PIRATE DATOS DE MERCADO</div>
 <div id="market-content" class="data-block">
   <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
+  <div class="row"><span class="label">CAP. MERCADO</span><span class="value" id="market-cap">---</span></div>
 </div>
 
 <!-- API PUBLICA -->
@@ -139,6 +148,9 @@ const STATUS_URL = "https://carover0.xyz/cacaX/pirate_status_X.json";
 // ========== FUNCIONES AUXILIARES ==========
 function formatDifficulty(diff) {
   if (!diff) return '---';
+  if (diff > 1e9) return (diff / 1e9).toFixed(2) + 'B';
+  if (diff > 1e6) return (diff / 1e6).toFixed(2) + 'M';
+  if (diff > 1e3) return (diff / 1e3).toFixed(2) + 'K';
   return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -149,7 +161,12 @@ function formatHash(hash) {
 
 function formatNumber(num) {
   if (num === undefined || num === null) return '---';
-  return Number(num).toLocaleString();
+  return Number(num).toLocaleString(undefined, {maximumFractionDigits: 2});
+}
+
+function formatCurrency(num) {
+  if (num === undefined || num === null) return '---';
+  return '$' + Number(num).toLocaleString(undefined, {maximumFractionDigits: 6});
 }
 
 // ========== LLAMADAS RPC DIRECTAS ==========
@@ -172,32 +189,26 @@ async function fetchNodeData() {
     const statusRes = await fetch(STATUS_URL);
     const status = await statusRes.json();
     
-    // 2. Información adicional vía RPC
-    const blockchainInfo = await callRPC('getblockchaininfo');
-    const networkInfo = await callRPC('getnetworkinfo');
-    const mempool = await callRPC('getrawmempool');
-    const peerinfo = await callRPC('getpeerinfo');
+    console.log("✅ Datos recibidos:", status); // Para debug
     
-    // Extraer datos
+    
     const version = status.software_subversion || status.subversion || '---';
-    const connections = status.connections || peerinfo?.length || 0;
-    const blockHeight = status.height || blockchainInfo?.blocks || 0;
-    const mempoolSize = mempool?.length || status.mempool || 0;
-    const difficulty = status.difficulty || blockchainInfo?.difficulty || 0;
-    const protocolVersion = status.protocolversion || networkInfo?.protocolversion || '---';
+    const connections = status.connections || status.peers || 0;
+    const blockHeight = status.height || 0;
+    const mempoolSize = status.mempool || 0;
+    const difficulty = status.difficulty || 0;
+    const protocolVersion = status.protocolversion || '---';
+    const bestBlockHash = status.bestblock || '---';
     
-    // Estado de sincronización
-    const synced = blockchainInfo?.blocks >= blockchainInfo?.headers;
-    const bestBlockHash = blockchainInfo?.bestblockhash || '---';
+    const synced = true; 
     
-    let blockReward = 16; // Valor fijo actual de Pirate Chain
+    // Recompensa actual (Pirate: fija 16 ARRR por bloque)
+    let blockReward = 16;
     
-    // Actualizar DOM
+    
     document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
-    
     document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
     document.getElementById('node-state').className = `value ${synced ? 'positive' : 'negative'}`;
-    
     document.getElementById('node-blocks').innerText = formatNumber(blockHeight);
     document.getElementById('node-connections').innerText = connections;
     document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
@@ -206,10 +217,26 @@ async function fetchNodeData() {
     document.getElementById('node-protocol').innerText = protocolVersion;
     document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
     
+    // SUPPLY - Datos del JSON
+    if (status.supply) {
+      const total = status.supply.total || 0;
+      const shielded = status.supply.shielded || 0;
+      const transparent = status.supply.transparent || 0;
+      const percentShielded = total > 0 ? ((shielded / total) * 100).toFixed(2) : 0;
+      
+      document.getElementById('supply-total').innerText = formatNumber(total) + ' ARRR';
+      document.getElementById('supply-shielded').innerText = formatNumber(shielded) + ' ARRR';
+      document.getElementById('supply-transparent').innerText = formatNumber(transparent) + ' ARRR';
+      document.getElementById('supply-percent').innerHTML = `<span class="positive">${percentShielded}%</span> blindado`;
+    }
+    
   } catch(err) {
-    console.error("Error cargando datos:", err);
+    console.error("❌ Error cargando datos:", err);
+    document.getElementById('node-state').innerText = "ERROR";
+    document.getElementById('node-state').className = "value negative";
   }
 }
+
 
 // ========== PRECIO ==========
 async function fetchPrice() {
@@ -217,14 +244,28 @@ async function fetchPrice() {
     const response = await fetch('https://carover0.xyz/getprice-arrr.php?token=pirate2026');
     if (!response.ok) throw new Error('No disponible');
     const data = await response.json();
+    
     if (data.success) {
-      document.getElementById('price-usd').innerText = `$${data.price.toFixed(6)}`;
+      const price = data.price;
+      document.getElementById('price-usd').innerText = `$${price.toFixed(6)}`;
+      
+      const totalSupplyEl = document.getElementById('supply-total');
+      if (totalSupplyEl && totalSupplyEl.innerText !== '---') {
+        const supplyStr = totalSupplyEl.innerText.replace(' ARRR', '').replace(/,/g, '');
+        const supply = parseFloat(supplyStr);
+        if (!isNaN(supply)) {
+          const marketCap = supply * price;
+          document.getElementById('market-cap').innerText = formatCurrency(marketCap);
+        }
+      }
     } else {
       document.getElementById('price-usd').innerText = '---';
+      document.getElementById('market-cap').innerText = '---';
     }
   } catch (error) {
     console.error('Error precio:', error);
     document.getElementById('price-usd').innerHTML = '---';
+    document.getElementById('market-cap').innerHTML = '---';
   }
   
   const now = new Date();
