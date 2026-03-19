@@ -90,19 +90,41 @@ function formatCompact(txid, vout, address) {
     return `${txShort}:${vout} (${addrShort})`;
 }
 
-// ========== DETECCIÓN ==========
 function detectCommand(input) {
     input = input.trim();
-    if (input.startsWith('getblock ') || input.startsWith('getrawtransaction ') || 
-        input.startsWith('validateaddress ') || input.startsWith('z_validateaddress ') ||
-        input.startsWith('z_getbalance ')) return input;
-    if (/^\d+$/.test(input)) return `getblock ${input}`;
-    if (/^[a-fA-F0-9]{64}$/.test(input)) return `getblock ${input}`;
-    if (input.startsWith('zs') && input.length > 50) return `z_getbalance ${input}`;
-    if ((input.startsWith('R') || input.startsWith('t1')) && input.length > 25) return `validateaddress ${input}`;
-    if (input.length > 50) return `z_validateaddress ${input}`;
+    
+    // Comandos directos (ya procesados)
+    if (input.startsWith('getblock ') || 
+        input.startsWith('getrawtransaction ') || 
+        input.startsWith('validateaddress ') || 
+        input.startsWith('z_validateaddress ') ||
+        input.startsWith('z_getbalance ')) {
+        return input;
+    }
+    
+    if (/^\d+$/.test(input)) {
+        return `getblock ${input}`;
+    }
+    
+    if (/^[a-fA-F0-9]{64}$/.test(input)) {
+        if (input.startsWith('0')) {
+            return `getblock ${input} 1`;  
+        } else {
+            return `getrawtransaction ${input} 1`;  
+        }
+    }
+    
+    if (input.startsWith('zs') && input.length > 50) {
+        return `z_validateaddress ${input}`;
+    }
+
+    if (input.startsWith('R') && input.length > 25) {
+        return `validateaddress ${input}`;
+    }
+    
     return input;
 }
+
 
 // ========== ESTADOS ==========
 async function loadNetworkStats() {
@@ -129,8 +151,6 @@ async function callRPC(method, params = []) {
 function calcularMontoReal(t) {
     if (!t.vin || t.vin.length === 0) return null;
     
-    // Para t→z, el monto blindado es abs(valueBalance)
-    // valueBalance YA viene en ARRR en este RPC
     if (t.valueBalance !== undefined && t.valueBalance < 0) {
         return Math.abs(t.valueBalance);
     }
@@ -161,7 +181,7 @@ function analizarTransaccion(t) {
     return { tipo, direccionesUnicas: [...direccionesUnicas], esConsolidacion };
 }
 
-// ========== EJECUTAR BÚSQUEDA ==========
+// ========== EJECUTAR BUSQUEDA ==========
 async function executeSearch(q) {
     const out = document.getElementById('output');
     out.innerHTML = '<pre>Ejecutando...</pre>';
@@ -325,21 +345,54 @@ async function executeSearch(q) {
             }
         }
         // ===== DIRECCIONES =====
-        else if ((q.includes('z_getbalance') || q.includes('validateaddress')) && data.result) {
+        else if ((q.includes('z_getbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
             const esBalance = q.includes('z_getbalance');
+            const esZValidate = q.includes('z_validateaddress');
             const direccion = q.split(' ')[1] || '';
             const esZ = direccion.startsWith('zs');
             
             if (esBalance) {
                 res += `DIRECCIÓN SHIELDED\n\n`;
-                res += `  dirección: ${direccion}\n`;
+                res += `  dirección: ${formatAddress(direccion)}\n`;
                 res += `  balance:   ${data.result} ARRR\n`;
             } else {
                 const v = data.result;
-                res += `DIRECCIÓN ${esZ ? 'SHIELDED' : 'TRANSPARENTE'}\n\n`;
-                res += `  dirección: ${direccion}\n`;
-                res += `  válida:    ${v.isvalid ? '✅' : '❌'}\n`;
-                if (v.ismine !== undefined) res += `  en wallet: ${v.ismine ? '✅' : '❌'}\n`;
+                
+                const titulo = esZValidate ? 'DIRECCIÓN SHIELDED (z_validateaddress)' : 
+                               (esZ ? 'DIRECCIÓN SHIELDED' : 'DIRECCIÓN TRANSPARENTE');
+                res += `${esZ ? '🔒' : '🔓'} ${titulo}\n\n`;
+                
+                res += `dirección: ${direccion}\n`;
+                res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
+                
+                if (v.isvalid) {
+                    // Tipo de dirección
+                    if (v.type) {
+                        res += `tipo: ${v.type}\n`;
+                    }
+                    
+                    if (v.diversifier) {
+                        res += `diversifier: ${v.diversifier}\n`;
+                    }
+                    if (v.diversifiedtransmissionkey) {
+                        const key = v.diversifiedtransmissionkey.length > 40 ? 
+                            v.diversifiedtransmissionkey: 
+                            v.diversifiedtransmissionkey;
+                        res += `transmission key: ${key}\n`;
+                    }
+                    
+                    if (v.pubkey) {
+                        res += `pubkey: ${v.pubkey}\n`;
+                    }
+                    
+                    if (v.isscript !== undefined) {
+                        res += `isscript: ${v.isscript ? 'sí' : 'no'}\n`;
+                    }
+                    
+                    if (v.timestamp) {
+                        res += `creada: ${new Date(v.timestamp * 1000).toLocaleString()}\n`;
+                    }
+                }
             }
         } else {
             res += JSON.stringify(data.result || data, null, 2);
@@ -352,7 +405,6 @@ async function executeSearch(q) {
     } catch(e) {
         out.innerHTML = `<pre>error: ${e.message}</pre>`;
     }
-    document.getElementById('searchInput').value = '';
 }
 
 // ========== TECLAS ==========
