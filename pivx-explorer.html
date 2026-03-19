@@ -112,14 +112,13 @@ function updateUrlWithSearch(parametro, tipo) {
 async function detectCommand(input) {
     input = input.trim();
 
-    // Comandos directos
     if (input.startsWith('getblock ') || 
         input.startsWith('getrawtransaction ') || 
-        input.startsWith('validateaddress ')) { 
+        input.startsWith('validateaddress ') ||
+        input.startsWith('getblockhash ')) { 
         return input;
     }
     
-    // Altura de bloque (números)
     if (/^\d+$/.test(input)) {
         try {
             const url = `${API_URL}?token=${TOKEN}&cmd=getblockhash ${input}`;
@@ -128,24 +127,31 @@ async function detectCommand(input) {
             
             if (data.result) {
                 return `getblock ${data.result}`;
-            } else {
-                return `getblock ${input}`;
             }
         } catch(e) {
-            return `getblock ${input}`;
+
         }
+        return `getblock ${input}`;
     }
     
-    // Hash de 64 caracteres (txid o bloque)
     if (/^[a-fA-F0-9]{64}$/.test(input)) {
-        if (/^0{4,}[a-fA-F0-9]*$/.test(input)) {
-            return `getblock ${input}`; 
-        } else {
-            return `getrawtransaction ${input} 1`;  // TxID normal
+        try {
+            const blockCheckUrl = `${API_URL}?token=${TOKEN}&cmd=getblock ${input}`;
+            const blockResponse = await fetch(blockCheckUrl);
+            const blockData = await blockResponse.json();
+            
+            // Si tiene resultado y no error, es bloque
+            if (blockData.result && !blockData.error) {
+                return `getblock ${input}`;
+            }
+            
+            return `getrawtransaction ${input} 1`;
+            
+        } catch (error) {
+            console.log("Error verificando bloque, asumiendo tx:", error);
+            return `getrawtransaction ${input} 1`;
         }
     }
-    
-    // DIRECCIONES
     if (input.startsWith('D') && input.length === 34) {
         return `validateaddress ${input}`;
     }
@@ -154,9 +160,9 @@ async function detectCommand(input) {
         return `validateaddress ${input}`;  
     }
 
-    // Si nada coincide, devolver el input original
     return input;
 }
+
 
 // ========== CARGA DE ESTADOS ==========
 async function loadNetworkStats() {
