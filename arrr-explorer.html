@@ -331,12 +331,12 @@ async function executeSearch(q) {
             const esZ = direccion.startsWith('zs');
             
             if (esBalance) {
-                res += `DIRECCIÓN SHIELDED\n════════════════════════════════════════════════\n\n`;
+                res += `DIRECCIÓN SHIELDED\n\n`;
                 res += `  dirección: ${direccion}\n`;
                 res += `  balance:   ${data.result} ARRR\n`;
             } else {
                 const v = data.result;
-                res += `DIRECCIÓN ${esZ ? 'SHIELDED' : 'TRANSPARENTE'}\n════════════════════════════════════════════════\n\n`;
+                res += `DIRECCIÓN ${esZ ? 'SHIELDED' : 'TRANSPARENTE'}\n\n`;
                 res += `  dirección: ${direccion}\n`;
                 res += `  válida:    ${v.isvalid ? '✅' : '❌'}\n`;
                 if (v.ismine !== undefined) res += `  en wallet: ${v.ismine ? '✅' : '❌'}\n`;
