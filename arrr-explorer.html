@@ -405,6 +405,7 @@ async function executeSearch(q) {
     } catch(e) {
         out.innerHTML = `<pre>error: ${e.message}</pre>`;
     }
+    document.getElementById('searchInput').value = '';
 }
 
 // ========== TECLAS ==========
