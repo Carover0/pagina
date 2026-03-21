@@ -111,7 +111,7 @@ cΔrovΣr0 • MONITOR DE NODO PIRATE CHAIN<br>
   <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
 </div>
 
-<!-- NUEVO: SUPPLY -->
+<!-- SUPPLY -->
 <div class="subheader">PIRATE SUPPLY</div>
 <div id="node-supply" class="data-block">
   <div class="row"><span class="label">TOTAL</span><span class="value" id="supply-total">---</span></div>
@@ -140,8 +140,6 @@ cΔrovΣr0 • MONITOR DE NODO PIRATE CHAIN<br>
 </div>
 
 <script>
-const RPC_URL = "https://carover0.xyz/api/pirate/rpc.php";
-const TOKEN = "pirate2026";
 const STATUS_URL = "https://carover0.xyz/cacaX/pirate_status_X.json";
 
 // ========== FUNCIONES AUXILIARES ==========
@@ -163,33 +161,13 @@ function formatNumber(num) {
   return Number(num).toLocaleString(undefined, {maximumFractionDigits: 2});
 }
 
-function formatCurrency(num) {
-  if (num === undefined || num === null) return '---';
-  return '$' + Number(num).toLocaleString(undefined, {maximumFractionDigits: 6});
-}
-
-// ========== LLAMADAS RPC DIRECTAS ==========
-async function callRPC(method, params = []) {
-  try {
-    const url = `${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(method + (params.length ? ' ' + params.join(' ') : ''))}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    return data.result;
-  } catch(e) {
-    console.error(`RPC error ${method}:`, e);
-    return null;
-  }
-}
-
 // ========== OBTENER DATOS DEL NODO ==========
 async function fetchNodeData() {
   try {
-    // 1. Datos básicos desde status.json
     const statusRes = await fetch(STATUS_URL);
     const status = await statusRes.json();
     
-    console.log("✅ Datos recibidos:", status); // Para debug
-    
+    console.log("✅ Datos recibidos:", status);
     
     const version = status.software_subversion || status.subversion || '---';
     const connections = status.connections || status.peers || 0;
@@ -200,42 +178,66 @@ async function fetchNodeData() {
     const bestBlockHash = status.bestblock || '---';
     
     const synced = true; 
+    const blockReward = 16;
     
-    // Recompensa actual (Pirate: fija 16 ARRR por bloque)
-    let blockReward = 16;
+    const nodeVersion = document.getElementById('node-version');
+    if (nodeVersion) nodeVersion.innerText = version.replace(/[\/"]/g, '');
     
+    const nodeState = document.getElementById('node-state');
+    if (nodeState) {
+      nodeState.innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
+      nodeState.className = `value ${synced ? 'positive' : 'negative'}`;
+    }
     
-    document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
-    document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
-    document.getElementById('node-state').className = `value ${synced ? 'positive' : 'negative'}`;
-    document.getElementById('node-blocks').innerText = formatNumber(blockHeight);
-    document.getElementById('node-connections').innerText = connections;
-    document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
-    document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
-    document.getElementById('node-reward').innerText = blockReward + ' ARRR';
-    document.getElementById('node-protocol').innerText = protocolVersion;
-    document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
+    const nodeBlocks = document.getElementById('node-blocks');
+    if (nodeBlocks) nodeBlocks.innerText = formatNumber(blockHeight);
     
-    // SUPPLY - Datos del JSON
+    const nodeConnections = document.getElementById('node-connections');
+    if (nodeConnections) nodeConnections.innerText = connections;
+    
+    const nodeMempool = document.getElementById('node-mempool');
+    if (nodeMempool) nodeMempool.innerText = mempoolSize + ' TX';
+    
+    const nodeDifficulty = document.getElementById('node-difficulty');
+    if (nodeDifficulty) nodeDifficulty.innerText = formatDifficulty(difficulty);
+    
+    const nodeReward = document.getElementById('node-reward');
+    if (nodeReward) nodeReward.innerText = blockReward + ' ARRR';
+    
+    const nodeProtocol = document.getElementById('node-protocol');
+    if (nodeProtocol) nodeProtocol.innerText = protocolVersion;
+    
+    const nodeBestblock = document.getElementById('node-bestblock');
+    if (nodeBestblock) nodeBestblock.innerText = formatHash(bestBlockHash);
+    
     if (status.supply) {
       const total = status.supply.total || 0;
       const shielded = status.supply.shielded || 0;
       const transparent = status.supply.transparent || 0;
       const percentShielded = total > 0 ? ((shielded / total) * 100).toFixed(2) : 0;
       
-      document.getElementById('supply-total').innerText = formatNumber(total) + ' ARRR';
-      document.getElementById('supply-shielded').innerText = formatNumber(shielded) + ' ARRR';
-      document.getElementById('supply-transparent').innerText = formatNumber(transparent) + ' ARRR';
-      document.getElementById('supply-percent').innerHTML = `<span class="positive">${percentShielded}%</span> blindado`;
+      const supplyTotal = document.getElementById('supply-total');
+      if (supplyTotal) supplyTotal.innerText = formatNumber(total) + ' ARRR';
+      
+      const supplyShielded = document.getElementById('supply-shielded');
+      if (supplyShielded) supplyShielded.innerText = formatNumber(shielded) + ' ARRR';
+      
+      const supplyTransparent = document.getElementById('supply-transparent');
+      if (supplyTransparent) supplyTransparent.innerText = formatNumber(transparent) + ' ARRR';
+      
+      const supplyPercent = document.getElementById('supply-percent');
+      if (supplyPercent) supplyPercent.innerHTML = `<span class="positive">${percentShielded}%</span> blindado`;
     }
     
   } catch(err) {
     console.error("❌ Error cargando datos:", err);
-    document.getElementById('node-state').innerText = "ERROR";
-    document.getElementById('node-state').className = "value negative";
+    const nodeState = document.getElementById('node-state');
+    if (nodeState) {
+      nodeState.innerText = "ERROR";
+      nodeState.className = "value negative";
+    }
   }
 }
-
 
 // ========== PRECIO ==========
 async function fetchPrice() {
@@ -244,38 +246,31 @@ async function fetchPrice() {
     if (!response.ok) throw new Error('No disponible');
     const data = await response.json();
     
-    if (data.success) {
+    const priceUsd = document.getElementById('price-usd');
+    const priceTime = document.getElementById('price-time');
+    
+    if (data.success && priceUsd) {
       const price = data.price;
-      document.getElementById('price-usd').innerText = `$${price.toFixed(6)}`;
-      
-      const totalSupplyEl = document.getElementById('supply-total');
-      if (totalSupplyEl && totalSupplyEl.innerText !== '---') {
-        const supplyStr = totalSupplyEl.innerText.replace(' ARRR', '').replace(/,/g, '');
-        const supply = parseFloat(supplyStr);
-        if (!isNaN(supply)) {
-          const marketCap = supply * price;
-          document.getElementById('market-cap').innerText = formatCurrency(marketCap);
-        }
-      }
-    } else {
-      document.getElementById('price-usd').innerText = '---';
-      document.getElementById('market-cap').innerText = '---';
+      priceUsd.innerText = `$${price.toFixed(6)}`;
+    } else if (priceUsd) {
+      priceUsd.innerText = '---';
+    }
+    
+    if (priceTime) {
+      const now = new Date();
+      priceTime.innerText = now.toLocaleTimeString();
     }
   } catch (error) {
     console.error('Error precio:', error);
-    document.getElementById('price-usd').innerHTML = '---';
-    //document.getElementById('market-cap').innerHTML = '---';
+    const priceUsd = document.getElementById('price-usd');
+    if (priceUsd) priceUsd.innerHTML = '---';
   }
-  
-  const now = new Date();
-  document.getElementById('price-time').innerText = now.toLocaleTimeString();
 }
 
 // ========== INICIO ==========
 fetchNodeData();
 fetchPrice();
 
-// Actualizar cada 30 segundos
 setInterval(fetchNodeData, 30000);
 setInterval(fetchPrice, 60000);
 </script>
