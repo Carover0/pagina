@@ -15,102 +15,16 @@
     }
 
     .terminal {
-      max-width: 80ch;
+      max-width: 90ch;
       width: 100%;
       margin: 0;
-    }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      margin: 1px 0;  
-      max-width: 80ch;
-      line-height: 1.2;
-    }
-
-    .label {
-      color: #bbb;
-      width: 15ch;
-    }
-
-    .value {
-      color: #fff;
-    }
-
-    .positive { color: #198652; }
-    .negative { color: #9B1C2E; }
-
-    .footer {
-      margin-top: 25px;
-      padding-top: 5px;
-      color: #fff;
-      font-size: 15px;
-      line-height: 1.2;
-    }
-
-    @keyframes blink {
-      from, to { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
-    .version {
-      color: #777;
-      font-size: 15px;
-      margin-top: 0px;
-      margin-bottom: 5px;
-      line-height: 1.2;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin: 10px 0 5px 0;  
-      max-width: 80ch;
-    }
-
-    @media (max-width: 600px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-    }
-
-    .data-block {
-      margin: 5px 0;  
-    }
-
-    .small {
-      color: #777;
-      font-size: 15px;
-      margin-top: 2px;
-      line-height: 1.2;
-    }
-
-    .link-block {
-      margin: 0px 0;  
-      line-height: 1.2;
-    }
-
-    .link-label {
-      color: #999;
-      font-size: 15px;
-      margin-bottom: 0px;
-      margin-top: 20px;
-      line-height: 1.2;
-    }
-
-    /* NUEVO: violeta para privacidad */
-    .privacy-marker {
-      color: #b8a0ff;  /* violeta suave */
-      font-weight: normal;
     }
 
     .price-line {
       display: flex;
       justify-content: space-between;
       margin: 1px 0;
-      max-width: 80ch;
+      max-width: 90ch;
       font-family: "Lucida Console", Monaco, monospace;
       font-size: 15px;
       line-height: 1.2;
@@ -149,10 +63,25 @@
       margin-right: 2ch;
     }
 
+    .price-change-7d {
+      width: 10ch;
+      text-align: right;
+      margin-right: 2ch;
+    }
+
     .price-privacy {
       width: 5ch;
       text-align: left;
     }
+
+    .positive { color: #198652; }
+    .negative { color: #9B1C2E; }
+
+    .privacy-marker {
+      color: #b8a0ff;
+      font-weight: normal;
+    }
+
     .sep-raw {
       color: #fff;
       white-space: pre;
@@ -160,21 +89,34 @@
       margin: 10px 0;
       letter-spacing: normal;
     }
+
+    .small {
+      color: #777;
+      font-size: 15px;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
   </style>
 </head>
 <body>
-  <div class="terminal"><h1>cΔrovΣr0 • Precios</h1>Sin trackers, ads y scripts basura. Solo datos<div><br></div>
+  <div class="terminal">
+    <h1>cΔrovΣr0 • Precios</h1>
+    Sin trackers, ads y scripts basura. Solo datos
+    <div><br></div>
     <div class="price-line" style="color: #9B1C2E; margin-bottom: 5px;">
       <span class="price-rank">#</span>
       <span class="price-name">NOMBRE</span>
       <span class="price-value">PRECIO</span>
       <span class="price-change">24H%</span>
+      <span class="price-change-7d">7D%</span>
       <span class="price-privacy">PRIV</span>
     </div>
     <div id="crypto-container"></div>
     <div class="sep-raw">════════════════════════════════════════════════════════════════════════════════ 
 © 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
-    </div><div class="small" id="updated"></div></div>
+    </div>
+    <div class="small" id="updated"></div>
+  </div>
 
   <script>
     const coins = [
@@ -184,6 +126,7 @@
 
     const privacyCoins = {
       "zcash": true,
+      "dash": true,
       "pivx": true,
       "zcoin": true,
       "pirate-chain": true
@@ -191,7 +134,10 @@
 
     function formatPriceLine(coin) {
       const change24 = coin.price_change_percentage_24h;
-      const changeClass = change24 >= 0 ? "positive" : "negative";
+      const change7d = coin.price_change_percentage_7d_in_currency;
+      
+      const change24Class = change24 >= 0 ? "positive" : "negative";
+      const change7dClass = change7d >= 0 ? "positive" : "negative";
       
       const isPrivacy = privacyCoins[coin.id] || false;
       const privacyIcon = isPrivacy ? '<span class="privacy-marker">🛡</span>' : '·';
@@ -200,8 +146,8 @@
         ? `$${coin.current_price.toFixed(6)}` 
         : `$${coin.current_price.toFixed(2)}`;
 
-      const change = change24 ? change24.toFixed(2) : '0.00';
-      const changeDisplay = change24 >= 0 ? `+${change}` : `${change}`;
+      const change24Display = change24 ? (change24 >= 0 ? `+${change24.toFixed(2)}` : `${change24.toFixed(2)}`) : '0.00';
+      const change7dDisplay = change7d ? (change7d >= 0 ? `+${change7d.toFixed(2)}` : `${change7d.toFixed(2)}`) : '0.00';
 
       return `
         <div class="price-line">
@@ -210,7 +156,8 @@
             ${coin.name}<span class="price-symbol">${coin.symbol.toUpperCase()}</span>
           </span>
           <span class="price-value">${price}</span>
-          <span class="price-change ${changeClass}">${changeDisplay}%</span>
+          <span class="price-change ${change24Class}">${change24Display}%</span>
+          <span class="price-change-7d ${change7dClass}">${change7dDisplay}%</span>
           <span class="price-privacy">${privacyIcon}</span>
         </div>
       `;
@@ -219,7 +166,7 @@
     async function fetchData() {
       try {
         const res = await fetch(
-          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coins.join(",")}&order=market_cap_desc&price_change_percentage=24h`
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coins.join(",")}&order=market_cap_desc&price_change_percentage=24h,7d`
         );
 
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
