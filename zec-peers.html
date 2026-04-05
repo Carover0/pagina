@@ -1,0 +1,211 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ZCASH - PEERS</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", "Monaco", "Monospace", monospace;
+    font-size: 16px;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+.prompt {
+    color: #DD9D34;
+}
+.status-online {
+    color: #198652;
+}
+.status-offline {
+    color: #9B1C2E;
+}
+.server-item {
+    margin-bottom: 20px;
+    padding-left: 1px;
+}
+.server-header {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+.server-details {
+    color: #888;
+    font-size: 16px;
+    margin-left: 25px;
+}
+.height-number {
+    color: #fff;
+}
+.version {
+    color: #AAAAAA;
+}
+.warning {
+    color: #DD9D34;
+}
+.footer {
+    margin-top: 10px;
+    padding-top: 20px;
+    color: #fff;
+    font-size: 16px;
+}
+a, a:visited {
+    color: #DD9D34;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+    color: #FFB347;
+}
+.nav-links {
+    margin: 15px 0 25px 0;
+    padding: 10px 0;
+}
+.nav-links a {
+    margin-right: 20px;
+}
+.timestamp {
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+.dashboard-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+<div class="terminal">
+<div class="dashboard-title">
+ZCASH - PEERS CONECTADOS
+</div>
+<a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
+Lista de peers conectados al nodo. Actualización cada 60 segundos. Ordenados por ping (menor a mayor).<br>
+<div id="timestamp" class="timestamp">Cargando...</div><br>
+■ LISTA DE PEERS carover0.xyz:<br>
+==============================<br>
+<br>
+<div id="serversList">
+Cargando peers...</div><div class="footer">
+===============================================================================<br>
+© 2026 Creada con ♥ por cΔrovΣr0<br>
+apoya: u19rfvunxtldp45atzdw4m3m0ddm8595stsf2ldz7sf4n3tat0nkwcamr976qf0y9uq7pfpevdp3mswwue3x0j92azaeeapdfhsv3xzydj
+</div>
+</div>
+
+<script>
+const API_URL = "https://carover0.xyz/api/zec/rpc.php";
+const TOKEN = "zec2026";
+
+let peersData = [];
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function shortAddr(addr) {
+    if (!addr) return '?';
+    return addr.split(':')[0];
+}
+
+function formatPing(pingtime) {
+    if (!pingtime) return '-';
+    var ms = pingtime * 1000;
+    if (ms < 1) return '<1ms';
+    return ms.toFixed(0) + 'ms';
+}
+
+function mostrarTimestamp() {
+    document.getElementById('timestamp').innerHTML = `última actualización: ${new Date().toLocaleString()}`;
+}
+
+function renderizarLista() {
+    const container = document.getElementById('serversList');
+    container.innerHTML = '';
+    
+    if (peersData.length === 0) {
+        container.innerHTML = '<div class="server-item"><span class="status-offline">No se encontraron peers</span></div>';
+        return;
+    }
+    
+    const ordenados = [...peersData].sort((a, b) => {
+        const pingA = a.pingtime ? a.pingtime * 1000 : 999999;
+        const pingB = b.pingtime ? b.pingtime * 1000 : 999999;
+        return pingA - pingB;
+    });
+    
+    ordenados.forEach(peer => {
+        const div = document.createElement('div');
+        div.className = 'server-item';
+        
+        const pingMs = peer.pingtime ? (peer.pingtime * 1000).toFixed(0) : '?';
+        const pingDisplay = formatPing(peer.pingtime);
+        const direccion = peer.inbound ? 'IN' : 'OUT';
+        const estadoColor = peer.inbound ? '#198652' : '#9B1C2E';
+        
+        let headerHTML = `► ${escapeHtml(shortAddr(peer.addr))} <span style="color:${estadoColor}">[${direccion}]</span> <span class="status-online"></span>`;
+        
+        let detailsHTML = `<div class="server-details">└─ addr: ${escapeHtml(peer.addr)}  |  ping: <span class="height-number">${pingMs}ms</span>`;
+        
+        if (peer.version) {
+            let versionStr = peer.version;
+            if (typeof versionStr === 'number') {
+                const major = Math.floor(versionStr / 1000000);
+                const minor = Math.floor((versionStr % 1000000) / 10000);
+                const patch = Math.floor((versionStr % 10000) / 100);
+                versionStr = `${major}.${minor}.${patch}`;
+            }
+            detailsHTML += `  |  version: <span class="version">${escapeHtml(versionStr)}</span>`;
+        }
+        
+        if (peer.subver) {
+            let subver = peer.subver.replace(/[\/\\]/g, '');
+            if (subver.length > 30) subver = subver.substring(0, 27) + '...';
+            detailsHTML += `  |  subver: <span class="version">${escapeHtml(subver)}</span>`;
+        }
+        
+        detailsHTML += `</div>`;
+        
+        div.innerHTML = `<div class="server-header">${headerHTML}</div>${detailsHTML}`;
+        container.appendChild(div);
+    });
+}
+
+async function cargarDatos() {
+    try {
+        const response = await fetch(API_URL + '?token=' + TOKEN + '&cmd=getpeerinfo');
+        const data = await response.json();
+        
+        if (data.error) {
+            document.getElementById('serversList').innerHTML = `<div class="server-item"><span class="status-offline">ERROR: ${escapeHtml(data.error)}</span></div>`;
+            document.getElementById('timestamp').innerHTML = 'Error cargando datos';
+            return;
+        }
+        
+        peersData = data.result || [];
+        mostrarTimestamp();
+        renderizarLista();
+        
+    } catch (error) {
+        console.error('Error cargando datos:', error);
+        document.getElementById('serversList').innerHTML = '<div class="server-item"><span class="status-offline">ERROR: No se pudo cargar la lista de peers</span></div>';
+        document.getElementById('timestamp').innerHTML = 'Error cargando datos';
+    }
+}
+
+cargarDatos();
+setInterval(cargarDatos, 60000);
+</script>
+</body>
+</html>
