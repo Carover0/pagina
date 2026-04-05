@@ -1,6 +1,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>ZCASH: ESTADO DE SERVIDORES LIGHTWALLETD</title>
 <style>
 body {
@@ -27,7 +30,6 @@ body {
 }
 .server-item {
     margin-bottom: 20px;
-    /*border-left: 2px solid #DD9D34;*/
     padding-left: 1px;
 }
 .server-header {
@@ -85,7 +87,7 @@ a:hover {
 <div class="dashboard-title">
 ZCASH - LISTA DE SERVIDORES LIGHTWALLET
 </div>
-<a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
+<a href="https://carover0.xyz/pagina/zec-nodo.html">[NODO]</a> <a href="https://carover0.xyz/pagina/zec-consola.html">[CONSOLA]</a> <a href="https://carover0.xyz/pagina/zec-info.html">[ZCASH]</a> <a href="https://carover0.xyz/pagina/">[INICIO]</a><br><br>
 Datos actualizados cada 12 horas desde verificaciones propias. No hay orden establecido, solo elegi el que mas te guste. Si queres aparecer en esta lista, contactame Telegram: @Cvg_1995.<br>
 <div id="timestamp" class="timestamp">Cargando...</div><br>
 LISTA DE SERVIDORES:<br>
@@ -169,7 +171,9 @@ function renderizarLista() {
 
 async function cargarDatos() {
     try {
-        const response = await fetch(STATUS_URL);
+        // Añadir timestamp para evitar caché del JSON
+        const urlConTimestamp = `${STATUS_URL}?t=${new Date().getTime()}`;
+        const response = await fetch(urlConTimestamp);
         const data = await response.json();
         
         serversData = data.servers;
