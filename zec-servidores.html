@@ -1,0 +1,190 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>ZCASH: ESTADO DE SERVIDORES LIGHTWALLETD</title>
+<style>
+body {
+    background: #000;
+    color: #F0F0F0;
+    font-family: "Lucida Console", "Monaco", "Monospace", monospace;
+    font-size: 16px;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+.prompt {
+    color: #DD9D34;
+}
+.status-online {
+    color: #198652;
+}
+.status-offline {
+    color: #9B1C2E;
+}
+.server-item {
+    margin-bottom: 20px;
+    /*border-left: 2px solid #DD9D34;*/
+    padding-left: 1px;
+}
+.server-header {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+.server-details {
+    color: #888;
+    font-size: 16px;
+    margin-left: 25px;
+}
+.height-number {
+    color: #fff;
+}
+.version {
+    color: #AAAAAA;
+}
+.warning {
+    color: #DD9D34;
+}
+.footer {
+    margin-top: 10px;
+    padding-top: 20px;
+    color: #fff;
+    font-size: 16px;
+}
+a, a:visited {
+    color: #DD9D34;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+    color: #FFB347;
+}
+.nav-links {
+    margin: 15px 0 25px 0;
+    padding: 10px 0;
+}
+.nav-links a {
+    margin-right: 20px;
+}
+.timestamp {
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+.dashboard-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+<div class="terminal">
+<div class="dashboard-title">
+ZCASH - LISTA DE SERVIDORES LIGHTWALLET
+</div>
+<a href="https://carover0.xyz/pagina/zec-nodo.html">[NODO]</a> <a href="https://carover0.xyz/pagina/zec-consola.html">[CONSOLA]</a> <a href="https://carover0.xyz/pagina/zec-info.html">[ZCASH]</a> <a href="https://carover0.xyz/pagina/">[INICIO]</a><br><br>
+Datos actualizados cada 12 horas desde verificaciones propias. No hay orden establecido, solo elegi el que mas te guste. Si queres aparecer en esta lista, contactame Telegram: @Cvg_1995.<br>
+<div id="timestamp" class="timestamp">Cargando...</div><br>
+LISTA DE SERVIDORES:<br>
+====================<br>
+<br>
+<div id="serversList">
+Cargando servidores...</div><div class="footer">
+===============================================================================<br>
+© 2026 Creada con ♥ por cΔrovΣr0<br>
+apoya: u19rfvunxtldp45atzdw4m3m0ddm8595stsf2ldz7sf4n3tat0nkwcamr976qf0y9uq7pfpevdp3mswwue3x0j92azaeeapdfhsv3xzydj
+</div>
+</div>
+
+<script>
+const STATUS_URL = "https://carover0.xyz/zec/lightwalletd_status.json";
+
+let serversData = [];
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function mostrarTimestamp(timestamp) {
+    const fecha = new Date(timestamp);
+    document.getElementById('timestamp').innerHTML = `última actualización: ${fecha.toLocaleString()} - JSON: https://carover0.xyz/zec/lightwalletd_status.json`;
+}
+
+function renderizarLista() {
+    const container = document.getElementById('serversList');
+    container.innerHTML = '';
+    
+    const ordenados = [...serversData].sort((a, b) => {
+        if (a.status === 'online' && b.status !== 'online') return -1;
+        if (a.status !== 'online' && b.status === 'online') return 1;
+        return a.hostname.localeCompare(b.hostname);
+    });
+    
+    ordenados.forEach(server => {
+        const div = document.createElement('div');
+        div.className = 'server-item';
+        
+        let estadoIcon = '';
+        let estadoTexto = '';
+        
+        if (server.status === 'online') {
+            estadoIcon = '►';
+            estadoTexto = '<span class="status-online">ONLINE</span>';
+        } else {
+            estadoIcon = '■';
+            estadoTexto = '<span class="status-offline">OFFLINE</span>';
+        }
+        
+        let headerHTML = `${estadoIcon} ${escapeHtml(server.hostname)}`;
+        
+        if (server.hostname === 'carover0.xyz:9067' && server.status === 'online') {
+            headerHTML += ' <span class="warning">💛</span>';
+        }
+        
+        headerHTML += ` ${estadoTexto}`;
+        
+        let detailsHTML = '';
+        if (server.status === 'online' && server.height) {
+            detailsHTML = `<div class="server-details">└─ altura: <span class="height-number">${server.height.toLocaleString()}</span>  |  lightwalletd: <span class="version">${escapeHtml(server.lightwalletd || '---')}</span>  |  nodo: <span class="version">${escapeHtml((server.node || '---').replace(/^\//, '').replace(/\/$/, ''))}</span></div>`;
+        } else if (server.status === 'offline') {
+            const razon = server.reason || 'timeout';
+            detailsHTML = `<div class="server-details">└─ <span class="version">razón: ${escapeHtml(razon)}</span></div>`;
+        } else {
+            detailsHTML = `<div class="server-details">└─ <span class="version">sin datos</span></div>`;
+        }
+        
+        div.innerHTML = `<div class="server-header">${headerHTML}</div>${detailsHTML}`;
+        container.appendChild(div);
+    });
+}
+
+async function cargarDatos() {
+    try {
+        const response = await fetch(STATUS_URL);
+        const data = await response.json();
+        
+        serversData = data.servers;
+        mostrarTimestamp(data.timestamp);
+        renderizarLista();
+        
+    } catch (error) {
+        console.error('Error cargando datos:', error);
+        document.getElementById('serversList').innerHTML = '<div class="server-item"><span class="status-offline">ERROR: No se pudo cargar el estado de los servidores</span></div>';
+        document.getElementById('timestamp').innerHTML = 'Error cargando datos';
+    }
+}
+
+cargarDatos();
+setInterval(cargarDatos, 300000);
+</script>
+</body>
+</html>
