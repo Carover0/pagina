@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <title>Redirigiendo...</title>
     <script>
-        // Obtener la ruta completa
         const path = window.location.pathname;
         
-        // Detectar qué explorer están usando
         let explorer = null;
         let searchParam = null;
         
-        // Buscar patrones para cada explorer
         const explorers = [
             { name: 'zec-explorer', pattern: /\/zec-explorer\/(.+)$/ },
             { name: 'pivx-explorer', pattern: /\/pivx-explorer\/(.+)$/ },
@@ -31,10 +28,8 @@
         }
         
         if (explorer && searchParam) {
-            // Redirigir al explorer correspondiente
             window.location.replace('/pagina/' + explorer + '?q=' + encodeURIComponent(searchParam));
         } else {
-            // Si no hay parámetro, ir al explorer por defecto (cambia esto según tu preferencia)
             window.location.replace('/pagina/zec-explorer');
         }
     </script>
