@@ -228,7 +228,7 @@ async function loadData() {
         document.getElementById('blocks').innerHTML = formatNumber(currentHeight);
         document.getElementById('difficulty').innerHTML = formatLargeNumber(blockchainInfo.difficulty);
         //document.getElementById('bestBlock').innerHTML = blockchainInfo.bestblockhash ? blockchainInfo.bestblockhash.substring(0, 16) + '...' : '---';
-        document.getElementById('bestBlock').innerHTML = blockchainInfo.bestblockhash.substring(0, 16) + '...' + blockchainInfo.bestblockhash.substring(blockchainInfo.bestblockhash.length - 4) : '---';
+        document.getElementById('bestBlock').innerHTML = blockchainInfo.bestblockhash ? blockchainInfo.bestblockhash.substring(0, 16) + '...' + blockchainInfo.bestblockhash.substring(blockchainInfo.bestblockhash.length - 4) : '---';
 
         // Barra de progreso minado
         const minedPercent = totalSupply > 0 ? (totalSupply / MAX_SUPPLY) * 100 : 0;
