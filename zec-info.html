@@ -128,13 +128,11 @@ const RPC_URL = "https://carover0.xyz/api/zec/rpc.php";
 const TOKEN = "zec2026";
 const PRICE_URL = "https://carover0.xyz/getprice.php";
 
-// Constantes para halving
 const HALVING_BLOCK = 4406400;
 const BLOCKS_PER_DAY = 1152;
 const SECONDS_PER_BLOCK = 75;
 const MAX_SUPPLY = 21000000;
 
-// Datos de upgrades del getblockchaininfo 
 const upgradeNames = {
     "5ba81b19": "Overwinter",
     "76b809bb": "Sapling",
@@ -213,7 +211,6 @@ async function loadData() {
     document.getElementById('statusMsg').innerHTML = 'Cargando datos...';
     
     try {
-        // 1. OBTENER GETBLOCKCHAININFO
         const blockchainInfo = await callRPC('getblockchaininfo');
         
         if (!blockchainInfo) {
@@ -223,19 +220,16 @@ async function loadData() {
         const totalSupply = blockchainInfo.chainSupply?.chainValue || 0;
         const currentHeight = blockchainInfo.blocks || 0;
         
-        // Actualizar datos básicos
         document.getElementById('totalSupply').innerHTML = formatNumber(totalSupply, 2) + ' ZEC';
         document.getElementById('blocks').innerHTML = formatNumber(currentHeight);
         document.getElementById('difficulty').innerHTML = formatLargeNumber(blockchainInfo.difficulty);
-        //document.getElementById('bestBlock').innerHTML = blockchainInfo.bestblockhash ? blockchainInfo.bestblockhash.substring(0, 16) + '...' : '---';
+
         document.getElementById('bestBlock').innerHTML = blockchainInfo.bestblockhash ? blockchainInfo.bestblockhash.substring(0, 16) + '...' + blockchainInfo.bestblockhash.substring(blockchainInfo.bestblockhash.length - 4) : '---';
 
-        // Barra de progreso minado
         const minedPercent = totalSupply > 0 ? (totalSupply / MAX_SUPPLY) * 100 : 0;
         document.getElementById('minedPercent').innerHTML = minedPercent.toFixed(2) + '%';
         document.getElementById('minedBar').innerHTML = createProgressBar(minedPercent);
         
-        // 2. VALUE POOLS
         let transparent = 0, orchard = 0, sapling = 0, sprout = 0, lockbox = 0;
         
         if (blockchainInfo.valuePools && Array.isArray(blockchainInfo.valuePools)) {
@@ -268,14 +262,12 @@ async function loadData() {
         document.getElementById('lockboxValue').innerHTML = formatNumber(lockbox, 2) + ' ZEC';
         document.getElementById('lockboxPct').innerHTML = poolsTotal > 0 ? ((lockbox / poolsTotal) * 100).toFixed(1) + '%' : '0%';
         
-        // Shielded total
         const shieldedTotal = orchard + sapling + sprout;
         document.getElementById('shieldedTotal').innerHTML = formatNumber(shieldedTotal, 2) + ' ZEC';
         const shieldedPct = totalSupply > 0 ? (shieldedTotal / totalSupply) * 100 : 0;
         document.getElementById('shieldedPercent').innerHTML = shieldedPct.toFixed(1) + '%';
         document.getElementById('shieldedBar').innerHTML = createProgressBar(shieldedPct);
         
-        // 3. UPGRADES
         const upgrades = blockchainInfo.upgrades || {};
         
         document.getElementById('overwinter').innerHTML = upgrades["5ba81b19"] ? 'bloque ' + formatNumber(upgrades["5ba81b19"].activationheight) : '---';
@@ -290,7 +282,6 @@ async function loadData() {
         const consensusTip = blockchainInfo.consensus?.chaintip || '';
         document.getElementById('consensusTip').innerHTML = consensusTip ? (upgradeNames[consensusTip] || consensusTip) + ' (' + consensusTip + ')' : '---';
         
-        // 4. HALVING
         const blocksRemaining = Math.max(0, HALVING_BLOCK - currentHeight);
         document.getElementById('blocksRemaining').innerHTML = formatNumber(blocksRemaining);
         
@@ -308,7 +299,6 @@ async function loadData() {
             document.getElementById('halvingDate').innerHTML = halvingDate.toLocaleDateString() + ' (est.)';
         }
         
-        // 5. BLOCK REWARD
         let currentReward = '---';
         if (currentHeight >= 4406400) currentReward = '0.78125';
         else if (currentHeight >= 2726400) currentReward = '1.5625';
@@ -316,7 +306,6 @@ async function loadData() {
         else if (currentHeight > 0) currentReward = '6.25';
         document.getElementById('blockReward').innerHTML = currentReward + ' ZEC';
         
-// 6. MEMPOOL - obtener tamaño y valor total
 try {
     const mempoolTxids = await callRPC('getrawmempool') || [];
     const mempoolSize = mempoolTxids.length || 0;
