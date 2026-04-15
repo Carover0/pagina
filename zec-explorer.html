@@ -164,8 +164,8 @@ function detectCommand(input) {
         }
     }
     
-    if (/^t1[a-zA-Z0-9]{33}$/.test(input)) {
-        return `getaddressbalance ${input}`;
+    if (input.startsWith('t1') || input.startsWith('t3')) {
+       return `getaddressbalance ${input}`;
     }
     
     if (input.startsWith('zs') && input.length > 50) {
