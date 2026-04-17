@@ -1,0 +1,270 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YCASH: MONITOR DE NODO</title>
+<style>
+body {
+  background: #000;
+  color: #fff;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 15px;
+  line-height: 1.2;  
+  margin: 0;
+  padding: 20px;
+}
+
+.terminal {
+  max-width: 80ch;
+  width: 100%;
+  margin: 0;
+}
+
+.subheader {
+  color: #F56733;  
+  font-size: 15px;  
+  margin: 15px 0 5px 0;
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 1px 0;  
+  max-width: 80ch;
+  line-height: 1.2;
+}
+
+.label {
+  color: #bbb;
+  width: 18ch;
+}
+
+.value {
+  color: #fff;
+}
+
+.positive { color: #198652; }
+.negative { color: #9B1C2E; }
+
+.footer {
+  margin-top: 20px;
+  padding-top: 5px;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+a, a:visited, a:hover, a:active {
+  color: #F56733;  
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.small {
+  color: #777;
+  font-size: 15px;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.link-block {
+  margin: 0px 0;  
+  line-height: 1.2;
+}
+
+.link-label {
+  color: #999;
+  font-size: 15px;
+  margin-bottom: 0px;
+  margin-top: 20px;
+  line-height: 1.2;
+}
+</style>
+</head>
+<body>
+
+<div class="terminal"><br>
+cΔrovΣr0 • MONITOR DE NODO YCASH<br>
+================================<br>
+</div>
+<a href="https://carover0.github.io/pagina/ycash-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/ycash-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/ycash-info">[INFO]</a><br><br>
+
+<div class="subheader">NODO YCASH · ESTADO</div>
+<div id="node-status" class="data-block">
+  <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
+  <div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
+  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
+  <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
+  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
+</div>
+
+<div class="subheader">NODO YCASH · RED</div>
+<div id="node-network" class="data-block">
+  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
+  <div class="row"><span class="label">REWARD POR BLOQUE</span><span class="value" id="node-reward">---</span></div>
+  <div class="row"><span class="label">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
+  <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
+</div>
+
+<div class="subheader">YCASH DATOS DE MERCADO</div>
+<div id="market-content" class="data-block">
+  <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
+  <div class="row"><span class="label">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
+</div>
+
+<div class="link-label">► API PUBLICA</div>
+<div class="link-block"><a href="https://carover0.xyz/cacaX/ycash_status.json" target="_blank">https://carover0.xyz/cacaX/ycash_status.json</a></div>
+
+<div class="footer">
+<div class="small" id="market-updated">actualizado: <span id="price-time">---</span></div>
+════════════════════════════════════════════════════════════════════════════════<br>
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya: ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff
+</div>
+
+</div>
+
+<script>
+const RPC_URL = "https://carover0.xyz/api/ycash/ycash.php";
+const TOKEN = "ycash2026";
+const STATUS_URL = "https://carover0.xyz/cacaX/ycash_status.json";
+const PRICE_API_URL = "https://carover0.xyz/getprice-ycash.php?token=ycash2026"; 
+
+function formatDifficulty(diff) {
+  if (!diff) return '---';
+  return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatHash(hash) {
+  if (!hash || hash === '0') return '---';
+  return hash.substring(0, 16) + '...' + hash.substring(hash.length - 8);
+}
+
+function formatNumber(num) {
+  if (num === undefined || num === null) return '---';
+  return Number(num).toLocaleString();
+}
+
+async function callRPC(method, params = []) {
+  try {
+    const url = `${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(method + (params.length ? ' ' + params.join(' ') : ''))}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.result;
+  } catch(e) {
+    console.error(`RPC error ${method}:`, e);
+    return null;
+  }
+}
+
+async function fetchNodeData() {
+  try {
+    const startTime = Date.now();
+    
+    const [statusRes, blockchainInfo, networkInfo, mempool, peerinfo, miningInfo] = await Promise.all([
+      fetch(STATUS_URL).then(r => r.json()).catch(() => ({})),
+      callRPC('getblockchaininfo'),
+      callRPC('getnetworkinfo'),
+      callRPC('getrawmempool'),
+      callRPC('getpeerinfo'),
+      callRPC('getmininginfo')
+    ]);
+    
+    const version = statusRes.software_subversion || statusRes.subversion || networkInfo?.subversion || '---';
+    const connections = statusRes.connections || peerinfo?.length || 0;
+    const blockHeight = statusRes.height || blockchainInfo?.blocks || 0;
+    const mempoolSize = mempool?.length || statusRes.mempool || 0;
+    const difficulty = statusRes.difficulty || blockchainInfo?.difficulty || 0;
+    const protocolVersion = statusRes.protocolversion || networkInfo?.protocolversion || '---';
+    const bestBlockHash = blockchainInfo?.bestblockhash || statusRes.bestblock || '---';
+    
+    const synced = blockchainInfo?.blocks >= blockchainInfo?.headers;
+    
+    let rewardPorBloque = '---';
+    if (miningInfo && miningInfo.reward) {
+      rewardPorBloque = miningInfo.reward.toFixed(2) + ' YEC';
+    } else if (miningInfo && miningInfo.networkreward) {
+      rewardPorBloque = miningInfo.networkreward.toFixed(2) + ' YEC';
+    } else if (blockchainInfo && blockchainInfo.reward) {
+      rewardPorBloque = blockchainInfo.reward.toFixed(2) + ' YEC';
+    }
+    
+    const loadTime = Date.now() - startTime;
+    console.log(`✅ Datos cargados en ${loadTime}ms`);
+    
+    document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
+    
+    document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
+    document.getElementById('node-state').className = `value ${synced ? 'positive' : 'negative'}`;
+    
+    document.getElementById('node-blocks').innerText = formatNumber(blockHeight);
+    document.getElementById('node-connections').innerText = connections;
+    document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
+    document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
+    document.getElementById('node-reward').innerHTML = rewardPorBloque;
+    document.getElementById('node-protocol').innerText = protocolVersion;
+    document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
+    
+  } catch(err) {
+    console.error("Error cargando datos:", err);
+    document.getElementById('node-version').innerText = 'Error';
+    document.getElementById('node-state').innerText = 'ERROR';
+    document.getElementById('node-blocks').innerText = '---';
+    document.getElementById('node-connections').innerText = '---';
+    document.getElementById('node-mempool').innerText = '---';
+    document.getElementById('node-difficulty').innerText = '---';
+    document.getElementById('node-reward').innerHTML = '---';
+    document.getElementById('node-protocol').innerText = '---';
+    document.getElementById('node-bestblock').innerText = '---';
+  }
+}
+
+async function fetchPrice() {
+  try {
+    const response = await fetch(PRICE_API_URL); 
+    if (!response.ok) throw new Error('No disponible');
+    const data = await response.json();
+    
+    if (data.ycash && data.success) {
+      document.getElementById('price-usd').innerHTML = `$${data.ycash.usd.toFixed(4)}`;
+      
+      if (data.ycash.usd_24h_vol) {
+        document.getElementById('price-volume').innerHTML = `$${Math.round(data.ycash.usd_24h_vol).toLocaleString()}`;
+      } else {
+        document.getElementById('price-volume').innerHTML = '---';
+      }
+      
+      if (data.last_updated) {
+        document.getElementById('price-time').innerText = data.last_updated;
+      } else {
+        document.getElementById('price-time').innerText = new Date().toLocaleString();
+      }
+    } else {
+      document.getElementById('price-usd').innerHTML = '---';
+      document.getElementById('price-volume').innerHTML = '---';
+      document.getElementById('price-time').innerText = new Date().toLocaleString();
+    }
+  } catch (error) {
+    console.error('Error precio:', error);
+    document.getElementById('price-usd').innerHTML = '---';
+    document.getElementById('price-volume').innerHTML = '---';
+    document.getElementById('price-time').innerText = new Date().toLocaleString();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetchPrice();
+  fetchNodeData();
+});
+
+// Actualizar cada 30 segundos
+setInterval(() => {
+  fetchNodeData();
+  fetchPrice();
+}, 30000);
+</script>
+
+</body>
+</html>
