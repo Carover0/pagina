@@ -75,9 +75,9 @@ Operación continua y estable.
 <span style="color:#fff;">■ FIRO FULL NODO (VPS)</span></span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0902-firo.mp4" target="_blank">Video</a> | <a href="https://carover0.github.io/pagina/firo-nodo.html" target="_blank">Firo nodo</a> 
 <pre id="output-firo">Fetching FIRO data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
 
-<span style="color:#fff;">■ PIRATE CHAIN FULL NODO (HOME-ARGENTINA)</span>
-<a href="https://carover0.github.io/pagina/arrr-nodo.html" target="_blank">Pirate chain nodo</a>
-<pre id="output-firo-home">Fetching PIRATE data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
+<span style="color:#fff;">■ YCASH FULL NODO (HOME-ARGENTINA)</span>
+<a href="https://carover0.github.io/pagina/ycash-nodo.html" target="_blank">Ycash nodo</a>
+<pre id="output-ycash-home">Fetching YCASH data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
 
 <span style="color:#fff;">■ PIVX FULL NODO (HOME-ARGENTINA)</span>
 <a href="https://carover0.github.io/pagina/pivx-nodo.html" target="_blank">PIVX nodo</a>
@@ -162,18 +162,18 @@ Donation Address: carover0.firo`;
     }
 
     try {
-        const r3 = await fetch('https://carover0.xyz/cacaX/pirate_status_X.json');
+        const r3 = await fetch('https://carover0.xyz/cacaX/ycash_status.json');
         const data3 = await r3.json();
-        document.getElementById('output-firo-home').textContent =
+        document.getElementById('output-ycash-home').textContent =
 `Block Height    : ${data3.height}
 Difficulty      : ${data3.difficulty ? data3.difficulty.toFixed(2) : "N/A"}
 Connections     : ${data3.connections}
 Mempool TX      : ${data3.mempool}
-Node Version    : ${data3.subversion}
+Node Version    : ${data3.software_subversion}
 Donation Address: 
-zs1x5w87pa6w676prs88rqshr2fjuvnsw8w3d436mt4xkdtz49enyugs5qqmvmey35twnw4cgx8trr`;
+ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff`;
     } catch (err) {
-        document.getElementById("output-firo-home").textContent = "[info] en mantenimiento/actualizacion.";
+        document.getElementById("output-ycash-home").textContent = "[info] en mantenimiento/actualizacion.";
         console.error(err);
     }
 
