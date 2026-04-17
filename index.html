@@ -1,339 +1,249 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>YCASH: EXPLORADOR DE BLOQUES</title>
+<title></title>
 <style>
 body {
-    background: #000;
+    background-color: #000;
+    color: #198652; 
+    /* color: #A044FF;*/
+    font-family: "Lucida Console", "Monaco", "monospace";
+    font-size: 16px;
+    padding: 14px;
+    white-space: pre; 
+}
+.separator {
+    color: #444;
+}
+.small {
+    color: #888;
+    font-size: 12px; 
+}
+.big {
     color: #fff;
-    font-family: "Lucida Console", "Monaco", monospace;
-    font-size: 15px;
-    line-height: 1.2;
-    margin: 0;
-    padding: 20px;
+    font-size: 26px; 
 }
-.terminal {
-    max-width: 80ch;
-    width: 100%;
-    margin: 0;
-    white-space: pre-wrap;
-}
-.prompt {
-    color: #F56733;
-}
-.input-line {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-}
-#searchInput {
-    background: #000;
+.titu {
     color: #fff;
-    border: none;
-    font-family: "Lucida Console", monospace;
-    font-size: 15px;
-    padding: 4px 0;
-    width: 60ch;
-    outline: none;
-    caret-color: #F56733;
+    font-size: 22px; 
 }
-.footer {
-    margin-top: 20px;
-    padding-top: 10px;
-    color: #777;
-}
-a, a:visited {
-    color: #F56733;
-    text-decoration: none;
+
+a, a:visited, a:hover, a:active {
+    color: #ffffff;
+    text-decoration: none; 
 }
 a:hover {
-    text-decoration: underline;
+    text-decoration: underline; 
 }
-pre {
-    margin: 10px 0 0 0;
-    font-family: "Lucida Console", monospace;
-    font-size: 15px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+
+body, p, span, pre, div, .body, .separator, #output-dgb, #output-firo, #output-firo-home, #output-pivx-home, #output-health {
+    font-size: 16px;
+    font-family: "Lucida Console", "Monaco", "monospace";
 }
+
+.small, .small a, .small a:visited, .small a:hover, .small a:active {
+    font-size: 12px !important;
+}
+
+.big, .titu {
+    font-size: 26px; 
+    font-size: 22px; 
+}
+.titu {
+    font-size: 22px !important;
+}
+.big {
+    font-size: 26px !important;
+}
+
 </style>
 </head>
 <body>
-<div class="terminal">cΔrovΣr0 • EXPLORADOR DE BLOQUES YCASH
-======================================
-<a href="https://carover0.github.io/pagina/ycash-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/ycash-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br>
-ALTURA               : <span id="stat-height">---</span>
-CONEXIONES           : <span id="stat-connections">---</span>
-MEMPOOL              : <span id="stat-mempool">---</span> tx<br>
-<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash / txid / direccion" autofocus>
-<div id="output"></div></div>
-<pre id="pie" style="display: block;">
-===============================================================================
-© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff</pre>
+<span class="big">cΔrovΣr0</span>
+-------------
+<span style="color:#fff;">Diseño y sostengo infraestructura técnica.  
+Nodos, bots y exploradores se ejecutan con autonomía total.  
+Operación continua y estable.
+</span>
+
+<span class="titu">► NODOS</span>
+
+<span style="color:#fff;">■ ZCASH FULL NODO (VPS)</span>
+<a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0611-explorador-de-bloques-zec.mp4" target="_blank">Video</a> | <a href="https://github.com/Carover0/ztip_public" target="_blank">Ztip (Git hub)</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/ztip4.mp4" target="_blank">Ztip video</a> | <a href="https://carover0.github.io/pagina/zec-info.html" target="_blank">Zcash nodo</a>
+<pre class="body" id="output-dgb">Fetching ZEC data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
+
+<span style="color:#fff;">■ FIRO FULL NODO (VPS)</span></span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0902-firo.mp4" target="_blank">Video</a> | <a href="https://carover0.github.io/pagina/firo-nodo.html" target="_blank">Firo nodo</a> 
+<pre id="output-firo">Fetching FIRO data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
+
+<span style="color:#fff;">■ YCASH FULL NODO (HOME-ARGENTINA)</span>
+<a href="https://carover0.github.io/pagina/ycash-nodo.html" target="_blank">Ycash nodo</a>
+<pre id="output-ycash-home">Fetching YCASH data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
+
+<span style="color:#fff;">■ PIVX FULL NODO (HOME-ARGENTINA)</span>
+<a href="https://carover0.github.io/pagina/pivx-nodo.html" target="_blank">PIVX nodo</a>
+<pre id="output-pivx-home">Fetching PIVX data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
+
+<span class="titu">► ESTADO DE LA INFRAESTRUCTURA VPS<br></span><pre id="output-health">Fetching VPS data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
+    
+<span class="titu">► OTROS DESARROLLOS<br></span>
+<span style="color:#fff;">DIGIBYTE</span>
+Explorador de bloques: <a href="https://t.me/dgbexplorer_bot" target="_blank">Dexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0201dexplorer.mp4" target="_blank">Video</a>
+   
+<span style="color:#fff;">■ TRON</span>
+Explorador de bloques: <a href="https://t.me/texplorerbot" target="_blank">Texplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/eng-2510-texplorer.mp4" target="_blank">Video</a>
+TxGhost: <a href="https://t.me/txghost_bot" target="_blank">TxGhost</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/2512ghost.mp4" target="_blank">Video</a>
+
+<span style="color:#fff;">■ RAVENCOIN</span>
+Explorador de bloques: <a href="https://t.me/rvnexplorer_bot" target="_blank">Rexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/rvn.mp4" target="_blank">Video</a>
+
+<span style="color:#fff;">■ Cprecios</span>
+Precios y comparaciones: <a href="https://t.me/c_preciosbot" target="_blank">C_precios</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/xchanges.mp4" target="_blank">Video</a>
+
+<span style="color:#fff;">■ Tabla periodica con imagenes</span>
+Tabla periodica: <a href="https://t.me/tablaperiodica_bot" target="_blank">Tperiodica</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/tp2025.mp4" target="_blank">Video</a>
+
+<span style="color:#fff;">■ CPrecios web</span>
+Mi lista de seguimiento (Sin trackers, ads y scripts basura. Solo datos): <a href="https://carover0.github.io/pagina/precios.html" target="_blank">Cprecios web</a> 
+
+
+<span class="small">☼ Actualizacion cada 30 segundos - </span><span class="small" id="last-update-zec"></span>
+<span style="color:#fff; display:block; margin-top:auto;">===============================================================================
+© 2025 Creada con ♥ por cΔrovΣr0
+</span>
 
 <script>
-const API_URL = "https://carover0.xyz/api/ycash/ycash.php";
-const TOKEN = "ycash2026";
-const STATUS_URL = "https://carover0.xyz/cacaX/ycash_status.json";
+let firstRunHealth = true;
+async function updateStatus() {
 
-function detectSearchFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const queryParam = urlParams.get('q');
-    if (queryParam) return queryParam;
-    const path = window.location.pathname;
-    const match = path.match(/\/ycash-explorer\/(.+)$/);
-    if (match && match[1]) return match[1];
-    return null;
+try {
+    const r1 = await fetch("https://carover0.xyz/zec/status.json"); 
+    const data1 = await r1.json();
+    const mappedData = {
+        height: data1.chain?.height ?? 0,
+        last_blocks: [{
+            difficulty: data1.chain?.difficulty ?? 0
+        }],
+        connections: data1.network?.connections ?? 0,
+        mempool_tx: data1.mempool?.size ?? 0,
+        version: data1.network?.subversion ?? "desconocido"
+    };
+    
+    const lastBlock = mappedData.last_blocks[0];
+
+
+    
+    document.getElementById("output-dgb").innerHTML =
+`Block Height    : ${mappedData.height}
+Difficulty      : ${lastBlock.difficulty.toFixed(2)}
+Connections     : ${mappedData.connections}
+Mempool TX      : ${mappedData.mempool_tx}
+Node Version    : ${mappedData.version}
+Donation Address:
+u19rfvunxtldp45atzdw4m3m0ddm8595stsf2ldz7sf4n3tat0nkwcamr976qf0y9uq7pfpevdp3mswwue3x0j92azaeeapdfhsv3xzydj`;
+} catch(err) {
+    document.getElementById("output-dgb").innerHTML = "[info] en mantenimiento/actualizacion.";
+    console.error(err);
 }
 
-function updateUrlWithSearch(parametro) {
-    const newUrl = window.location.origin + '/pagina/ycash-explorer/' + encodeURIComponent(parametro);
-    window.history.replaceState({}, '', newUrl);
-}
-
-function detectCommand(input) {
-    input = input.trim();
-    if (!input) return input;
-
-    if (/^\d{1,7}$/.test(input)) return `getblock ${input}`;
-    if (/^000000[a-fA-F0-9]{58}$/.test(input)) return `getblock ${input}`;
-    if (/^[a-fA-F0-9]{64}$/.test(input) && !input.startsWith('000000')) return `getrawtransaction ${input} 1`;
-    if (input.startsWith('s1') || input.startsWith('s3')) return `z_getbalance ${input}`;
-    if (input.startsWith('ys1') || input.startsWith('yu1')) return `z_getbalance ${input}`;
-    if (input.startsWith('getblock') || input.startsWith('getrawtransaction') || 
-        input.startsWith('z_getbalance') || input.startsWith('getblockchaininfo')) return input;
-    return input;
-}
-
-async function loadNetworkStats() {
-    try {
-        const r = await fetch(STATUS_URL);
-        const d = await r.json();
-        document.getElementById('stat-height').innerText = d.height?.toLocaleString() || '---';
-        document.getElementById('stat-connections').innerText = d.connections || '---';
-        document.getElementById('stat-mempool').innerText = d.mempool || '0';
-    } catch(e) { console.error(e); }
-}
-
-async function getVinValue(txid, voutIndex) {
-    try {
-        const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
-            .then(r => r.json()).then(r => r.result);
-        if (!prevTx || !prevTx.vout || !prevTx.vout[voutIndex]) return null;
-        return prevTx.vout[voutIndex].value;
-    } catch(e) { return null; }
-}
-
-async function executeSearch(q) {
-    const out = document.getElementById('output');
-    out.innerHTML = '<pre>Ejecutando...</pre>';
-    document.getElementById("pie").style.display = "none";
-
-    let rawParam = '';
-    if (q.startsWith('getblock ')) rawParam = q.replace('getblock ', '');
-    else if (q.startsWith('getrawtransaction ')) rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
-    else if (/^[a-fA-F0-9]{64}$/.test(q)) rawParam = q;
-    else if (/^\d+$/.test(q)) rawParam = q;
-    if (rawParam) updateUrlWithSearch(rawParam);
 
     try {
-        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
-        const data = await r.json();
-        let res = `<pre><span style="color:#F56733;">ycash> ${q}</span>\n\n`;
-
-        // ===== BLOQUES =====
-        if (q.includes('getblock') && data.result?.hash) {
-            const b = data.result;
-            res += `BLOQUE #${b.height}\n`;
-            res += `hash: ${b.hash}\n`;
-            res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
-            res += `transacciones: ${b.tx?.length || 0}\n`;
-            res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
-            if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
-            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
-            if (b.size) res += `tamaño: ${b.size} bytes\n`;
-            
-            if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
-                res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
-                b.tx.forEach((tx, i) => {
-                    res += `\n  TX #${i+1}: ${tx.txid}\n`;
-                    if (tx.vout && tx.vout.length > 0) {
-                        let totalOut = 0;
-                        tx.vout.forEach(vout => totalOut += vout.value || 0);
-                        res += `    total salida: ${totalOut.toFixed(8)} YEC\n`;
-                        tx.vout.forEach(vout => {
-                            let addr = 'privada';
-                            if (vout.scriptPubKey?.addresses?.[0]) {
-                                addr = vout.scriptPubKey.addresses[0];
-                                if (addr.length > 64) addr = addr.substring(0,64) + '...';
-                            }
-                            res += `    → ${vout.value.toFixed(8)} YEC a ${addr}\n`;
-                        });
-                    }
-                });
-            } else if (b.tx && b.tx.length > 0) {
-                res += `\n▶ TXIDS (${b.tx.length})\n`;
-                b.tx.forEach((txid, i) => res += `   ${i+1}. ${txid}\n`);
-            }
-        }
-        // ===== TRANSACCIONES =====
-        else if (q.includes('getrawtransaction') && data.result?.txid) {
-            const t = data.result;
-            res += `█ TRANSACCIÓN\n`;
-            res += `TXID: ${t.txid}\n`;
-            res += `bloque: #${t.height || t.blockheight || 'no confirmada'}\n`;
-            res += `confirmaciones: ${t.confirmations || 0}\n`;
-            if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
-            res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
-            if (t.size) res += `tamaño: ${t.size} bytes\n`;
-            
-            let totalIn = 0, totalOut = 0, utxosGastados = 0, utxosCreados = 0;
-            let pagos = [];
-            
-            if (t.vin && t.vin.length > 0) {
-                res += `\n▶ ENTRADAS (${t.vin.length})\n`;
-                utxosGastados = t.vin.length;
-                for (const [i, vin] of t.vin.entries()) {
-                    if (vin.coinbase) {
-                        res += `  [#${i}] COINBASE (nuevos YEC)\n`;
-                    } else if (vin.txid) {
-                        const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
-                        let value = vin.value;
-                        if (!value) value = await getVinValue(vin.txid, vin.vout);
-                        if (value) totalIn += value;
-                        const valStr = value ? ` ${value.toFixed(8)} YEC` : '';
-                        res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
-                    }
-                }
-                if (totalIn > 0) res += `  total entradas: ${totalIn.toFixed(8)} YEC\n`;
-            }
-            
-            if (t.vout && t.vout.length > 0) {
-                res += `\n◀ SALIDAS (${t.vout.length})\n`;
-                utxosCreados = t.vout.length;
-                for (const [i, vout] of t.vout.entries()) {
-                    totalOut += vout.value || 0;
-                    let addr = 'OP_RETURN/privada';
-                    if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
-                    else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
-                    if (addr.length > 64) addr = addr.substring(0,64) + '...';
-                    pagos.push({ value: vout.value, addr });
-                    res += `  [#${i}] ${vout.value.toFixed(8)} YEC → ${addr}\n`;
-                }
-                if (totalOut > 0) res += `  total salida: ${totalOut.toFixed(8)} YEC\n`;
-                if (totalIn > 0 && totalOut > 0) {
-                    const fee = totalIn - totalOut;
-                    if (fee > 0) res += `\n  FEE: ${fee.toFixed(8)} YEC\n`;
-                }
-            }
-            
-            res += `\nRESUMEN:\n`;
-            res += `   ${utxosGastados} UTXOs gastados\n`;
-            res += `   ${utxosCreados} UTXOs creados\n`;
-            if (pagos.length >= 2) {
-                const ordenados = [...pagos].sort((a, b) => b.value - a.value);
-                const cambioTotal = ordenados.slice(1).reduce((sum, p) => sum + p.value, 0);
-                res += `   Pago: ${ordenados[0].value.toFixed(8)} YEC\n`;
-                if (cambioTotal > 0) res += `   Cambio: ${cambioTotal.toFixed(8)} YEC\n`;
-            } else if (pagos.length === 1) {
-                res += `   Salida: ${pagos[0].value.toFixed(8)} YEC\n`;
-            }
-            if (totalIn > 0 && totalOut > 0) {
-                const fee = totalIn - totalOut;
-                if (fee > 0) res += `   Fee red: ${fee.toFixed(8)} YEC\n`;
-            }
-        }
-        // ===== DIRECCIONES =====
-        else if (q.includes('z_getbalance')) {
-            const direccion = q.split(' ')[1] || 'desconocida';
-            if (typeof data.result === 'number') {
-                res += `DIRECCIÓN VÁLIDA\n`;
-                res += `dirección: ${direccion}\n`;
-                res += `balance: ${data.result.toFixed(8)} YEC\n`;
-            } else if (data.error) {
-                res += `DIRECCIÓN INVÁLIDA\n`;
-                res += `dirección: ${direccion}\n`;
-                res += `motivo: Formato incorrecto o checksum erróneo\n`;
-            }
-        }
-        // ===== ERROR GENERAL =====
-        else if (data.error) {
-            res += `ERROR\ncomando: ${q}\nmotivo: ${data.error}\n`;
-        }
-        else {
-            res += `SIN RESULTADOS\n`;
-        }
-        
-        res += '</pre><br><br><div>[F8 copiar] [F9 Limpiar]</div>';
-        res += `<div class="result-footer">\n\n===============================================================================\n`;
-        res += `© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff</div>`;
-        out.innerHTML = res;
-    } catch(e) {
-        out.innerHTML = `<pre>error: ${e.message}</pre>`;
+        const r2 = await fetch("https://carover0.xyz/firo/status.json");
+        const data2 = await r2.json();
+        document.getElementById("output-firo").textContent =
+`Block Height    : ${data2.height}
+Difficulty      : ${data2.difficulty.toFixed(2)}
+Connections     : ${data2.connections}
+Mempool TX      : ${data2.mempool}
+Node Version    : ${data2.version}
+Donation Address: carover0.firo`;
+    } catch(err) {
+        document.getElementById("output-firo").textContent = "[info] en mantenimiento/actualizacion.";
+        console.error(err);
     }
-    document.getElementById('searchInput').value = '';
+
+    try {
+        const r3 = await fetch('https://carover0.xyz/cacaX/ycash_status.json');
+        const data3 = await r3.json();
+        document.getElementById('output-ycash-home').textContent =
+`Block Height    : ${data3.height}
+Difficulty      : ${data3.difficulty ? data3.difficulty.toFixed(2) : "N/A"}
+Connections     : ${data3.connections}
+Mempool TX      : ${data3.mempool}
+Node Version    : ${data3.software_subversion}
+Donation Address: 
+ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff`;
+    } catch (err) {
+        document.getElementById("output-ycash-home").textContent = "[info] en mantenimiento/actualizacion.";
+        console.error(err);
+    }
+
+try {
+    const r4 = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json');
+    const data4 = await r4.json();
+    document.getElementById('output-pivx-home').textContent =
+`Block Height    : ${data4.height}
+Difficulty      : ${data4.difficulty ? data4.difficulty.toFixed(2) : "N/A"}
+Connections     : ${data4.connections}
+Mempool TX      : ${data4.mempool}
+Node Version    : ${data4.software_subversion}
+Donation Address: 
+ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f`;
+} catch (err) {
+    document.getElementById("output-pivx-home").textContent = "[info] en mantenimiento/actualizacion.";
+    console.error(err);
 }
 
-// ========== INICIALIZACION ==========
-(function() {
-    const searchParam = detectSearchFromUrl();
-    if (searchParam) {
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const input = document.getElementById('searchInput');
-                if (input) {
-                    input.value = searchParam;
-                    executeSearch(detectCommand(searchParam));
-                }
-            }, 500);
-        });
-    }
-})();
+try {
+    const r = await fetch('https://carover0.xyz/firo/health.json');
+    const h = await r.json();
 
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'F8') {
-        e.preventDefault();
-        const outputPre = document.querySelector('#output pre');
-        if (outputPre) {
-            navigator.clipboard.writeText(outputPre.innerText);
-            const prompt = document.querySelector('.prompt');
-            const original = prompt.innerHTML;
-            prompt.innerHTML = '✓ COPIADO ✓';
-            setTimeout(() => prompt.innerHTML = original, 1000);
-        }
-    }
-    if (e.key === 'F9') {
-        e.preventDefault();
-        document.getElementById('searchInput').value = '';
-        document.getElementById('output').innerHTML = '';
-        document.getElementById('pie').style.display = 'block';
-        loadNetworkStats();
-        window.history.replaceState({}, '', window.location.origin + '/pagina/ycash-explorer');
-        const prompt = document.querySelector('.prompt');
-        const original = prompt.innerHTML;
-        prompt.innerHTML = '♥ LIMPIADO ♥';
-        setTimeout(() => prompt.innerHTML = original, 1000);
-    }
-});
+    const date = new Date(h.timestamp);
+    const dia = String(date.getUTCDate()).padStart(2, '0');
+    const mes = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const año = date.getUTCFullYear();
+    const horas = String(date.getUTCHours()).padStart(2, '0');
+    const minutos = String(date.getUTCMinutes()).padStart(2, '0');
+    const timestampLegible = `${dia}/${mes}/${año} ${horas}:${minutos} UTC`;
 
-const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        const rawInput = searchInput.value.trim();
-        if (rawInput) executeSearch(detectCommand(rawInput));
-    }
-});
-searchInput.addEventListener('paste', () => {
-    setTimeout(() => {
-        const input = searchInput.value;
-        const cmd = detectCommand(input);
-        if (cmd !== input) searchInput.value = cmd;
-    }, 10);
-});
+    document.getElementById('output-health').textContent =
+`Timestamp : ${timestampLegible}
+Uptime    : ${h.uptime}
 
-loadNetworkStats();
-setInterval(loadNetworkStats, 30000);
+CPU       : ${h.cpu.percent}% ${h.cpu.bar}
+Activo    : ${h.load["1m"]} | ${h.load["5m"]} | ${h.load["15m"]}
+
+RAM       : ${h.memory.used_mb} / ${h.memory.total_mb} MB
+Uso       : ${h.memory.percent}% ${h.memory.bar}
+Alerta    : ${h.memory.alert ? "SI" : "NO"}
+
+SWAP      : ${h.swap.used_mb} / ${h.swap.total_mb} MB
+Uso       : ${h.swap.percent}% ${h.swap.bar}
+
+DISCO /   : ${h.disk.root_percent}% ${h.disk.bar}
+Alerta    : ${h.disk.alert ? "SI" : "NO"}
+`;
+} catch (err) {
+    document.getElementById('output-health').textContent =
+        'Error loading health.json: ' + err.message;
+    console.error(err);
+    
+}
+if (!firstRunHealth) {
+    const now = new Date();
+    const timeStr = now.toLocaleString("es-AR", { hour12: false });
+
+    const el = document.getElementById("last-update-zec");
+    el.innerText = "Última actualización: " + timeStr;
+    el.style.display = "inline";
+} else {
+    firstRunHealth = false;
+}
+
+}
+
+// Inicial + refresco cada 30s
+updateStatus();
+setInterval(updateStatus, 30000);
 </script>
 </body>
 </html>
