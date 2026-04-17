@@ -1,0 +1,543 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>YCASH: EXPLORADOR DE BLOQUES</title>
+<style>
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Lucida Console", "Monaco", monospace;
+    font-size: 15px;
+    line-height: 1.2;
+    margin: 0;
+    padding: 20px;
+}
+.terminal {
+    max-width: 80ch;
+    width: 100%;
+    margin: 0;
+    white-space: pre-wrap;
+}
+.prompt {
+    color: #F56733;
+}
+.input-line {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+#searchInput {
+    background: #000;
+    color: #fff;
+    border: none;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    padding: 4px 0;
+    width: 60ch;
+    outline: none;
+    caret-color: #F56733;
+    
+}
+.footer {
+    margin-top: 20px;
+    padding-top: 10px;
+    color: #777;
+}
+a, a:visited {
+    color: #F56733;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+.shielded {
+    color: #888;
+}
+pre {
+    margin: 10px 0 0 0;
+    font-family: "Lucida Console", monospace;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.copy-full-btn {
+    background: #000;
+    border: 1px solid #000;
+    color: #fff;
+    font-family: 'Lucida console', monospace;
+    font-size: 15px;
+    padding: 5px 10px;
+    cursor: pointer;
+    width: 30%;
+    text-align: center;
+    margin-top: 10px;
+}
+.copy-full-btn:hover {
+    border-color: #F56733;
+}
+
+</style>
+</head>
+<body>
+<div class="terminal">cΔrovΣr0 • EXPLORADOR DE BLOQUES YCASH
+======================================
+<a href="https://carover0.github.io/pagina/ycash-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/ycash-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br>
+ALTURA               : <span id="stat-height">---</span>
+CONEXIONES           : <span id="stat-connections">---</span>
+MEMPOOL              : <span id="stat-mempool">---</span> tx
+SERVIDOR LIGHTWALLET : <span id="stat-difficulty">---</span><br>
+<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash de bloque / txid / direccion" autofocus>
+
+
+<div id="output"></div></div>
+<pre id="pie" style="display: block;">
+===============================================================================
+© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff</pre>
+
+<script>
+const API_URL = "https://carover0.xyz/api/ycash/ycash.php";
+const TOKEN = "ycash2026";
+const STATUS_URL = "https://carover0.xyz/cacaX/ycash_status.json";
+
+function detectSearchFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    
+    if (queryParam) {
+        console.log('🔍 Desde query string:', queryParam);
+        return queryParam;
+    }
+    
+    const path = window.location.pathname;
+    const match = path.match(/\/ycash-explorer\/(.+)$/);
+    
+    if (match && match[1]) {
+        const cleanParam = match[1];
+        console.log('🔍 Desde ruta /ycash-explorer/:', cleanParam);
+        return cleanParam;
+    }
+    
+    return null;
+}
+
+function updateUrlWithSearch(parametro, tipo) {
+    const basePath = window.location.origin + '/pagina';
+    const newUrl = basePath + '/ycash-explorer/' + encodeURIComponent(parametro);
+    
+    window.history.replaceState({}, '', newUrl);
+    
+    console.log('🔗 URL actualizada:', newUrl);
+}
+
+function detectCommand(input) {
+    input = input.trim();
+
+    if (!input) return input;
+
+    if (/^\d{1,7}$/.test(input)) {
+        return `getblock ${input}`;
+    }
+
+    if (/^000000[a-fA-F0-9]{58}$/.test(input)) {
+        return `getblock ${input}`;
+    }
+
+    if (/^[a-fA-F0-9]{64}$/.test(input) && !input.startsWith('000000')) {
+        return `getrawtransaction ${input} 1`;
+    }
+
+    if (input.startsWith('s1')) {
+        return `z_getbalance ${input}`;
+    }
+
+    if (input.startsWith('ys1') || input.startsWith('yu1')) {
+        return `z_getbalance ${input}`;
+    }
+
+    if (input.startsWith('getblock') || 
+        input.startsWith('getrawtransaction') || 
+        input.startsWith('z_getbalance') ||
+        input.startsWith('getblockchaininfo')) {
+        return input;
+    }
+
+    return input;
+}
+
+async function loadNetworkStats() {
+    try {
+        const r = await fetch(STATUS_URL);
+        const d = await r.json();
+        
+        document.getElementById('stat-height').innerText = d.height?.toLocaleString() || '---';
+        document.getElementById('stat-connections').innerText = d.connections || '---';
+        document.getElementById('stat-mempool').innerText = d.mempool || '0';
+        
+    } catch(e) {
+        console.error('Error loading stats:', e);
+    }
+}
+
+async function getVinValue(txid, voutIndex) {
+    try {
+        const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
+            .then(r => r.json())
+            .then(r => r.result);
+        
+        if (!prevTx || !prevTx.vout || !prevTx.vout[voutIndex]) return null;
+        
+        return prevTx.vout[voutIndex].value;
+    } catch(e) {
+        return null;
+    }
+}
+
+async function executeSearch(q) {
+
+    const out = document.getElementById('output');
+    out.innerHTML = '<pre>Ejecutando...</pre>';
+    document.getElementById("pie").style.display = "none";
+
+    let tipoBusqueda = 'desconocido';
+    let rawParam = '';
+    
+    if (q.startsWith('getblock ')) {
+        tipoBusqueda = 'block';
+        rawParam = q.replace('getblock ', '');
+    } else if (q.startsWith('getrawtransaction ')) {
+        tipoBusqueda = 'tx';
+        rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
+    } else if (q.startsWith('getaddressbalance ')) {
+        tipoBusqueda = 'address';
+        rawParam = q.replace('getaddressbalance ', '');
+    } else if (q.startsWith('z_validateaddress ')) {
+        tipoBusqueda = 'address';
+        rawParam = q.split(' ')[1];
+    } else {
+        if (/^[a-fA-F0-9]{64}$/.test(q)) {
+            tipoBusqueda = 'tx';
+            rawParam = q;
+        } else if (/^\d+$/.test(q)) {
+            tipoBusqueda = 'block';
+            rawParam = q;
+        } else if (q.startsWith('t1') || q.startsWith('zs') || q.startsWith('u1') || q.startsWith('ua1')) {
+            tipoBusqueda = 'address';
+            rawParam = q;
+        }
+    }
+    
+    if (tipoBusqueda !== 'desconocido' && rawParam) {
+        updateUrlWithSearch(rawParam, tipoBusqueda);
+    }
+
+    try {
+        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
+        const data = await r.json();
+        
+        let res = `<pre><span style="color:#F56733;">ycash> ${q}</span>\n\n`;
+        
+        if (data.error) {
+            res += `error: ${JSON.stringify(data.error)}`;
+        } 
+        // ===== BLOQUES =====
+        else if (q.includes('getblock') && data.result?.hash) {
+            const b = data.result;
+            res += `BLOQUE #${b.height}\n`;
+            res += `hash: ${b.hash}\n`;
+            res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
+            res += `transacciones: ${b.tx?.length || 0}\n`;
+            res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
+            if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
+            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
+            if (b.size) res += `tamaño: ${b.size} bytes\n`;
+            
+            if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
+                res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
+                b.tx.forEach((tx, i) => {
+                    res += `\n  TX #${i+1}: ${tx.txid}\n`;
+                    
+                    if (tx.vout && tx.vout.length > 0) {
+                        let totalOut = 0;
+                        tx.vout.forEach(vout => {
+                            totalOut += vout.value || 0;
+                        });
+                        res += `    total salida: ${totalOut.toFixed(8)} YEC\n`;
+                        
+                        tx.vout.forEach((vout, j) => {
+                            let addr = 'privada';
+                            if (vout.scriptPubKey?.addresses?.[0]) {
+                                addr = vout.scriptPubKey.addresses[0];
+                                if (addr.length > 64) addr = addr.substring(0,64) + '...';
+                            }
+                            res += `    → ${vout.value.toFixed(8)} YEC a ${addr}\n`;
+                        });
+                    }
+                });
+            } else if (b.tx && b.tx.length > 0) {
+                res += `\n▶ TXIDS (${b.tx.length})\n`;
+                b.tx.forEach((txid, i) => {
+                    res += `   ${i+1}. ${txid}\n`;
+                });
+            }
+        }
+
+// ===== TRANSACCIONES =====
+else if (q.includes('getrawtransaction') && data.result?.txid) {
+    const t = data.result;
+    
+    res += `█ TRANSACCIÓN\n`;
+    res += `TXID: ${t.txid}\n`;
+    
+    const blockHeight = t.blockheight || t.height || (t.blockhash ? 'consultar bloque' : 'no confirmada');
+    res += `bloque: #${blockHeight}\n`;
+    res += `confirmaciones: ${t.confirmations || 0}\n`;
+    
+    if (t.blocktime || t.time) {
+        const ts = t.blocktime || t.time;
+        res += `fecha: ${new Date(ts*1000).toLocaleString()}\n`;
+    }
+    
+    res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
+    if (t.size) res += `tamaño: ${t.size} bytes\n`;
+    
+    let totalIn = 0;
+    let totalOut = 0;
+    let utxosGastados = 0;
+    let utxosCreados = 0;
+    let pagos = [];
+    
+    if (t.vin && t.vin.length > 0) {
+        res += `\n▶ ENTRADAS (${t.vin.length})\n`;
+        utxosGastados = t.vin.length;
+        
+        const vinPromises = t.vin.map(async (vin, i) => {
+            if (vin.coinbase) {
+                return `  [#${i}] COINBASE (nuevos YEC)`;
+            } else if (vin.txid) {
+                const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
+                
+                let value = vin.value;
+                if (!value) {
+                    value = await getVinValue(vin.txid, vin.vout);
+                }
+                
+                if (value) totalIn += value;
+                const valStr = value ? ` ${value.toFixed(8)} YEC` : '';
+                return `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}`;
+            }
+            return '';
+        });
+        
+        const vinLines = await Promise.all(vinPromises);
+        res += vinLines.filter(line => line !== '').join('\n') + '\n';
+        
+        if (totalIn > 0) {
+            res += `  total entradas: ${totalIn.toFixed(8)} YEC\n`;
+        }
+    }
+    
+    if (t.vout && t.vout.length > 0) {
+        res += `\n◀ SALIDAS (${t.vout.length})\n`;
+        utxosCreados = t.vout.length;
+        
+        t.vout.forEach((vout, i) => {
+            totalOut += vout.value || 0;
+            let addr = 'OP_RETURN/privada';
+            if (vout.scriptPubKey?.addresses?.[0]) {
+                addr = vout.scriptPubKey.addresses[0];
+            } else if (vout.scriptPubKey?.address) {
+                addr = vout.scriptPubKey.address;
+            }
+            if (addr.length > 64) {
+                addr = addr.substring(0,64) + '...';
+            }
+            
+            pagos.push({
+                index: i,
+                value: vout.value,
+                address: addr,
+                raw: `  [#${i}] ${vout.value.toFixed(8)} YEC → ${addr}`
+            });
+            
+            res += `  [#${i}] ${vout.value.toFixed(8)} YEC → ${addr}\n`;
+        });
+        
+        if (totalOut > 0) {
+            res += `  total salida: ${totalOut.toFixed(8)} YEC\n`;
+        }
+        
+        if (totalIn > 0 && totalOut > 0) {
+            const fee = totalIn - totalOut;
+            if (fee > 0) {
+                res += `\n  FEE: ${fee.toFixed(8)} YEC\n`;
+            }
+        }
+    }
+    
+    // ===== RESUMEN =====
+    res += `\nRESUMEN:\n`;
+    res += `   ${utxosGastados} UTXOs transparentes gastados\n`;
+    res += `   ${utxosCreados} UTXOs transparentes creados\n`;
+    
+    if (pagos.length >= 2) {
+        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+        const pagoPrincipal = pagosOrdenados[0];
+        const cambioTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
+        res += `   Pago: ${pagoPrincipal.value.toFixed(8)} YEC\n`;
+        if (cambioTotal > 0) {
+            res += `   Cambio: ${cambioTotal.toFixed(8)} YEC\n`;
+        }
+    } else if (pagos.length === 1) {
+        res += `   Salida: ${pagos[0].value.toFixed(8)} YEC\n`;
+    }
+    
+    if (totalIn > 0 && totalOut > 0) {
+        const fee = totalIn - totalOut;
+        if (fee > 0) {
+            res += `   Fee red: ${fee.toFixed(8)} YEC\n`;
+        }
+    }
+}
+
+// ===== INFORMACION DE DIRECCION =====
+else if (q.includes('z_getbalance')) {
+    const direccion = q.split(' ')[1] || 'desconocida';
+    
+    if (typeof data.result === 'number') {
+        res += `DIRECCIÓN VÁLIDA\n`;
+        res += `dirección: ${direccion}\n`;
+        res += `balance: ${data.result.toFixed(8)} YEC\n`;
+    } 
+    else if (data.error) {
+        res += `DIRECCIÓN INVÁLIDA\n`;
+        res += `dirección: ${direccion}\n`;
+        res += `error: ${data.error}\n`;
+    }
+}
+else if (q.includes('getreceivedbyaddress') && typeof data.result === 'number') {
+    const balance = data.result;
+    const direccion = q.split(' ')[1] || 'desconocida';
+    
+    res += `DIRECCIÓN\n`;
+    res += `dirección: ${direccion}\n`;
+    res += `balance recibido: ${(balance / 1e8).toFixed(8)} YEC\n`;
+}
+// ===== MANEJO DE ERRORES =====
+if (data.error) {
+    const errorMsg = data.error.toString();
+    const direccion = q.split(' ')[1] || '';
+    
+    if (errorMsg.includes('Invalid from address') || errorMsg.includes('Invalid address')) {
+        res += `DIRECCIÓN INVÁLIDA\n`;
+        res += `dirección: ${direccion}\n`;
+        res += `motivo: Formato incorrecto o checksum erróneo\n`;
+        res += `nota: Verificá que la dirección esté bien escrita\n`;
+    } else {
+        res += `ERROR\n`;
+        res += `comando: ${q}\n`;
+        res += `motivo: ${errorMsg}\n`;
+    }
+}
+
+        else {
+            res += JSON.stringify(data.result || data, null, 2);
+        }
+        
+        res += '</pre><br><br>'; 
+        res += `<div>[F8 copiar] [F9 Limpiar]</div>`;
+        res += `<div class="result-footer">\n\n===============================================================================\n`;
+        res += `© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff</div>`;
+        out.innerHTML = res;        
+    } catch(e) {
+        out.innerHTML = `<pre>error: ${e.message}</pre>`;
+    }
+    
+    document.getElementById('searchInput').value = '';
+}
+
+
+// ========== DETECTAR BUSQUEDA DESDE URL ==========
+(function() {
+    const searchParam = detectSearchFromUrl();
+    
+    if (searchParam) {
+        console.log('🔍 Buscando:', searchParam);
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    input.value = searchParam;
+                    const cmd = detectCommand(searchParam);
+                    executeSearch(cmd);
+                }
+            }, 500);
+        });
+    }
+})();
+
+// ========== TECLAS DE ACCESO RAPIDO ==========
+document.addEventListener('keydown', function(e) {
+    // F8 - SOLO COPIAR
+    if (e.key === 'F8') {
+        e.preventDefault();
+        const outputPre = document.querySelector('#output pre');
+        if (outputPre) {
+            const textToCopy = outputPre.innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalPrompt = document.querySelector('.prompt').innerHTML;
+                document.querySelector('.prompt').innerHTML = '✓ COPIADO ✓';
+                setTimeout(() => {
+                    document.querySelector('.prompt').innerHTML = originalPrompt;
+                }, 1000);
+            });
+        }
+    }
+    
+    // F9 - LIMPIAR TODO 
+    if (e.key === 'F9') {
+        e.preventDefault();
+        document.getElementById('searchInput').value = '';
+        document.getElementById('output').innerHTML = '';
+        document.getElementById('pie').style.display = 'block';
+        loadNetworkStats();
+        const baseUrl = window.location.origin + '/pagina/ycash-explorer';
+        window.history.replaceState({}, '', baseUrl);
+        const originalPrompt = document.querySelector('.prompt').innerHTML;
+        document.querySelector('.prompt').innerHTML = '♥ LIMPIADO ♥';
+        setTimeout(() => {
+            document.querySelector('.prompt').innerHTML = originalPrompt;
+        }, 1000);
+    }
+});
+
+// ========== EVENTOS ==========
+const searchInput = document.getElementById('searchInput');
+// enter
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const rawInput = searchInput.value.trim();
+        if (rawInput) {
+            const cmd = detectCommand(rawInput);
+            executeSearch(cmd);
+        }
+    }
+});
+// pegar
+searchInput.addEventListener('paste', (e) => {
+    setTimeout(() => {
+        const input = searchInput.value;
+        const cmd = detectCommand(input);
+        if (cmd !== input) {
+            searchInput.value = cmd;
+        }
+    }, 10);
+});
+
+// ========== INICIO ==========
+loadNetworkStats();
+setInterval(loadNetworkStats, 30000);
+
+</script>
+</body>
+</html>
