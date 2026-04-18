@@ -91,20 +91,15 @@ function updateUrlWithSearch(parametro) {
     window.history.replaceState({}, '', newUrl);
 }
 
-function updateUrlWithSearch(parametro) {
-    const newUrl = window.location.origin + '/pagina/ycash-explorer/' + encodeURIComponent(parametro);
-    window.history.replaceState({}, '', newUrl);
-}
-
 function detectCommand(input) {
     input = input.trim();
     if (!input) return input;
 
     if (/^\d{1,7}$/.test(input)) return `getblock ${input}`;
     
-    if (/^000000[a-fA-F0-9]{58}$/.test(input)) return `getblock ${input}`;
+    if (/^0{4,}[a-fA-F0-9]{60}$/.test(input)) return `getblock ${input}`;
     
-    if (/^[a-fA-F0-9]{64}$/.test(input) && !input.startsWith('000000')) return `getrawtransaction ${input} 1`;
+    if (/^[a-fA-F0-9]{64}$/.test(input) && !/^0{4,}/.test(input)) return `getrawtransaction ${input} 1`;
     
     if (/^(s1|s3|t1)[a-zA-Z0-9]{33}$/.test(input)) return `validateaddress ${input}`;
     
@@ -117,7 +112,6 @@ function detectCommand(input) {
     
     return input;
 }
-
 
 async function loadNetworkStats() {
     try {
@@ -186,77 +180,141 @@ async function executeSearch(q) {
                     }
                 });
             } else if (b.tx && b.tx.length > 0) {
-                res += `\n▶ TXIDS (${b.tx.length})\n`;
+                res += `\n► TXIDS (${b.tx.length})\n`;
                 b.tx.forEach((txid, i) => res += `   ${i+1}. ${txid}\n`);
             }
         }
-        // ===== TRANSACCIONES =====
-        else if (q.includes('getrawtransaction') && data.result?.txid) {
-            const t = data.result;
-            res += `█ TRANSACCIÓN\n`;
-            res += `TXID: ${t.txid}\n`;
-            res += `bloque: #${t.height || t.blockheight || 'no confirmada'}\n`;
-            res += `confirmaciones: ${t.confirmations || 0}\n`;
-            if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
-            res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
-            if (t.size) res += `tamaño: ${t.size} bytes\n`;
+
+
+// ===== TRANSACCIONES =====
+else if (q.includes('getrawtransaction') && data.result?.txid) {
+    const t = data.result;
+    res += `█ TRANSACCIÓN\n`;
+    res += `TXID: ${t.txid}\n`;
+    res += `bloque: #${t.height || t.blockheight || 'no confirmada'}\n`;
+    res += `confirmaciones: ${t.confirmations || 0}\n`;
+    if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
+    res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
+    if (t.size) res += `tamaño: ${t.size} bytes\n`;
+    
+    let totalIn = 0, totalOut = 0, utxosGastados = 0, utxosCreados = 0;
+    let pagos = [];
+    let esCoinbase = false;
+    let tieneInputsTransparentes = false;
+    let tieneOutputsTransparentes = false;
+    let totalBlindado = 0;
+    
+    if (t.vin && t.vin.length > 0) {
+        res += `\n► ENTRADAS (${t.vin.length})\n`;
+        utxosGastados = t.vin.length;
+        for (const [i, vin] of t.vin.entries()) {
+            if (vin.coinbase) {
+                esCoinbase = true;
+                res += `  [#${i}] COINBASE (nuevos YEC)\n`;
+            } else if (vin.txid) {
+                const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
+                let value = vin.value;
+                if (!value) value = await getVinValue(vin.txid, vin.vout);
+                if (value) totalIn += value;
+                const valStr = value ? ` ${value.toFixed(8)} YEC` : '';
+                res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
+                tieneInputsTransparentes = true;
+            }
+        }
+        if (totalIn > 0) res += `  total entradas: ${totalIn.toFixed(8)} YEC\n`;
+    }
+    
+    if (t.vout && t.vout.length > 0) {
+        res += `\n◄ SALIDAS (${t.vout.length})\n`;
+        utxosCreados = t.vout.length;
+        for (const [i, vout] of t.vout.entries()) {
+            const valor = vout.value || 0;
+            totalOut += valor;
             
-            let totalIn = 0, totalOut = 0, utxosGastados = 0, utxosCreados = 0;
-            let pagos = [];
+            let addr = '';
+            let esTransparente = false;
             
-            if (t.vin && t.vin.length > 0) {
-                res += `\n▶ ENTRADAS (${t.vin.length})\n`;
-                utxosGastados = t.vin.length;
-                for (const [i, vin] of t.vin.entries()) {
-                    if (vin.coinbase) {
-                        res += `  [#${i}] COINBASE (nuevos YEC)\n`;
-                    } else if (vin.txid) {
-                        const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
-                        let value = vin.value;
-                        if (!value) value = await getVinValue(vin.txid, vin.vout);
-                        if (value) totalIn += value;
-                        const valStr = value ? ` ${value.toFixed(8)} YEC` : '';
-                        res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
-                    }
-                }
-                if (totalIn > 0) res += `  total entradas: ${totalIn.toFixed(8)} YEC\n`;
+            // Detectar tipo de output
+            if (vout.scriptPubKey?.addresses?.[0]) {
+                addr = vout.scriptPubKey.addresses[0];
+                esTransparente = true;
+                tieneOutputsTransparentes = true;
+            }
+            else if (vout.scriptPubKey?.address) {
+                addr = vout.scriptPubKey.address;
+                esTransparente = true;
+                tieneOutputsTransparentes = true;
+            }
+            else if (vout.scriptPubKey?.type === 'nulldata') {
+                addr = 'OP_RETURN (datos)';
+            }
+            else {
+                totalBlindado += valor;
+                addr = '🛡 OUTPUT BLINDADO (Sapling)';
             }
             
-            if (t.vout && t.vout.length > 0) {
-                res += `\n◀ SALIDAS (${t.vout.length})\n`;
-                utxosCreados = t.vout.length;
-                for (const [i, vout] of t.vout.entries()) {
-                    totalOut += vout.value || 0;
-                    let addr = 'OP_RETURN/privada';
-                    if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
-                    else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
-                    if (addr.length > 64) addr = addr.substring(0,64) + '...';
-                    pagos.push({ value: vout.value, addr });
-                    res += `  [#${i}] ${vout.value.toFixed(8)} YEC → ${addr}\n`;
-                }
-                if (totalOut > 0) res += `  total salida: ${totalOut.toFixed(8)} YEC\n`;
-                if (totalIn > 0 && totalOut > 0) {
-                    const fee = totalIn - totalOut;
-                    if (fee > 0) res += `\n  FEE: ${fee.toFixed(8)} YEC\n`;
-                }
-            }
-            
-            res += `\nRESUMEN:\n`;
+            if (addr.length > 64) addr = addr.substring(0,64) + '...';
+            pagos.push({ value: valor, addr, esTransparente });
+            res += `  [#${i}] ${valor.toFixed(8)} YEC → ${addr}\n`;
+        }
+        
+        if (totalOut > 0) res += `  total salida: ${totalOut.toFixed(8)} YEC\n`;
+        
+        if (totalIn > 0 && totalOut > 0 && !esCoinbase) {
+            const fee = totalIn - totalOut;
+            if (fee > 0) res += `\n  FEE: ${fee.toFixed(8)} YEC\n`;
+        }
+    }
+    
+    // ========== RESUMEN FINAL ==========
+    res += `\nRESUMEN:\n`;
+    
+    if (esCoinbase) {
+        res += `   0 UTXOs gastados (nueva emisión - coinbase)\n`;
+        res += `   ${utxosCreados} UTXOs creados\n`;
+        res += `   ■ Recompensa total: ${totalOut.toFixed(8)} YEC\n`;
+        if (pagos.length >= 2) {
+            res += `\n   Distribución:\n`;
+            pagos.forEach((p, i) => {
+                const etiqueta = i === 0 ? 'principal' : 'secundaria';
+                res += `     → ${p.value.toFixed(8)} YEC (salida #${i} - ${etiqueta})\n`;
+            });
+        } else if (pagos.length === 1) {
+            res += `   Única salida: ${pagos[0].value.toFixed(8)} YEC\n`;
+        }
+    } 
+    else {
+// DETECCIÓN DE SHIELDING
+const esShielding = tieneInputsTransparentes && !tieneOutputsTransparentes;
+
+if (esShielding) {
+    const montoBlindado = (totalOut > 0) ? totalOut : totalIn;
+    res += `   🛡 BLINDaje de fondos\n`;
+    res += `   ${utxosGastados} UTXOs gastados\n`;
+    res += `   0 UTXOs transparentes creados\n`;
+    res += `   → ${montoBlindado.toFixed(8)} YEC enviados al pool blindado\n`;
+
+        } else {
             res += `   ${utxosGastados} UTXOs gastados\n`;
             res += `   ${utxosCreados} UTXOs creados\n`;
+            
             if (pagos.length >= 2) {
                 const ordenados = [...pagos].sort((a, b) => b.value - a.value);
                 const cambioTotal = ordenados.slice(1).reduce((sum, p) => sum + p.value, 0);
-                res += `   Pago: ${ordenados[0].value.toFixed(8)} YEC\n`;
+                res += `   Pago principal: ${ordenados[0].value.toFixed(8)} YEC\n`;
                 if (cambioTotal > 0) res += `   Cambio: ${cambioTotal.toFixed(8)} YEC\n`;
             } else if (pagos.length === 1) {
-                res += `   Salida: ${pagos[0].value.toFixed(8)} YEC\n`;
-            }
-            if (totalIn > 0 && totalOut > 0) {
-                const fee = totalIn - totalOut;
-                if (fee > 0) res += `   Fee red: ${fee.toFixed(8)} YEC\n`;
+                res += `   Salida única: ${pagos[0].value.toFixed(8)} YEC\n`;
             }
         }
+        
+        if (totalIn > 0 && totalOut > 0 && !esShielding) {
+            const fee = totalIn - totalOut;
+            if (fee > 0) res += `   Fee red: ${fee.toFixed(8)} YEC\n`;
+        }
+    }
+}
+
 // ===== INFORMACION DE DIRECCION =====
 else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
     
@@ -311,8 +369,7 @@ else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.
             res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
         }
     }
-}
-    // ===== ERROR GENERAL =====
+}        // ===== ERROR GENERAL =====
         else if (data.error) {
             res += `ERROR\ncomando: ${q}\nmotivo: ${data.error}\n`;
         }
