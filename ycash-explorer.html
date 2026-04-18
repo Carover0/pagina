@@ -91,19 +91,33 @@ function updateUrlWithSearch(parametro) {
     window.history.replaceState({}, '', newUrl);
 }
 
+function updateUrlWithSearch(parametro) {
+    const newUrl = window.location.origin + '/pagina/ycash-explorer/' + encodeURIComponent(parametro);
+    window.history.replaceState({}, '', newUrl);
+}
+
 function detectCommand(input) {
     input = input.trim();
     if (!input) return input;
 
     if (/^\d{1,7}$/.test(input)) return `getblock ${input}`;
+    
     if (/^000000[a-fA-F0-9]{58}$/.test(input)) return `getblock ${input}`;
+    
     if (/^[a-fA-F0-9]{64}$/.test(input) && !input.startsWith('000000')) return `getrawtransaction ${input} 1`;
-    if (input.startsWith('s1') || input.startsWith('s3')) return `z_getbalance ${input}`;
-    if (input.startsWith('ys1') || input.startsWith('yu1')) return `z_getbalance ${input}`;
+    
+    if (/^(s1|s3|t1)[a-zA-Z0-9]{33}$/.test(input)) return `validateaddress ${input}`;
+    
+    if (/^(ys1|yu1)[a-zA-Z0-9]{75,}$/.test(input)) return `z_validateaddress ${input}`;
+    
     if (input.startsWith('getblock') || input.startsWith('getrawtransaction') || 
-        input.startsWith('z_getbalance') || input.startsWith('getblockchaininfo')) return input;
+        input.startsWith('validateaddress') || input.startsWith('z_validateaddress') ||
+        input.startsWith('z_getbalance') || input.startsWith('getblockchaininfo') ||
+        input.startsWith('getaddressbalance')) return input;
+    
     return input;
 }
+
 
 async function loadNetworkStats() {
     try {
@@ -243,20 +257,62 @@ async function executeSearch(q) {
                 if (fee > 0) res += `   Fee red: ${fee.toFixed(8)} YEC\n`;
             }
         }
-        // ===== DIRECCIONES =====
-        else if (q.includes('z_getbalance')) {
-            const direccion = q.split(' ')[1] || 'desconocida';
-            if (typeof data.result === 'number') {
-                res += `DIRECCIÓN VÁLIDA\n`;
-                res += `dirección: ${direccion}\n`;
-                res += `balance: ${data.result.toFixed(8)} YEC\n`;
-            } else if (data.error) {
-                res += `DIRECCIÓN INVÁLIDA\n`;
-                res += `dirección: ${direccion}\n`;
-                res += `motivo: Formato incorrecto o checksum erróneo\n`;
-            }
+// ===== INFORMACION DE DIRECCION =====
+else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
+    
+    const esBalance = q.includes('getaddressbalance');
+    const esValidate = q.includes('validateaddress');
+    const esZValidate = q.includes('z_validateaddress');
+    
+    if (esBalance) {
+        const b = data.result;
+        const direccion = q.split(' ')[1] || b.address || 'desconocida';
+        
+        res += `DIRECCIÓN\n`;
+        res += `dirección: ${direccion}\n`;
+        res += `balance: ${(b.balance / 1e8).toFixed(6)} YEC\n`;
+        
+        if (b.received) {
+            res += `recibido (total histórico): ${(b.received / 1e8).toFixed(6)} YEC\n`;
         }
-        // ===== ERROR GENERAL =====
+        
+        if (b.immature) {
+            res += `inmaduro (no gastable): ${(b.immature / 1e8).toFixed(6)} YEC\n`;
+        }
+    }
+    else if (esValidate || esZValidate) {
+        const v = data.result;
+        const direccion = v.address || q.split(' ')[1] || 'desconocida';
+        
+        const esShielded = esZValidate || direccion.startsWith('ys');
+        const esTransparent = esValidate || direccion.startsWith('s1') || direccion.startsWith('t1');
+        
+        if (esShielded) {
+            res += `DIRECCIÓN BLINDADA (SHIELDED)\n`;
+            res += `tipo: ${v.type || 'sapling'}\n`;
+            if (v.diversifier) res += `diversificador: ${v.diversifier}\n`;
+            if (v.diversifiedtransmissionkey) res += `clave transmisión: ${v.diversifiedtransmissionkey}\n`;
+        } else {
+            res += `DIRECCIÓN TRANSPARENTE\n`;
+            if (v.scriptPubKey) res += `scriptPubKey: ${v.scriptPubKey}\n`;
+        }
+        
+        res += `dirección: ${direccion}\n`;
+        res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
+        
+        if (v.isvalid && !esShielded) {
+            let tipo = 'transparente';
+            if (v.isscript) tipo = 'script';
+            else if (v.iswatchonly) tipo = 'watchonly';
+            res += `subtipo: ${tipo}\n`;
+        }
+        
+        if (v.ismine !== undefined) {
+            res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
+        }
+    }
+}
+    // ===== ERROR GENERAL =====
         else if (data.error) {
             res += `ERROR\ncomando: ${q}\nmotivo: ${data.error}\n`;
         }
