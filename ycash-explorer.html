@@ -95,16 +95,23 @@ function detectCommand(input) {
     input = input.trim();
     if (!input) return input;
 
+    // Números de bloque (altura)
     if (/^\d{1,7}$/.test(input)) return `getblock ${input}`;
     
+    // Hash de bloque (64 hex, empieza con al menos 4 ceros - dificultad baja)
+    // Bloques en YECash pueden tener 4, 5 o 6 ceros al inicio
     if (/^0{4,}[a-fA-F0-9]{60}$/.test(input)) return `getblock ${input}`;
     
+    // Hash de transacción (64 hex, que NO empiece con 4+ ceros)
     if (/^[a-fA-F0-9]{64}$/.test(input) && !/^0{4,}/.test(input)) return `getrawtransaction ${input} 1`;
     
+    // Dirección transparente (s1, s3, t1)
     if (/^(s1|s3|t1)[a-zA-Z0-9]{33}$/.test(input)) return `validateaddress ${input}`;
     
+    // Dirección blindada Sapling (ys1, yu1)
     if (/^(ys1|yu1)[a-zA-Z0-9]{75,}$/.test(input)) return `z_validateaddress ${input}`;
     
+    // Comandos ya completos
     if (input.startsWith('getblock') || input.startsWith('getrawtransaction') || 
         input.startsWith('validateaddress') || input.startsWith('z_validateaddress') ||
         input.startsWith('z_getbalance') || input.startsWith('getblockchaininfo') ||
@@ -185,202 +192,282 @@ async function executeSearch(q) {
             }
         }
 
-
-// ===== TRANSACCIONES =====
-else if (q.includes('getrawtransaction') && data.result?.txid) {
-    const t = data.result;
-    res += `█ TRANSACCIÓN\n`;
-    res += `TXID: ${t.txid}\n`;
-    res += `bloque: #${t.height || t.blockheight || 'no confirmada'}\n`;
-    res += `confirmaciones: ${t.confirmations || 0}\n`;
-    if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
-    res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
-    if (t.size) res += `tamaño: ${t.size} bytes\n`;
+        // ===== TRANSACCIONES =====
+        else if (q.includes('getrawtransaction') && data.result?.txid) {
+            const t = data.result;
+            
+            const tieneShieldedSpend = t.vShieldedSpend && t.vShieldedSpend.length > 0;
+            const tieneShieldedOutput = t.vShieldedOutput && t.vShieldedOutput.length > 0;
+            const esTransaccionBlindada = (tieneShieldedSpend || tieneShieldedOutput) && (!t.vin || t.vin.length === 0) && (!t.vout || t.vout.length === 0);
+            
+            if (esTransaccionBlindada) {
+                const balance = t.valueBalance || 0;
+                
+                res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
+                res += `TXID: ${t.txid}\n`;
+                res += `bloque: #${t.height || t.blockheight || 'no confirmada'}\n`;
+                res += `confirmaciones: ${t.confirmations || 0}\n`;
+                if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
+                res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
+                if (t.size) res += `tamaño: ${t.size} bytes\n`;
+                if (t.expiryheight) res += `expira: bloque ${t.expiryheight}\n`;
+                
+                res += `\n🛡 SHIELDED\n`;
+                if (t.vShieldedSpend) res += `  gastos: ${t.vShieldedSpend.length}\n`;
+                if (t.vShieldedOutput) res += `  salidas: ${t.vShieldedOutput.length}\n`;
+                res += `  balance: ${balance.toFixed(8)} YEC\n`;
+                if (t.vShieldedSpend?.[0]?.anchor) res += `  anchor: ${t.vShieldedSpend[0].anchor}\n`;
+                if (t.bindingSig) res += `  bindingSig: ${t.bindingSig}\n`;
+                
+                if (t.vShieldedOutput?.[0]?.proof) {
+                    res += `\n☼ PRUEBAS ZK-SNARK\n`;
+                    res += `  cv: ${t.vShieldedOutput[0].cv?.substring(0, 32)}...\n`;
+                    res += `  cmu: ${t.vShieldedOutput[0].cmu?.substring(0, 32)}...\n`;
+                    res += `  proof: ${t.vShieldedOutput[0].proof?.substring(0, 32)}...\n`;
+                }
+                
+                res += `\nRESUMEN:\n`;
+                if (tieneShieldedSpend && tieneShieldedOutput) {
+                    res += `   ■ Transferencia privada (z → z)\n`;
+                    res += `   ${t.vShieldedSpend.length} gastos blindados\n`;
+                    res += `   ${t.vShieldedOutput.length} salidas blindadas\n`;
+                    res += `   ■ ${Math.abs(balance).toFixed(8)} YEC neto transferido\n`;
+                } else if (tieneShieldedSpend && !tieneShieldedOutput) {
+                    res += `   ► Desblindaje de fondos (z → t)\n`;
+                    res += `   ${t.vShieldedSpend.length} gastos blindados\n`;
+                    res += `   0 salidas blindadas\n`;
+                } else if (!tieneShieldedSpend && tieneShieldedOutput) {
+                    res += `   🛡 Blindaje de fondos (t → z)\n`;
+                    res += `   0 gastos blindados\n`;
+                    res += `   ${t.vShieldedOutput.length} salidas blindadas\n`;
+                    res += `   → ${Math.abs(balance).toFixed(8)} YEC enviados al pool blindado\n`;
+                }
+                
+            } else {
+                // FORMATO TRANSPARENTE O MIXTO
+                const tieneShieldedSpendMix = t.vShieldedSpend && t.vShieldedSpend.length > 0;
+                const tieneShieldedOutputMix = t.vShieldedOutput && t.vShieldedOutput.length > 0;
+                
+                res += `█ TRANSACCIÓN\n`;
+                res += `TXID: ${t.txid}\n`;
+                res += `bloque: #${t.height || t.blockheight || 'no confirmada'}\n`;
+                res += `confirmaciones: ${t.confirmations || 0}\n`;
+                if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
+                res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
+                if (t.size) res += `tamaño: ${t.size} bytes\n`;
+                if (t.expiryheight) res += `expira: bloque ${t.expiryheight}\n`;
+                
+                let totalIn = 0, totalOut = 0, utxosGastados = 0, utxosCreados = 0;
+                let pagos = [];
+                let esCoinbase = false;
+                let tieneInputsTransparentes = false;
+                let tieneOutputsTransparentes = false;
+                let totalBlindado = 0;
+                
+                if (t.vin && t.vin.length > 0) {
+                    res += `\n► ENTRADAS (${t.vin.length})\n`;
+                    utxosGastados = t.vin.length;
+                    for (const [i, vin] of t.vin.entries()) {
+                        if (vin.coinbase) {
+                            esCoinbase = true;
+                            res += `  [#${i}] COINBASE (nuevos YEC)\n`;
+                        } else if (vin.txid) {
+                            const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
+                            let value = vin.value;
+                            if (!value) value = await getVinValue(vin.txid, vin.vout);
+                            if (value) totalIn += value;
+                            const valStr = value ? ` ${value.toFixed(8)} YEC` : '';
+                            res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
+                            tieneInputsTransparentes = true;
+                        }
+                    }
+                    if (totalIn > 0) res += `  total entradas: ${totalIn.toFixed(8)} YEC\n`;
+                }
+                
+                if (t.vout && t.vout.length > 0) {
+                    res += `\n◄ SALIDAS (${t.vout.length})\n`;
+                    utxosCreados = t.vout.length;
+                    for (const [i, vout] of t.vout.entries()) {
+                        const valor = vout.value || 0;
+                        totalOut += valor;
+                        
+                        let addr = '';
+                        let esTransparente = false;
+                        
+                        if (vout.scriptPubKey?.addresses?.[0]) {
+                            addr = vout.scriptPubKey.addresses[0];
+                            esTransparente = true;
+                            tieneOutputsTransparentes = true;
+                        }
+                        else if (vout.scriptPubKey?.address) {
+                            addr = vout.scriptPubKey.address;
+                            esTransparente = true;
+                            tieneOutputsTransparentes = true;
+                        }
+                        else if (vout.scriptPubKey?.type === 'nulldata') {
+                            addr = 'OP_RETURN (datos)';
+                        }
+                        else {
+                            totalBlindado += valor;
+                            addr = '🛡 OUTPUT BLINDADO (Sapling)';
+                        }
+                        
+                        if (addr.length > 64) addr = addr.substring(0,64) + '...';
+                        pagos.push({ value: valor, addr, esTransparente });
+                        res += `  [#${i}] ${valor.toFixed(8)} YEC → ${addr}\n`;
+                    }
+                    
+                    if (totalOut > 0) res += `  total salida: ${totalOut.toFixed(8)} YEC\n`;
+                }
+                
+                if (tieneShieldedSpendMix || tieneShieldedOutputMix) {
+                    res += `\n🛡 DATOS BLINDADOS\n`;
+                    if (tieneShieldedSpendMix) res += `   gastos blindados: ${t.vShieldedSpend.length}\n`;
+                    if (tieneShieldedOutputMix) res += `   salidas blindadas: ${t.vShieldedOutput.length}\n`;
+                    if (t.valueBalance) res += `   balance blindado: ${t.valueBalance.toFixed(8)} YEC\n`;
+                    
+                    if (t.vShieldedOutput?.[0]?.proof) {
+                        res += `\n☼ PRUEBAS ZK-SNARK\n`;
+                        res += `cv: ${t.vShieldedOutput[0].cv}\n`;
+                        res += `cmu: ${t.vShieldedOutput[0].cmu}\n`;
+                        res += `proof: ${t.vShieldedOutput[0].proof}\n`;
+                    }
+                }
+                
+                // ========== RESUMEN FINAL ==========
+                res += `\nRESUMEN:\n`;
+                
+                if (esCoinbase) {
+                    res += `   0 UTXOs gastados (nueva emisión - coinbase)\n`;
+                    res += `   ${utxosCreados} UTXOs creados\n`;
+                    res += `   ■ Recompensa total: ${totalOut.toFixed(8)} YEC\n`;
+                    if (pagos.length >= 2) {
+                        res += `\n   Distribución:\n`;
+                        pagos.forEach((p, i) => {
+                            const etiqueta = i === 0 ? 'principal' : 'secundaria';
+                            res += `     → ${p.value.toFixed(8)} YEC (salida #${i} - ${etiqueta})\n`;
+                        });
+                    } else if (pagos.length === 1) {
+                        res += `   Salida única: ${pagos[0].value.toFixed(8)} YEC\n`;
+                    }
+                } 
+                else if (tieneInputsTransparentes && tieneShieldedOutputMix && !tieneOutputsTransparentes) {
+                    const montoBlindado = Math.abs(t.valueBalance || 0);
+                    const fee = totalIn - montoBlindado;
+                    
+                    res += `   ◄ Blindaje de fondos (s → y)\n`;
+                    res += `   ${utxosGastados} UTXOs gastados\n`;
+                    res += `   0 UTXOs transparentes creados\n`;
+                    res += `   ${t.vShieldedOutput?.length || 0} salida(s) blindada(s)\n`;
+                    res += `   → ${montoBlindado.toFixed(8)} YEC enviados al pool blindado\n`;
+                    if (fee > 0.00000001) res += `   fee: ${fee.toFixed(8)} YEC\n`;
+                }
+// DETECCIÓN DE UNSHIELDING
+else if (tieneShieldedSpendMix && tieneOutputsTransparentes && !tieneInputsTransparentes) {
+    const totalSalidaPool = Math.abs(t.valueBalance || 0); 
+    const montoTransparente = totalOut; 
+    const fee = totalSalidaPool - montoTransparente; 
     
-    let totalIn = 0, totalOut = 0, utxosGastados = 0, utxosCreados = 0;
-    let pagos = [];
-    let esCoinbase = false;
-    let tieneInputsTransparentes = false;
-    let tieneOutputsTransparentes = false;
-    let totalBlindado = 0;
+    res += `   ► Desblindaje de fondos (y → s)\n`;
+    res += `   ${t.vShieldedSpend?.length || 0} gasto(s) blindado(s)\n`;
+    res += `   ${t.vShieldedOutput?.length || 0} salida(s) blindada(s) (parte del circuito zk-SNARK)\n`;
+    res += `   ${utxosCreados} UTXO(s) transparente(s) creado(s)\n\n`;
     
-    if (t.vin && t.vin.length > 0) {
-        res += `\n► ENTRADAS (${t.vin.length})\n`;
-        utxosGastados = t.vin.length;
-        for (const [i, vin] of t.vin.entries()) {
-            if (vin.coinbase) {
-                esCoinbase = true;
-                res += `  [#${i}] COINBASE (nuevos YEC)\n`;
-            } else if (vin.txid) {
-                const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
-                let value = vin.value;
-                if (!value) value = await getVinValue(vin.txid, vin.vout);
-                if (value) totalIn += value;
-                const valStr = value ? ` ${value.toFixed(8)} YEC` : '';
-                res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
-                tieneInputsTransparentes = true;
-            }
-        }
-        if (totalIn > 0) res += `  total entradas: ${totalIn.toFixed(8)} YEC\n`;
+    if (montoTransparente > 0) {
+        res += `   → ${montoTransparente.toFixed(8)} YEC enviados a dirección transparente\n`;
     }
     
-    if (t.vout && t.vout.length > 0) {
-        res += `\n◄ SALIDAS (${t.vout.length})\n`;
-        utxosCreados = t.vout.length;
-        for (const [i, vout] of t.vout.entries()) {
-            const valor = vout.value || 0;
-            totalOut += valor;
-            
-            let addr = '';
-            let esTransparente = false;
-            
-            // Detectar tipo de output
-            if (vout.scriptPubKey?.addresses?.[0]) {
-                addr = vout.scriptPubKey.addresses[0];
-                esTransparente = true;
-                tieneOutputsTransparentes = true;
-            }
-            else if (vout.scriptPubKey?.address) {
-                addr = vout.scriptPubKey.address;
-                esTransparente = true;
-                tieneOutputsTransparentes = true;
-            }
-            else if (vout.scriptPubKey?.type === 'nulldata') {
-                addr = 'OP_RETURN (datos)';
-            }
-            else {
-                totalBlindado += valor;
-                addr = '🛡 OUTPUT BLINDADO (Sapling)';
-            }
-            
-            if (addr.length > 64) addr = addr.substring(0,64) + '...';
-            pagos.push({ value: valor, addr, esTransparente });
-            res += `  [#${i}] ${valor.toFixed(8)} YEC → ${addr}\n`;
-        }
-        
-        if (totalOut > 0) res += `  total salida: ${totalOut.toFixed(8)} YEC\n`;
-        
-        if (totalIn > 0 && totalOut > 0 && !esCoinbase) {
-            const fee = totalIn - totalOut;
-            if (fee > 0) res += `\n  FEE: ${fee.toFixed(8)} YEC\n`;
-        }
-    }
-    
-    // ========== RESUMEN FINAL ==========
-    res += `\nRESUMEN:\n`;
-    
-    if (esCoinbase) {
-        res += `   0 UTXOs gastados (nueva emisión - coinbase)\n`;
-        res += `   ${utxosCreados} UTXOs creados\n`;
-        res += `   ■ Recompensa total: ${totalOut.toFixed(8)} YEC\n`;
-        if (pagos.length >= 2) {
-            res += `\n   Distribución:\n`;
-            pagos.forEach((p, i) => {
-                const etiqueta = i === 0 ? 'principal' : 'secundaria';
-                res += `     → ${p.value.toFixed(8)} YEC (salida #${i} - ${etiqueta})\n`;
-            });
-        } else if (pagos.length === 1) {
-            res += `   Única salida: ${pagos[0].value.toFixed(8)} YEC\n`;
-        }
-    } 
-    else {
-// DETECCIÓN DE SHIELDING
-const esShielding = tieneInputsTransparentes && !tieneOutputsTransparentes;
-
-if (esShielding) {
-    const montoBlindado = (totalOut > 0) ? totalOut : totalIn;
-    res += `   🛡 BLINDaje de fondos\n`;
-    res += `   ${utxosGastados} UTXOs gastados\n`;
-    res += `   0 UTXOs transparentes creados\n`;
-    res += `   → ${montoBlindado.toFixed(8)} YEC enviados al pool blindado\n`;
-
-        } else {
-            res += `   ${utxosGastados} UTXOs gastados\n`;
-            res += `   ${utxosCreados} UTXOs creados\n`;
-            
-            if (pagos.length >= 2) {
-                const ordenados = [...pagos].sort((a, b) => b.value - a.value);
-                const cambioTotal = ordenados.slice(1).reduce((sum, p) => sum + p.value, 0);
-                res += `   Pago principal: ${ordenados[0].value.toFixed(8)} YEC\n`;
-                if (cambioTotal > 0) res += `   Cambio: ${cambioTotal.toFixed(8)} YEC\n`;
-            } else if (pagos.length === 1) {
-                res += `   Salida única: ${pagos[0].value.toFixed(8)} YEC\n`;
-            }
-        }
-        
-        if (totalIn > 0 && totalOut > 0 && !esShielding) {
-            const fee = totalIn - totalOut;
-            if (fee > 0) res += `   Fee red: ${fee.toFixed(8)} YEC\n`;
-        }
-    }
+    res += `\n   Total extraído del pool blindado: ${totalSalidaPool.toFixed(8)} YEC\n`;
+    if (fee > 0.00000001) res += `   fee: ${fee.toFixed(8)} YEC (pagado al minero)\n`;
 }
+                else {
+                    res += `   ${utxosGastados} UTXOs gastados\n`;
+                    res += `   ${utxosCreados} UTXOs creados\n`;
+                    
+                    if (pagos.length >= 2) {
+                        const ordenados = [...pagos].sort((a, b) => b.value - a.value);
+                        const cambioTotal = ordenados.slice(1).reduce((sum, p) => sum + p.value, 0);
+                        res += `   Pago principal: ${ordenados[0].value.toFixed(8)} YEC\n`;
+                        if (cambioTotal > 0) res += `   Cambio: ${cambioTotal.toFixed(8)} YEC\n`;
+                    } else if (pagos.length === 1) {
+                        res += `   Salida única: ${pagos[0].value.toFixed(8)} YEC\n`;
+                    }
+                    
+                    if (totalIn > 0 && totalOut > 0 && !esCoinbase) {
+                        const fee = totalIn - totalOut;
+                        if (fee > 0.00000001) res += `   Fee red: ${fee.toFixed(8)} YEC\n`;
+                    }
+                }
+            } 
+        } 
+        // ===== INFORMACION DE DIRECCION =====
+        else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
+            
+            const esBalance = q.includes('getaddressbalance');
+            const esValidate = q.includes('validateaddress');
+            const esZValidate = q.includes('z_validateaddress');
+            
+            if (esBalance) {
+                const b = data.result;
+                const direccion = q.split(' ')[1] || b.address || 'desconocida';
+                
+                res += `DIRECCIÓN\n`;
+                res += `dirección: ${direccion}\n`;
+                res += `balance: ${(b.balance / 1e8).toFixed(6)} YEC\n`;
+                
+                if (b.received) {
+                    res += `recibido (total histórico): ${(b.received / 1e8).toFixed(6)} YEC\n`;
+                }
+                
+                if (b.immature) {
+                    res += `inmaduro (no gastable): ${(b.immature / 1e8).toFixed(6)} YEC\n`;
+                }
+            }
+            else if (esValidate || esZValidate) {
+                const v = data.result;
+                const direccion = v.address || q.split(' ')[1] || 'desconocida';
+                
+                const esShielded = esZValidate || direccion.startsWith('ys');
+                
+                if (esShielded) {
+                    res += `DIRECCIÓN BLINDADA (SHIELDED)\n`;
+                    res += `tipo: ${v.type || 'sapling'}\n`;
+                    if (v.diversifier) res += `diversificador: ${v.diversifier}\n`;
+                    if (v.diversifiedtransmissionkey) res += `clave transmisión: ${v.diversifiedtransmissionkey}\n`;
+                } else {
+                    res += `DIRECCIÓN TRANSPARENTE\n`;
+                    if (v.scriptPubKey) res += `scriptPubKey: ${v.scriptPubKey}\n`;
+                }
+                
+                res += `dirección: ${direccion}\n`;
+                res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
+                
+                if (v.isvalid && !esShielded) {
+                    let tipo = 'transparente';
+                    if (v.isscript) tipo = 'script';
+                    else if (v.iswatchonly) tipo = 'watchonly';
+                    res += `subtipo: ${tipo}\n`;
+                }
+                
+                if (v.ismine !== undefined) {
+                    res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
+                }
+            }
+        }
 
-// ===== INFORMACION DE DIRECCION =====
-else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
-    
-    const esBalance = q.includes('getaddressbalance');
-    const esValidate = q.includes('validateaddress');
-    const esZValidate = q.includes('z_validateaddress');
-    
-    if (esBalance) {
-        const b = data.result;
-        const direccion = q.split(' ')[1] || b.address || 'desconocida';
-        
-        res += `DIRECCIÓN\n`;
-        res += `dirección: ${direccion}\n`;
-        res += `balance: ${(b.balance / 1e8).toFixed(6)} YEC\n`;
-        
-        if (b.received) {
-            res += `recibido (total histórico): ${(b.received / 1e8).toFixed(6)} YEC\n`;
-        }
-        
-        if (b.immature) {
-            res += `inmaduro (no gastable): ${(b.immature / 1e8).toFixed(6)} YEC\n`;
-        }
-    }
-    else if (esValidate || esZValidate) {
-        const v = data.result;
-        const direccion = v.address || q.split(' ')[1] || 'desconocida';
-        
-        const esShielded = esZValidate || direccion.startsWith('ys');
-        const esTransparent = esValidate || direccion.startsWith('s1') || direccion.startsWith('t1');
-        
-        if (esShielded) {
-            res += `DIRECCIÓN BLINDADA (SHIELDED)\n`;
-            res += `tipo: ${v.type || 'sapling'}\n`;
-            if (v.diversifier) res += `diversificador: ${v.diversifier}\n`;
-            if (v.diversifiedtransmissionkey) res += `clave transmisión: ${v.diversifiedtransmissionkey}\n`;
-        } else {
-            res += `DIRECCIÓN TRANSPARENTE\n`;
-            if (v.scriptPubKey) res += `scriptPubKey: ${v.scriptPubKey}\n`;
-        }
-        
-        res += `dirección: ${direccion}\n`;
-        res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
-        
-        if (v.isvalid && !esShielded) {
-            let tipo = 'transparente';
-            if (v.isscript) tipo = 'script';
-            else if (v.iswatchonly) tipo = 'watchonly';
-            res += `subtipo: ${tipo}\n`;
-        }
-        
-        if (v.ismine !== undefined) {
-            res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
-        }
-    }
-}        // ===== ERROR GENERAL =====
+        // ===== ERROR GENERAL =====
         else if (data.error) {
             res += `ERROR\ncomando: ${q}\nmotivo: ${data.error}\n`;
         }
         else {
             res += `SIN RESULTADOS\n`;
         }
-        
+
         res += '</pre><br><br><div>[F8 copiar] [F9 Limpiar]</div>';
         res += `<div class="result-footer">\n\n===============================================================================\n`;
         res += `© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff</div>`;
         out.innerHTML = res;
+        
     } catch(e) {
         out.innerHTML = `<pre>error: ${e.message}</pre>`;
     }
