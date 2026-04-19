@@ -95,23 +95,16 @@ function detectCommand(input) {
     input = input.trim();
     if (!input) return input;
 
-    // Números de bloque (altura)
     if (/^\d{1,7}$/.test(input)) return `getblock ${input}`;
     
-    // Hash de bloque (64 hex, empieza con al menos 4 ceros - dificultad baja)
-    // Bloques en YECash pueden tener 4, 5 o 6 ceros al inicio
     if (/^0{4,}[a-fA-F0-9]{60}$/.test(input)) return `getblock ${input}`;
     
-    // Hash de transacción (64 hex, que NO empiece con 4+ ceros)
     if (/^[a-fA-F0-9]{64}$/.test(input) && !/^0{4,}/.test(input)) return `getrawtransaction ${input} 1`;
     
-    // Dirección transparente (s1, s3, t1)
     if (/^(s1|s3|t1)[a-zA-Z0-9]{33}$/.test(input)) return `validateaddress ${input}`;
     
-    // Dirección blindada Sapling (ys1, yu1)
     if (/^(ys1|yu1)[a-zA-Z0-9]{75,}$/.test(input)) return `z_validateaddress ${input}`;
     
-    // Comandos ya completos
     if (input.startsWith('getblock') || input.startsWith('getrawtransaction') || 
         input.startsWith('validateaddress') || input.startsWith('z_validateaddress') ||
         input.startsWith('z_getbalance') || input.startsWith('getblockchaininfo') ||
