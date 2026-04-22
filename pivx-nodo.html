@@ -1,5 +1,6 @@
+<!DOCTYPE html>
 <html>
-<head> 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PIVX: MONITOR DE NODO</title>
@@ -46,6 +47,7 @@ body {
 
 .positive { color: #198652; }
 .negative { color: #9B1C2E; }
+.warning { color: #FFA500; }
 
 .footer {
   margin-top: 20px;
@@ -90,9 +92,9 @@ a:hover {
 cΔrovΣr0 • MONITOR DE NODO PIVX<br>
 ================================<br>
 </div>
-<a href="https://carover0.github.io/pagina/pivx-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
+<a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/pivx-info">[INFO]</a><br><br>
 
-<!-- NODO STATUS -->
+<!-- NODO ESTADO -->
 <div class="subheader">NODO PIVX · ESTADO</div>
 <div id="node-status" class="data-block">
   <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
@@ -111,17 +113,28 @@ cΔrovΣr0 • MONITOR DE NODO PIVX<br>
   <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
 </div>
 
-<!-- STAKE -->
-<div class="subheader">COLD STAKING<div id="piv-stake" class="data-block">Delega tus PIV para que un nodo activo haga staking en tu nombre</div>
-</div>
-  <div class="row"><span class="label">DIRECCION</span><span class="value" id="stake">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span></div>
-</div>
-  
 <!-- MARKET DATA -->
 <div class="subheader">PIVX DATOS DE MERCADO</div>
 <div id="market-content" class="data-block">
   <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
   <div class="row"><span class="label">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
+</div>
+
+<!-- COLD STAKING · RESUMEN -->
+<div class="subheader">COLD STAKING · RESUMEN</div>
+<div id="coldstaking-summary" class="data-block">
+  <div class="row"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
+  <div class="row"><span class="label">TOTAL DELEGADO</span><span class="value" id="cs-total">---</span></div>
+  <div class="row"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
+  <div class="row"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
+  <div class="row"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
+  <div class="row"><span class="label">BALANCE LOCAL</span><span class="value" id="cs-local-balance">---</span></div>
+</div>
+
+<!-- DIRECCIÓN DE COLD STAKING -->
+<div class="subheader">DIRECCIÓN DE COLD STAKING</div>
+<div class="data-block">
+  <div class="row"><span class="label">DELEGA AQUÍ</span><span class="value">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span></div>
 </div>
 
 <!-- API PUBLICA -->
@@ -132,8 +145,7 @@ cΔrovΣr0 • MONITOR DE NODO PIVX<br>
 <div class="footer">
 <div class="small" id="market-updated">actualizado: <span id="price-time">---</span></div>
 ════════════════════════════════════════════════════════════════════════════════<br>
-© 2026 Creada con ♥ por cΔrovΣr0 · apoya:
-ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f
+© 2026 Creada con ♥ por cΔrovΣr0 · apoya: PIVX donations
 </div>
 
 </div>
@@ -178,7 +190,7 @@ async function callRPC(method, params = []) {
   }
 }
 
-// ========== STAKE PROMEDIO REAL ==========
+// ========== STAKE PROMEDIO ==========
 async function calcularStakePromedio(blockHeight) {
   const ahora = Date.now();
   if (stakeCache.value && (ahora - stakeCache.timestamp) < 300000) {
@@ -187,37 +199,68 @@ async function calcularStakePromedio(blockHeight) {
   
   try {
     const stakingInfo = await callRPC('getstakinginfo');
-    
     if (stakingInfo) {
-      let stakeValue = 4.0;
-      
-      if (stakingInfo.stakeReward) {
-        stakeValue = stakingInfo.stakeReward;
-      } else if (stakingInfo.reward) {
-        stakeValue = stakingInfo.reward;
-      }
-      
-      stakeCache = {
-        value: stakeValue,
-        timestamp: ahora
-      };
-      
+      let stakeValue = stakingInfo.stakeReward || stakingInfo.reward || 4.0;
+      stakeCache = { value: stakeValue, timestamp: ahora };
       return stakeValue;
     }
-    // Si no hay stakingInfo, devolver valor por defecto
     return 4.0;
-    
   } catch(err) {
     console.error("Error calculando stake promedio:", err);
     return 4.0;
   }
 }
 
-// ========== OBTENER DATOS DEL NODO  ==========
+// ========== COLD STAKING · RESUMEN ==========
+async function fetchColdStakingSummary(statusRes) {
+  try {
+    const csInfo = statusRes.cold_staking_info;
+    const stakingInfo = statusRes.staking_info;
+    
+    if (csInfo && csInfo.utxos) {
+      const utxos = csInfo.utxos;
+      const utxosList = utxos.list || [];
+      
+      document.getElementById('cs-utxos').innerText = utxos.count || 0;
+      document.getElementById('cs-total').innerText = (utxos.total_amount || 0).toFixed(2) + ' PIV';
+      
+      if (utxosList.length > 0) {
+        const confirmaciones = utxosList.map(u => u.confirmations);
+        const minConf = Math.min(...confirmaciones);
+        document.getElementById('cs-confirms').innerHTML = `${minConf} <span style="color:#777">(mín)</span>`;
+        
+        const whitelistedCount = utxosList.filter(u => u.whitelisted === "true").length;
+        document.getElementById('cs-whitelist').innerHTML = `${whitelistedCount}/${utxosList.length} <span style="color:#198652"></span>`;
+      } else {
+        document.getElementById('cs-confirms').innerText = '---';
+        document.getElementById('cs-whitelist').innerText = '---';
+      }
+    }
+    
+    if (stakingInfo) {
+      const stakeStatus = stakingInfo.status;
+      const balances = stakingInfo.balances;
+      
+      if (stakeStatus && stakeStatus.staking_status === true && balances && balances.stakeable_coins > 0) {
+        document.getElementById('cs-staking-status').innerHTML = '<span class="positive">ACTIVO</span>';
+      } else if (stakeStatus && stakeStatus.staking_status === true && balances && balances.stakeable_coins === 0) {
+        document.getElementById('cs-staking-status').innerHTML = '<span class="warning">ESPERANDO</span>';
+      } else {
+        document.getElementById('cs-staking-status').innerHTML = '<span class="negative">INACTIVO</span>';
+      }
+      
+      const balanceLocal = balances ? balances.total_wallet_balance : 0;
+      document.getElementById('cs-local-balance').innerText = balanceLocal.toFixed(4) + ' PIV';
+    }
+    
+  } catch(err) {
+    console.error("Error en cold staking summary:", err);
+  }
+}
+
+// ========== OBTENER DATOS DEL NODO ==========
 async function fetchNodeData() {
   try {
-    const startTime = Date.now();
-    
     const [statusRes, blockchainInfo, networkInfo, mempool, peerinfo] = await Promise.all([
       fetch(STATUS_URL).then(r => r.json()).catch(() => ({})),
       callRPC('getblockchaininfo'),
@@ -225,6 +268,8 @@ async function fetchNodeData() {
       callRPC('getrawmempool'),
       callRPC('getpeerinfo')
     ]);
+    
+    await fetchColdStakingSummary(statusRes);
     
     const version = statusRes.software_subversion || statusRes.subversion || networkInfo?.subversion || '---';
     const connections = statusRes.connections || peerinfo?.length || 0;
@@ -234,17 +279,11 @@ async function fetchNodeData() {
     const protocolVersion = statusRes.protocolversion || networkInfo?.protocolversion || '---';
     const synced = blockchainInfo?.blocks >= blockchainInfo?.headers;
     const bestBlockHash = blockchainInfo?.bestblockhash || '---';
-    
     const avgStake = await calcularStakePromedio(blockHeight);
     
-    const loadTime = Date.now() - startTime;
-    console.log(`✅ Datos cargados en ${loadTime}ms`);
-    
     document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
-    
     document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
     document.getElementById('node-state').className = `value ${synced ? 'positive' : 'negative'}`;
-    
     document.getElementById('node-blocks').innerText = formatNumber(blockHeight);
     document.getElementById('node-connections').innerText = connections;
     document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
@@ -259,11 +298,7 @@ async function fetchNodeData() {
 }
 
 // ========== PRECIO ==========
-let precioCache = {
-  usd: null,
-  volumen: null,
-  timestamp: 0
-};
+let precioCache = { usd: null, volumen: null, timestamp: 0 };
 
 async function fetchPrice() {
   const ahora = Date.now();
@@ -288,40 +323,23 @@ async function fetchPrice() {
         volumen: data.pivx.usd_24h_vol,
         timestamp: ahora
       };
-      
       document.getElementById('price-usd').innerText = `$${data.pivx.usd.toFixed(4)}`;
-      
-      if (data.pivx.usd_24h_vol) {
-        document.getElementById('price-volume').innerText = `$${Math.round(data.pivx.usd_24h_vol).toLocaleString()}`;
-      } else {
-        document.getElementById('price-volume').innerText = '---';
-      }
-    } else {
-      document.getElementById('price-usd').innerText = '---';
-      document.getElementById('price-volume').innerText = '---';
+      document.getElementById('price-volume').innerText = data.pivx.usd_24h_vol ? `$${Math.round(data.pivx.usd_24h_vol).toLocaleString()}` : '---';
     }
   } catch (error) {
     console.error('Error precio:', error);
-    document.getElementById('price-usd').innerHTML = '---';
-    document.getElementById('price-volume').innerHTML = '---';
   }
-  
   document.getElementById('price-time').innerText = new Date().toLocaleTimeString();
 }
 
-// ========== INICIO  ==========
+// ========== INICIO ==========
 document.addEventListener('DOMContentLoaded', () => {
   fetchPrice();
-  
   fetchNodeData();
 });
 
-// Actualizar cada 30 segundos 
 setInterval(() => {
-  Promise.all([
-    fetchNodeData(),
-    fetchPrice()
-  ]);
+  Promise.all([fetchNodeData(), fetchPrice()]);
 }, 30000);
 </script>
 
