@@ -73,13 +73,11 @@
             letter-spacing: 1px;
         }
         .data-block {
-            margin-bottom: 20px;
-            padding-left: 20px;
         }
         .row {
             display: flex;
             justify-content: space-between;
-            margin: 3px 0;
+            margin: 0;
             max-width: 700px;
         }
         .label {
@@ -110,39 +108,38 @@
     <div class="dashboard-title">
         <span class="prompt">PIVX</span> · MONITOR DE COLD STAKING
     </div>
-<a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/pivx-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
+<a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/pivx-info">[INFO]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
 
 <div id="timestamp" class="timestamp">Cargando datos...</div>
 
-    <!-- SECCIÓN: RESUMEN DE COLD STAKING -->
-    <div class="subheader">COLD STAKING · RESUMEN</div>
-    <div id="coldstaking-summary" class="data-block">
-        <div class="row"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
-        <div class="row"><span class="label">TOTAL DELEGADO</span><span class="value" id="cs-total">---</span></div>
-        <div class="row"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
-        <div class="row"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
-        <div class="row"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
-        <div class="row"><span class="label">BALANCE LOCAL</span><span class="value" id="cs-local-balance">---</span></div>
-        <div class="row"><span class="label">ÚLTIMO INTENTO</span><span class="value" id="cs-last-attempt">---</span></div>
-    </div>
+<!-- SECCIÓN: RESUMEN DE COLD STAKING -->
+<div class="subheader">COLD STAKING · RESUMEN</div>
+<div id="coldstaking-summary" class="data-block">
+<div class="row"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
+<div class="row"><span class="label">TOTAL DELEGADO</span><span class="value" id="cs-total">---</span></div>
+<div class="row"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
+<div class="row"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
+<div class="row"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
+<div class="row"><span class="label">BALANCE LOCAL</span><span class="value" id="cs-local-balance">---</span></div>
+<div class="row"><span class="label">ÚLTIMO INTENTO</span><span class="value" id="cs-last-attempt">---</span></div>
+</div><br>
 
     <!-- SECCIÓN: LISTA DE UTXOS DELEGADOS -->
 <div class="subheader">UTXOS DELEGADOS (DETALLE)</div>
 <div id="utxos-list" class="data-block">
 <div class="info-text">Cargando lista de UTXOs...</div>
 
-</div>
+</div><br>
 
     <!-- DIRECCIÓN DE COLD STAKING -->
     <div class="subheader">DIRECCIÓN DE COLD STAKING</div>
     <div class="data-block">
         <div class="row"><span class="label">DELEGA AQUÍ</span><span class="value">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span></div>
-    </div>
+    </div><br>
 
     <div class="footer">
         ===============================================================================<br>
-        © 2026 Creada con ♥ por cΔrovΣr0 · apoya: PIVX donations<br>
-        Datos obtenidos desde <a href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank">pivx_status_X.json</a>
+        © 2026 Creada con ♥ por cΔrovΣr0 <br> apoya: ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f
     </div>
 </div>
 
@@ -236,22 +233,28 @@ document.getElementById('cs-last-attempt').innerHTML = `hace ${ageText} · ${las
         }
     }
 
-    async function cargarDatos() {
-        try {
-            const urlConTimestamp = `${STATUS_URL}?t=${new Date().getTime()}`;
-            const response = await fetch(urlConTimestamp);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const data = await response.json();
-            
-            mostrarTimestamp(data.generated_at || Date.now());
-            renderizarDatos(data);
-            
-        } catch (error) {
-            console.error('Error cargando datos:', error);
-            document.getElementById('timestamp').innerHTML = '<span class="negative">ERROR: No se pudo cargar el estado</span>';
-            document.getElementById('utxos-list').innerHTML = '<div class="info-text negative">Error al conectar con la fuente de datos.</div>';
-        }
+function mostrarTimestamp() {
+    const ahora = new Date();
+    document.getElementById('timestamp').innerHTML = `última actualización: ${ahora.toLocaleString()}`;
+}
+
+// --- En cargarDatos(), cambia esta parte ---
+async function cargarDatos() {
+    try {
+        const urlConTimestamp = `${STATUS_URL}?t=${new Date().getTime()}`;
+        const response = await fetch(urlConTimestamp);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        
+        mostrarTimestamp();  // ← Sin parámetros, usa hora local
+        renderizarDatos(data);
+        
+    } catch (error) {
+        console.error('Error cargando datos:', error);
+        document.getElementById('timestamp').innerHTML = '<span class="negative">ERROR: No se pudo cargar el estado</span>';
+        document.getElementById('utxos-list').innerHTML = '<div class="info-text negative">Error al conectar con la fuente de datos.</div>';
     }
+}
 
     cargarDatos();
     setInterval(cargarDatos, 30000);
