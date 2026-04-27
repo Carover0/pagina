@@ -233,7 +233,6 @@ function formatDifficulty(diff) {
 }
 
 function displayNodeData(data) {
-  // Si no hay datos, no actualizar
   if (!data) return;
   
   const uptimeSec = data.node?.uptime_seconds;
@@ -249,10 +248,8 @@ function displayNodeData(data) {
   const chainName = data.chain?.name;
   const bestBlock = data.chain?.best_block;
   
-  // Actualizar VERSION
   document.getElementById('node-version').innerText = version ? `Zebra ${version}` : '---';
   
-  // Actualizar ESTADO
   if (isSynced !== undefined) {
     document.getElementById('node-state').innerText = isSynced ? "SINCRONIZADO" : "SINCRONIZANDO";
     document.getElementById('node-state').className = `value ${isSynced ? "positive" : "negative"}`;
@@ -260,35 +257,26 @@ function displayNodeData(data) {
     document.getElementById('node-state').innerText = '---';
   }
   
-  // Actualizar BLOQUES
   document.getElementById('node-blocks').innerText = blockHeight ? Number(blockHeight).toLocaleString() : '---';
   
-  // Actualizar CONEXIONES
   if (connections !== undefined && inbound !== undefined && outbound !== undefined) {
     document.getElementById('node-connections').innerText = `${connections} (${inbound} IN · ${outbound} OUT)`;
   } else {
     document.getElementById('node-connections').innerText = '---';
   }
   
-  // Actualizar MEMPOOL
   document.getElementById('node-mempool').innerText = mempoolSize !== undefined ? `${mempoolSize} TX` : '---';
   
-  // Actualizar UPTIME
   document.getElementById('node-uptime').innerText = formatUptime(uptimeSec);
   
-  // Actualizar DIFICULTAD
   document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
   
-  // Actualizar RECOMPENSA
   document.getElementById('node-hashrate').innerText = blockReward ? `${blockReward} ZEC` : '---';
   
-  // Actualizar CHAIN
   document.getElementById('node-chain').innerText = chainName || '---';
   
-  // Actualizar ULTIMO BLOQUE
   document.getElementById('node-bestblock').innerText = formatHash(bestBlock);
   
-  // Actualizar PRECIO
   const price = data.price?.usd;
   if (price) {
     document.getElementById('price-usd').innerText = `$${price.toFixed(2)}`;
@@ -296,7 +284,6 @@ function displayNodeData(data) {
     document.getElementById('price-usd').innerText = '---';
   }
   
-  // Actualizar timestamp
   const now = new Date();
   document.getElementById('price-time').innerText = now.toLocaleTimeString();
 }
@@ -309,13 +296,13 @@ async function fetchNodeData() {
     displayNodeData(jsonData);
   } catch(err) {
     console.error("Error de conexion:", err);
-    // En caso de error, mantener los valores en '---'
+
   }
 }
 
-// Cargar datos inmediatamente
+
 fetchNodeData();
-// Actualizar cada 60 segundos
+
 setInterval(fetchNodeData, 60000);
 </script>
 
