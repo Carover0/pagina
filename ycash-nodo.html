@@ -21,7 +21,7 @@ body {
 }
 
 .subheader {
-  color: #F56733;  /* Color Ycash */
+  color: #F56733;
   font-size: 15px;  
   margin: 15px 0 5px 0;
   text-transform: uppercase;
@@ -56,7 +56,7 @@ body {
 }
 
 a, a:visited, a:hover, a:active {
-  color: #F56733;  /* Color Ycash */
+  color: #F56733;
   text-decoration: none;
 }
 a:hover {
@@ -92,7 +92,6 @@ cΔrovΣr0 • MONITOR DE NODO YCASH<br>
 </div>
 <a href="https://carover0.github.io/pagina/ycash-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/ycash-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/ycash-info">[INFO]</a><br><br>
 
-<!-- NODO STATUS -->
 <div class="subheader">NODO YCASH · ESTADO</div>
 <div id="node-status" class="data-block">
   <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
@@ -102,7 +101,6 @@ cΔrovΣr0 • MONITOR DE NODO YCASH<br>
   <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
 </div>
 
-<!-- NODO NETWORK -->
 <div class="subheader">NODO YCASH · RED</div>
 <div id="node-network" class="data-block">
   <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
@@ -113,18 +111,15 @@ cΔrovΣr0 • MONITOR DE NODO YCASH<br>
   <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
 </div>
 
-<!-- MARKET DATA -->
 <div class="subheader">YCASH DATOS DE MERCADO</div>
 <div id="market-content" class="data-block">
   <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
   <div class="row"><span class="label">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
 </div>
 
-<!-- API PUBLICA -->
 <div class="link-label">► API PUBLICA</div>
 <div class="link-block"><a href="https://carover0.xyz/cacaX/ycash_status.json" target="_blank">https://carover0.xyz/cacaX/ycash_status.json</a></div>
 
-<!-- FOOTER -->
 <div class="footer">
 <div class="small" id="market-updated">actualizado: <span id="price-time">---</span></div>
 ════════════════════════════════════════════════════════════════════════════════<br>
@@ -137,7 +132,6 @@ cΔrovΣr0 • MONITOR DE NODO YCASH<br>
 const STATUS_URL = "https://carover0.xyz/cacaX/ycash_status.json";
 const PRICE_API_URL = "https://carover0.xyz/getprice-ycash.php?token=ycash2026"; 
 
-// ========== FUNCIONES AUXILIARES ==========
 function formatDifficulty(diff) {
   if (!diff) return '---';
   return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -158,14 +152,10 @@ function formatReward(reward) {
   return reward.toFixed(8) + ' YEC';
 }
 
-// ========== OBTENER DATOS DEL NODO (SOLO DESDE STATUS.JSON) ==========
 async function fetchNodeData() {
   try {
-    const startTime = Date.now();
-    
     const statusRes = await fetch(STATUS_URL).then(r => r.json()).catch(() => ({}));
     
-    // DATOS DEL STATUS.JSON
     const version = statusRes.software_subversion || statusRes.subversion || '---';
     const connections = statusRes.connections || statusRes.peers || 0;
     const blockHeight = statusRes.height || 0;
@@ -174,17 +164,12 @@ async function fetchNodeData() {
     const protocolVersion = statusRes.protocolversion || '---';
     const bestBlockHash = statusRes.bestblock || '---';
     
-    // REWARDS
-    const rewardTotal = statusRes.blockreward_total;
-    const rewardMiner = statusRes.blockreward_miner;
-    const rewardFounders = statusRes.blockreward_founders;
-    const fundingStreams = statusRes.blockreward_funding_streams;
+    const rewardTotal = statusRes.blockreward_total || 1.5625;
+    const rewardFounders = 0;
+    const rewardMiner = rewardTotal;  
     
     const syncProgress = statusRes.sync_progress || 0;
     const synced = syncProgress > 0.9999;
-    
-    const loadTime = Date.now() - startTime;
-    console.log(`✅ Datos cargados en ${loadTime}ms`);
     
     document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
     
@@ -200,18 +185,6 @@ async function fetchNodeData() {
     document.getElementById('node-reward-founders').innerHTML = formatReward(rewardFounders);
     document.getElementById('node-protocol').innerText = protocolVersion;
     document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
-    
-    if (fundingStreams !== undefined && fundingStreams !== null && fundingStreams !== 0) {
-      let fundingRow = document.querySelector('#node-network .row:has(.label[data-funding])');
-      if (!fundingRow && fundingStreams > 0) {
-        const networkDiv = document.getElementById('node-network');
-        const newRow = document.createElement('div');
-        newRow.className = 'row';
-        newRow.innerHTML = `<span class="label">STREAMS</span><span class="value">${formatReward(fundingStreams)}</span>`;
-        const protocolRow = document.querySelector('#node-network .row:last-child');
-        if (protocolRow) networkDiv.insertBefore(newRow, protocolRow);
-      }
-    }
     
   } catch(err) {
     console.error("Error cargando datos:", err);
@@ -229,7 +202,6 @@ async function fetchNodeData() {
   }
 }
 
-// ========== PRECIO ==========
 async function fetchPrice() {
   try {
     const response = await fetch(PRICE_API_URL); 
@@ -263,13 +235,11 @@ async function fetchPrice() {
   }
 }
 
-// ========== INICIO ==========
 document.addEventListener('DOMContentLoaded', () => {
   fetchPrice();
   fetchNodeData();
 });
 
-// Actualizar cada 30 segundos
 setInterval(() => {
   fetchNodeData();
   fetchPrice();
