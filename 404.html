@@ -5,40 +5,44 @@
     <title>Redirigiendo...</title>
     <script>
         const path = window.location.pathname;
-        const search = window.location.search;
-        const hash = window.location.hash;
         
-        let explorer = null;
-        let searchParam = null;
-        
-        const explorers = [
-            { name: 'zec-explorer', pattern: /\/zec-explorer\/(.+)$/ },
-            { name: 'pivx-explorer', pattern: /\/pivx-explorer\/(.+)$/ },
-            { name: 'ycash-explorer', pattern: /\/ycash-explorer\/(.+)$/ },
-            { name: 'komodo-explorer', pattern: /\/komodo-explorer\/(.+)$/ },
-            { name: 'firo-explorer', pattern: /\/firo-explorer\/(.+)$/ }
-        ];
-        
-        // Detectar si es una URL con parámetro o con path
-        for (let exp of explorers) {
-            const match = path.match(exp.pattern);
-            if (match && match[1]) {
-                explorer = exp.name;
-                searchParam = match[1];
-                break;
-            }
-        }
-        
-        if (explorer && searchParam) {
-            
-            const newPath = '/pagina/' + explorer + '/' + searchParam + (search || '') + (hash || '');
-            window.location.replace(newPath);
-        } else if (explorer) {
-
-            window.location.replace('/pagina/' + explorer);
+        if (path.startsWith('/pagina/')) {
         } else {
+            let explorer = null;
+            let searchParam = null;
+            
+            const explorers = [
+                { name: 'zec-explorer', pattern: /^\/zec-explorer\/(.+)$/ },
+                { name: 'pivx-explorer', pattern: /^\/pivx-explorer\/(.+)$/ },
+                { name: 'ycash-explorer', pattern: /^\/ycash-explorer\/(.+)$/ },
+                { name: 'komodo-explorer', pattern: /^\/komodo-explorer\/(.+)$/ },
+                { name: 'firo-explorer', pattern: /^\/firo-explorer\/(.+)$/ }
+            ];
+            
+            for (let exp of explorers) {
+                const match = path.match(exp.pattern);
+                if (match && match[1]) {
+                    explorer = exp.name;
+                    searchParam = match[1];
+                    break;
+                }
+            }
+            
+            if (explorer && searchParam) {
 
-            window.location.replace('/pagina/');
+                window.location.replace('/pagina/' + explorer + '/' + searchParam);
+            } else if (explorer) {
+                window.location.replace('/pagina/' + explorer);
+            } else {
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const q = urlParams.get('q');
+                if (q) {
+                    window.location.replace('/pagina/zec-explorer/' + encodeURIComponent(q));
+                } else {
+                    window.location.replace('/pagina/zec-explorer');
+                }
+            }
         }
     </script>
 </head>
