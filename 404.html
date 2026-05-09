@@ -5,6 +5,8 @@
     <title>Redirigiendo...</title>
     <script>
         const path = window.location.pathname;
+        const search = window.location.search;
+        const hash = window.location.hash;
         
         let explorer = null;
         let searchParam = null;
@@ -14,10 +16,10 @@
             { name: 'pivx-explorer', pattern: /\/pivx-explorer\/(.+)$/ },
             { name: 'ycash-explorer', pattern: /\/ycash-explorer\/(.+)$/ },
             { name: 'komodo-explorer', pattern: /\/komodo-explorer\/(.+)$/ },
-	        { name: 'firo-explorer', pattern: /\/firo-explorer\/(.+)$/ } 
-    
+            { name: 'firo-explorer', pattern: /\/firo-explorer\/(.+)$/ }
         ];
         
+        // Detectar si es una URL con parámetro o con path
         for (let exp of explorers) {
             const match = path.match(exp.pattern);
             if (match && match[1]) {
@@ -28,9 +30,15 @@
         }
         
         if (explorer && searchParam) {
-            window.location.replace('/pagina/' + explorer + '?q=' + encodeURIComponent(searchParam));
+            
+            const newPath = '/pagina/' + explorer + '/' + searchParam + (search || '') + (hash || '');
+            window.location.replace(newPath);
+        } else if (explorer) {
+
+            window.location.replace('/pagina/' + explorer);
         } else {
-            window.location.replace('/pagina/zec-explorer');
+
+            window.location.replace('/pagina/');
         }
     </script>
 </head>
