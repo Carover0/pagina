@@ -1,244 +1,75 @@
-<html lang="es"> 
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<title></title>
-<style>
-body {
-    background-color: #000;
-    color: #198652; 
-    /* color: #A044FF;*/
-    font-family: "Lucida Console", "Monaco", "monospace";
-    font-size: 16px;
-    padding: 14px;
-    white-space: pre; 
-}
-.separator {
-    color: #444;
-}
-.small {
-    color: #888;
-    font-size: 12px; 
-}
-.big {
-    color: #fff;
-    font-size: 26px; 
-}
-.titu {
-    color: #fff;
-    font-size: 22px; 
-}
-
-a, a:visited, a:hover, a:active {
-    color: #ffffff;
-    text-decoration: none; 
-}
-a:hover {
-    text-decoration: underline; 
-}
-
-body, p, span, pre, div, .body, .separator, #output-dgb, #output-firo, #output-firo-home, #output-pivx-home, #output-health {
-    font-size: 16px;
-    font-family: "Lucida Console", "Monaco", "monospace";
-}
-
-.small, .small a, .small a:visited, .small a:hover, .small a:active {
-    font-size: 12px !important;
-}
-
-.big, .titu {
-    font-size: 26px; 
-    font-size: 22px; 
-}
-.titu {
-    font-size: 22px !important;
-}
-.big {
-    font-size: 26px !important;
-}
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.85">
+  <title>cΔrovΣr0 · Nodos</title>
+  <style>
+    :root { --cyan:#00d9ff; --green:#31db72; --panel:rgba(1,14,19,.91); --line:rgba(0,217,255,.45); }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--green); font-family:"Lucida Console","Monaco",monospace; background:#02070a url('https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/f2.png') center/cover fixed no-repeat; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.5),transparent 34%,transparent 66%,rgba(0,0,0,.5)),rgba(0,5,10,.35); }
+    body::after { content:""; pointer-events:none; position:fixed; inset:0; background:repeating-linear-gradient(0deg,rgba(0,217,255,.025) 0 1px,transparent 1px 4px); }
+    .brand { position:fixed; z-index:3; top:18px; left:50%; transform:translateX(-50%); color:var(--cyan); font-size:clamp(20px,2vw,30px); font-weight:bold; letter-spacing:5px; text-shadow:0 0 18px var(--cyan); }
+    main { width:min(1600px,100%); min-height:100vh; margin:auto; padding:76px 48px 46px; display:grid; grid-template-columns:minmax(330px,412px) 1fr minmax(330px,412px); gap:clamp(25px,6vw,120px); align-items:center; }
+    .panel { position:relative; z-index:1; padding:36px 39px 27px; background:linear-gradient(135deg,rgba(2,20,27,.94),var(--panel)); border:3px solid var(--cyan); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 15px rgba(0,217,255,.9),0 0 45px rgba(0,217,255,.18),inset 0 0 26px rgba(0,217,255,.06); }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--cyan) 0 11px,transparent 11px 18px); }
+    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    h2 { margin:4px 0 18px; color:var(--cyan); font-size:20px; font-weight:normal; letter-spacing:2px; text-shadow:0 0 10px var(--cyan); }
+    .node,.section { border-top:1px solid var(--line); padding:14px 0 16px; }
+    .node-title { display:flex; align-items:center; gap:12px; margin-bottom:7px; color:var(--cyan); font-size:18px; }
+    .coin { flex:none; width:40px; height:40px; display:grid; place-items:center; }
+    .coin img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 6px rgba(255,255,255,.25)); }
+    .online { margin-left:auto; font-size:13px; color:var(--green); }
+    .data { display:grid; grid-template-columns:1fr auto; gap:4px 12px; padding-left:52px; font-size:15px; line-height:1.18; }
+    .data strong { min-width:116px; color:var(--green); font-weight:normal; }
+    .metric-name { display:block; margin-bottom:9px; color:var(--cyan); font-size:16px; }
+    .bar-line { display:flex; align-items:center; gap:9px; } .bar { display:flex; flex:1; gap:4px; } .bar i { display:block; width:14px; height:16px; border:1px solid rgba(49,219,114,.24); } .bar i.on { background:#32d772; box-shadow:0 0 8px rgba(49,219,114,.42); } .percent { min-width:40px; font-size:15px; }
+    .info { font-size:15px; line-height:1.4; white-space:pre-line; } .status { letter-spacing:1px; } .error { color:#ff8b75; font-size:14px; }
+    .links { position:relative; z-index:1; grid-column:1 / -1; text-align:center; color:#b8fff0; font-size:15px; text-shadow:0 1px 3px #000; } .links a { color:var(--cyan); text-decoration:none; } .links a:hover { text-decoration:underline; }
+    @media (max-width:1050px) { main { grid-template-columns:1fr 1fr; gap:25px; padding:74px 24px 35px; } .status-panel { grid-column:2; } .links { grid-column:1 / -1; } }
+    @media (max-width:700px) { main { display:block; padding:72px 15px 28px; } .panel { padding:31px 27px 24px; margin-bottom:22px; } .data { padding-left:48px; font-size:14px; } .data strong { min-width:98px; } .node-title { font-size:17px; gap:10px; } .coin { width:36px; height:36px; font-size:20px; } .online { font-size:12px; } h2 { font-size:20px; } .links { font-size:12px; } }
+  </style>
 </head>
 <body>
-<span class="big">cΔrovΣr0</span>
--------------
-<span style="color:#fff;">Diseño y sostengo infraestructura técnica.  
-Nodos, bots y exploradores se ejecutan con autonomía total.  
-Operación continua y estable.
-</span>
-
-<span class="titu">► NODOS</span>
-
-<span style="color:#fff;">■ ZCASH FULL NODO (VPS)</span>
-<a href="https://t.me/zcashexplorer_bot" target="_blank">Zexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/zexplorer20.mp4" target="_blank">Video</a> | <a href="https://github.com/Carover0/ztip_public" target="_blank">Ztip (Git hub)</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/ztip4.mp4" target="_blank">Ztip video</a> | <a href="https://carover0.github.io/pagina/zec-nodo.html" target="_blank">Zcash nodo</a>
-<pre class="body" id="output-dgb">Fetching ZEC data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
-
-<span style="color:#fff;">■ FIRO FULL NODO (VPS)</span></span><br><a href="https://t.me/firoexplorer_bot" target="_blank">Fexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0902-firo.mp4" target="_blank">Video</a> | <a href="https://carover0.github.io/pagina/firo-nodo.html" target="_blank">Firo nodo</a> 
-<pre id="output-firo">Fetching FIRO data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
-
-<span style="color:#fff;">■ YCASH FULL NODO (HOME-ARGENTINA)</span>
-<a href="https://carover0.github.io/pagina/ycash-nodo.html" target="_blank">Ycash nodo</a>
-<pre id="output-ycash-home">Fetching YCASH data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
-
-<span style="color:#fff;">■ PIVX FULL NODO (HOME-ARGENTINA)</span>
-<a href="https://carover0.github.io/pagina/pivx-nodo.html" target="_blank">PIVX nodo</a>
-<pre id="output-pivx-home">Fetching PIVX data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
-
-<span class="titu">► ESTADO DE LA INFRAESTRUCTURA VPS<br></span><pre id="output-health">Fetching VPS data...</pre><span class="separator" style="color:#fff;">--------------------------------------------------------------------------------</span>
-    
-<span class="titu">► OTROS DESARROLLOS<br></span>
-<span style="color:#fff;">■ DIGIBYTE</span>
-Explorador de bloques: <a href="https://t.me/dgbexplorer_bot" target="_blank">Dexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/0201dexplorer.mp4" target="_blank">Video</a>
-   
-<span style="color:#fff;">■ TRON</span>
-Explorador de bloques: <a href="https://t.me/texplorerbot" target="_blank">Texplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/eng-2510-texplorer.mp4" target="_blank">Video</a>
-TxGhost (tracker del token BRST para la comunidad de Brutus): <a href="https://t.me/txghost_bot" target="_blank">TxGhost</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/2512ghost.mp4" target="_blank">Video</a>
-
-<span style="color:#fff;">■ RAVENCOIN</span>
-Explorador de bloques: <a href="https://t.me/rvnexplorer_bot" target="_blank">Rexplorer</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/rvn.mp4" target="_blank">Video</a>
-
-<span style="color:#fff;">■ Cprecios</span>
-Precios y comparaciones: <a href="https://t.me/c_preciosbot" target="_blank">C_precios</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/xchanges.mp4" target="_blank">Video</a>
-
-<span style="color:#fff;">■ Tabla periodica con imagenes</span>
-Tabla periodica: <a href="https://t.me/tablaperiodica_bot" target="_blank">Tperiodica</a> | <a href="https://free2z.cash/uploadz/public/c%CE%94rov%CE%A3r0/tp2025.mp4" target="_blank">Video</a>
-
-<span class="small">☼ Actualizacion cada 30 segundos - </span><span class="small" id="last-update-zec"></span>
-<span style="color:#fff; display:block; margin-top:auto;">===============================================================================
-© 2025 Creada con ♥ por cΔrovΣr0
-</span>
-
-<script>
-let firstRunHealth = true;
-async function updateStatus() {
-
-try {
-    const r1 = await fetch("https://carover0.xyz/zec/status.json"); 
-    const data1 = await r1.json();
-    const mappedData = {
-        height: data1.chain?.height ?? 0,
-        last_blocks: [{
-            difficulty: data1.chain?.difficulty ?? 0
-        }],
-        connections: data1.network?.connections ?? 0,
-        mempool_tx: data1.mempool?.size ?? 0,
-        version: data1.network?.subversion ?? "desconocido"
-    };
-    
-    const lastBlock = mappedData.last_blocks[0];
-
-
-    
-    document.getElementById("output-dgb").innerHTML =
-`Block Height    : ${mappedData.height}
-Difficulty      : ${lastBlock.difficulty.toFixed(2)}
-Connections     : ${mappedData.connections}
-Mempool TX      : ${mappedData.mempool_tx}
-Node Version    : ${mappedData.version}
-Donation Address: t1g6NAetkFajFP62crR54DBazfqJjxRG1XD`;
-} catch(err) {
-    document.getElementById("output-dgb").innerHTML = "[info] en mantenimiento/actualizacion.";
-    console.error(err);
-}
-
-
-    try {
-        const r2 = await fetch("https://carover0.xyz/firo/status.json");
-        const data2 = await r2.json();
-        document.getElementById("output-firo").textContent =
-`Block Height    : ${data2.height}
-Difficulty      : ${data2.difficulty.toFixed(2)}
-Connections     : ${data2.connections}
-Mempool TX      : ${data2.mempool}
-Node Version    : ${data2.version}
-Donation Address: carover0.firo`;
-    } catch(err) {
-        document.getElementById("output-firo").textContent = "[info] en mantenimiento/actualizacion.";
-        console.error(err);
+  <div class="brand">cΔrovΣr0</div>
+  <main>
+    <section class="panel">
+      <h2>FULL NODES</h2>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/zcash.png" alt="Zcash"></span>ZCASH <span class="online" id="zec-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="zec-height">—</strong><span>Peers</span><strong id="zec-peers">—</strong><span>Mempool</span><strong id="zec-mempool">—</strong><span>Version</span><strong id="zec-version">—</strong></div></article>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/firo.png" alt="Firo"></span>FIRO <span class="online" id="firo-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="firo-height">—</strong><span>Peers</span><strong id="firo-peers">—</strong><span>Mempool</span><strong id="firo-mempool">—</strong><span>Version</span><strong id="firo-version">—</strong></div></article>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/pivx.png" alt="PIVX"></span>PIVX <span class="online" id="pivx-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="pivx-height">—</strong><span>Peers</span><strong id="pivx-peers">—</strong><span>Mempool</span><strong id="pivx-mempool">—</strong><span>Version</span><strong id="pivx-version">—</strong></div></article>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/ycash.png" alt="Ycash"></span>YCASH <span class="online" id="ycash-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="ycash-height">—</strong><span>Peers</span><strong id="ycash-peers">—</strong><span>Mempool</span><strong id="ycash-mempool">—</strong><span>Version</span><strong id="ycash-version">—</strong></div></article>
+    </section>
+    <div></div>
+    <aside class="panel status-panel"><h2>VPS STATUS</h2>
+      <div class="section"><span class="metric-name">CPU</span><div class="bar-line"><div class="bar" id="cpu-bar"></div><span class="percent" id="cpu-percent">—</span></div></div>
+      <div class="section"><span class="metric-name">RAM</span><div class="bar-line"><div class="bar" id="ram-bar"></div><span class="percent" id="ram-percent">—</span></div></div>
+      <div class="section"><span class="metric-name">DISK /</span><div class="bar-line"><div class="bar" id="disk-bar"></div><span class="percent" id="disk-percent">—</span></div></div>
+      <div class="section"><span class="metric-name">LOAD AVERAGE</span><div class="info" id="load">—</div></div>
+      <div class="section"><span class="metric-name">UPTIME</span><div class="info" id="uptime">—</div></div>
+      <div class="section"><span class="metric-name">LAST UPDATE</span><div class="info" id="last-update">—</div></div>
+      <div class="section"><span class="metric-name">STATUS</span><div class="info status" id="vps-status">CONNECTING…</div></div>
+    </aside>
+    <footer class="links">
+<a href="https://carover0.github.io/pagina/zcash-nodo.html" target="_blank">Zcash nodo</a> · 
+<a href="https://carover0.github.io/pagina/firo-nodo.html" target="_blank">Firo nodo</a> · 
+<a href="https://carover0.github.io/pagina/ycash-nodo.html" target="_blank">Ycash nodo</a> · <a href="https://carover0.github.io/pagina/pivx-nodo.html" target="_blank">Pivx nodo</a></footer>
+  </main>
+  <script>
+    const $ = id => document.getElementById(id);
+    const show = (id, value) => $(id).textContent = value ?? '—';
+    const format = value => Number(value || 0).toLocaleString('en-US');
+    const setNode = (coin, data) => { show(`${coin}-height`, format(data.height)); show(`${coin}-peers`, data.connections); show(`${coin}-mempool`, data.mempool); show(`${coin}-version`, data.version); $( `${coin}-online`).textContent = 'ONLINE'; };
+    const offline = coin => { $( `${coin}-online`).textContent = 'OFFLINE'; $( `${coin}-online`).style.color = '#ff8b75'; };
+    const setBar = (id, value) => { const safe = Math.max(0, Math.min(100, Number(value) || 0)); $(id).innerHTML = Array.from({length:10}, (_, i) => `<i class="${i < Math.ceil(safe / 10) ? 'on' : ''}"></i>`).join(''); };
+    async function updateStatus() {
+      try { const r = await fetch('https://carover0.xyz/zec/status.json'); const d = await r.json(); setNode('zec', {height:d.chain?.height, connections:d.network?.connections, mempool:d.mempool?.size, version:d.network?.subversion || '—'}); } catch(e) { offline('zec'); }
+      try { const r = await fetch('https://carover0.xyz/firo/status.json'); const d = await r.json(); setNode('firo', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.version}); } catch(e) { offline('firo'); }
+      try { const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json'); const d = await r.json(); setNode('pivx', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.software_subversion}); } catch(e) { offline('pivx'); }
+      try { const r = await fetch('https://carover0.xyz/cacaX/ycash_status.json'); const d = await r.json(); setNode('ycash', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.software_subversion}); } catch(e) { offline('ycash'); }
+      try { const r = await fetch('https://carover0.xyz/firo/health.json'); const h = await r.json(); const cpu=h.cpu?.percent, ram=h.memory?.percent, disk=h.disk?.root_percent; setBar('cpu-bar',cpu); setBar('ram-bar',ram); setBar('disk-bar',disk); show('cpu-percent',`${cpu}%`); show('ram-percent',`${ram}%`); show('disk-percent',`${disk}%`); show('load',`1m     ${h.load?.['1m'] ?? '—'}\n5m     ${h.load?.['5m'] ?? '—'}\n15m    ${h.load?.['15m'] ?? '—'}`); show('uptime',h.uptime); show('vps-status','ALL SYSTEMS OPERATIONAL'); const date=new Date(h.timestamp); show('last-update',date.toLocaleString('es-AR',{hour12:false})+' UTC'); } catch(e) { show('vps-status','STATUS UNAVAILABLE'); }
     }
-
-    try {
-        const r3 = await fetch('https://carover0.xyz/cacaX/ycash_status.json');
-        const data3 = await r3.json();
-        document.getElementById('output-ycash-home').textContent =
-`Block Height    : ${data3.height}
-Difficulty      : ${data3.difficulty ? data3.difficulty.toFixed(2) : "N/A"}
-Connections     : ${data3.connections}
-Mempool TX      : ${data3.mempool}
-Node Version    : ${data3.software_subversion}
-Donation Address: 
-ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff`;
-    } catch (err) {
-        document.getElementById("output-ycash-home").textContent = "[info] en mantenimiento/actualizacion.";
-        console.error(err);
-    }
-
-try {
-    const r4 = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json');
-    const data4 = await r4.json();
-    document.getElementById('output-pivx-home').textContent =
-`Block Height    : ${data4.height}
-Difficulty      : ${data4.difficulty ? data4.difficulty.toFixed(2) : "N/A"}
-Connections     : ${data4.connections}
-Mempool TX      : ${data4.mempool}
-Node Version    : ${data4.software_subversion}
-Donation Address: 
-ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f`;
-} catch (err) {
-    document.getElementById("output-pivx-home").textContent = "[info] en mantenimiento/actualizacion.";
-    console.error(err);
-}
-
-try {
-    const r = await fetch('https://carover0.xyz/firo/health.json');
-    const h = await r.json();
-
-    const date = new Date(h.timestamp);
-    const dia = String(date.getUTCDate()).padStart(2, '0');
-    const mes = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const año = date.getUTCFullYear();
-    const horas = String(date.getUTCHours()).padStart(2, '0');
-    const minutos = String(date.getUTCMinutes()).padStart(2, '0');
-    const timestampLegible = `${dia}/${mes}/${año} ${horas}:${minutos} UTC`;
-
-    document.getElementById('output-health').textContent =
-`Timestamp : ${timestampLegible}
-Uptime    : ${h.uptime}
-
-CPU       : ${h.cpu.percent}% ${h.cpu.bar}
-Activo    : ${h.load["1m"]} | ${h.load["5m"]} | ${h.load["15m"]}
-
-RAM       : ${h.memory.used_mb} / ${h.memory.total_mb} MB
-Uso       : ${h.memory.percent}% ${h.memory.bar}
-Alerta    : ${h.memory.alert ? "SI" : "NO"}
-
-SWAP      : ${h.swap.used_mb} / ${h.swap.total_mb} MB
-Uso       : ${h.swap.percent}% ${h.swap.bar}
-
-DISCO /   : ${h.disk.root_percent}% ${h.disk.bar}
-Alerta    : ${h.disk.alert ? "SI" : "NO"}
-`;
-} catch (err) {
-    document.getElementById('output-health').textContent =
-        'Error loading health.json: ' + err.message;
-    console.error(err);
-    
-}
-if (!firstRunHealth) {
-    const now = new Date();
-    const timeStr = now.toLocaleString("es-AR", { hour12: false });
-
-    const el = document.getElementById("last-update-zec");
-    el.innerText = "Última actualización: " + timeStr;
-    el.style.display = "inline";
-} else {
-    firstRunHealth = false;
-}
-
-}
-
-// Inicial + refresco cada 30s
-updateStatus();
-setInterval(updateStatus, 30000);
-</script>
+    updateStatus(); setInterval(updateStatus, 30000);
+  </script>
 </body>
 </html>
