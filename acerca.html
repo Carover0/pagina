@@ -7,11 +7,39 @@
   <style>
     :root { --indigo:#330099; --indigo-soft:#8866cc; --indigo-light:#aa88ee; --green:#31db72; --line:rgba(51,0,153,.45); --panel:rgba(10,5,20,.92); --ui-scale:.9; }
     * { box-sizing:border-box; }
-    body { min-height:100vh; margin:0; color:#fff; font:15px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f4.png") center top/cover fixed no-repeat; }
-    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(30,10,50,.25) 55%,rgba(0,0,0,.6)); }
-    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(150,100,255,.025) 0 1px,transparent 1px 4px); }
+    body { 
+      min-height:100vh; 
+      margin:0; 
+      color:#fff; 
+      font:15px/1.25 "Lucida Console",Monaco,monospace; 
+      background:#020105; 
+      position:relative;
+      overflow-x:hidden;
+    }
+    body::before { 
+      content:""; 
+      position:fixed; 
+      inset:0; 
+      z-index:-2; 
+      background:url("assets/f4.png") center center/auto 100% no-repeat fixed;
+      background-size:auto 100%;
+    }
+    body::after { 
+      content:""; 
+      position:fixed; 
+      inset:0; 
+      z-index:-1;
+      background:linear-gradient(90deg,rgba(0,0,0,.7),rgba(30,10,50,.3) 55%,rgba(0,0,0,.7)); 
+    }
+    .scanlines {
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      background:repeating-linear-gradient(0deg,rgba(150,100,255,.025) 0 1px,transparent 1px 4px);
+    }
     .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--indigo-light); font-size:24px; letter-spacing:5px; text-shadow:0 0 15px var(--indigo); }
-    main { width:min(1380px,100%); min-height:100vh; margin:auto; padding:40px 10px 36px; display:flex; align-items:flex-start; transform:scale(var(--ui-scale)); transform-origin:top center; }
+    main { width:min(1380px,100%); min-height:100vh; margin:auto; padding:40px 10px 36px; display:flex; align-items:flex-start; transform:scale(var(--ui-scale)); transform-origin:top center; position:relative; z-index:1; }
     .panel { position:relative; width:min(670px,100%); padding:31px 38px 25px; background:linear-gradient(135deg,rgba(30,10,50,.95),var(--panel)); border:3px solid var(--indigo); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(51,0,153,.9),0 0 48px rgba(51,0,153,.22),inset 0 0 30px rgba(51,0,153,.09); margin-left:0; margin-top:0; }
     @media (min-width:701px) { .panel { margin-left:0; margin-top:0; } }
     .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--indigo-light) 0 11px,transparent 11px 18px); }.panel::before { top:17px; right:58px; }.panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
@@ -20,9 +48,13 @@
     .desc { color:#b8aacc; line-height:1.6; margin:4px 0; }
     .highlight { color:#fff; }
     @media (max-width:700px) { .brand { position:absolute; font-size:18px; letter-spacing:3px; }main { padding:50px 15px 24px; align-items:flex-start; }.panel { padding:28px 26px 24px; }.panel-title { font-size:16px; }.row { grid-template-columns:1fr; gap:1px; margin-bottom:7px; }.value { text-align:left; } }
+    @media (max-width:500px) {
+      body::before { background-size:cover; }
+    }
   </style>
 </head>
 <body>
+  <div class="scanlines"></div>
   <main><section class="panel">
     <div class="panel-title">cΔrovΣr0</div>
     <section class="section">
@@ -35,7 +67,7 @@
         <span class="tag">HTML5</span>
         <span class="tag">CSS3</span>
         <span class="tag">PHP</span> 
-        <span class="tag">Unix Shell
+        <span class="tag">Unix Shell</span>
       </div>
     <nav class="top-links"><a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
 
