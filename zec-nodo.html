@@ -1,338 +1,53 @@
-<html>
-<!-- 
-No hay frameworks.
-No hay librerías modernas.
-No hay scroll infinito ni diseño responsive.
-
-Solo HTML, JavaScript, y una idea clara:
-emular la experiencia de cuando lo digital era más honesto.
-
-cΔrovΣr0
--->
-
+<!doctype html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZCASH - NODO</title>
-<style>
-body {
-  background: #000;
-  color: #fff;
-  font-family: "Lucida Console", Monaco, monospace;
-  font-size: 15px;
-  line-height: 1.2;  
-  margin: 0;
-  padding: 20px;
-}
-
-.terminal {
-  max-width: 80ch;
-  width: 100%;
-  margin: 0;
-}
-
-.ascii-art {
-  color: #DD9D34;
-  font-size: 12px;
-  line-height: 1.1;  
-  margin: 5px 0 5px 0; 
-  white-space: pre;
-}
-
-.header-gold {
-  color: #DD9D34;
-  font-size: 23px;  
-  letter-spacing: 2px;
-  margin: 5px 0 2px 0;
-}
-
-.subheader {
-  color: #DD9D34;
-  font-size: 15px;  
-  margin: 15px 0 5px 0;
-  text-transform: uppercase;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  margin: 1px 0;  
-  max-width: 80ch;
-  line-height: 1.2;
-}
-
-.label {
-  color: #bbb;
-  width: 18ch;
-}
-
-.value {
-  color: #fff;
-}
-
-.positive { color: #198652; }
-.negative { color: #9B1C2E; }
-
-.footer {
-  margin-top: 20px;
-  padding-top: 5px;
-  color: #fff;
-  font-size: 15px;
-  line-height: 1.2;
-}
-
-a, a:visited, a:hover, a:active {
-  color: #DD9D34;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
-
-.blink {
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  from, to { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.version {
-  color: #777;
-  font-size: 15px;
-  margin-top: 0px;
-  margin-bottom: 5px;
-  line-height: 1.2;
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin: 10px 0 5px 0;  
-  max-width: 80ch;
-}
-
-@media (max-width: 600px) {
-  .grid-2 {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-}
-
-.data-block {
-  margin: 5px 0;  
-}
-
-.small {
-  color: #777;
-  font-size: 15px;
-  margin-top: 2px;
-  line-height: 1.2;
-}
-
-.link-block {
-  margin: 0px 0;  
-  line-height: 1.2;
-}
-
-.link-label {
-  color: #999;
-  font-size: 15px;
-  margin-bottom: 0px;
-  margin-top: 20px;
-  line-height: 1.2;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zcash · Monitor de nodo</title>
+  <style>
+    :root { --gold:#dd9d34; --gold-soft:#ffd170; --green:#31db72; --red:#ff756f; --line:rgba(221,157,52,.5); --panel:rgba(16,10,2,.91); --ui-scale:.9; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; color:#fff; font:15px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f3.png") center top/cover fixed no-repeat; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.48),rgba(10,6,0,.13) 55%,rgba(0,0,0,.56)); }
+    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,209,112,.025) 0 1px,transparent 1px 4px); }
+    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 15px var(--gold); }
+    main { width:min(1380px,100%); min-height:100vh; margin:auto; padding:72px 10px 36px; display:flex; align-items:center; transform:scale(var(--ui-scale)); transform-origin:top center; }
+    .panel { position:relative; width:min(670px,100%); padding:31px 38px 25px; background:linear-gradient(135deg,rgba(30,19,3,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(221,157,52,.85),0 0 48px rgba(221,157,52,.2),inset 0 0 30px rgba(221,157,52,.08); }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
+    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    .panel-title { display:flex; align-items:center; gap:15px; margin:2px 0 19px; color:var(--gold-soft); font-size:20px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
+    .logo { width:44px; height:44px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(255,193,65,.65)); }
+    .top-links { border-top:1px solid var(--line); padding:11px 0; font-size:13px; line-height:1.7; }
+    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
+    .section { border-top:1px solid var(--line); padding:12px 0 13px; }
+    .subheader { margin:0 0 8px; color:var(--gold-soft); font-size:14px; letter-spacing:.5px; text-transform:uppercase; }
+    .row { display:grid; grid-template-columns:1fr auto; gap:15px; min-height:19px; }
+    .label { color:#d2c8b7; } .value { color:#fff; text-align:right; overflow-wrap:anywhere; }
+    .positive { color:var(--green); } .negative { color:var(--red); } .note { color:var(--gold-soft); font-size:12px; line-height:1.45; }
+    .api { font-size:12px; overflow-wrap:anywhere; } .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:12px; color:#e6ddce; font-size:12px; line-height:1.45; } .small { color:#afa391; }
+    @media (max-width:700px) { .brand { position:absolute; font-size:18px; letter-spacing:3px; } main { padding:65px 15px 24px; align-items:flex-start; } .panel { padding:28px 26px 24px; } .panel-title { font-size:16px; } .row { grid-template-columns:1fr; gap:1px; margin-bottom:7px; } .value { text-align:left; } }
+  </style>
 </head>
 <body>
-
-<div class="terminal">
-cΔrovΣr0 • MONITOR DE NODO<br>
-==========================<br>
-</div>
-<a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
-<a href="https://carover0.github.io/pagina/zec-peers.html">[PEERS]</a> <a href="https://carover0.xyz/api/zebra-log.php?token=carover0">[VER NODO EN TIEMPO REAL]</a>
-
-<!-- NODO STATUS -->
-<div class="subheader">NODO ZCASH · ESTADO</div>
-<div id="node-status" class="data-block">
-  <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
-  <div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
-  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
-  <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
-  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
-  <div class="row"><span class="label">TIEMPO EN LINEA</span><span class="value" id="node-uptime">---</span></div>
-</div>
-
-<!-- NODO NETWORK -->
-<div class="subheader">NODO ZCASH · RED</div>
-<div id="node-network" class="data-block">
-  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
-  <div class="row"><span class="label">RECOMPENSA</span><span class="value" id="node-hashrate">---</span></div>
-  <div class="row"><span class="label">CHAIN</span><span class="value" id="node-chain">---</span></div>
-  <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
-</div>
-
-<!-- MARKET DATA -->
-<div class="subheader">ZCASH DATOS DE MERCADO</div>
-<div id="market-content" class="data-block">
-  <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
-</div>
-
-<!-- CONECTAR WALLET -->
-<div class="subheader">CONECTAR WALLET</div>
-<div id="wallet-connect" class="data-block">
-  <div class="row"><span class="label">SERVIDOR</span><span class="value">carover0.xyz:9067</span></div>
-  <div class="row"><span class="label">TLS</span><span class="value positive">HABILITADO</span></div>
-  <div class="row"><span class="label">% 30D EN LINEA</span><span class="value" id="node-uptime30d">---</span></div>
-</div>
-<div class="small" style="margin-top: 4px; color: #DD9D34;">
-  Conecta tu wallet a este servidor para contribuir a la descentralización de Zcash.
-</div>
-
-
-<div class="link-label">► API PUBLICA</div>
-<div class="link-block"><a href="https://carover0.xyz/zec/status.json" target="_blank">https://carover0.xyz/zec/status.json</a></div>
-
-<div class="link-label">► EXPLORADOR EN TELEGRAM</div>
-<div class="link-block"><a href="https://t.me/zcashexplorer_bot" target="_blank">@zcashexplorer_bot</a></div>
-
-<!-- FOOTER -->
-<div class="footer">
-<div class="small" id="market-updated">actualizado: <span id="price-time">---</span></div>
-════════════════════════════════════════════════════════════════════════════════<br>
-© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: t1g6NAetkFajFP62crR54DBazfqJjxRG1XD 
-</div>
-
-</div>
-
-<script>
-const NODE_JSON_URL = "https://carover0.xyz/zec/status.json";
-
-function formatUptime(seconds) {
-  if (!seconds) return '---';
-  seconds = parseInt(seconds);
-  const days = Math.floor(seconds / (60 * 60 * 24));
-  seconds %= (60 * 60 * 24);
-  const hours = Math.floor(seconds / (60 * 60));
-  seconds %= (60 * 60);
-  const minutes = Math.floor(seconds / 60);
-  return `${days}d ${hours}h ${minutes}min`;
-}
-
-function formatHash(hash) {
-  if (!hash || hash === '0') return '---';
-  return hash.substring(0, 16) + '...' + hash.substring(hash.length - 4);
-}
-
-function formatDifficulty(diff) {
-  if (!diff) return '---';
-  return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-function displayNodeData(data) {
-  if (!data) return;
-  
-  const uptimeSec = data.node?.uptime_seconds;
-  const isSynced = data.health?.synced;
-  const connections = data.network?.connections;
-  const inbound = data.network?.inbound;
-  const outbound = data.network?.outbound;
-  const version = data.versions?.zcashd;
-  const blockHeight = data.chain?.height;
-  const mempoolSize = data.mempool?.size;
-  const difficulty = data.chain?.difficulty;
-  const blockReward = data.mining?.block_reward;
-  const chainName = data.chain?.name;
-  const bestBlock = data.chain?.best_block;
-  
-  document.getElementById('node-version').innerText = version ? `Zebra ${version}` : '---';
-  
-  if (isSynced !== undefined) {
-    document.getElementById('node-state').innerText = isSynced ? "SINCRONIZADO" : "SINCRONIZANDO";
-    document.getElementById('node-state').className = `value ${isSynced ? "positive" : "negative"}`;
-  } else {
-    document.getElementById('node-state').innerText = '---';
-  }
-  
-  document.getElementById('node-blocks').innerText = blockHeight ? Number(blockHeight).toLocaleString() : '---';
-  
-  if (connections !== undefined && inbound !== undefined && outbound !== undefined) {
-    document.getElementById('node-connections').innerText = `${connections} (${inbound} IN · ${outbound} OUT)`;
-  } else {
-    document.getElementById('node-connections').innerText = '---';
-  }
-  
-  document.getElementById('node-mempool').innerText = mempoolSize !== undefined ? `${mempoolSize} TX` : '---';
-  
-  document.getElementById('node-uptime').innerText = formatUptime(uptimeSec);
-  
-  document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
-  
-  document.getElementById('node-hashrate').innerText = blockReward ? `${blockReward} ZEC` : '---';
-  
-  document.getElementById('node-chain').innerText = chainName || '---';
-  
-  document.getElementById('node-bestblock').innerText = formatHash(bestBlock);
-  
-  const price = data.price?.usd;
-  if (price) {
-    document.getElementById('price-usd').innerText = `$${price.toFixed(2)}`;
-  } else {
-    document.getElementById('price-usd').innerText = '---';
-  }
-  
-  const now = new Date();
-  document.getElementById('price-time').innerText = now.toLocaleTimeString();
-}
-
-async function fetchNodeData() {
-  try {
-    const response = await fetch(NODE_JSON_URL);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const jsonData = await response.json();
-    displayNodeData(jsonData);
-  } catch(err) {
-    console.error("Error de conexion:", err);
-
-  }
-}
-
-
-fetchNodeData();
-
-setInterval(fetchNodeData, 60000);
-</script>
-
-<script>
-async function fetchUptime() {
-    try {
-        const response = await fetch('https://carover0.xyz/uptime.txt');
-        
-        if (!response.ok) throw new Error('No disponible');
-        const text = await response.text();
-        
-        const matches = text.match(/([0-9.]+)%\s*\((\d+)\/(\d+)\)/);
-        if (matches) {
-            const percent = matches[1];
-            const position = matches[2];
-            const total = matches[3];
-            document.getElementById('node-uptime30d').innerHTML = 
-                `${percent}% <span style="color:#666;">(${position}/${total})</span>`;
-        } else {
-            document.getElementById('node-uptime30d').innerHTML = text || '---';
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('node-uptime30d').innerHTML = '---';
-    }
-}
-
-fetchUptime();
-setInterval(fetchUptime, 600000);
-</script>
-
+  <div class="brand">cΔrovΣr0</div>
+  <main><section class="panel">
+    <div class="panel-title"><img class="logo" src="assets/zcash.png" alt="Zcash">MONITOR DE NODO ZCASH</div>
+    <nav class="top-links"><a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a> · <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> · <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><a href="https://carover0.github.io/pagina/zec-peers.html">[PEERS]</a> · <a href="https://carover0.xyz/api/zebra-log.php?token=carover0" target="_blank" rel="noopener">[VER NODO EN TIEMPO REAL]</a></nav>
+    <section class="section"><h2 class="subheader">Nodo Zcash · Estado</h2><div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div><div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div><div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div><div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div><div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div><div class="row"><span class="label">TIEMPO EN LINEA</span><span class="value" id="node-uptime">---</span></div></section>
+    <section class="section"><h2 class="subheader">Nodo Zcash · Red</h2><div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div><div class="row"><span class="label">RECOMPENSA</span><span class="value" id="node-hashrate">---</span></div><div class="row"><span class="label">CHAIN</span><span class="value" id="node-chain">---</span></div><div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div></section>
+    <section class="section"><h2 class="subheader">Zcash · Datos de mercado</h2><div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div></section>
+    <section class="section"><h2 class="subheader">Conectar wallet</h2><div class="row"><span class="label">SERVIDOR</span><span class="value">carover0.xyz:9067</span></div><div class="row"><span class="label">TLS</span><span class="value positive">HABILITADO</span></div><div class="row"><span class="label">% 30D EN LINEA</span><span class="value" id="node-uptime30d">---</span></div><p class="note">Conectá tu wallet a este servidor para contribuir a la descentralización de Zcash.</p></section>
+    <section class="section"><h2 class="subheader">► API pública</h2><a class="api" href="https://carover0.xyz/zec/status.json" target="_blank" rel="noopener">https://carover0.xyz/zec/status.json</a></section>
+    <section class="section"><h2 class="subheader">► Explorador en Telegram</h2><a href="https://t.me/zcashexplorer_bot" target="_blank" rel="noopener">@zcashexplorer_bot</a></section>
+    <footer class="footer"><div class="small">actualizado: <span id="price-time">---</span></div></footer>
+  </section></main>
+  <script>
+    const NODE_JSON_URL='https://carover0.xyz/zec/status.json';
+    const el=id=>document.getElementById(id), formatUptime=s=>{if(!s)return'---';s=parseInt(s);const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;return `${d}d ${h}h ${Math.floor(s/60)}min`;}, formatHash=h=>!h||h==='0'?'---':h.substring(0,16)+'...'+h.substring(h.length-4), formatDifficulty=d=>!d?'---':Number(d).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    function displayNodeData(data) { if(!data)return; const synced=data.health?.synced, net=data.network||{}, chain=data.chain||{}; el('node-version').textContent=data.versions?.zcashd?`Zebra ${data.versions.zcashd}`:'---'; el('node-state').textContent=synced===undefined?'---':synced?'SINCRONIZADO':'SINCRONIZANDO'; el('node-state').className=`value ${synced?'positive':'negative'}`; el('node-blocks').textContent=chain.height?Number(chain.height).toLocaleString():'---'; el('node-connections').textContent=net.connections!==undefined?`${net.connections} (${net.inbound} IN · ${net.outbound} OUT)`:'---'; el('node-mempool').textContent=data.mempool?.size!==undefined?`${data.mempool.size} TX`:'---'; el('node-uptime').textContent=formatUptime(data.node?.uptime_seconds); el('node-difficulty').textContent=formatDifficulty(chain.difficulty); el('node-hashrate').textContent=data.mining?.block_reward?`${data.mining.block_reward} ZEC`:'---'; el('node-chain').textContent=chain.name||'---'; el('node-bestblock').textContent=formatHash(chain.best_block); el('price-usd').textContent=data.price?.usd?`$${data.price.usd.toFixed(2)}`:'---'; el('price-time').textContent=new Date().toLocaleTimeString(); }
+    async function fetchNodeData() { try { const r=await fetch(NODE_JSON_URL); if(!r.ok)throw new Error(`HTTP ${r.status}`); displayNodeData(await r.json()); } catch(e) { console.error('Error de conexión:',e); } }
+    async function fetchUptime() { try { const r=await fetch('https://carover0.xyz/uptime.txt'); if(!r.ok)throw new Error('No disponible'); const text=await r.text(), match=text.match(/([0-9.]+)%\s*\((\d+)\/(\d+)\)/); el('node-uptime30d').innerHTML=match?`${match[1]}% <span style="color:#8d806b;">(${match[2]}/${match[3]})</span>`:text||'---'; } catch(e) { console.error('Uptime:',e); el('node-uptime30d').textContent='---'; } }
+    fetchNodeData(); fetchUptime(); setInterval(fetchNodeData,60000); setInterval(fetchUptime,600000);
+  </script>
 </body>
 </html>
