@@ -6,7 +6,13 @@
   <style>
     :root { --violet:#a044ff; --violet-soft:#c597ff; --green:#31db72; --red:#ff756f; --line:rgba(160,68,255,.48); --panel:rgba(6,2,13,.91); --ui-scale:.9; }
     * { box-sizing:border-box; }
-    body { min-height:100vh; margin:0; color:#fff; font:15px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f3.png") center/cover fixed no-repeat; }
+    body {
+  min-height:100vh;
+  margin:0;
+  color:#fff;
+  font:15px/1.25 "Lucida Console",Monaco,monospace;
+  background:#020105 url("assets/f3.png") center top/cover fixed no-repeat;
+}
     body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.42),rgba(3,0,10,.14) 55%,rgba(0,0,0,.52)); }
     body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(202,150,255,.025) 0 1px,transparent 1px 4px); }
     .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--violet-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 15px var(--violet); }
