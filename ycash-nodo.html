@@ -1,250 +1,61 @@
-<html>
+<!doctype html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YCASH: MONITOR DE NODO</title>
-<style>
-body {
-  background: #000;
-  color: #fff;
-  font-family: "Lucida Console", Monaco, monospace;
-  font-size: 15px;
-  line-height: 1.2;  
-  margin: 0;
-  padding: 20px;
-}
-
-.terminal {
-  max-width: 80ch;
-  width: 100%;
-  margin: 0;
-}
-
-.subheader {
-  color: #F56733;
-  font-size: 15px;  
-  margin: 15px 0 5px 0;
-  text-transform: uppercase;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  margin: 1px 0;  
-  max-width: 80ch;
-  line-height: 1.2;
-}
-
-.label {
-  color: #bbb;
-  width: 18ch;
-}
-
-.value {
-  color: #fff;
-}
-
-.positive { color: #198652; }
-.negative { color: #9B1C2E; }
-
-.footer {
-  margin-top: 20px;
-  padding-top: 5px;
-  color: #fff;
-  font-size: 15px;
-  line-height: 1.2;
-}
-
-a, a:visited, a:hover, a:active {
-  color: #F56733;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
-
-.small {
-  color: #777;
-  font-size: 15px;
-  margin-top: 2px;
-  line-height: 1.2;
-}
-
-.link-block {
-  margin: 0px 0;  
-  line-height: 1.2;
-}
-
-.link-label {
-  color: #999;
-  font-size: 15px;
-  margin-bottom: 0px;
-  margin-top: 20px;
-  line-height: 1.2;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ycash · Monitor de nodo</title>
+  <style>
+    :root { --red:#F56733; --red-soft:#ff9a6b; --green:#198652; --line:rgba(245,103,51,.45); --panel:rgba(10,5,2,.93); --ui-scale:.9; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; color:#fff; font:15px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f3.png") center top/cover fixed no-repeat; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(20,8,2,.25) 55%,rgba(0,0,0,.6)); }
+    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,160,120,.025) 0 1px,transparent 1px 4px); }
+    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--red-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 15px var(--red); }
+    main { width:min(1380px,100%); min-height:100vh; margin:auto; padding:72px 10px 36px; display:flex; align-items:center; transform:scale(var(--ui-scale)); transform-origin:top center; }
+    .panel { position:relative; width:min(670px,100%); padding:31px 38px 25px; background:linear-gradient(135deg,rgba(35,12,5,.95),var(--panel)); border:3px solid var(--red); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(245,103,51,.8),0 0 48px rgba(245,103,51,.2),inset 0 0 30px rgba(245,103,51,.08); }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--red-soft) 0 11px,transparent 11px 18px); }.panel::before { top:17px; right:58px; }.panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    .panel-title { display:flex; align-items:center; gap:15px; margin:2px 0 19px; color:var(--red-soft); font-size:20px; letter-spacing:1px; text-shadow:0 0 10px var(--red); }.logo { width:44px; height:44px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(245,130,60,.65)); }
+    .top-links { border-top:1px solid var(--line); padding:11px 0; font-size:13px; line-height:1.7; }a { color:var(--red-soft); text-decoration:none; }a:hover { text-decoration:underline; }.section { border-top:1px solid var(--line); padding:12px 0 13px; }.subheader { margin:0 0 8px; color:var(--red-soft); font-size:14px; letter-spacing:.5px; text-transform:uppercase; }.row { display:grid; grid-template-columns:1fr auto; gap:15px; min-height:19px; }.label { color:#d4bcc1; }.value { color:#fff; text-align:right; overflow-wrap:anywhere; }.positive { color:var(--green); }.negative { color:#ff7b5a; }.note { color:var(--red-soft); font-size:12px; line-height:1.45; }.api { font-size:12px; overflow-wrap:anywhere; }.footer { border-top:1px solid var(--line); margin-top:2px; padding-top:12px; color:#ead8db; font-size:12px; line-height:1.45; }.small { color:#b99ea4; font-size:12px; }
+    @media (max-width:700px) { .brand { position:absolute; font-size:18px; letter-spacing:3px; }main { padding:65px 15px 24px; align-items:flex-start; }.panel { padding:28px 26px 24px; }.panel-title { font-size:16px; }.row { grid-template-columns:1fr; gap:1px; margin-bottom:7px; }.value { text-align:left; } }
+  </style>
 </head>
 <body>
-
-<div class="terminal"><br>
-cΔrovΣr0 • MONITOR DE NODO YCASH<br>
-================================<br>
-</div>
-<a href="https://carover0.github.io/pagina/ycash-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/ycash-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
-
-<div class="subheader">NODO YCASH · ESTADO</div>
-<div id="node-status" class="data-block">
-  <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
-  <div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
-  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
-  <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
-  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
-</div>
-
-<div class="subheader">NODO YCASH · RED</div>
-<div id="node-network" class="data-block">
-  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
-  <div class="row"><span class="label">REWARD TOTAL</span><span class="value" id="node-reward-total">---</span></div>
-  <div class="row"><span class="label">REWARD MINERO</span><span class="value" id="node-reward-miner">---</span></div>
-  <div class="row"><span class="label">REWARD FOUNDERS</span><span class="value" id="node-reward-founders">---</span></div>
-  <div class="row"><span class="label">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
-  <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
-</div>
-
-<div class="subheader">YCASH DATOS DE MERCADO</div>
-<div id="market-content" class="data-block">
-  <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
-  <div class="row"><span class="label">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
-</div>
-
-<div class="link-label">► API PUBLICA</div>
-<div class="link-block"><a href="https://carover0.xyz/cacaX/ycash_status.json" target="_blank">https://carover0.xyz/cacaX/ycash_status.json</a></div>
-
-<div class="footer">
-<div class="small" id="market-updated">actualizado: <span id="price-time">---</span></div>
-════════════════════════════════════════════════════════════════════════════════<br>
-© 2026 Creada con ♥ por cΔrovΣr0 · apoya: ys1e0x8xq7q6vyt55d7rhpt92ap8jqf394ev4u4q50kfn5aj0qnvn5mglxep2gpkjzlsdj729jzhff
-</div>
-
-</div>
-
-<script>
-const STATUS_URL = "https://carover0.xyz/cacaX/ycash_status.json";
-const PRICE_API_URL = "https://carover0.xyz/getprice-ycash.php?token=ycash2026"; 
-
-function formatDifficulty(diff) {
-  if (!diff) return '---';
-  return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-function formatHash(hash) {
-  if (!hash || hash === '0') return '---';
-  return hash.substring(0, 16) + '...' + hash.substring(hash.length - 8);
-}
-
-function formatNumber(num) {
-  if (num === undefined || num === null) return '---';
-  return Number(num).toLocaleString();
-}
-
-function formatReward(reward) {
-  if (reward === undefined || reward === null) return '---';
-  return reward.toFixed(8) + ' YEC';
-}
-
-async function fetchNodeData() {
-  try {
-    const statusRes = await fetch(STATUS_URL).then(r => r.json()).catch(() => ({}));
-    
-    const version = statusRes.software_subversion || statusRes.subversion || '---';
-    const connections = statusRes.connections || statusRes.peers || 0;
-    const blockHeight = statusRes.height || 0;
-    const mempoolSize = statusRes.mempool || 0;
-    const difficulty = statusRes.difficulty || 0;
-    const protocolVersion = statusRes.protocolversion || '---';
-    const bestBlockHash = statusRes.bestblock || '---';
-    
-    const rewardTotal = statusRes.blockreward_total || 1.5625;
-    const rewardFounders = 0;
-    const rewardMiner = rewardTotal;  
-    
-    const syncProgress = statusRes.sync_progress || 0;
-    const synced = syncProgress > 0.9999;
-    
-    document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
-    
-    document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
-    document.getElementById('node-state').className = `value ${synced ? 'positive' : 'negative'}`;
-    
-    document.getElementById('node-blocks').innerText = formatNumber(blockHeight);
-    document.getElementById('node-connections').innerText = connections;
-    document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
-    document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
-    document.getElementById('node-reward-total').innerHTML = formatReward(rewardTotal);
-    document.getElementById('node-reward-miner').innerHTML = formatReward(rewardMiner);
-    document.getElementById('node-reward-founders').innerHTML = formatReward(rewardFounders);
-    document.getElementById('node-protocol').innerText = protocolVersion;
-    document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
-    
-  } catch(err) {
-    console.error("Error cargando datos:", err);
-    document.getElementById('node-version').innerText = 'Error';
-    document.getElementById('node-state').innerText = 'ERROR';
-    document.getElementById('node-blocks').innerText = '---';
-    document.getElementById('node-connections').innerText = '---';
-    document.getElementById('node-mempool').innerText = '---';
-    document.getElementById('node-difficulty').innerText = '---';
-    document.getElementById('node-reward-total').innerHTML = '---';
-    document.getElementById('node-reward-miner').innerHTML = '---';
-    document.getElementById('node-reward-founders').innerHTML = '---';
-    document.getElementById('node-protocol').innerText = '---';
-    document.getElementById('node-bestblock').innerText = '---';
-  }
-}
-
-async function fetchPrice() {
-  try {
-    const response = await fetch(PRICE_API_URL); 
-    if (!response.ok) throw new Error('No disponible');
-    const data = await response.json();
-    
-    if (data.ycash && data.success) {
-      document.getElementById('price-usd').innerHTML = `$${data.ycash.usd.toFixed(4)}`;
+  <div class="brand">cΔrovΣr0</div>
+  <main><section class="panel">
+    <div class="panel-title"><img class="logo" src="assets/ycash.png" alt="Ycash">MONITOR DE NODO YCASH</div>
+    <nav class="top-links"><a href="https://carover0.github.io/pagina/ycash-explorer.html">[EXPLORADOR]</a> · <a href="https://carover0.github.io/pagina/ycash-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a> <a href="https://carover0.xyz/cacaX/ycash_status.json" target="_blank" rel="noopener">[VER NODO EN TIEMPO REAL]</a></nav>
+    <section class="section"><h2 class="subheader">Nodo Ycash · Estado</h2><div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div><div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div><div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div><div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div><div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div><div class="row"><span class="label">TIEMPO EN LINEA</span><span class="value" id="node-uptime">---</span></div></section>
+    <section class="section"><h2 class="subheader">Nodo Ycash · Red</h2><div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div><div class="row"><span class="label">REWARD TOTAL</span><span class="value" id="node-reward-total">---</span></div><div class="row"><span class="label">REWARD MINERO</span><span class="value" id="node-reward-miner">---</span></div><div class="row"><span class="label">REWARD FOUNDERS</span><span class="value" id="node-reward-founders">---</span></div><div class="row"><span class="label">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div><div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div></section>
+    <section class="section"><h2 class="subheader">Datos de mercado Ycash</h2><div id="market-content"><div class="row"><span class="label">PRECIO USD</span><span class="value">---</span></div><div class="row"><span class="label">24h %</span><span class="value">---</span></div><div class="row"><span class="label">7d %</span><span class="value">---</span></div><div class="row"><span class="label">MARKET CAP</span><span class="value">---</span></div><div class="row"><span class="label">VOLUMEN 24h</span><span class="value">---</span></div></div><div class="small" id="market-updated">actualizando...</div></section>
+    <section class="section"><h2 class="subheader">► API pública</h2><a class="api" href="https://carover0.xyz/cacaX/ycash_status.json" target="_blank" rel="noopener">carover0.xyz/cacaX/ycash_status.json</a></section>
+  </section>
+  </section></main>
+  <script>
+    const NODE_JSON_URL='https://carover0.xyz/cacaX/ycash_status.json', COINGECKO_API='https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
+    const el=id=>document.getElementById(id), formatUptime=s=>{s=parseInt(s||0);const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;return `${d}d ${h}h ${Math.floor(s/60)}min`;}, formatHash=h=>!h?'N/A':h.substring(0,15)+'...'+h.substring(h.length-7);
+    function displayNodeData(d) { const synced=!!d.sync_progress && d.sync_progress > 0.9999; 
+      el('node-version').textContent=(d.software_subversion||d.subversion||'N/A').replace(/[\/"]/g,'');
+      el('node-state').textContent=synced?'SINCRONIZADO':'SINCRONIZANDO';
+      el('node-state').className=`value ${synced?'positive':'negative'}`;
+      el('node-blocks').textContent=Number(d.height||0).toLocaleString();
+      el('node-connections').textContent=`${d.connections??0}`;
+      el('node-mempool').textContent=`${d.mempool??0} TX`;
+      el('node-uptime').textContent=formatUptime(d.uptime_seconds);
+      el('node-difficulty').textContent=Number(d.difficulty||0).toFixed(2);
       
-      if (data.ycash.usd_24h_vol) {
-        document.getElementById('price-volume').innerHTML = `$${Math.round(data.ycash.usd_24h_vol).toLocaleString()}`;
-      } else {
-        document.getElementById('price-volume').innerHTML = '---';
-      }
+      const rewardTotal = d.blockreward_total ?? 1.5625;
+      const rewardMiner = rewardTotal;
+      const rewardFounders = 0;
+      el('node-reward-total').textContent=rewardTotal.toFixed(8)+' YEC';
+      el('node-reward-miner').textContent=rewardMiner.toFixed(8)+' YEC';
+      el('node-reward-founders').textContent=rewardFounders.toFixed(8)+' YEC';
       
-      if (data.last_updated) {
-        document.getElementById('price-time').innerText = data.last_updated;
-      } else {
-        document.getElementById('price-time').innerText = new Date().toLocaleString();
-      }
-    } else {
-      document.getElementById('price-usd').innerHTML = '---';
-      document.getElementById('price-volume').innerHTML = '---';
-      document.getElementById('price-time').innerText = new Date().toLocaleString();
+      el('node-protocol').textContent=d.protocolversion||'---';
+      el('node-bestblock').textContent=formatHash(d.bestblock);
     }
-  } catch (error) {
-    console.error('Error precio:', error);
-    document.getElementById('price-usd').innerHTML = '---';
-    document.getElementById('price-volume').innerHTML = '---';
-    document.getElementById('price-time').innerText = new Date().toLocaleString();
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  fetchPrice();
-  fetchNodeData();
-});
-
-setInterval(() => {
-  fetchNodeData();
-  fetchPrice();
-}, 30000);
-</script>
-
+    async function fetchMarketData() { try { const d=await (await fetch(COINGECKO_API)).json(), m=d.market_data, p=m.current_price.usd, c24=m.price_change_percentage_24h, c7=m.price_change_percentage_7d; const row=(label,value,cls='')=>`<div class="row"><span class="label">${label}</span><span class="value ${cls}">${value}</span></div>`;el('market-content').innerHTML=row('PRECIO USD',`$${p.toFixed(4)}`)+row('24h %',`${c24>=0?'+':''}${c24.toFixed(2)}%`,c24>=0?'positive':'negative')+row('7d %',`${c7>=0?'+':''}${c7.toFixed(2)}%`,c7>=0?'positive':'negative')+row('MARKET CAP',`$${(m.market_cap.usd/1e6).toFixed(2)}M`)+row('VOLUMEN 24h',`$${(m.total_volume.usd/1e6).toFixed(2)}M`);el('market-updated').textContent=`actualizado: ${new Date().toLocaleTimeString()}`; } catch(e) { el('market-content').innerHTML='<span class="negative">ERROR DE MERCADO</span>'; } }
+    async function fetchNodeData() { try { const r=await fetch(NODE_JSON_URL);if(!r.ok)throw new Error(`HTTP ${r.status}`);displayNodeData(await r.json()); } catch(e) { console.error('Error de conexión:',e);el('node-version').textContent='ERROR DE CONEXIÓN'; } }
+    fetchNodeData();fetchMarketData();setInterval(fetchNodeData,60000);setInterval(fetchMarketData,60000);
+  </script>
 </body>
 </html>
