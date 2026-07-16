@@ -1,33 +1,34 @@
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=.9">
   <title>cΔrovΣr0 · Nodos</title>
   <style>
-    :root { --cyan:#00d9ff; --green:#31db72; --panel:rgba(1,14,19,.91); --line:rgba(0,217,255,.45); --ui-scale:1; }
+    :root { --cyan:#00d9ff; --green:#31db72; --panel:rgba(1,14,19,.91); --line:rgba(0,217,255,.45); --ui-scale:.9; }
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; color:var(--green); font-family:"Lucida Console","Monaco",monospace; background:#02070a url('assets/f2.png') center/cover fixed no-repeat; }
     body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.5),transparent 34%,transparent 66%,rgba(0,0,0,.5)),rgba(0,5,10,.35); }
     body::after { content:""; pointer-events:none; position:fixed; inset:0; background:repeating-linear-gradient(0deg,rgba(0,217,255,.025) 0 1px,transparent 1px 4px); }
-    .brand { position:fixed; z-index:3; top:18px; left:50%; transform:translateX(-50%) scale(var(--ui-scale));  transform-origin:center top; color:var(--cyan); font-size:clamp(20px,2vw,30px); font-weight:bold; letter-spacing:5px; text-shadow:0 0 18px var(--cyan); }
-main {
-  width:min(1600px,100%);
-  min-height:100vh;
-  margin:auto;
-  padding:76px 10px 46px;
-  display:grid;
-  grid-template-columns:minmax(330px,412px) 1fr minmax(330px,412px);
-  gap:clamp(25px,6vw,120px);
-  align-items:center;
-  transform:scale(var(--ui-scale));
-  transform-origin:top center;
-}
+    .brand { position:fixed; z-index:3; top:18px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--cyan); font-size:clamp(20px,2vw,30px); font-weight:bold; letter-spacing:5px; text-shadow:0 0 18px var(--cyan); font-family:"Lucida Console","Monaco",monospace; }
+    main { width:min(1600px,100%); min-height:100vh; margin:auto; padding:76px 48px 46px; display:grid; grid-template-columns:minmax(330px,412px) 1fr minmax(330px,412px); gap:clamp(25px,6vw,120px); align-items:center; transform:scale(var(--ui-scale)); transform-origin:top center; }
     .panel { position:relative; z-index:1; padding:36px 39px 27px; background:linear-gradient(135deg,rgba(2,20,27,.94),var(--panel)); border:3px solid var(--cyan); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 15px rgba(0,217,255,.9),0 0 45px rgba(0,217,255,.18),inset 0 0 26px rgba(0,217,255,.06); }
     .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--cyan) 0 11px,transparent 11px 18px); }
     .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
     h2 { margin:4px 0 18px; color:var(--cyan); font-size:20px; font-weight:normal; letter-spacing:2px; text-shadow:0 0 10px var(--cyan); }
     .node,.section { border-top:1px solid var(--line); padding:14px 0 16px; }
     .node-title { display:flex; align-items:center; gap:12px; margin-bottom:7px; color:var(--cyan); font-size:18px; }
+    .node-link {
+      color:var(--cyan);
+      text-decoration:none;
+      font-weight:bold;
+      transition:color 0.2s;
+      font-family:"Lucida Console","Monaco",monospace;
+    }
+    .node-link:hover {
+      color:#fff;
+      text-decoration:underline;
+    }
     .coin { flex:none; width:40px; height:40px; display:grid; place-items:center; }
     .coin img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 6px rgba(255,255,255,.25)); }
     .online { margin-left:auto; font-size:13px; color:var(--green); }
@@ -38,30 +39,7 @@ main {
     .info { font-size:15px; line-height:1.4; white-space:pre-line; } .status { letter-spacing:1px; } .error { color:#ff8b75; font-size:14px; }
     .links { position:relative; z-index:1; grid-column:1 / -1; text-align:center; color:#b8fff0; font-size:15px; text-shadow:0 1px 3px #000; } .links a { color:var(--cyan); text-decoration:none; } .links a:hover { text-decoration:underline; }
     @media (max-width:1050px) { main { grid-template-columns:1fr 1fr; gap:25px; padding:74px 24px 35px; } .status-panel { grid-column:2; } .links { grid-column:1 / -1; } }
-@media (max-width:700px) {
-  main { display:block; padding:72px 15px 28px; }
-  .panel { padding:31px 27px 24px; margin-bottom:22px; }
-  .data { padding-left:48px; font-size:14px; }
-  .data strong { min-width:98px; }
-  .node-title { font-size:17px; gap:10px; }
-  .coin { width:36px; height:36px; font-size:20px; }
-  .online { font-size:12px; }
-  h2 { font-size:20px; }
-  .links { font-size:12px; }
-
-  .panel:first-child,
-  .status-panel {
-    transform:none;
-  }
-}
-.panel:first-child {
-  transform: translateX(-10px);
-}
-
-.status-panel {
-  transform: translateX(10px);
-}
-
+    @media (max-width:700px) { main { display:block; padding:72px 15px 28px; } .panel { padding:31px 27px 24px; margin-bottom:22px; } .data { padding-left:48px; font-size:14px; } .data strong { min-width:98px; } .node-title { font-size:17px; gap:10px; } .coin { width:36px; height:36px; font-size:20px; } .online { font-size:12px; } h2 { font-size:20px; } .links { font-size:12px; } }
   </style>
 </head>
 <body>
@@ -69,10 +47,10 @@ main {
   <main>
     <section class="panel">
       <h2>FULL NODES</h2>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/zcash.png" alt="Zcash"></span>ZCASH <span class="online" id="zec-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="zec-height">—</strong><span>Peers</span><strong id="zec-peers">—</strong><span>Mempool</span><strong id="zec-mempool">—</strong><span>Version</span><strong id="zec-version">—</strong></div></article>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/firo.png" alt="Firo"></span>FIRO <span class="online" id="firo-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="firo-height">—</strong><span>Peers</span><strong id="firo-peers">—</strong><span>Mempool</span><strong id="firo-mempool">—</strong><span>Version</span><strong id="firo-version">—</strong></div></article>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/pivx.png" alt="PIVX"></span>PIVX <span class="online" id="pivx-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="pivx-height">—</strong><span>Peers</span><strong id="pivx-peers">—</strong><span>Mempool</span><strong id="pivx-mempool">—</strong><span>Version</span><strong id="pivx-version">—</strong></div></article>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/ycash.png" alt="Ycash"></span>YCASH <span class="online" id="ycash-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="ycash-height">—</strong><span>Peers</span><strong id="ycash-peers">—</strong><span>Mempool</span><strong id="ycash-mempool">—</strong><span>Version</span><strong id="ycash-version">—</strong></div></article>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/zcash.png" alt="Zcash"></span><a class="node-link" href="https://carover0.github.io/pagina/zec-nodo.html">ZCASH</a> <span class="online" id="zec-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="zec-height">—</strong><span>Peers</span><strong id="zec-peers">—</strong><span>Mempool</span><strong id="zec-mempool">—</strong><span>Version</span><strong id="zec-version">—</strong></div></article>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/firo.png" alt="Firo"></span><a class="node-link" href="https://carover0.github.io/pagina/firo-nodo.html">FIRO</a> <span class="online" id="firo-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="firo-height">—</strong><span>Peers</span><strong id="firo-peers">—</strong><span>Mempool</span><strong id="firo-mempool">—</strong><span>Version</span><strong id="firo-version">—</strong></div></article>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/pivx.png" alt="PIVX"></span><a class="node-link" href="https://carover0.github.io/pagina/pivx-nodo.html">PIVX</a> <span class="online" id="pivx-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="pivx-height">—</strong><span>Peers</span><strong id="pivx-peers">—</strong><span>Mempool</span><strong id="pivx-mempool">—</strong><span>Version</span><strong id="pivx-version">—</strong></div></article>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/ycash.png" alt="Ycash"></span><a class="node-link" href="https://carover0.github.io/pagina/ycash-nodo.html">YCASH</a> <span class="online" id="ycash-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="ycash-height">—</strong><span>Peers</span><strong id="ycash-peers">—</strong><span>Mempool</span><strong id="ycash-mempool">—</strong><span>Version</span><strong id="ycash-version">—</strong></div></article>
     </section>
     <div></div>
     <aside class="panel status-panel"><h2>VPS STATUS</h2>
@@ -83,13 +61,15 @@ main {
       <div class="section"><span class="metric-name">UPTIME</span><div class="info" id="uptime">—</div></div>
       <div class="section"><span class="metric-name">LAST UPDATE</span><div class="info" id="last-update">—</div></div>
       <div class="section"><span class="metric-name">STATUS</span><div class="info status" id="vps-status">CONNECTING…</div></div>
+      <div class="section"><span class="metric-name">SOBRE MI</span><div class="info" id="last-update"><a href="https://carover0.github.io/pagina/zcash-nodo.html" target="_blank" class="node-link">Acerca</a> 
+</div>
     </aside>
     <footer class="links">
-<a href="https://carover0.github.io/pagina/zec-nodo.html" target="_blank">Zcash nodo</a> · 
-<a href="https://carover0.github.io/pagina/firo-nodo.html" target="_blank">Firo nodo</a> · 
-<a href="https://carover0.github.io/pagina/ycash-nodo.html" target="_blank">Ycash nodo</a> ·
-<a href="https://carover0.github.io/pagina/pivx-nodo.html" target="_blank">Pivx nodo</a> ·
-<a href="https://carover0.github.io/pagina/acerca.html" target="_blank">Acerca</a>      
+      <a href="https://carover0.github.io/pagina/zcash-nodo.html" target="_blank">Zcash nodo</a> · 
+      <a href="https://carover0.github.io/pagina/firo-nodo.html" target="_blank">Firo nodo</a> · 
+      <a href="https://carover0.github.io/pagina/ycash-nodo.html" target="_blank">Ycash nodo</a> · 
+      <a href="https://carover0.github.io/pagina/pivx-nodo.html" target="_blank">Pivx nodo</a> ·
+      <a href="https://carover0.github.io/pagina/acerca.html" target="_blank">Acerca</a> 
     </footer>
   </main>
   <script>
