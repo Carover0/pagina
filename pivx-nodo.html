@@ -1,347 +1,57 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PIVX: MONITOR DE NODO</title>
-<style>
-body {
-  background: #000;
-  color: #fff;
-  font-family: "Lucida Console", Monaco, monospace;
-  font-size: 15px;
-  line-height: 1.2;  
-  margin: 0;
-  padding: 20px;
-}
-
-.terminal {
-  max-width: 80ch;
-  width: 100%;
-  margin: 0;
-}
-
-.subheader {
-  color: #A044FF;
-  font-size: 15px;  
-  margin: 15px 0 5px 0;
-  text-transform: uppercase;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  margin: 1px 0;  
-  max-width: 80ch;
-  line-height: 1.2;
-}
-
-.label {
-  color: #bbb;
-  width: 18ch;
-}
-
-.value {
-  color: #fff;
-}
-
-.positive { color: #198652; }
-.negative { color: #9B1C2E; }
-.warning { color: #FFA500; }
-
-.footer {
-  margin-top: 20px;
-  padding-top: 5px;
-  color: #fff;
-  font-size: 15px;
-  line-height: 1.2;
-}
-
-a, a:visited, a:hover, a:active {
-  color: #A044FF; 
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
-
-.small {
-  color: #777;
-  font-size: 15px;
-  margin-top: 2px;
-  line-height: 1.2;
-}
-
-.link-block {
-  margin: 0px 0;  
-  line-height: 1.2;
-}
-
-.link-label {
-  color: #999;
-  font-size: 15px;
-  margin-bottom: 0px;
-  margin-top: 20px;
-  line-height: 1.2;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIVX · Monitor de nodo</title>
+  <style>
+    :root { --violet:#a044ff; --violet-soft:#c597ff; --green:#31db72; --red:#ff756f; --line:rgba(160,68,255,.48); --panel:rgba(6,2,13,.91); --ui-scale:.9; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; color:#fff; font:15px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f3.png") center/cover fixed no-repeat; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.42),rgba(3,0,10,.14) 55%,rgba(0,0,0,.52)); }
+    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(202,150,255,.025) 0 1px,transparent 1px 4px); }
+    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--violet-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 15px var(--violet); }
+    main { width:min(1380px,100%); min-height:100vh; margin:auto; padding:72px 10px 36px; display:flex; align-items:center; transform:scale(var(--ui-scale)); transform-origin:top center; }
+    .panel { position:relative; width:min(660px,100%); padding:31px 38px 25px; background:linear-gradient(135deg,rgba(18,6,31,.95),var(--panel)); border:3px solid var(--violet); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(160,68,255,.85),0 0 48px rgba(160,68,255,.2),inset 0 0 30px rgba(160,68,255,.08); }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--violet) 0 11px,transparent 11px 18px); }
+    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    .panel-title { display:flex; align-items:center; gap:15px; margin:2px 0 19px; color:var(--violet-soft); font-size:20px; letter-spacing:1px; text-shadow:0 0 10px var(--violet); }
+    .logo { width:44px; height:44px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(184,110,255,.65)); }
+    .top-links { border-top:1px solid var(--line); padding:11px 0; font-size:13px; }
+    a { color:var(--violet-soft); text-decoration:none; } a:hover { text-decoration:underline; }
+    .section { border-top:1px solid var(--line); padding:12px 0 13px; }
+    .subheader { margin:0 0 8px; color:var(--violet-soft); font-size:14px; letter-spacing:.5px; text-transform:uppercase; }
+    .row { display:grid; grid-template-columns:1fr auto; gap:15px; min-height:19px; }
+    .label { color:#c4b8d0; } .value { color:#fff; text-align:right; overflow-wrap:anywhere; }
+    .positive { color:var(--green); } .negative { color:var(--red); } .warning { color:#ffb530; }
+    .address { font-size:12px; color:#fff; overflow-wrap:anywhere; }
+    .api { font-size:12px; overflow-wrap:anywhere; } .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:12px; color:#ddd3e6; font-size:12px; line-height:1.45; } .small { color:#a89cb4; }
+    @media (max-width:700px) { .brand { position:absolute; font-size:18px; letter-spacing:3px; } main { padding:65px 15px 24px; align-items:flex-start; } .panel { padding:28px 26px 24px; } .panel-title { font-size:16px; } .row { grid-template-columns:1fr; gap:1px; margin-bottom:7px; } .value { text-align:left; } }
+  </style>
 </head>
 <body>
-
-<div class="terminal"><br>
-cΔrovΣr0 • MONITOR DE NODO PIVX<br>
-================================<br>
-</div>
-<a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/pivx-stakers.html">[COLD STAKING]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
-
-  <!-- NODO ESTADO -->
-<div class="subheader">NODO PIVX · ESTADO</div>
-<div id="node-status" class="data-block">
-  <div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div>
-  <div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
-  <div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
-  <div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
-  <div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
-</div>
-
-<!-- NODO NETWORK -->
-<div class="subheader">NODO PIVX · RED</div>
-<div id="node-network" class="data-block">
-  <div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
-  <div class="row"><span class="label">STAKE PROMEDIO</span><span class="value" id="node-stake">---</span></div>
-  <div class="row"><span class="label">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
-  <div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div>
-</div>
-
-<!-- MARKET DATA -->
-<div class="subheader">PIVX DATOS DE MERCADO</div>
-<div id="market-content" class="data-block">
-  <div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div>
-  <div class="row"><span class="label">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
-</div>
-
-<!-- COLD STAKING · RESUMEN -->
-<div class="subheader">COLD STAKING · RESUMEN</div>
-<div id="coldstaking-summary" class="data-block">
-  <div class="row"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
-  <div class="row"><span class="label">TOTAL DELEGADO</span><span class="value" id="cs-total">---</span></div>
-  <div class="row"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
-  <div class="row"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
-  <div class="row"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
-  <div class="row"><span class="label">BALANCE LOCAL</span><span class="value" id="cs-local-balance">---</span></div>
-</div>
-
-<!-- DIRECCIÓN DE COLD STAKING -->
-<div class="subheader">DIRECCIÓN DE COLD STAKING</div>
-<div class="data-block">
-  <div class="row"><span class="label">DELEGA ACA</span><span class="value">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span></div>
-</div>
-
-<!-- API PUBLICA -->
-<div class="link-label">► API PUBLICA</div>
-<div class="link-block"><a href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank">https://carover0.xyz/cacaX/pivx_status_X.json</a></div>
-
-<!-- FOOTER -->
-<div class="footer">
-<div class="small" id="market-updated">actualizado: <span id="price-time">---</span></div>
-════════════════════════════════════════════════════════════════════════════════<br>
-© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f
-</div>
-
-</div>
-
-<script>
-const RPC_URL = "https://carover0.xyz/api/pivx/pivx.php";
-const TOKEN = "pivx2026";
-const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
-const PRICE_API_URL = "https://carover0.xyz/getprice-pivx.php?token=pivx2026"; 
-
-let stakeCache = {
-  value: 4.0,
-  timestamp: 0
-};
-
-// ========== FUNCIONES AUXILIARES ==========
-function formatDifficulty(diff) {
-  if (!diff) return '---';
-  return Number(diff).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-function formatHash(hash) {
-  if (!hash || hash === '0') return '---';
-  return hash.substring(0, 16) + '...' + hash.substring(hash.length - 8);
-}
-
-function formatNumber(num) {
-  if (num === undefined || num === null) return '---';
-  return Number(num).toLocaleString();
-}
-
-// ========== LLAMADAS RPC DIRECTAS ==========
-async function callRPC(method, params = []) {
-  try {
-    const url = `${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(method + (params.length ? ' ' + params.join(' ') : ''))}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    return data.result;
-  } catch(e) {
-    console.error(`RPC error ${method}:`, e);
-    return null;
-  }
-}
-
-// ========== STAKE PROMEDIO ==========
-async function calcularStakePromedio(blockHeight) {
-  const ahora = Date.now();
-  if (stakeCache.value && (ahora - stakeCache.timestamp) < 300000) {
-    return stakeCache.value;
-  }
-  
-  try {
-    const stakingInfo = await callRPC('getstakinginfo');
-    if (stakingInfo) {
-      let stakeValue = stakingInfo.stakeReward || stakingInfo.reward || 4.0;
-      stakeCache = { value: stakeValue, timestamp: ahora };
-      return stakeValue;
-    }
-    return 4.0;
-  } catch(err) {
-    console.error("Error calculando stake promedio:", err);
-    return 4.0;
-  }
-}
-
-// ========== COLD STAKING · RESUMEN ==========
-async function fetchColdStakingSummary(statusRes) {
-  try {
-    const csInfo = statusRes.cold_staking_info;
-    const stakingInfo = statusRes.staking_info;
-    
-    if (csInfo && csInfo.utxos) {
-      const utxos = csInfo.utxos;
-      const utxosList = utxos.list || [];
-      
-      document.getElementById('cs-utxos').innerText = utxos.count || 0;
-      document.getElementById('cs-total').innerText = (utxos.total_amount || 0).toFixed(2) + ' PIV';
-      
-      if (utxosList.length > 0) {
-        const confirmaciones = utxosList.map(u => u.confirmations);
-        const minConf = Math.min(...confirmaciones);
-        document.getElementById('cs-confirms').innerHTML = `${minConf} <span style="color:#777">(mín)</span>`;
-        
-        const whitelistedCount = utxosList.filter(u => u.whitelisted === "true").length;
-        document.getElementById('cs-whitelist').innerHTML = `${whitelistedCount}/${utxosList.length} <span style="color:#198652"></span>`;
-      } else {
-        document.getElementById('cs-confirms').innerText = '---';
-        document.getElementById('cs-whitelist').innerText = '---';
-      }
-    }
-    
-    if (stakingInfo) {
-      const stakeStatus = stakingInfo.status;
-      const balances = stakingInfo.balances;
-      
-      if (stakeStatus && stakeStatus.staking_status === true && balances && balances.stakeable_coins > 0) {
-        document.getElementById('cs-staking-status').innerHTML = '<span class="positive">ACTIVO</span>';
-      } else if (stakeStatus && stakeStatus.staking_status === true && balances && balances.stakeable_coins === 0) {
-        document.getElementById('cs-staking-status').innerHTML = '<span class="warning">ESPERANDO</span>';
-      } else {
-        document.getElementById('cs-staking-status').innerHTML = '<span class="negative">INACTIVO</span>';
-      }
-      
-      const balanceLocal = balances ? balances.total_wallet_balance : 0;
-      document.getElementById('cs-local-balance').innerText = balanceLocal.toFixed(4) + ' PIV';
-    }
-    
-  } catch(err) {
-    console.error("Error en cold staking summary:", err);
-  }
-}
-
-// ========== OBTENER DATOS DEL NODO ==========
-async function fetchNodeData() {
-  try {
-    const [statusRes, blockchainInfo, networkInfo, mempool, peerinfo] = await Promise.all([
-      fetch(STATUS_URL).then(r => r.json()).catch(() => ({})),
-      callRPC('getblockchaininfo'),
-      callRPC('getnetworkinfo'),
-      callRPC('getrawmempool'),
-      callRPC('getpeerinfo')
-    ]);
-    
-    await fetchColdStakingSummary(statusRes);
-    
-    const version = statusRes.software_subversion || statusRes.subversion || networkInfo?.subversion || '---';
-    const connections = statusRes.connections || peerinfo?.length || 0;
-    const blockHeight = statusRes.height || blockchainInfo?.blocks || 0;
-    const mempoolSize = mempool?.length || statusRes.mempool || 0;
-    const difficulty = statusRes.difficulty || blockchainInfo?.difficulty || 0;
-    const protocolVersion = statusRes.protocolversion || networkInfo?.protocolversion || '---';
-    const synced = blockchainInfo?.blocks >= blockchainInfo?.headers;
-    const bestBlockHash = blockchainInfo?.bestblockhash || '---';
-    const avgStake = await calcularStakePromedio(blockHeight);
-    
-    document.getElementById('node-version').innerText = version.replace(/[\/"]/g, '');
-    document.getElementById('node-state').innerText = synced ? "SINCRONIZADO" : "SINCRONIZANDO";
-    document.getElementById('node-state').className = `value ${synced ? 'positive' : 'negative'}`;
-    document.getElementById('node-blocks').innerText = formatNumber(blockHeight);
-    document.getElementById('node-connections').innerText = connections;
-    document.getElementById('node-mempool').innerText = mempoolSize + ' TX';
-    document.getElementById('node-difficulty').innerText = formatDifficulty(difficulty);
-    document.getElementById('node-stake').innerText = avgStake.toFixed(2) + ' PIV (por bloque)';
-    document.getElementById('node-protocol').innerText = protocolVersion;
-    document.getElementById('node-bestblock').innerText = formatHash(bestBlockHash);
-    
-  } catch(err) {
-    console.error("Error cargando datos:", err);
-  }
-}
-
-// ========== PRECIO ==========
-let precioCache = { usd: null, volumen: null, timestamp: 0 };
-
-async function fetchPrice() {
-  const ahora = Date.now();
-  
-  if (precioCache.usd && (ahora - precioCache.timestamp) < 120000) {
-    document.getElementById('price-usd').innerText = `$${precioCache.usd.toFixed(4)}`;
-    if (precioCache.volumen) {
-      document.getElementById('price-volume').innerText = `$${precioCache.volumen.toLocaleString()}`;
-    }
-    document.getElementById('price-time').innerText = new Date().toLocaleTimeString();
-    return;
-  }
-  
-  try {
-    const response = await fetch(PRICE_API_URL); 
-    if (!response.ok) throw new Error('No disponible');
-    const data = await response.json();
-    
-    if (data.pivx) {
-      precioCache = {
-        usd: data.pivx.usd,
-        volumen: data.pivx.usd_24h_vol,
-        timestamp: ahora
-      };
-      document.getElementById('price-usd').innerText = `$${data.pivx.usd.toFixed(4)}`;
-      document.getElementById('price-volume').innerText = data.pivx.usd_24h_vol ? `$${Math.round(data.pivx.usd_24h_vol).toLocaleString()}` : '---';
-    }
-  } catch (error) {
-    console.error('Error precio:', error);
-  }
-  document.getElementById('price-time').innerText = new Date().toLocaleTimeString();
-}
-
-// ========== INICIO ==========
-document.addEventListener('DOMContentLoaded', () => {
-  fetchPrice();
-  fetchNodeData();
-});
-
-setInterval(() => {
-  Promise.all([fetchNodeData(), fetchPrice()]);
-}, 30000);
-</script>
-
+  <div class="brand">cΔrovΣr0</div>
+  <main><section class="panel">
+    <div class="panel-title"><img class="logo" src="assets/pivx.png" alt="PIVX">MONITOR DE NODO PIVX</div>
+    <nav class="top-links"><a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a> · <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/pivx-stakers.html">[COLD STAKING]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
+    <section class="section"><h2 class="subheader">Nodo PIVX · Estado</h2><div class="row"><span class="label">VERSION</span><span class="value" id="node-version">---</span></div><div class="row"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div><div class="row"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div><div class="row"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div><div class="row"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div></section>
+    <section class="section"><h2 class="subheader">Nodo PIVX · Red</h2><div class="row"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div><div class="row"><span class="label">STAKE PROMEDIO</span><span class="value" id="node-stake">---</span></div><div class="row"><span class="label">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div><div class="row"><span class="label">ULTIMO BLOQUE</span><span class="value" id="node-bestblock">---</span></div></section>
+    <section class="section"><h2 class="subheader">PIVX · Datos de mercado</h2><div class="row"><span class="label">PRECIO USD</span><span class="value" id="price-usd">---</span></div><div class="row"><span class="label">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div></section>
+    <section class="section"><h2 class="subheader">Cold staking · Resumen</h2><div class="row"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div><div class="row"><span class="label">TOTAL DELEGADO</span><span class="value" id="cs-total">---</span></div><div class="row"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div><div class="row"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div><div class="row"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div><div class="row"><span class="label">BALANCE LOCAL</span><span class="value" id="cs-local-balance">---</span></div></section>
+    <section class="section"><h2 class="subheader">Dirección de cold staking</h2><div class="address">DELEGÁ ACÁ&nbsp; SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</div></section>
+    <section class="section"><h2 class="subheader">► API pública</h2><a class="api" href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank" rel="noopener">https://carover0.xyz/cacaX/pivx_status_X.json</a></section>
+    <footer class="footer"><div class="small">actualizado: <span id="price-time">---</span></div></footer>
+  </section></main>
+  <script>
+    const RPC_URL='https://carover0.xyz/api/pivx/pivx.php', TOKEN='pivx2026', STATUS_URL='https://carover0.xyz/cacaX/pivx_status_X.json', PRICE_API_URL='https://carover0.xyz/getprice-pivx.php?token=pivx2026';
+    let stakeCache={value:4,timestamp:0}, precioCache={usd:null,volumen:null,timestamp:0};
+    const el=id=>document.getElementById(id), formatDifficulty=d=>d?Number(d).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','):'---', formatHash=h=>!h||h==='0'?'---':h.substring(0,16)+'...'+h.substring(h.length-8), formatNumber=n=>n===undefined||n===null?'---':Number(n).toLocaleString();
+    async function callRPC(method,params=[]) { try { const cmd=method+(params.length?' '+params.join(' '):''); const r=await fetch(`${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`); return (await r.json()).result; } catch(e) { console.error(`RPC error ${method}:`,e); return null; } }
+    async function calcularStakePromedio() { const now=Date.now(); if(stakeCache.value&&now-stakeCache.timestamp<300000)return stakeCache.value; const s=await callRPC('getstakinginfo'); const value=s?.stakeReward||s?.reward||4; stakeCache={value,timestamp:now}; return value; }
+    async function fetchColdStakingSummary(status) { try { const utxos=status.cold_staking_info?.utxos, staking=status.staking_info; if(utxos) { const list=utxos.list||[]; el('cs-utxos').textContent=utxos.count||0; el('cs-total').textContent=Number(utxos.total_amount||0).toFixed(2)+' PIV'; el('cs-confirms').textContent=list.length?Math.min(...list.map(u=>u.confirmations)):'---'; el('cs-whitelist').textContent=list.length?`${list.filter(u=>u.whitelisted==='true').length}/${list.length}`:'---'; } const balances=staking?.balances, active=staking?.status?.staking_status; el('cs-staking-status').innerHTML=active&&balances?.stakeable_coins>0?'<span class="positive">ACTIVO</span>':active?'<span class="warning">ESPERANDO</span>':'<span class="negative">INACTIVO</span>'; el('cs-local-balance').textContent=(balances?.total_wallet_balance||0).toFixed(4)+' PIV'; } catch(e) { console.error('Cold staking:',e); } }
+    async function fetchNodeData() { try { const [status,chain,network,mempool,peers]=await Promise.all([fetch(STATUS_URL).then(r=>r.json()).catch(()=>({})),callRPC('getblockchaininfo'),callRPC('getnetworkinfo'),callRPC('getrawmempool'),callRPC('getpeerinfo')]); await fetchColdStakingSummary(status); const blocks=status.height||chain?.blocks||0, synced=chain?.blocks>=chain?.headers, stake=await calcularStakePromedio(); el('node-version').textContent=(status.software_subversion||status.subversion||network?.subversion||'---').replace(/[\/"]/g,''); el('node-state').textContent=synced?'SINCRONIZADO':'SINCRONIZANDO'; el('node-state').className=`value ${synced?'positive':'negative'}`; el('node-blocks').textContent=formatNumber(blocks); el('node-connections').textContent=status.connections||peers?.length||0; el('node-mempool').textContent=(mempool?.length||status.mempool||0)+' TX'; el('node-difficulty').textContent=formatDifficulty(status.difficulty||chain?.difficulty); el('node-stake').textContent=Number(stake).toFixed(2)+' PIV (por bloque)'; el('node-protocol').textContent=status.protocolversion||network?.protocolversion||'---'; el('node-bestblock').textContent=formatHash(chain?.bestblockhash); } catch(e) { console.error('Datos del nodo:',e); } }
+    async function fetchPrice() { const now=Date.now(); try { if(!precioCache.usd||now-precioCache.timestamp>=120000) { const r=await fetch(PRICE_API_URL); if(!r.ok)throw new Error('No disponible'); const d=await r.json(); if(d.pivx)precioCache={usd:d.pivx.usd,volumen:d.pivx.usd_24h_vol,timestamp:now}; } if(precioCache.usd)el('price-usd').textContent=`$${Number(precioCache.usd).toFixed(4)}`; if(precioCache.volumen)el('price-volume').textContent=`$${Math.round(precioCache.volumen).toLocaleString()}`; } catch(e) { console.error('Precio:',e); } el('price-time').textContent=new Date().toLocaleTimeString(); }
+    document.addEventListener('DOMContentLoaded',()=>{fetchNodeData();fetchPrice();}); setInterval(()=>{fetchNodeData();fetchPrice();},30000);
+  </script>
 </body>
 </html>
