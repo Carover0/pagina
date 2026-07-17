@@ -51,7 +51,18 @@ main {
     .metric-name { display:block; margin-bottom:9px; color:var(--cyan); font-size:16px; }
     .bar-line { display:flex; align-items:center; gap:9px; } .bar { display:flex; flex:1; gap:4px; } .bar i { display:block; width:14px; height:16px; border:1px solid rgba(49,219,114,.24); } .bar i.on { background:#32d772; box-shadow:0 0 8px rgba(49,219,114,.42); } .percent { min-width:40px; font-size:15px; }
     .info { font-size:15px; line-height:1.4; white-space:pre-line; } .status { letter-spacing:1px; } .error { color:#ff8b75; font-size:14px; }
-    .links { position:relative; z-index:1; grid-column:1 / -1; text-align:center; color:#b8fff0; font-size:15px; text-shadow:0 1px 3px #000; } .links a { color:var(--cyan); text-decoration:none; } .links a:hover { text-decoration:underline; }
+.links { 
+  position:relative; 
+  z-index:1; 
+  grid-column:1 / -1; 
+  text-align:center; 
+  color:#b8fff0; 
+  font-size:15px; 
+  text-shadow:0 1px 3px #000; 
+  margin-top: -50px; /* <-- Agrega esto aquí */
+}
+.links a { color:var(--cyan); text-decoration:none; }
+.links a:hover { text-decoration:underline; }
 
     @media (max-width:1050px) { main { grid-template-columns:1fr 1fr; gap:25px; padding:74px 24px 35px; } .status-panel { grid-column:2; } .links { grid-column:1 / -1; } }
 
@@ -93,8 +104,7 @@ main {
       <article class="node"><div class="node-title"><span class="coin"><img src="assets/firo.png" alt="Firo"></span><a class="node-link" href="https://carover0.github.io/pagina/firo-nodo.html">FIRO</a> <span class="online" id="firo-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="firo-height">—</strong><span>Peers</span><strong id="firo-peers">—</strong><span>Mempool</span><strong id="firo-mempool">—</strong><span>Version</span><strong id="firo-version">—</strong></div></article>
       <article class="node"><div class="node-title"><span class="coin"><img src="assets/pivx.png" alt="PIVX"></span><a class="node-link" href="https://carover0.github.io/pagina/pivx-nodo.html">PIVX</a> <span class="online" id="pivx-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="pivx-height">—</strong><span>Peers</span><strong id="pivx-peers">—</strong><span>Mempool</span><strong id="pivx-mempool">—</strong><span>Version</span><strong id="pivx-version">—</strong></div></article>
       <article class="node"><div class="node-title"><span class="coin"><img src="assets/ycash.png" alt="Ycash"></span><a class="node-link" href="https://carover0.github.io/pagina/ycash-nodo.html">YCASH</a> <span class="online" id="ycash-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="ycash-height">—</strong><span>Peers</span><strong id="ycash-peers">—</strong><span>Mempool</span><strong id="ycash-mempool">—</strong><span>Version</span><strong id="ycash-version">—</strong></div></article>
-    </section>
-    <div></div>
+      <article class="node"><div class="node-title"><span class="coin"><img src="assets/radiacion.png" alt="Tron Energia"></span><a class="node-link" href="https://carover0.github.io/pagina/tron.html">Tron Energia</a> </div></article></section><div></div>
     <aside class="panel status-panel"><h2>VPS STATUS</h2>
       <div class="section"><span class="metric-name">CPU</span><div class="bar-line"><div class="bar" id="cpu-bar"></div><span class="percent" id="cpu-percent">—</span></div></div>
       <div class="section"><span class="metric-name">RAM</span><div class="bar-line"><div class="bar" id="ram-bar"></div><span class="percent" id="ram-percent">—</span></div></div>
@@ -103,7 +113,7 @@ main {
       <div class="section"><span class="metric-name">UPTIME</span><div class="info" id="uptime">—</div></div>
       <div class="section"><span class="metric-name">LAST UPDATE</span><div class="info" id="last-update">—</div></div>
       <div class="section"><span class="metric-name">STATUS</span><div class="info status" id="vps-status">CONNECTING…</div></div>
-      <div class="section"><span class="metric-name">SOBRE MI</span><div class="info" id="last-update"><a href="https://carover0.github.io/pagina/acerca.html" target="_self" class="node-link">Acerca</a> 
+      <div class="section"><span class="metric-name">SOBRE MI</span><div class="info" id="last-update"><a href="https://carover0.github.io/pagina/zcash-nodo.html" target="_blank" class="node-link">Acerca</a> 
 </div>
     </aside>
     <footer class="links">
