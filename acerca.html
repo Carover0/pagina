@@ -14,15 +14,13 @@
       background:#020105; 
       position:relative;
     }
-    /* Fondo sin capa oscura - usa cover para cubrir toda la pantalla */
-    .bg {
-      position:fixed;
-      inset:0;
-      z-index:-2;
-      background:url("assets/f4.png") center center/cover no-repeat;
-      background-color:#020105;
-    }
-    /* Eliminada la capa de gradiente que oscurecía */
+.bg {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: url("assets/f4.png") center center / cover no-repeat;
+    background-color: #020105;
+}
     body::after { 
       content:""; 
       position:fixed; 
