@@ -5,259 +5,238 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>PIVX · MONITOR DE COLD STAKING</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIVX · Monitor de Cold Staking</title>
     <style>
-        body {
-            background: #000;
-            color: #F0F0F0;
-            font-family: "Lucida Console", "Monaco", monospace;
-            font-size: 16px;
-            margin: 0;
-            padding: 20px;
+        :root { --gold:#A044FF; --gold-soft:#b86bff; --green:#31db72; --red:#ff756f; --line:rgba(160,68,255,.5); --panel:rgba(16,6,26,.91); --ui-scale:1; }
+        * { box-sizing:border-box; }
+        body { min-height:100vh; margin:0; color:#fff; font:14px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
+        body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.48),rgba(10,6,0,.13) 55%,rgba(0,0,0,.56)); }
+        body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(160,68,255,.025) 0 1px,transparent 1px 4px); }
+        .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
+        main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
+        .panel { position:relative; width:min(800px,98%); padding:25px 30px 20px; background:linear-gradient(135deg,rgba(30,16,50,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(160,68,255,.85),0 0 48px rgba(160,68,255,.2),inset 0 0 30px rgba(160,68,255,.08); }
+        .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
+        .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+        .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
+        .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(160,68,255,.65)); }
+        .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
+        a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
+        .section { border-top:1px solid var(--line); padding:9px 0 10px; }
+        .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
+        .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
+        .api { font-size:11px; overflow-wrap:anywhere; } 
+        .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
+        .small { color:#afa391; }
+        .donation { font-size:10px; color:#7a7060; word-break:break-all; }
+        
+        .stats-row { display:flex; flex-wrap:wrap; gap:5px 18px; font-size:12px; margin-bottom:4px; color:#d2c8b7; }
+        .stats-row span { color:#fff; }
+        .stats-label { color:#d2c8b7; }
+        .stats-value { color:#fff; }
+        
+        .data-block { margin:6px 0 4px 0; }
+        .row { display:grid; grid-template-columns:18ch 1fr; gap:10px; min-height:19px; font-size:13px; }
+        .label { color:#d2c8b7; }
+        .value { color:#fff; text-align:left; overflow-wrap:anywhere; }
+        .positive { color:var(--green); }
+        .negative { color:var(--red); }
+        .warning { color:#DD9D34; }
+        .info-text { color:#888; font-size:12px; }
+        .small-note { color:#555; font-size:11px; }
+        
+        .utxo-list { margin-top:6px; }
+        .utxo-item { font-size:12px; color:#aaa; margin-left:0px; margin-bottom:3px; line-height:1.4; }
+        
+        .timestamp { color:#666; font-size:11px; margin-bottom:6px; }
+        
+        .server-list-container { max-height:450px; overflow-y:auto; padding-right:5px; }
+        .server-list-container::-webkit-scrollbar { width:3px; }
+        .server-list-container::-webkit-scrollbar-track { background:rgba(160,68,255,.1); }
+        .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
+        
+        .cold-staker-addr { color:var(--gold-soft); font-size:13px; word-break:break-all; }
+        
+        @media (max-width:700px) { 
+            .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
+            main { padding:65px 10px 24px 5px; align-items:flex-start; } 
+            .panel { padding:22px 18px 18px; width:98%; } 
+            .panel-title { font-size:16px; } 
+            .row { grid-template-columns:1fr; gap:1px; margin-bottom:5px; }
+            .value { text-align:left; }
+            .utxo-item { font-size:11px; }
+            .server-list-container { max-height:300px; }
         }
-        .terminal {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-        }
-        .prompt {
-            color: #A044FF;
-        }
-        .positive {
-            color: #198652;
-        }
-        .negative {
-            color: #9B1C2E;
-        }
-        .warning {
-            color: #DD9D34;
-        }
-        .info-text {
-            color: #888;
-        }
-        .footer {
-            margin-top: 10px;
-            padding-top: 20px;
-            color: #fff;
-            font-size: 16px;
-        }
-        a, a:visited {
-            color: #A044FF;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-            color: #C277FF;
-        }
-        .nav-links {
-            margin: 15px 0 25px 0;
-            padding: 10px 0;
-        }
-        .nav-links a {
-            margin-right: 20px;
-        }
-        .timestamp {
-            color: #666;
-            font-size: 12px;
-            margin-bottom: 15px;
-        }
-        .dashboard-title {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        .subheader {
-            color: #A044FF;
-            font-size: 16px;
-            margin: 0px 0 10px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .data-block {
-        }
-        .row {
-            display: flex;
-            justify-content: space-between;
-            margin: 0;
-            max-width: 700px;
-        }
-        .label {
-            color: #bbb;
-            width: 18ch;
-        }
-        .value {
-            color: #fff;
-        }
-        .utxo-list {
-            margin-top: 10px;
-            padding-top: 10px;
-        }
-        .utxo-item {
-            font-size: 14px;
-            color: #aaa;
-            margin-left: 0px;
-            margin-bottom: 4px;
-        }
-        .small-note {
-            color: #555;
-            font-size: 12px;
+        @media (min-width:1920px) { 
+            :root { --ui-scale:1.1; } 
+            main { padding:72px 20px 36px 0; } 
+            .panel { width:min(750px,90%); } 
         }
     </style>
 </head>
 <body>
-<div class="terminal">
-    <div class="dashboard-title">
-        <span class="prompt">PIVX</span> · MONITOR DE COLD STAKING
-    </div>
-<a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/pivx-nodo">[NODO]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
-
-<div id="timestamp" class="timestamp">Cargando datos...</div>
-
-<!-- SECCIÓN: RESUMEN DE COLD STAKING -->
-<div class="subheader">COLD STAKING · RESUMEN</div>
-<div id="coldstaking-summary" class="data-block">
-<div class="row"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
-<div class="row"><span class="label">TOTAL DELEGADO</span><span class="value" id="cs-total">---</span></div>
-<div class="row"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
-<div class="row"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
-<div class="row"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
-<div class="row"><span class="label">BALANCE LOCAL</span><span class="value" id="cs-local-balance">---</span></div>
-<div class="row"><span class="label">ÚLTIMO INTENTO</span><span class="value" id="cs-last-attempt">---</span></div>
-</div><br>
-
-    <!-- SECCIÓN: LISTA DE UTXOS DELEGADOS -->
-<div class="subheader">UTXOS DELEGADOS (DETALLE)</div>
-<div id="utxos-list" class="data-block">
-<div class="info-text">Cargando lista de UTXOs...</div>
-
-</div><br>
-
-    <!-- DIRECCIÓN DE COLD STAKING -->
-    <div class="subheader">DIRECCIÓN DE COLD STAKING</div>
-    <div class="data-block">
-        <div class="row"><span class="label">DELEGA ACA</span><span class="value">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span></div>
-    </div><br>
-
-    <div class="footer">
-        ===============================================================================<br>
-        © 2026 Creada con ♥ por cΔrovΣr0 <br> apoya: ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f
-    </div>
-</div>
-
-<script>
-    const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
-
-    function formatTimestamp(seconds) {
-        if (!seconds && seconds !== 0) return '---';
-        if (seconds < 60) return `${seconds} segundos`;
-        if (seconds < 3600) return `${Math.floor(seconds / 60)} minutos`;
-        return `${(seconds / 3600).toFixed(1)} horas`;
-    }
-
-    function mostrarTimestamp(timestamp) {
-        const fecha = new Date(timestamp);
-        document.getElementById('timestamp').innerHTML = `última actualización: ${fecha.toLocaleString()}`;
-    }
-
-    function renderizarDatos(data) {
-        if (!data) return;
-
-        const csInfo = data.cold_staking_info;
-        const stakingInfo = data.staking_info;
-        const balances = stakingInfo?.balances;
-        const status = stakingInfo?.status;
-        const lastAttempt = stakingInfo?.last_attempt;
-
-        if (csInfo && csInfo.utxos) {
-            const utxos = csInfo.utxos;
-            const utxosList = utxos.list || [];
+    <div class="brand">cΔrovΣr0</div>
+    <main><section class="panel">
+        <div class="panel-title"><img class="logo" src="assets/pivx.png" alt="PIVX">MONITOR COLD STAKING</div>
+        <nav class="top-links"><a href="https://carover0.github.io/pagina/pivx-explorer.html">[EXPLORADOR]</a> · <a href="https://carover0.github.io/pagina/pivx-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/pivx-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
+        
+        <section class="section">
+            <div id="timestamp" class="timestamp">Cargando datos...</div>
             
-            document.getElementById('cs-utxos').innerText = utxos.count || 0;
-            document.getElementById('cs-total').innerText = (utxos.total_amount || 0).toFixed(2) + ' PIV';
+            <div class="subheader">COLD STAKING · RESUMEN</div>
+            <div id="coldstaking-summary" class="data-block">
+                <div class="row"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
+                <div class="row"><span class="label">TOTAL DELEGADO</span><span class="value" id="cs-total">---</span></div>
+                <div class="row"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
+                <div class="row"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
+                <div class="row"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
+                <div class="row"><span class="label">BALANCE LOCAL</span><span class="value" id="cs-local-balance">---</span></div>
+                <div class="row"><span class="label">ÚLTIMO INTENTO</span><span class="value" id="cs-last-attempt">---</span></div>
+            </div>
             
-            if (utxosList.length > 0) {
-                const confirmaciones = utxosList.map(u => u.confirmations);
-                const minConf = Math.min(...confirmaciones);
-                document.getElementById('cs-confirms').innerHTML = `${minConf} <span class="info-text">(mín)</span>`;
-                
-                const whitelistedCount = utxosList.filter(u => u.whitelisted === "true").length;
-                document.getElementById('cs-whitelist').innerHTML = `${whitelistedCount}/${utxosList.length}`;
-            } else {
-                document.getElementById('cs-confirms').innerText = '---';
-                document.getElementById('cs-whitelist').innerText = '---';
-            }
-        } else {
-            document.getElementById('cs-utxos').innerText = '---';
-            document.getElementById('cs-total').innerText = '---';
-            document.getElementById('cs-confirms').innerText = '---';
-            document.getElementById('cs-whitelist').innerText = '---';
-        }
-
-         if (status && balances) {
-            if (status.staking_status === true && balances.stakeable_coins > 0) {
-                document.getElementById('cs-staking-status').innerHTML = '<span class="positive">ACTIVO</span>';
-            } else if (status.staking_status === true && balances.stakeable_coins === 0) {
-                document.getElementById('cs-staking-status').innerHTML = '<span class="warning">ESPERANDO</span>';
-            } else {
-                document.getElementById('cs-staking-status').innerHTML = '<span class="negative">INACTIVO</span>';
-            }
+            <div class="subheader" style="margin-top:8px;">UTXOS DELEGADOS (DETALLE)</div>
+            <div id="utxos-list" class="data-block">
+                <div class="info-text">Cargando lista de UTXOs...</div>
+            </div>
             
-            document.getElementById('cs-local-balance').innerText = (balances.total_wallet_balance || 0).toFixed(4) + ' PIV';
-        } else {
-            document.getElementById('cs-staking-status').innerText = '---';
-            document.getElementById('cs-local-balance').innerText = '---';
-        }
+            <div class="subheader" style="margin-top:8px;">DIRECCIÓN DE COLD STAKING</div>
+            <div class="data-block">
+                <div class="row"><span class="label">DELEGA ACA</span><span class="cold-staker-addr">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span></div>
+            </div>
+        </section>
 
-if (lastAttempt) {
-    const ageText = formatTimestamp(lastAttempt.age_seconds);
-document.getElementById('cs-last-attempt').innerHTML = `hace ${ageText} · ${lastAttempt.tries} intentos (depth: ${lastAttempt.depth})`;}
- else {
-    document.getElementById('cs-last-attempt').innerText = '---';
-}
-        const utxosContainer = document.getElementById('utxos-list');
-        if (csInfo && csInfo.utxos && csInfo.utxos.list && csInfo.utxos.list.length > 0) {
-            let html = `<div class="info-text">Mostrando ${csInfo.utxos.list.length} UTXOs delegados:</div><div class="utxo-list">`;
-            csInfo.utxos.list.forEach((utxo, index) => {
-                const isWhitelisted = utxo.whitelisted === "true";
-                html += `
-                    <div class="utxo-item">
-                        #${index + 1} · ${utxo.amount.toFixed(2)} PIV · conf: ${utxo.confirmations} · 
-                        whitelisted: ${isWhitelisted ? '<span class="positive">sí</span>' : '<span class="negative">no</span>'}
-                        <span class="small-note">(owner: ${utxo['coin-owner']})</span>
-                    </div>
-                `;
+        <section class="section"><h2 class="subheader">► API pública</h2>
+            <a class="api" href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank" rel="noopener">https://carover0.xyz/cacaX/pivx_status_X.json</a>
+        </section>
+
+        <footer class="footer">
+            <div class="small">actualizado automáticamente cada 30s</div>
+            <div class="donation"><br></div>
+        </footer>
+    </section></main>
+
+    <script>
+        const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
             });
-            html += `</div><div class="small-note" style="margin-top: 8px;">cold-staker: ${csInfo.utxos.list[0]['cold-staker']}</div>`;
-            utxosContainer.innerHTML = html;
-        } else {
-            utxosContainer.innerHTML = '<div class="info-text">No se encontraron UTXOs delegados.</div>';
         }
-    }
 
-function mostrarTimestamp() {
-    const ahora = new Date();
-    document.getElementById('timestamp').innerHTML = `última actualización: ${ahora.toLocaleString()}`;
-}
+        function formatTimestamp(seconds) {
+            if (!seconds && seconds !== 0) return '---';
+            if (seconds < 60) return `${seconds} segundos`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)} minutos`;
+            return `${(seconds / 3600).toFixed(1)} horas`;
+        }
 
-// --- En cargarDatos(), cambia esta parte ---
-async function cargarDatos() {
-    try {
-        const urlConTimestamp = `${STATUS_URL}?t=${new Date().getTime()}`;
-        const response = await fetch(urlConTimestamp);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        
-        mostrarTimestamp();  // ← Sin parámetros, usa hora local
-        renderizarDatos(data);
-        
-    } catch (error) {
-        console.error('Error cargando datos:', error);
-        document.getElementById('timestamp').innerHTML = '<span class="negative">ERROR: No se pudo cargar el estado</span>';
-        document.getElementById('utxos-list').innerHTML = '<div class="info-text negative">Error al conectar con la fuente de datos.</div>';
-    }
-}
+        function mostrarTimestamp() {
+            const ahora = new Date();
+            document.getElementById('timestamp').innerHTML = `última actualización: ${ahora.toLocaleString()}`;
+        }
 
-    cargarDatos();
-    setInterval(cargarDatos, 30000);
-</script>
+        function renderizarDatos(data) {
+            if (!data) return;
+
+            const csInfo = data.cold_staking_info;
+            const stakingInfo = data.staking_info;
+            const balances = stakingInfo?.balances;
+            const status = stakingInfo?.status;
+            const lastAttempt = stakingInfo?.last_attempt;
+
+            if (csInfo && csInfo.utxos) {
+                const utxos = csInfo.utxos;
+                const utxosList = utxos.list || [];
+                
+                document.getElementById('cs-utxos').textContent = utxos.count || 0;
+                document.getElementById('cs-total').textContent = (utxos.total_amount || 0).toFixed(2) + ' PIV';
+                
+                if (utxosList.length > 0) {
+                    const confirmaciones = utxosList.map(u => u.confirmations);
+                    const minConf = Math.min(...confirmaciones);
+                    document.getElementById('cs-confirms').innerHTML = `${minConf} <span class="small-note">(mín)</span>`;
+                    
+                    const whitelistedCount = utxosList.filter(u => u.whitelisted === "true").length;
+                    document.getElementById('cs-whitelist').innerHTML = `${whitelistedCount}/${utxosList.length}`;
+                } else {
+                    document.getElementById('cs-confirms').textContent = '---';
+                    document.getElementById('cs-whitelist').textContent = '---';
+                }
+            } else {
+                document.getElementById('cs-utxos').textContent = '---';
+                document.getElementById('cs-total').textContent = '---';
+                document.getElementById('cs-confirms').textContent = '---';
+                document.getElementById('cs-whitelist').textContent = '---';
+            }
+
+            if (status && balances) {
+                if (status.staking_status === true && balances.stakeable_coins > 0) {
+                    document.getElementById('cs-staking-status').innerHTML = '<span class="positive">ACTIVO</span>';
+                } else if (status.staking_status === true && balances.stakeable_coins === 0) {
+                    document.getElementById('cs-staking-status').innerHTML = '<span class="warning">ESPERANDO</span>';
+                } else {
+                    document.getElementById('cs-staking-status').innerHTML = '<span class="negative">INACTIVO</span>';
+                }
+                
+                document.getElementById('cs-local-balance').textContent = (balances.total_wallet_balance || 0).toFixed(4) + ' PIV';
+            } else {
+                document.getElementById('cs-staking-status').textContent = '---';
+                document.getElementById('cs-local-balance').textContent = '---';
+            }
+
+            if (lastAttempt) {
+                const ageText = formatTimestamp(lastAttempt.age_seconds);
+                document.getElementById('cs-last-attempt').innerHTML = `hace ${ageText} · ${lastAttempt.tries} intentos (depth: ${lastAttempt.depth})`;
+            } else {
+                document.getElementById('cs-last-attempt').textContent = '---';
+            }
+
+            const utxosContainer = document.getElementById('utxos-list');
+            if (csInfo && csInfo.utxos && csInfo.utxos.list && csInfo.utxos.list.length > 0) {
+                let html = `<div class="info-text">Mostrando ${csInfo.utxos.list.length} UTXOs delegados:</div><div class="utxo-list">`;
+                csInfo.utxos.list.forEach((utxo, index) => {
+                    const isWhitelisted = utxo.whitelisted === "true";
+                    html += `
+                        <div class="utxo-item">
+                            #${index + 1} · ${utxo.amount.toFixed(2)} PIV · conf: ${utxo.confirmations} · 
+                            whitelisted: ${isWhitelisted ? '<span class="positive">sí</span>' : '<span class="negative">no</span>'}
+                            <span class="small-note">(owner: ${escapeHtml(utxo['coin-owner'])})</span>
+                        </div>
+                    `;
+                });
+                if (csInfo.utxos.list[0]) {
+                    html += `<div class="small-note" style="margin-top: 8px;">cold-staker: ${escapeHtml(csInfo.utxos.list[0]['cold-staker'])}</div>`;
+                }
+                utxosContainer.innerHTML = html;
+            } else {
+                utxosContainer.innerHTML = '<div class="info-text">No se encontraron UTXOs delegados.</div>';
+            }
+        }
+
+        async function cargarDatos() {
+            try {
+                const urlConTimestamp = `${STATUS_URL}?t=${new Date().getTime()}`;
+                const response = await fetch(urlConTimestamp);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                
+                mostrarTimestamp();
+                renderizarDatos(data);
+                
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                document.getElementById('timestamp').innerHTML = '<span class="negative">ERROR: No se pudo cargar el estado</span>';
+                document.getElementById('utxos-list').innerHTML = '<div class="info-text negative">Error al conectar con la fuente de datos.</div>';
+            }
+        }
+
+        cargarDatos();
+        setInterval(cargarDatos, 30000);
+    </script>
 </body>
 </html>
