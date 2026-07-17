@@ -1,718 +1,479 @@
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>ZCASH: EXPLORADOR DE BLOQUES</title>
-<style>
-body {
-    background: #000;
-    color: #fff;
-    font-family: "Lucida Console", "Monaco", monospace;
-    font-size: 15px;
-    line-height: 1.2;
-    margin: 0;
-    padding: 20px;
-}
-.terminal {
-    max-width: 80ch;
-    width: 100%;
-    margin: 0;
-    white-space: pre-wrap;
-}
-.prompt {
-    color: #DD9D34;
-}
-.input-line {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-}
-#searchInput {
-    background: #000;
-    color: #fff;
-    border: none;
-    font-family: "Lucida Console", monospace;
-    font-size: 15px;
-    padding: 4px 0;
-    width: 60ch;
-    outline: none;
-    caret-color: #DD9D34;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zcash · Explorador de Bloques</title>
+  <style>
+    :root { --gold:#dd9d34; --gold-soft:#ffd170; --green:#31db72; --red:#ff756f; --line:rgba(221,157,52,.5); --panel:rgba(16,10,2,.91); --ui-scale:1; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; color:#fff; font:16px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.48),rgba(10,6,0,.13) 55%,rgba(0,0,0,.56)); }
+    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,209,112,.025) 0 1px,transparent 1px 4px); }
+    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
+    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
+    .panel { position:relative; width:min(800px,98%); padding:25px 30px 20px; background:linear-gradient(135deg,rgba(30,19,3,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(221,157,52,.85),0 0 48px rgba(221,157,52,.2),inset 0 0 30px rgba(221,157,52,.08); }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
+    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
+    .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(255,193,65,.65)); }
+    .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
+    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
+    .section { border-top:1px solid var(--line); padding:9px 0 10px; }
+    .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
+    .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
+    .api { font-size:11px; overflow-wrap:anywhere; } 
+    .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
+    .small { color:#afa391; }
+    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
     
-}
-.footer {
-    margin-top: 20px;
-    padding-top: 10px;
-    color: #777;
-}
-a, a:visited {
-    color: #DD9D34;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
-}
-.shielded {
-    color: #888;
-}
-pre {
-    margin: 10px 0 0 0;
-    font-family: "Lucida Console", monospace;
-    font-size: 15px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-.copy-full-btn {
-    background: #000;
-    border: 1px solid #000;
-    color: #fff;
-    font-family: 'Lucida console', monospace;
-    font-size: 15px;
-    padding: 5px 10px;
-    cursor: pointer;
-    width: 30%;
-    text-align: center;
-    margin-top: 10px;
-}
-.copy-full-btn:hover {
-    border-color: #DD9D34;
-}
-
-</style>
+    .stats-row { display:flex; flex-wrap:wrap; gap:5px 18px; font-size:12px; margin-bottom:4px; color:#d2c8b7; }
+    .stats-row span { color:#fff; }
+    .stats-label { color:#d2c8b7; }
+    .stats-value { color:#fff; }
+    
+    .input-line { display:flex; align-items:center; margin:8px 0; gap:8px; }
+    .prompt { color:var(--gold-soft); font-size:13px; white-space:nowrap; }
+    #searchInput { background:transparent; color:#fff; border:none; border-bottom:1px solid var(--line); font-family:"Lucida Console",Monaco,monospace; font-size:13px; padding:3px 5px; width:100%; outline:none; caret-color:var(--gold); }
+    #searchInput:focus { border-bottom-color:var(--gold); }
+    
+    #output { margin-top:6px; }
+    #output pre { margin:6px 0 0 0; font-family:"Lucida Console",Monaco,monospace; font-size:12px; white-space:pre-wrap; word-wrap:break-word; color:#e6ddce; line-height:1.5; }
+    #output pre .gold { color:var(--gold-soft); }
+    
+    .result-footer { font-size:10px; color:#7a7060; margin-top:8px; padding-top:6px; border-top:1px solid var(--line); }
+    
+    .server-list-container { max-height:450px; overflow-y:auto; padding-right:5px; }
+    .server-list-container::-webkit-scrollbar { width:3px; }
+    .server-list-container::-webkit-scrollbar-track { background:rgba(221,157,52,.1); }
+    .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
+    
+    .copy-btn { background:transparent; border:1px solid var(--line); color:var(--gold-soft); font-family:'Lucida Console',monospace; font-size:11px; padding:3px 10px; cursor:pointer; margin-top:6px; }
+    .copy-btn:hover { border-color:var(--gold); background:rgba(221,157,52,.1); }
+    
+    @media (max-width:700px) { 
+      .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
+      main { padding:65px 10px 24px 5px; align-items:flex-start; } 
+      .panel { padding:22px 18px 18px; width:98%; } 
+      .panel-title { font-size:16px; } 
+      .stats-row { font-size:11px; gap:3px 12px; }
+      #searchInput { font-size:12px; }
+      #output pre { font-size:11px; }
+      .server-list-container { max-height:300px; }
+    }
+    @media (min-width:1920px) { 
+      :root { --ui-scale:1.1; } 
+      main { padding:72px 20px 36px 0; } 
+      .panel { width:min(750px,90%); } 
+    }
+  </style>
 </head>
 <body>
-<div class="terminal">cΔrovΣr0 • EXPLORADOR DE BLOQUES ZCASH
-======================================
-<a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br>
-ALTURA               : <span id="stat-height">---</span>
-CONEXIONES           : <span id="stat-connections">---</span>
-MEMPOOL              : <span id="stat-mempool">---</span> tx
-SERVIDOR LIGHTWALLET : <span id="stat-difficulty">https://carover0.xyz:9067</span><br>
-<span class="prompt">Buscar por -></span> <input type="text" id="searchInput" placeholder="bloque / hash de bloque / txid / direccion" autofocus>
-
-
-<div id="output"></div></div>
-<pre id="pie" style="display: block;">
-===============================================================================
-© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: t1g6NAetkFajFP62crR54DBazfqJjxRG1XD</pre>
-
-<script>
-const API_URL = "https://carover0.xyz/api/zec/rpc.php";
-const TOKEN = "zec2026";
-const STATUS_URL = "https://carover0.xyz/zec/status.json";
-
-// ========== DETECTAR BUSQUEDA DESDE URL ==========
-function detectSearchFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const queryParam = urlParams.get('q');
+  <div class="brand">cΔrovΣr0</div>
+  <main><section class="panel">
+    <div class="panel-title"><img class="logo" src="assets/zcash.png" alt="Zcash">EXPLORADOR DE BLOQUES</div>
+    <nav class="top-links"><a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> · <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
     
-    if (queryParam) {
-        console.log('🔍 Desde query string:', queryParam);
-        return queryParam;
+    <section class="section">
+      <div class="stats-row">
+        <span><span class="stats-label">ALTURA:</span> <span class="stats-value" id="stat-height">---</span></span>
+        <span><span class="stats-label">CONEXIONES:</span> <span class="stats-value" id="stat-connections">---</span></span>
+        <span><span class="stats-label">MEMPOOL:</span> <span class="stats-value" id="stat-mempool">---</span> tx</span>
+        <span><span class="stats-label">LIGHTWALLET:</span> <span class="stats-value">carover0.xyz:9067</span></span>
+      </div>
+      
+      <div class="input-line">
+        <span class="prompt">►</span>
+        <input type="text" id="searchInput" placeholder="bloque / hash / txid / dirección" autofocus>
+      </div>
+      
+      <div id="output" class="server-list-container"></div>
+    </section>
+
+    <section class="section"><h2 class="subheader">► API pública</h2>
+      <a class="api" href="https://carover0.xyz/api/zec/rpc.php?token=zec2026" target="_blank" rel="noopener">https://carover0.xyz/api/zec/rpc.php?token=zec2026</a>
+    </section>
+
+    <footer class="footer">
+      <div class="small">[F8] copiar &nbsp;·&nbsp; [F9] limpiar</div>
+      <div><br></div>	
+    </footer>
+  </section></main>
+
+  <script>
+    const API_URL = "https://carover0.xyz/api/zec/rpc.php";
+    const TOKEN = "zec2026";
+    const STATUS_URL = "https://carover0.xyz/zec/status.json";
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
     }
-    
-    const path = window.location.pathname;
-    const match = path.match(/\/zec-explorer\/(.+)$/);
-    
-    if (match && match[1]) {
-        const cleanParam = match[1];
-        console.log('🔍 Desde ruta /zec-explorer/:', cleanParam);
-        return cleanParam;
+
+    function detectSearchFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryParam = urlParams.get('q');
+      if (queryParam) return queryParam;
+      const path = window.location.pathname;
+      const match = path.match(/\/zec-explorer\/(.+)$/);
+      if (match && match[1]) return match[1];
+      return null;
     }
-    
-    return null;
-}
 
-// ========== ACTUALIZAR URL PARA COMPARTIR ==========
-function updateUrlWithSearch(parametro, tipo) {
-    const basePath = window.location.origin + '/pagina';
-    const newUrl = basePath + '/zec-explorer/' + encodeURIComponent(parametro);
-    
-    window.history.replaceState({}, '', newUrl);
-    
-    console.log('🔗 URL actualizada:', newUrl);
-}
+    function updateUrlWithSearch(parametro, tipo) {
+      const basePath = window.location.origin + '/pagina';
+      const newUrl = basePath + '/zec-explorer/' + encodeURIComponent(parametro);
+      window.history.replaceState({}, '', newUrl);
+    }
 
-// ========== DETECCION AUTOMATICA ==========
-function detectCommand(input) {
-    input = input.trim();
-
-    if (input.startsWith('UA:')) {
+    function detectCommand(input) {
+      input = input.trim();
+      if (input.startsWith('UA:')) return input;
+      if (input.startsWith('getblock') || input.startsWith('getrawtransaction') || 
+          input.startsWith('validateaddress') || input.startsWith('z_validateaddress') ||
+          input.startsWith('z_listunifiedreceivers') || input.startsWith('getaddressbalance')) {
         return input;
+      }
+      if (input.startsWith('u1') && input.length > 100) return `UA:${input}`;
+      if (/^\d+$/.test(input)) return `getblock ${input}`;
+      if (/^[a-fA-F0-9]{64}$/.test(input)) {
+        if (/^0{4,}[a-fA-F0-9]*$/.test(input)) return `getblock ${input}`;
+        else return `getrawtransaction ${input} 1`;
+      }
+      if (input.startsWith('t1') || input.startsWith('t3')) return `getaddressbalance ${input}`;
+      if (input.startsWith('zs') && input.length > 50) return `z_getbalance ${input}`;
+      if (input.length > 50) return `validateaddress ${input}`;
+      return input;
     }
 
-    if (input.startsWith('getblock') || 
-        input.startsWith('getrawtransaction') || 
-        input.startsWith('validateaddress') || 
-        input.startsWith('z_validateaddress') ||
-        input.startsWith('z_listunifiedreceivers') ||
-        input.startsWith('getaddressbalance')) {
-        return input;
-    }
-    
-    if (input.startsWith('u1') && input.length > 100) {
-        return `UA:${input}`;  // Solo UAs con prefijo u1 y largas
-    }
-    
-    if (/^\d+$/.test(input)) {
-        return `getblock ${input}`;
-    }
-    
-    if (/^[a-fA-F0-9]{64}$/.test(input)) {
-        if (/^0{4,}[a-fA-F0-9]*$/.test(input)) {
-            return `getblock ${input}`;
-        } else {
-            return `getrawtransaction ${input} 1`;
-        }
-    }
-    
-    if (input.startsWith('t1') || input.startsWith('t3')) {
-       return `getaddressbalance ${input}`;
-    }
-    
-    if (input.startsWith('zs') && input.length > 50) {
-        return `z_getbalance ${input}`;
-    }
-    
-    if (input.length > 50) {
-        return `validateaddress ${input}`;
-    }
-    
-    return input;
-}
-
-// ========== CARGA DE ESTADOS ==========
-async function loadNetworkStats() {
-    try {
+    async function loadNetworkStats() {
+      try {
         const r = await fetch(STATUS_URL);
         const d = await r.json();
-        
-        document.getElementById('stat-height').innerText = d.chain?.height?.toLocaleString() || '---';
-        document.getElementById('stat-connections').innerText = d.network?.connections || '---';
-        document.getElementById('stat-mempool').innerText = d.mempool?.size || '0';
-        
-    } catch(e) {
-        // NADA
-    }
-}
-
-async function getVinValue(txid, voutIndex) {
-    const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
-        .then(r => r.json())
-        .then(r => r.result);
-    
-    if (!prevTx || !prevTx.vout || !prevTx.vout[voutIndex]) return null;
-    
-    return prevTx.vout[voutIndex].value;
-}
-
-// ========== EJECUCION DE BUSQUEDA ==========
-async function executeSearch(q) {
-
-    const out = document.getElementById('output');
-    out.innerHTML = '<pre>Ejecutando...</pre>';
-    document.getElementById("pie").style.display = "none";
-
-    let tipoBusqueda = 'desconocido';
-    let rawParam = '';
-    
-    if (q.startsWith('getblock ')) {
-        tipoBusqueda = 'block';
-        rawParam = q.replace('getblock ', '');
-    } else if (q.startsWith('getrawtransaction ')) {
-        tipoBusqueda = 'tx';
-        rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
-    } else if (q.startsWith('getaddressbalance ')) {
-        tipoBusqueda = 'address';
-        rawParam = q.replace('getaddressbalance ', '');
-    } else if (q.startsWith('validateaddress ') || q.startsWith('z_validateaddress ')) {
-        tipoBusqueda = 'address';
-        rawParam = q.split(' ')[1];
-    } else if (q.startsWith('UA:')) {
-        tipoBusqueda = 'address';
-        rawParam = q.substring(3);
-    } else {
-        // Detección directa por formato
-        if (/^[a-fA-F0-9]{64}$/.test(q)) {
-            tipoBusqueda = 'tx';
-            rawParam = q;
-        } else if (/^\d+$/.test(q)) {
-            tipoBusqueda = 'block';
-            rawParam = q;
-        } else if (q.startsWith('t1') || q.startsWith('zs') || q.startsWith('u1')) {
-            tipoBusqueda = 'address';
-            rawParam = q;
-        }
-    }
-    
-    // Actualizar la URL para compartir
-    if (tipoBusqueda !== 'desconocido' && rawParam) {
-        updateUrlWithSearch(rawParam, tipoBusqueda);
+        document.getElementById('stat-height').textContent = d.chain?.height?.toLocaleString() || '---';
+        document.getElementById('stat-connections').textContent = d.network?.connections || '---';
+        document.getElementById('stat-mempool').textContent = d.mempool?.size || '0';
+      } catch(e) {}
     }
 
-    if (q.startsWith('UA:')) {
-        const ua = q.substring(3); 
-        let res = `<pre><span style="color:#DD9D34;">zcash> ${ua}</span>\n\n`;
-        res += `DIRECCIÓN UNIFICADA (UA)\n`;
-        res += `dirección: ${ua}\n`;
-        res += `\n`;
-        res += `→ Las direcciones unificadas pertenecen a una cuenta.\n`;
-        res += `→ Solo se puede consultar su balance si es una cuenta propia.\n`;
-        res += `\n`;
+    async function getVinValue(txid, voutIndex) {
+      try {
+        const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`).then(r => r.json());
+        if (!prevTx.result?.vout?.[voutIndex]) return null;
+        return prevTx.result.vout[voutIndex].value;
+      } catch(e) { return null; }
+    }
+
+    async function executeSearch(q) {
+      const out = document.getElementById('output');
+      out.innerHTML = '<pre style="color:#888;">ejecutando...</pre>';
+
+      let tipoBusqueda = 'desconocido';
+      let rawParam = '';
+      
+      if (q.startsWith('getblock ')) { tipoBusqueda = 'block'; rawParam = q.replace('getblock ', ''); }
+      else if (q.startsWith('getrawtransaction ')) { tipoBusqueda = 'tx'; rawParam = q.replace('getrawtransaction ', '').replace(' 1', ''); }
+      else if (q.startsWith('getaddressbalance ')) { tipoBusqueda = 'address'; rawParam = q.replace('getaddressbalance ', ''); }
+      else if (q.startsWith('validateaddress ') || q.startsWith('z_validateaddress ')) { tipoBusqueda = 'address'; rawParam = q.split(' ')[1]; }
+      else if (q.startsWith('UA:')) { tipoBusqueda = 'address'; rawParam = q.substring(3); }
+      else {
+        if (/^[a-fA-F0-9]{64}$/.test(q)) { tipoBusqueda = 'tx'; rawParam = q; }
+        else if (/^\d+$/.test(q)) { tipoBusqueda = 'block'; rawParam = q; }
+        else if (q.startsWith('t1') || q.startsWith('zs') || q.startsWith('u1')) { tipoBusqueda = 'address'; rawParam = q; }
+      }
+      
+      if (tipoBusqueda !== 'desconocido' && rawParam) updateUrlWithSearch(rawParam, tipoBusqueda);
+
+      if (q.startsWith('UA:')) {
+        const ua = q.substring(3);
+        let res = `<pre style="color:#DD9D34;">zcash> ${escapeHtml(ua)}</pre><pre style="color:#e6ddce;">\nDIRECCIÓN UNIFICADA (UA)\ndirección: ${escapeHtml(ua)}\n\n→ Las direcciones unificadas pertenecen a una cuenta.\n→ Solo se puede consultar su balance si es una cuenta propia.\n\n`;
         
         try {
-            const validateCmd = `z_validateaddress ${ua}`;
-            const validateRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(validateCmd)}`);
-            const validateData = await validateRes.json();
-            
-            if (validateData.result) {
-                res += `Validación del formato con z_validateaddress:\n`;
-                res += `<span style="color:#DD9D34;">zcash> ${validateCmd}</span>\n`;
-                res += `${JSON.stringify(validateData.result, null, 2)}\n\n`;
-            }
-        } catch(e) {
-            res += `Error validando dirección: ${e.message}\n\n`;
-        }
+          const validateCmd = `z_validateaddress ${ua}`;
+          const validateRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(validateCmd)}`);
+          const validateData = await validateRes.json();
+          if (validateData.result) {
+            res += `Validación:\n<span style="color:#DD9D34;">zcash> ${validateCmd}</span>\n${JSON.stringify(validateData.result, null, 2)}\n\n`;
+          }
+        } catch(e) { res += `Error: ${e.message}\n\n`; }
         
         try {
-            const receiversCmd = `z_listunifiedreceivers ${ua}`;
-            const receiversRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(receiversCmd)}`);
-            const receiversData = await receiversRes.json();
-            
-            if (receiversData.result) {
-                res += `Listando receivers con z_listunifiedreceivers:\n`;
-                res += `<span style="color:#DD9D34;">zcash> ${receiversCmd}</span>\n`;
-                res += `${JSON.stringify(receiversData.result, null, 2)}\n`;
-            }
-        } catch(e) {
-            res += `Error listando receivers: ${e.message}\n`;
-        }
+          const receiversCmd = `z_listunifiedreceivers ${ua}`;
+          const receiversRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(receiversCmd)}`);
+          const receiversData = await receiversRes.json();
+          if (receiversData.result) {
+            res += `Listando receivers:\n<span style="color:#DD9D34;">zcash> ${receiversCmd}</span>\n${JSON.stringify(receiversData.result, null, 2)}\n`;
+          }
+        } catch(e) { res += `Error: ${e.message}\n`; }
         
         res += `</pre>`;
         out.innerHTML = res;
         document.getElementById('searchInput').value = '';
         return;
-    }
+      }
 
-    try {
+      try {
         const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
         const data = await r.json();
         
-        let res = `<pre><span style="color:#DD9D34;">zcash> ${q}</span>\n\n`;
+        let res = `<pre style="color:#DD9D34;">zcash> ${escapeHtml(q)}</pre><pre style="color:#e6ddce;">\n`;
         
         if (data.error) {
-            res += `error: ${JSON.stringify(data.error)}`;
-        } 
-        // ===== BLOQUES =====
-        else if (q.includes('getblock') && data.result?.hash) {
-            const b = data.result;
-            res += `BLOQUE #${b.height}\n`;
-            res += `hash: ${b.hash}\n`;
-            res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
-            res += `transacciones: ${b.tx?.length || 0}\n`;
-            res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
-            if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
-            if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
-            if (b.size) res += `tamaño: ${b.size} bytes\n`;
-            
-            // Mostrar transacciones con detalles si están disponibles
-            if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
-                res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
-                b.tx.forEach((tx, i) => {
-                    res += `\n  TX #${i+1}: ${tx.txid}\n`;
-                    
-                    if (tx.vout && tx.vout.length > 0) {
-                        let totalOut = 0;
-                        tx.vout.forEach(vout => {
-                            totalOut += vout.value || 0;
-                        });
-                        res += `    total salida: ${totalOut.toFixed(8)} ZEC\n`;
-                        
-                        tx.vout.forEach((vout, j) => {
-                            let addr = 'privada';
-                            if (vout.scriptPubKey?.addresses?.[0]) {
-                                addr = vout.scriptPubKey.addresses[0];
-                                if (addr.length > 64) addr = addr.substring(0,64) + '...';
-                            }
-                            res += `    → ${vout.value.toFixed(8)} ZEC a ${addr}\n`;
-                        });
-                    }
-                    
-                    const esBlindada = tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0 || tx.orchard?.actions?.length > 0;
-                    if (esBlindada) {
-                        res += `    🛡 incluye ${tx.vShieldedSpend?.length || 0} spends, ${tx.vShieldedOutput?.length || 0} outputs\n`;
-                    }
-                });
-            } else if (b.tx && b.tx.length > 0) {
-                res += `\n▶ TXIDS (${b.tx.length})\n`;
-                b.tx.forEach((txid, i) => {
-                    res += `   ${i+1}. ${txid}\n`;
-                });
-            }
+          res += `error: ${JSON.stringify(data.error)}`;
         }
-        // ===== TRANSACCIONES =====
+        else if (q.includes('getblock') && data.result?.hash) {
+          const b = data.result;
+          res += `BLOQUE #${b.height}\n`;
+          res += `hash: ${b.hash}\n`;
+          res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
+          res += `transacciones: ${b.tx?.length || 0}\n`;
+          res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
+          if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
+          if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
+          if (b.size) res += `tamaño: ${b.size} bytes\n`;
+          
+          if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
+            res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
+            b.tx.forEach((tx, i) => {
+              res += `\n  TX #${i+1}: ${tx.txid}\n`;
+              if (tx.vout && tx.vout.length > 0) {
+                let totalOut = 0;
+                tx.vout.forEach(vout => totalOut += vout.value || 0);
+                res += `    total salida: ${totalOut.toFixed(8)} ZEC\n`;
+                tx.vout.forEach((vout, j) => {
+                  let addr = 'privada';
+                  if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
+                  if (addr.length > 64) addr = addr.substring(0,64) + '...';
+                  res += `    → ${vout.value.toFixed(8)} ZEC a ${addr}\n`;
+                });
+              }
+              const esBlindada = tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0 || tx.orchard?.actions?.length > 0;
+              if (esBlindada) {
+                res += `    🛡 incluye ${tx.vShieldedSpend?.length || 0} spends, ${tx.vShieldedOutput?.length || 0} outputs\n`;
+              }
+            });
+          } else if (b.tx && b.tx.length > 0) {
+            res += `\n▶ TXIDS (${b.tx.length})\n`;
+            b.tx.forEach((txid, i) => res += `   ${i+1}. ${txid}\n`);
+          }
+        }
         else if (q.includes('getrawtransaction') && data.result?.txid) {
-            const t = data.result;
+          const t = data.result;
+          const esBlindada = t.orchard?.actions?.length > 0 || t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0 || t.vjoinsplit?.length > 0 || t.bindingSig || (t.version >= 5 && t.vin?.length === 0 && t.vout?.length === 0);
+          
+          res += `${esBlindada ? '🛡 TRANSACCIÓN PRIVADA' : '█ TRANSACCIÓN TRANSPARENTE'}\n`;
+          res += `TXID: ${t.txid}\n`;
+          res += `bloque: #${t.blockheight || t.height || (t.blockhash ? 'consultar bloque' : 'no confirmada')}\n`;
+          res += `confirmaciones: ${t.confirmations || 0}\n`;
+          if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
+          res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
+          if (t.size) res += `tamaño: ${t.size} bytes\n`;
+          if (t.expiryheight) res += `expira: bloque ${t.expiryheight}\n`;
+          
+          let totalIn = 0;
+          if (t.vin && t.vin.length > 0) {
+            res += `\n▶ ENTRADAS (${t.vin.length})\n`;
+            const vinPromises = t.vin.map(async (vin, i) => {
+              if (vin.coinbase) return `  [#${i}] COINBASE`;
+              if (vin.txid) {
+                const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
+                let value = vin.value;
+                if (!value) value = await getVinValue(vin.txid, vin.vout);
+                if (value) totalIn += value;
+                return `  [#${i}] ${shortTxid}:${vin.vout}${value ? ` ${value.toFixed(8)} ZEC` : ''}`;
+              }
+              return '';
+            });
+            const vinLines = await Promise.all(vinPromises);
+            res += vinLines.filter(l => l !== '').join('\n') + '\n';
+            if (totalIn > 0) res += `  total entradas: ${totalIn.toFixed(8)} ZEC\n`;
+          }
+          
+          if (t.vout && t.vout.length > 0) {
+            res += `\n◀ SALIDAS (${t.vout.length})\n`;
+            let totalOut = 0;
+            let pagos = [];
+            t.vout.forEach((vout, i) => {
+              totalOut += vout.value || 0;
+              let addr = 'OP_RETURN/privada';
+              if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
+              else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
+              if (addr.length > 64) addr = addr.substring(0,64) + '...';
+              pagos.push({ index: i, value: vout.value, address: addr });
+            });
             
-            function esTransaccionBlindada(tx) {
-                if (tx.orchard?.actions?.length > 0) return true;
-                if (tx.vShieldedSpend?.length > 0) return true;
-                if (tx.vShieldedOutput?.length > 0) return true;
-                if (tx.vjoinsplit?.length > 0) return true;
-                if (tx.bindingSig) return true;
-                if (tx.version >= 5 && tx.vin?.length === 0 && tx.vout?.length === 0) return true;
-                if (tx.valueBalance !== undefined && tx.valueBalance !== 0) return true;
-                return false;
+            if (pagos.length >= 2) {
+              const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+              const pagoPrincipal = pagosOrdenados[0];
+              pagos.forEach(p => {
+                res += `  ${p.index === pagoPrincipal.index ? 'PAGO:' : 'RETORNO:'}    [#${p.index}] ${p.value.toFixed(8)} ZEC → ${escapeHtml(p.address)}\n`;
+              });
+            } else {
+              pagos.forEach(p => res += `  [#${p.index}] ${p.value.toFixed(8)} ZEC → ${escapeHtml(p.address)}\n`);
+            }
+            if (totalOut > 0) res += `  total salida: ${totalOut.toFixed(8)} ZEC\n`;
+            
+            if (totalIn > 0) {
+              let fee = 0;
+              if (esBlindada) {
+                if (t.valueBalance !== undefined) fee = Math.abs(t.valueBalance) / 100000000;
+                else if (t.orchard?.valueBalance) fee = Math.abs(t.orchard.valueBalance) / 100000000;
+                else fee = (t.size || 0) * 0.00001;
+              } else {
+                if (totalOut > 0) fee = totalIn - totalOut;
+              }
+              if (fee > 0) res += `\n  FEE: ${fee.toFixed(8)} ZEC\n`;
             }
             
-            const esBlindada = esTransaccionBlindada(t);
+            res += `\nRESUMEN:\n  ${t.vin?.length || 0} UTXOs transparentes gastados\n`;
+            if (t.vout?.length > 0) {
+              res += `  ${t.vout.length} UTXOs transparentes creados\n`;
+              if (pagos.length >= 2) {
+                const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+                const pagoPrincipal = pagosOrdenados[0];
+                const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
+                res += `  Pago transparente: ${pagoPrincipal.value.toFixed(8)} ZEC\n`;
+                res += `  Cambio transparente: ${retornoTotal.toFixed(8)} ZEC\n`;
+              } else if (pagos.length === 1) {
+                res += `  Salida transparente: ${pagos[0].value.toFixed(8)} ZEC\n`;
+              }
+            }
+            
+            let feeReal = 0;
+            if (t.valueBalance !== undefined) feeReal = Math.abs(t.valueBalance) / 100000000;
+            else if (t.orchard?.valueBalance) feeReal = Math.abs(t.orchard.valueBalance) / 100000000;
+            if (feeReal > 0) res += `  Fee red: ${feeReal.toFixed(8)} ZEC\n`;
             
             if (esBlindada) {
-                res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
-            } else {
-                res += `█ TRANSACCIÓN TRANSPARENTE\n`;
+              const totalShielded = t.valueBalance ? Math.abs(t.valueBalance) / 100000000 : 0;
+              if (totalShielded > 0.0001) res += `  Total blindado: ${totalShielded.toFixed(8)} ZEC (privado)\n`;
             }
-            res += `TXID: ${t.txid}\n`;
-            
-            const blockHeight = t.blockheight || t.height || (t.blockhash ? 'consultar bloque' : 'no confirmada');
-            res += `bloque: #${blockHeight}\n`;
-            res += `confirmaciones: ${t.confirmations || 0}\n`;
-            
-            if (t.blocktime || t.time) {
-                const ts = t.blocktime || t.time;
-                res += `fecha: ${new Date(ts*1000).toLocaleString()}\n`;
-            }
-            
-            res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
-            if (t.size) res += `tamaño: ${t.size} bytes\n`;
-            if (t.expiryheight) {
-                res += `expira: bloque ${t.expiryheight}\n`;
-            }
-            
-            let totalIn = 0;
-            
-            if (t.vin && t.vin.length > 0) {
-                res += `\n▶ ENTRADAS (UTXOs gastados: ${t.vin.length})\n`;
-                totalIn = 0;
-                
-                const vinPromises = t.vin.map(async (vin, i) => {
-                    if (vin.coinbase) {
-                        return `  [#${i}] COINBASE (nuevos ZEC)`;
-                    } else if (vin.txid) {
-                        const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
-                        
-                        let value = vin.value;
-                        if (!value) {
-                            value = await getVinValue(vin.txid, vin.vout);
-                        }
-                        
-                        if (value) totalIn += value;
-                        const valStr = value ? ` ${value.toFixed(8)} ZEC` : '';
-                        return `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}`;
-                    }
-                    return '';
-                });
-                
-                const vinLines = await Promise.all(vinPromises);
-                res += vinLines.filter(line => line !== '').join('\n') + '\n';
-                
-                if (totalIn > 0) {
-                    res += `  total entradas: ${totalIn.toFixed(8)} ZEC\n`;
-                }
-            } 
-            
-            if (t.vout && t.vout.length > 0) {
-                res += `\n◀ SALIDAS (UTXOs creados: ${t.vout.length})\n`;
-                let totalOut = 0;
-                let pagos = [];
-                
-                t.vout.forEach((vout, i) => {
-                    totalOut += vout.value || 0;
-                    let addr = 'OP_RETURN/privada';
-                    if (vout.scriptPubKey?.addresses?.[0]) {
-                        addr = vout.scriptPubKey.addresses[0];
-                    } else if (vout.scriptPubKey?.address) {
-                        addr = vout.scriptPubKey.address;
-                    }
-                    if (addr.length > 64) {
-                        addr = addr.substring(0,64) + '...';
-                    }
-                    
-                    pagos.push({
-                        index: i,
-                        value: vout.value,
-                        address: addr,
-                        raw: `  [#${i}] ${vout.value.toFixed(8)} ZEC → ${addr}`
-                    });
-                });
-                
-                if (pagos.length >= 2) {
-                    const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
-                    const pagoPrincipal = pagosOrdenados[0];
-                    
-                    pagos.forEach(p => {
-                        if (p.index === pagoPrincipal.index) {
-                            res += `  PAGO:      ${p.raw}\n`;
-                        } else {
-                            res += `  RETORNO:   ${p.raw}\n`;
-                        }
-                    });
-                } else {
-                    pagos.forEach(p => {
-                        res += `  ${p.raw}\n`;
-                    });
-                }
-                
-                if (totalOut > 0) {
-                    res += `  total salida: ${totalOut.toFixed(8)} ZEC\n`;
-                }
-                
-                if (totalIn > 0) {
-                    let fee = 0;
-                    
-                    if (esBlindada) {
-                        if (t.valueBalance !== undefined) {
-                            fee = Math.abs(t.valueBalance) / 100000000;
-                        } else if (t.orchard?.valueBalance) {
-                            fee = Math.abs(t.orchard.valueBalance) / 100000000;
-                        } else {
-                            fee = (t.size || 0) * 0.00001;
-                        }
-                    } else {
-                        if (totalOut > 0) {
-                            fee = totalIn - totalOut;
-                        }
-                    }
-                    
-                    if (fee > 0) {
-                        res += `\n  FEE: ${fee.toFixed(8)} ZEC (red)\n`;
-                        
-                        if (esBlindada && totalOut > 0 && (totalIn - totalOut) > fee) {
-                            const valorBlindado = (totalIn - totalOut - fee).toFixed(8);
-                            res += `  VALOR BLINDADO: ${valorBlindado} ZEC \n`;
-                        }
-                    }
-                }                
-           
-                res += `\nRESUMEN:\n`;
-                res += `   ${t.vin?.length || 0} UTXOs transparentes gastados\n`;
-                
-                if (t.vout?.length > 0) {
-                    res += `   ${t.vout.length} UTXOs transparentes creados\n`;
-                    
-                    if (pagos.length >= 2) {
-                        const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
-                        const pagoPrincipal = pagosOrdenados[0];
-                        const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
-                        res += `   Pago transparente: ${pagoPrincipal.value.toFixed(8)} ZEC\n`;
-                        res += `   Cambio transparente: ${retornoTotal.toFixed(8)} ZEC\n`;
-                    } else if (pagos.length === 1) {
-                        res += `   Salida transparente: ${pagos[0].value.toFixed(8)} ZEC\n`;
-                    }
-                }
-                
-                let feeReal = 0;
-                if (t.valueBalance !== undefined) {
-                    feeReal = Math.abs(t.valueBalance) / 100000000;
-                } else if (t.orchard?.valueBalance) {
-                    feeReal = Math.abs(t.orchard.valueBalance) / 100000000;
-                }
-                
-                if (feeReal > 0) {
-                    res += `   Fee red: ${feeReal.toFixed(8)} ZEC\n`;
-                }
-                
-                if (esBlindada) {
-                    const totalShielded = t.valueBalance ? Math.abs(t.valueBalance) / 100000000 : 0;
-                    if (totalShielded > 0.0001) {
-                        res += `   Total blindado: ${totalShielded.toFixed(8)} ZEC (privado)\n`;
-                    }
-                }
-            }            
-            
-            if (t.vjoinsplit && t.vjoinsplit.length > 0) {
-                res += `\n🛡 SPROUT SHIELDED (${t.vjoinsplit.length})\n`;
-            }
-            
-            if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
-                res += `\n🛡 SAPLING SHIELDED\n`;
-                if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
-                if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
-            }
-            
-            if (t.orchard?.actions?.length > 0) {
-                res += `\n🛡 ORCHARD SHIELDED\n`;
-                res += `  acciones: ${t.orchard.actions.length}\n`;
-                
-                t.orchard.actions.forEach((action, i) => {
-                    res += `  acción #${i+1}:\n`;
-                    if (action.nullifier) res += `    nullifier: ${action.nullifier}\n`;
-                    if (action.cmx) res += `    commitment: ${action.cmx}\n`;
-                });
-                
-                if (t.orchard.valueBalance && t.orchard.valueBalance !== 0) {
-                    res += `  balance: ${t.orchard.valueBalance.toFixed(8)} ZEC\n`;
-                }
-                if (t.orchard.anchor) {
-                    res += `  anchor: ${t.orchard.anchor}\n`;
-                }
-                if (t.orchard.bindingSig) {
-                    res += `  bindingSig: ${t.orchard.bindingSig}\n`;
-                }
-            }
-            
-            if (t.valueBalance && t.valueBalance !== 0) {
-                const balanceZec = t.valueBalance / 1e8;
-                const signo = balanceZec > 0 ? '+' : '';
-                res += `\nbalance entre pools: ${signo}${balanceZec.toFixed(8)} ZEC\n`;
-            }
-            
-            if (t.bindingSig && !t.orchard?.bindingSig) {
-                res += `bindingSig: ${t.bindingSig}\n`;
-            }
+          }
+          
+          if (t.vjoinsplit?.length > 0) res += `\n🛡 SPROUT SHIELDED (${t.vjoinsplit.length})\n`;
+          if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
+            res += `\n🛡 SAPLING SHIELDED\n`;
+            if (t.vShieldedSpend?.length) res += `  spends: ${t.vShieldedSpend.length}\n`;
+            if (t.vShieldedOutput?.length) res += `  outputs: ${t.vShieldedOutput.length}\n`;
+          }
+          if (t.orchard?.actions?.length > 0) {
+            res += `\n🛡 ORCHARD SHIELDED\n  acciones: ${t.orchard.actions.length}\n`;
+            t.orchard.actions.forEach((action, i) => {
+              res += `  acción #${i+1}:\n`;
+              if (action.nullifier) res += `    nullifier: ${action.nullifier}\n`;
+              if (action.cmx) res += `    commitment: ${action.cmx}\n`;
+            });
+            if (t.orchard.valueBalance && t.orchard.valueBalance !== 0) res += `  balance: ${t.orchard.valueBalance.toFixed(8)} ZEC\n`;
+            if (t.orchard.anchor) res += `  anchor: ${t.orchard.anchor}\n`;
+            if (t.orchard.bindingSig) res += `  bindingSig: ${t.orchard.bindingSig}\n`;
+          }
+          if (t.valueBalance && t.valueBalance !== 0) {
+            const balanceZec = t.valueBalance / 1e8;
+            res += `\nbalance entre pools: ${balanceZec > 0 ? '+' : ''}${balanceZec.toFixed(8)} ZEC\n`;
+          }
         }
-        // ===== INFORMACION DE DIRECCION =====
         else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
-            
-            const esBalance = q.includes('getaddressbalance');
-            const esValidate = q.includes('validateaddress');
-            const esZValidate = q.includes('z_validateaddress');
-            
-            if (esBalance) {
-                const b = data.result;
-                const direccion = q.split(' ')[1] || b.address || 'desconocida';
-                
-                res += `DIRECCIÓN TRANSPARENTE\n`;
-                res += `dirección: ${direccion}\n`;
-                res += `balance: ${(b.balance / 1e8).toFixed(6)} ZEC\n`;
-                
-                if (b.received) {
-                    res += `recibido (total histórico): ${(b.received / 1e8).toFixed(6)} ZEC\n`;
-                }
-                
-                if (b.immature) {
-                    res += `inmaduro (no gastable): ${(b.immature / 1e8).toFixed(6)} ZEC\n`;
-                }
+          const esBalance = q.includes('getaddressbalance');
+          const esZValidate = q.includes('z_validateaddress');
+          
+          if (esBalance) {
+            const b = data.result;
+            const direccion = q.split(' ')[1] || b.address || 'desconocida';
+            res += `DIRECCIÓN TRANSPARENTE\ndirección: ${direccion}\nbalance: ${(b.balance / 1e8).toFixed(6)} ZEC\n`;
+            if (b.received) res += `recibido: ${(b.received / 1e8).toFixed(6)} ZEC\n`;
+            if (b.immature) res += `inmaduro: ${(b.immature / 1e8).toFixed(6)} ZEC\n`;
+          } else {
+            const v = data.result;
+            const direccion = v.address || q.split(' ')[1] || 'desconocida';
+            res += `${esZValidate ? 'Z-ADDRESS (BLINDADA)' : 'DIRECCIÓN TRANSPARENTE'}\n`;
+            res += `dirección: ${direccion}\nválida: ${v.isvalid ? 'sí' : 'no'}\n`;
+            if (v.isvalid) {
+              let tipo = 'transparente';
+              if (v.isscript) tipo = 'script';
+              else if (v.iswatchonly) tipo = 'watchonly';
+              else if (esZValidate) tipo = 'shielded';
+              res += `tipo: ${tipo}\n`;
             }
-            else if (esValidate || esZValidate) {
-                const v = data.result;
-                const direccion = v.address || q.split(' ')[1] || 'desconocida';
-                
-                res += `${esZValidate ? 'Z-ADDRESS (BLINDADA)' : 'DIRECCIÓN TRANSPARENTE'}\n`;
-                res += `dirección: ${direccion}\n`;
-                res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
-                
-                if (v.isvalid) {
-                    let tipo = 'transparente';
-                    if (v.isscript) tipo = 'script';
-                    else if (v.iswatchonly) tipo = 'watchonly';
-                    else if (esZValidate) tipo = 'shielded';
-                    res += `tipo: ${tipo}\n`;
-                }
-                
-                if (v.ismine !== undefined) {
-                    res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
-                }
-            }
+            if (v.ismine !== undefined) res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
+          }
         }
-        // ===== CUALQUIER OTRO COMANDO =====
         else {
-            res += JSON.stringify(data.result || data, null, 2);
+          res += JSON.stringify(data.result || data, null, 2);
         }
         
-        res += '</pre><br><br>'; 
-        res += `<div>[F8 copiar] [F9 Limpiar]</div>`;
-        res += `<div class="result-footer">\n\n===============================================================================\n`;
-        res += `© 2026 Creada con ♥ por cΔrovΣr0<br>apoya: u19rfvunxtldp45atzdw4m3m0ddm8595stsf2ldz7sf4n3tat0nkwcamr976qf0y9uq7pfpevdp3mswwue3x0j92azaeeapdfhsv3xzydj</div>`;
-        out.innerHTML = res;        
-    } catch(e) {
-        out.innerHTML = `<pre>error: ${e.message}</pre>`;
+        res += `\n\n</pre>`;
+        res += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
+        out.innerHTML = res;
+        
+      } catch(e) {
+        out.innerHTML = `<pre style="color:var(--red);">error: ${escapeHtml(e.message)}</pre>`;
+      }
+      
+      document.getElementById('searchInput').value = '';
     }
-    
-    document.getElementById('searchInput').value = '';
-}
 
-
-// ========== DETECTAR BUSQUEDA DESDE URL ==========
-(function() {
-    const searchParam = detectSearchFromUrl();
-    
-    if (searchParam) {
-        console.log('🔍 Buscando:', searchParam);
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                const input = document.getElementById('searchInput');
-                if (input) {
-                    input.value = searchParam;
-                    const cmd = detectCommand(searchParam);
-                    executeSearch(cmd);
-                }
-            }, 500);
+    window.copyResult = function() {
+      const outputPre = document.querySelector('#output pre:last-of-type');
+      if (outputPre) {
+        navigator.clipboard.writeText(outputPre.innerText).then(() => {
+          document.querySelector('.prompt').textContent = '✓';
+          setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
         });
-    }
-})();
+      }
+    };
 
-// ========== TECLAS DE ACCESO RAPIDO ==========
-document.addEventListener('keydown', function(e) {
-    // F8 - SOLO COPIAR
-    if (e.key === 'F8') {
-        e.preventDefault();
-        const outputPre = document.querySelector('#output pre');
-        if (outputPre) {
-            const textToCopy = outputPre.innerText;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalPrompt = document.querySelector('.prompt').innerHTML;
-                document.querySelector('.prompt').innerHTML = '✓ COPIADO ✓';
-                setTimeout(() => {
-                    document.querySelector('.prompt').innerHTML = originalPrompt;
-                }, 1000);
-            });
-        }
-    }
-    
-    // F9 - LIMPIAR TODO 
-    if (e.key === 'F9') {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F8') { e.preventDefault(); window.copyResult(); }
+      if (e.key === 'F9') {
         e.preventDefault();
         document.getElementById('searchInput').value = '';
         document.getElementById('output').innerHTML = '';
-        document.getElementById('pie').style.display = 'block';
-        loadNetworkStats();
+        document.querySelector('.prompt').textContent = '♥';
+        setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
         const baseUrl = window.location.origin + '/pagina/zec-explorer';
         window.history.replaceState({}, '', baseUrl);
-        const originalPrompt = document.querySelector('.prompt').innerHTML;
-        document.querySelector('.prompt').innerHTML = '♥ LIMPIADO ♥';
-        setTimeout(() => {
-            document.querySelector('.prompt').innerHTML = originalPrompt;
-        }, 1000);
-    }
-});
+        loadNetworkStats();
+      }
+    });
 
-// ========== EVENTOS ==========
-const searchInput = document.getElementById('searchInput');
-// enter
-searchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
         e.preventDefault();
         const rawInput = searchInput.value.trim();
-        if (rawInput) {
-            const cmd = detectCommand(rawInput);
-            executeSearch(cmd);
-        }
-    }
-});
-// pegar
-searchInput.addEventListener('paste', (e) => {
-    setTimeout(() => {
+        if (rawInput) executeSearch(detectCommand(rawInput));
+      }
+    });
+    searchInput.addEventListener('paste', () => {
+      setTimeout(() => {
         const input = searchInput.value;
         const cmd = detectCommand(input);
-        if (cmd !== input) {
-            searchInput.value = cmd;
-        }
-    }, 10);
-});
+        if (cmd !== input) searchInput.value = cmd;
+      }, 10);
+    });
 
-// ========== INICIO ==========
-loadNetworkStats();
-setInterval(loadNetworkStats, 30000);
+    (function() {
+      const searchParam = detectSearchFromUrl();
+      if (searchParam) {
+        window.addEventListener('load', function() {
+          setTimeout(() => {
+            const input = document.getElementById('searchInput');
+            if (input) {
+              input.value = searchParam;
+              executeSearch(detectCommand(searchParam));
+            }
+          }, 500);
+        });
+      }
+    })();
 
-</script>
+    loadNetworkStats();
+    setInterval(loadNetworkStats, 30000);
+  </script>
 </body>
 </html>
