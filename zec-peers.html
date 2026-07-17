@@ -1,211 +1,202 @@
-<html>
+<!doctype html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>ZCASH - PEERS</title>
-<style>
-body {
-    background: #000;
-    color: #fff;
-    font-family: "Lucida Console", "Monaco", "Monospace", monospace;
-    font-size: 16px;
-    margin: 0;
-    padding: 20px;
-}
-.terminal {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-}
-.prompt {
-    color: #DD9D34;
-}
-.status-online {
-    color: #198652;
-}
-.status-offline {
-    color: #9B1C2E;
-}
-.server-item {
-    margin-bottom: 20px;
-    padding-left: 1px;
-}
-.server-header {
-    font-size: 16px;
-    margin-bottom: 5px;
-}
-.server-details {
-    color: #888;
-    font-size: 16px;
-    margin-left: 25px;
-}
-.height-number {
-    color: #fff;
-}
-.version {
-    color: #AAAAAA;
-}
-.warning {
-    color: #DD9D34;
-}
-.footer {
-    margin-top: 10px;
-    padding-top: 20px;
-    color: #fff;
-    font-size: 16px;
-}
-a, a:visited {
-    color: #DD9D34;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
-    color: #FFB347;
-}
-.nav-links {
-    margin: 15px 0 25px 0;
-    padding: 10px 0;
-}
-.nav-links a {
-    margin-right: 20px;
-}
-.timestamp {
-    color: #666;
-    font-size: 12px;
-    margin-bottom: 15px;
-}
-.dashboard-title {
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zcash · Peers Conectados</title>
+  <style>
+    :root { --gold:#dd9d34; --gold-soft:#ffd170; --green:#31db72; --red:#ff756f; --line:rgba(221,157,52,.5); --panel:rgba(16,10,2,.91); --ui-scale:.9; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; color:#fff; font:15px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.48),rgba(10,6,0,.13) 55%,rgba(0,0,0,.56)); }
+    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,209,112,.025) 0 1px,transparent 1px 4px); }
+    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 15px var(--gold); }
+    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
+    .panel { position:relative; width:min(780px,95%); padding:28px 32px 22px; background:linear-gradient(135deg,rgba(30,19,3,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(221,157,52,.85),0 0 48px rgba(221,157,52,.2),inset 0 0 30px rgba(221,157,52,.08); }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
+    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:18px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
+    .logo { width:38px; height:38px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(255,193,65,.65)); }
+    .top-links { border-top:1px solid var(--line); padding:9px 0; font-size:12px; line-height:1.6; }
+    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
+    .section { border-top:1px solid var(--line); padding:10px 0 11px; }
+    .subheader { margin:0 0 6px; color:var(--gold-soft); font-size:13px; letter-spacing:.5px; text-transform:uppercase; }
+    .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
+    .api { font-size:11px; overflow-wrap:anywhere; } .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:10px; color:#e6ddce; font-size:11px; line-height:1.4; } .small { color:#afa391; }
+    .server-item { margin-bottom:10px; padding-left:1px; }
+    .server-header { font-size:14px; margin-bottom:2px; }
+    .server-details { color:#888; font-size:13px; margin-left:22px; line-height:1.4; }
+    .height-number { color:#fff; }
+    .version { color:#AAAAAA; }
+    .warning { color:var(--gold-soft); }
+    .ips { color:#555; font-size:12px; }
+    .status-online { color:var(--green); }
+    .status-offline { color:var(--red); }
+    .status-in { color:#198652; }
+    .status-out { color:#9B1C2E; }
+    .timestamp { color:#666; font-size:11px; margin-bottom:8px; }
+    .server-list-container { max-height:400px; overflow-y:auto; padding-right:5px; }
+    .server-list-container::-webkit-scrollbar { width:3px; }
+    .server-list-container::-webkit-scrollbar-track { background:rgba(221,157,52,.1); }
+    .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
+    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
+    .peer-count { color:var(--gold-soft); font-size:13px; margin-bottom:5px; }
+    @media (max-width:700px) { .brand { position:absolute; font-size:18px; letter-spacing:3px; } main { padding:65px 10px 24px 5px; align-items:flex-start; } .panel { padding:24px 20px 20px; width:98%; } .panel-title { font-size:15px; } .server-header { font-size:13px; } .server-details { font-size:12px; margin-left:12px; } .server-list-container { max-height:300px; } }
+    @media (min-width:1920px) { :root { --ui-scale:1.1; } main { padding:72px 20px 36px 0; } .panel { width:min(700px,90%); } }
+  </style>
 </head>
 <body>
-<div class="terminal">
-<div class="dashboard-title">
-ZCASH - PEERS CONECTADOS
-</div>
-<a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a><br><br>
-Lista de peers conectados al nodo. Actualización cada 60 segundos. Ordenados por ping (menor a mayor).<br>
-<div id="timestamp" class="timestamp">Cargando...</div><br>
-■ LISTA DE PEERS carover0.xyz:<br>
-==============================<br>
-<br>
-<div id="serversList">
-Cargando peers...</div><div class="footer">
-===============================================================================<br>
-© 2026 Creada con ♥ por cΔrovΣr0<br>
-apoya: t1g6NAetkFajFP62crR54DBazfqJjxRG1XD
-</div>
-</div>
+  <div class="brand">cΔrovΣr0</div>
+  <main><section class="panel">
+    <div class="panel-title"><img class="logo" src="assets/zcash.png" alt="Zcash">PEERS CONECTADOS</div>
+    <nav class="top-links"><a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
+    
+    <section class="section"><h2 class="subheader">► Lista de peers carover0.xyz</h2>
+      <div class="note" style="margin-bottom:8px;">Actualización cada 60 segundos. Ordenados por ping (menor a mayor).</div>
+      <div id="peerCount" class="peer-count">Peers: 0</div>
+      <div id="timestamp" class="timestamp">Cargando...</div>
+      <div id="serversList" class="server-list-container">Cargando peers...</div>
+    </section>
 
-<script>
-const API_URL = "https://carover0.xyz/api/zec/rpc.php";
-const TOKEN = "zec2026";
+    <section class="section"><h2 class="subheader">► API pública</h2>
+      <a class="api" href="https://carover0.xyz/api/zec/rpc.php?token=zec2026&cmd=getpeerinfo" target="_blank" rel="noopener">https://carover0.xyz/api/zec/rpc.php?token=zec2026&cmd=getpeerinfo</a>
+    </section>
 
-let peersData = [];
+    <footer class="footer">
+      <div class="small">actualizado: <span id="update-time">---</span></div>
+      <div class="donation"><br></div>
+    </footer>
+  </section></main>
 
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/[&<>]/g, function(m) {
+  <script>
+    const API_URL = "https://carover0.xyz/api/zec/rpc.php";
+    const TOKEN = "zec2026";
+    let peersData = [];
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/[&<>]/g, function(m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
         return m;
-    });
-}
-
-function shortAddr(addr) {
-    if (!addr) return '?';
-    return addr.split(':')[0];
-}
-
-function formatPing(pingtime) {
-    if (!pingtime) return '-';
-    var ms = pingtime * 1000;
-    if (ms < 1) return '<1ms';
-    return ms.toFixed(0) + 'ms';
-}
-
-function mostrarTimestamp() {
-    document.getElementById('timestamp').innerHTML = `última actualización: ${new Date().toLocaleString()}`;
-}
-
-function renderizarLista() {
-    const container = document.getElementById('serversList');
-    container.innerHTML = '';
-    
-    if (peersData.length === 0) {
-        container.innerHTML = '<div class="server-item"><span class="status-offline">No se encontraron peers</span></div>';
-        return;
+      });
     }
-    
-    const ordenados = [...peersData].sort((a, b) => {
+
+    function shortAddr(addr) {
+      if (!addr) return '?';
+      return addr.split(':')[0];
+    }
+
+    function formatPing(pingtime) {
+      if (!pingtime && pingtime !== 0) return '-';
+      var ms = pingtime * 1000;
+      if (ms < 1) return '<1ms';
+      return ms.toFixed(0) + 'ms';
+    }
+
+    function formatVersion(version) {
+      if (!version) return '';
+      if (typeof version === 'number') {
+        const major = Math.floor(version / 1000000);
+        const minor = Math.floor((version % 1000000) / 10000);
+        const patch = Math.floor((version % 10000) / 100);
+        return `${major}.${minor}.${patch}`;
+      }
+      return version;
+    }
+
+    function mostrarTimestamp() {
+      const ahora = new Date();
+      document.getElementById('timestamp').innerHTML = `última actualización: ${ahora.toLocaleString()}`;
+      document.getElementById('update-time').textContent = ahora.toLocaleString();
+    }
+
+    function renderizarLista() {
+      const container = document.getElementById('serversList');
+      container.innerHTML = '';
+      
+      if (!peersData || peersData.length === 0) {
+        container.innerHTML = '<div class="server-item"><span class="status-offline">No se encontraron peers</span></div>';
+        document.getElementById('peerCount').textContent = 'Peers: 0';
+        return;
+      }
+      
+      document.getElementById('peerCount').textContent = `Peers: ${peersData.length}`;
+      
+      const ordenados = [...peersData].sort((a, b) => {
         const pingA = a.pingtime ? a.pingtime * 1000 : 999999;
         const pingB = b.pingtime ? b.pingtime * 1000 : 999999;
         return pingA - pingB;
-    });
-    
-    ordenados.forEach(peer => {
+      });
+      
+      ordenados.forEach(peer => {
         const div = document.createElement('div');
         div.className = 'server-item';
         
         const pingMs = peer.pingtime ? (peer.pingtime * 1000).toFixed(0) : '?';
         const pingDisplay = formatPing(peer.pingtime);
         const direccion = peer.inbound ? 'IN' : 'OUT';
-        const estadoColor = peer.inbound ? '#198652' : '#9B1C2E';
+        const estadoClass = peer.inbound ? 'status-in' : 'status-out';
+        const estadoIcon = peer.inbound ? '⬇' : '⬆';
         
-        let headerHTML = `► ${escapeHtml(shortAddr(peer.addr))} <span style="color:${estadoColor}">[${direccion}]</span> <span class="status-online"></span>`;
+        let headerHTML = `${estadoIcon} ${escapeHtml(shortAddr(peer.addr))} <span class="${estadoClass}">[${direccion}]</span>`;
         
-        let detailsHTML = `<div class="server-details">└─ addr: ${escapeHtml(peer.addr)}  |  ping: <span class="height-number">${pingMs}ms</span>`;
+        if (peer.addr) {
+          headerHTML += ` <span class="version">(${escapeHtml(peer.addr)})</span>`;
+        }
         
-        if (peer.version) {
-            let versionStr = peer.version;
-            if (typeof versionStr === 'number') {
-                const major = Math.floor(versionStr / 1000000);
-                const minor = Math.floor((versionStr % 1000000) / 10000);
-                const patch = Math.floor((versionStr % 10000) / 100);
-                versionStr = `${major}.${minor}.${patch}`;
-            }
-            detailsHTML += `  |  version: <span class="version">${escapeHtml(versionStr)}</span>`;
+        let detailsHTML = `<div class="server-details">└─ ping: <span class="height-number">${pingMs}ms</span>`;
+        
+        const versionStr = formatVersion(peer.version);
+        if (versionStr) {
+          detailsHTML += `  |  version: <span class="version">${escapeHtml(versionStr)}</span>`;
         }
         
         if (peer.subver) {
-            let subver = peer.subver.replace(/[\/\\]/g, '');
-            if (subver.length > 30) subver = subver.substring(0, 27) + '...';
-            detailsHTML += `  |  subver: <span class="version">${escapeHtml(subver)}</span>`;
+          let subver = peer.subver.replace(/[\/\\]/g, '');
+          if (subver.length > 30) subver = subver.substring(0, 27) + '...';
+          detailsHTML += `  |  subver: <span class="version">${escapeHtml(subver)}</span>`;
+        }
+        
+        if (peer.bytesrecv || peer.bytessent) {
+          const recv = peer.bytesrecv ? (peer.bytesrecv / 1024).toFixed(0) : '0';
+          const sent = peer.bytessent ? (peer.bytessent / 1024).toFixed(0) : '0';
+          detailsHTML += `  |  tráfico: <span class="version">${recv}KB ↓ ${sent}KB ↑</span>`;
         }
         
         detailsHTML += `</div>`;
         
         div.innerHTML = `<div class="server-header">${headerHTML}</div>${detailsHTML}`;
         container.appendChild(div);
-    });
-}
+      });
+    }
 
-async function cargarDatos() {
-    try {
+    async function cargarDatos() {
+      try {
         const response = await fetch(API_URL + '?token=' + TOKEN + '&cmd=getpeerinfo');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         
         if (data.error) {
-            document.getElementById('serversList').innerHTML = `<div class="server-item"><span class="status-offline">ERROR: ${escapeHtml(data.error)}</span></div>`;
-            document.getElementById('timestamp').innerHTML = 'Error cargando datos';
-            return;
+          document.getElementById('serversList').innerHTML = `<div class="server-item"><span class="status-offline">ERROR: ${escapeHtml(data.error)}</span></div>`;
+          document.getElementById('timestamp').innerHTML = 'Error cargando datos';
+          return;
         }
         
         peersData = data.result || [];
         mostrarTimestamp();
         renderizarLista();
         
-    } catch (error) {
+      } catch (error) {
         console.error('Error cargando datos:', error);
         document.getElementById('serversList').innerHTML = '<div class="server-item"><span class="status-offline">ERROR: No se pudo cargar la lista de peers</span></div>';
         document.getElementById('timestamp').innerHTML = 'Error cargando datos';
+      }
     }
-}
 
-cargarDatos();
-setInterval(cargarDatos, 60000);
-</script>
+    cargarDatos();
+    setInterval(cargarDatos, 60000);
+  </script>
 </body>
 </html>
