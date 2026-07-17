@@ -7,13 +7,7 @@
 <style>
         :root { --cyan: #00d9ff; --green: #31db72; --panel: rgba(1,14,19,.91); --line: rgba(0,217,255,.45); }
         * { box-sizing: border-box; }
-body { 
-    margin: 0; 
-    min-height: 100vh; 
-    color: var(--green); 
-    font-family: "Lucida Console", "Monaco", monospace; 
-    background: #02070a url('assets/f5.png') 75% center / contain fixed no-repeat; 
-}
+        body { margin: 0; min-height: 100vh; color: var(--green); font-family: "Lucida Console", "Monaco", monospace; background: #02070a url('assets/f5.png') 75% center / cover fixed no-repeat; }
         .brand { position: fixed; z-index: 3; top: 18px; left: 50%; transform: translateX(-50%) scale(var(--ui-scale)); transform-origin: center top; color: var(--cyan); font-size: clamp(20px, 2vw, 30px); font-weight: bold; letter-spacing: 5px; text-shadow: 0 0 18px var(--cyan); font-family: "Lucida Console", "Monaco", monospace; }
         main { width: min(1100px, 100%); height: 100vh; margin: auto; padding: 76px 10px 46px; display: flex; justify-content: center; align-items: flex-end; transform: scale(var(--ui-scale)); transform-origin: top center; }
         .panel { position: relative; z-index: 1; width: 80%; max-width: 750px; margin-top: 600px; margin-left: -4.5cm; padding: 28px 32px 22px; background: linear-gradient(135deg, rgba(2,20,27,.94), var(--panel)); border: 3px solid var(--cyan); clip-path: polygon(0 31px, 31px 0, calc(100% - 31px) 0, 100% 31px, 100% calc(100% - 31px), calc(100% - 31px) 100%, 31px 100%, 0 calc(100% - 31px)); box-shadow: 0 0 15px rgba(0,217,255,.9), 0 0 45px rgba(0,217,255,.18), inset 0 0 26px rgba(0,217,255,.06); }
