@@ -1,45 +1,39 @@
-<!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=.9">
     <title>cΔrovΣr0 · Reactores Tron</title>
-    <style>
+<style>
         :root { --cyan: #00d9ff; --green: #31db72; --panel: rgba(1,14,19,.91); --line: rgba(0,217,255,.45); }
         * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; color: var(--green); font-family: "Lucida Console", "Monaco", monospace; background: #02070a url('assets/f5.png') 75% center / cover fixed no-repeat; }
         .brand { position: fixed; z-index: 3; top: 18px; left: 50%; transform: translateX(-50%) scale(var(--ui-scale)); transform-origin: center top; color: var(--cyan); font-size: clamp(20px, 2vw, 30px); font-weight: bold; letter-spacing: 5px; text-shadow: 0 0 18px var(--cyan); font-family: "Lucida Console", "Monaco", monospace; }
         main { width: min(1100px, 100%); height: 100vh; margin: auto; padding: 76px 10px 46px; display: flex; justify-content: center; align-items: flex-end; transform: scale(var(--ui-scale)); transform-origin: top center; }
-        .panel { position: relative; z-index: 1; width: 70%; max-width: 600px; margin-top: 600px; padding: 28px 32px 22px; background: linear-gradient(135deg, rgba(2,20,27,.94), var(--panel)); border: 3px solid var(--cyan); clip-path: polygon(0 31px, 31px 0, calc(100% - 31px) 0, 100% 31px, 100% calc(100% - 31px), calc(100% - 31px) 100%, 31px 100%, 0 calc(100% - 31px)); box-shadow: 0 0 15px rgba(0,217,255,.9), 0 0 45px rgba(0,217,255,.18), inset 0 0 26px rgba(0,217,255,.06); }
+        .panel { position: relative; z-index: 1; width: 80%; max-width: 750px; margin-top: 600px; margin-left: -4.5cm; padding: 28px 32px 22px; background: linear-gradient(135deg, rgba(2,20,27,.94), var(--panel)); border: 3px solid var(--cyan); clip-path: polygon(0 31px, 31px 0, calc(100% - 31px) 0, 100% 31px, 100% calc(100% - 31px), calc(100% - 31px) 100%, 31px 100%, 0 calc(100% - 31px)); box-shadow: 0 0 15px rgba(0,217,255,.9), 0 0 45px rgba(0,217,255,.18), inset 0 0 26px rgba(0,217,255,.06); }
         .panel::before, .panel::after { content: ""; position: absolute; width: 62px; height: 8px; background: repeating-linear-gradient(52deg, var(--cyan) 0 11px, transparent 11px 18px); }
         .panel::before { top: 17px; right: 58px; }
         .panel::after { bottom: 17px; left: 80px; transform: scaleX(-1); }
         h2 { margin: 4px 0 14px; color: var(--cyan); font-size: 18px; font-weight: normal; letter-spacing: 2px; text-shadow: 0 0 10px var(--cyan); }
         .section { border-top: 1px solid var(--line); padding: 10px 0 12px; }
-        .metric-name { display: block; margin-bottom: 6px; color: var(--cyan); font-size: 13px; }
-        .info { font-size: 14px; line-height: 1.4; }
+        .metric-name { display: block; margin-bottom: 6px; color: var(--cyan); font-size: 12px; }
+        .info { font-size: 12px; line-height: 1.4; }
         .status { letter-spacing: 1px; }
         .bar-line { display: flex; align-items: center; gap: 9px; }
         .bar { display: flex; flex: 1; gap: 3px; }
-        .bar i { display: block; width: 12px; height: 14px; border: 1px solid rgba(49,219,114,.24); }
+        .bar i { display: block; width: 10px; height: 12px; border: 1px solid rgba(49,219,114,.24); }
         .bar i.on { background: #32d772; box-shadow: 0 0 8px rgba(49,219,114,.42); }
-        .percent { min-width: 35px; font-size: 14px; }
-        .node-title { display: flex; align-items: center; gap: 10px; color: var(--cyan); font-size: 14px; margin-bottom: 6px; }
-        .online { margin-left: auto; font-size: 12px; color: var(--green); }
-        .links { text-align: center; color: #b8fff0; font-size: 14px; text-shadow: 0 1px 3px #000; padding: 6px 0 0; }
+        .bar i.on.bw { background: #00d9ff; box-shadow: 0 0 8px rgba(0,217,255,.42); }
+        .percent { min-width: 35px; font-size: 12px; }
+        .node-title { display: flex; align-items: center; gap: 10px; color: var(--cyan); font-size: 13px; margin-bottom: 6px; }
+        .online { margin-left: auto; font-size: 11px; color: var(--green); }
+        .links { text-align: center; color: #b8fff0; font-size: 13px; text-shadow: 0 1px 3px #000; padding: 6px 0 0; }
         .links a { color: var(--cyan); text-decoration: none; }
         .links a:hover { text-decoration: underline; }
         .reactor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .footer-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 4px; font-size: 13px; }
-        .resource-detail { font-size: 10px; color: #b8aacc; margin-top: 4px; padding: 4px 6px; background: rgba(0,217,255,0.05); border-radius: 3px; border-left: 2px solid rgba(0,217,255,0.2); line-height: 1.8; }
-        .resource-detail .from-stake { color: var(--green); }
-        .resource-detail .from-others { color: #ffd700; }
-        .resource-detail .to-others { color: #ff7b87; }
-        .resource-detail .energy-bought { color: #ff6b9d; }
-        @media (max-width: 1050px) { main { padding: 74px 24px 35px; } .panel { width: 85%; max-width: 550px; } }
-        @media (max-width: 700px) { main { padding: 72px 15px 28px; } .panel { width: 95%; max-width: 100%; padding: 24px 20px 18px; margin-top: 420px; } .reactor-grid { grid-template-columns: 1fr; gap: 15px; } .footer-info { grid-template-columns: 1fr; text-align: center; } .links { font-size: 12px; } }
+        .footer-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 4px; font-size: 12px; }
+        @media (max-width: 1050px) { main { padding: 74px 24px 35px; } .panel { width: 85%; max-width: 700px; margin-left: -1cm; } }
+        @media (max-width: 700px) { main { padding: 72px 15px 28px; } .panel { width: 95%; max-width: 100%; padding: 24px 20px 18px; margin-top: 420px; margin-left: 0; } .reactor-grid { grid-template-columns: 1fr; gap: 15px; } .footer-info { grid-template-columns: 1fr; text-align: center; } .links { font-size: 12px; } }
     </style>
-</head>
 <body>
     <div class="brand">cΔrovΣr0</div>
     <main>
@@ -52,7 +46,9 @@
                         <span class="metric-name">⚡ ENERGIA</span>
                         <div class="bar-line"><div class="bar" id="r1-energy-bar"></div><span class="percent" id="r1-energy-percent">—</span></div>
                         <div class="info" id="r1-energy-total" style="font-size:12px;color:#b8aacc;margin-top:3px;">—</div>
-                        <div class="resource-detail" id="r1-energy-detail"><span class="from-stake">💥 Staking: —</span><br><span class="from-others">📥 Recibida: —</span><br><span class="to-others">⚡️ Delegada: —</span><br><span class="energy-bought">⚡ Energy bought: —</span></div>
+                        <span class="metric-name" style="margin-top:8px;">📶 BANDWIDTH</span>
+                        <div class="bar-line"><div class="bar" id="r1-bandwidth-bar"></div><span class="percent" id="r1-bandwidth-percent">—</span></div>
+                        <div class="info" id="r1-bandwidth-total" style="font-size:12px;color:#b8aacc;margin-top:3px;">—</div>
                     </div>
                 </div>
                 <div>
@@ -61,7 +57,9 @@
                         <span class="metric-name">⚡ ENERGIA</span>
                         <div class="bar-line"><div class="bar" id="r2-energy-bar"></div><span class="percent" id="r2-energy-percent">—</span></div>
                         <div class="info" id="r2-energy-total" style="font-size:12px;color:#b8aacc;margin-top:3px;">—</div>
-                        <div class="resource-detail" id="r2-energy-detail"><span class="from-stake">💥 Staking: —</span><br><span class="from-others">🔋 Recibida: —</span><br><span class="to-others">⚡️ Delegada: —</span><br><span class="energy-bought">⚡ Energy bought: —</span></div>
+                        <span class="metric-name" style="margin-top:8px;">📶 BANDWIDTH</span>
+                        <div class="bar-line"><div class="bar" id="r2-bandwidth-bar"></div><span class="percent" id="r2-bandwidth-percent">—</span></div>
+                        <div class="info" id="r2-bandwidth-total" style="font-size:12px;color:#b8aacc;margin-top:3px;">—</div>
                     </div>
                 </div>
             </div>
@@ -75,10 +73,9 @@
     <script>
         const TRONGRID_KEY='a9d4c385-3529-46a5-94b4-1d3adbc45978',R1_ADDRESS='TS1k7yVS6PLNRP3xSms65YVa5sARj2JgVd',R2_ADDRESS='TN8tyafAodF5Yez4yuKv6QqvycQoMPYt2D',UPDATE_INTERVAL=3e4,TASA_CONVERSION=9.5;
         function $(id){return document.getElementById(id);}
-        function formatNum(num){if(num===undefined||num===null)return'0';if(num>=1e9)return(num/1e9).toFixed(2)+'B';if(num>=1e6)return(num/1e6).toFixed(2)+'M';if(num>=1e3)return(num/1e3).toFixed(2)+'K';return num.toFixed(2);}
         function formatNumInt(num){if(num===undefined||num===null)return'0';if(num>=1e9)return(num/1e9).toFixed(1)+'B';if(num>=1e6)return(num/1e6).toFixed(1)+'M';if(num>=1e3)return(num/1e3).toFixed(1)+'K';return Math.round(num).toString();}
-        function setBar(barId,value,max){const bar=document.getElementById(barId);if(!bar)return 0;const percent=max>0?Math.min(100,Math.round((value/max)*100)):0,segments=10,filled=Math.round((percent/100)*segments);bar.innerHTML='';for(let i=0;i<segments;i++){const segment=document.createElement('i');if(i<filled)segment.className='on';bar.appendChild(segment);}return percent;}
-        async function fetchReactorData(address,prefix){try{const headers={"accept":"application/json","content-type":"application/json","TRON-PRO-API-KEY":TRONGRID_KEY},payload={"address":address,"visible":true};const resResources=await fetch('https://api.trongrid.io/wallet/getaccountresource',{method:'POST',headers:headers,body:JSON.stringify(payload)}),resources=await resResources.json();const resAccount=await fetch('https://api.trongrid.io/wallet/getaccount',{method:'POST',headers:headers,body:JSON.stringify(payload)}),account=await resAccount.json();const resDelegated=await fetch('https://api.trongrid.io/wallet/getdelegatedresourceaccountindexv2',{method:'POST',headers:headers,body:JSON.stringify({"value":address,"visible":true})}),delegatedInfo=await resDelegated.json();const energyLimit=resources.EnergyLimit||0,energyUsed=resources.EnergyUsed||0,energyAvailable=energyLimit-energyUsed;const frozenData=account.frozenV2||[],balanceCongeladoEnergia=frozenData.filter(item=>item.type==="ENERGY").reduce((sum,item)=>sum+(item.amount||0),0)/1e6;const energiaMax=balanceCongeladoEnergia*TASA_CONVERSION;const energiaComprada=energyLimit>energiaMax;const fromAccounts=delegatedInfo.fromAccounts||[];let delegatedByOthersEnergy=0,delegatedToOthersEnergy=0;fromAccounts.forEach(item=>{if(item.resource==="ENERGY")delegatedByOthersEnergy+=item.amount||0;});const toAccounts=delegatedInfo.toAccounts||[];toAccounts.forEach(item=>{if(item.resource==="ENERGY")delegatedToOthersEnergy+=item.amount||0;});const totalEnergy=(balanceCongeladoEnergia*TASA_CONVERSION)+delegatedByOthersEnergy-delegatedToOthersEnergy;const energyAvailableReal=totalEnergy-energyUsed;const energyPercent=setBar(`${prefix}-energy-bar`,energyAvailableReal,totalEnergy||1);$(`${prefix}-energy-percent`).textContent=totalEnergy>0?`${energyPercent}%`:"0%";$(`${prefix}-energy-total`).textContent=`⚡ ${formatNumInt(totalEnergy)} ENERGY (${formatNumInt(energyAvailableReal)} disponible)`;let energyDetailHTML=`<span class="from-stake">💥 Staking: +${formatNum(balanceCongeladoEnergia*TASA_CONVERSION)}</span><br><span class="from-others">🔋 Recibida: +${formatNum(delegatedByOthersEnergy)}</span><br><span class="to-others">⚡️ Delegada: -${formatNum(delegatedToOthersEnergy)}</span><br>`;if(energiaComprada)energyDetailHTML+=`<span class="energy-bought">⚡ Energy bought: +${formatNum(energyLimit-energiaMax)}</span>`;$(`${prefix}-energy-detail`).innerHTML=energyDetailHTML;$(`${prefix}-status`).textContent="✅ ONLINE";$(`${prefix}-status`).style.color="#31db72";return{success:true};}catch(e){console.error(`Error en ${prefix}:`,e);$(`${prefix}-status`).textContent="⚠️ OFFLINE";$(`${prefix}-status`).style.color="#ff7b87";return{success:false};}}
+        function setBar(barId,value,max,isBandwidth=false){const bar=document.getElementById(barId);if(!bar)return 0;const percent=max>0?Math.min(100,Math.round((value/max)*100)):0,segments=10,filled=Math.round((percent/100)*segments);bar.innerHTML='';for(let i=0;i<segments;i++){const segment=document.createElement('i');if(i<filled){if(isBandwidth)segment.className='on bw';else segment.className='on';}bar.appendChild(segment);}return percent;}
+        async function fetchReactorData(address,prefix){try{const headers={"accept":"application/json","content-type":"application/json","TRON-PRO-API-KEY":TRONGRID_KEY};const payload={"address":address,"visible":true};const resResources=await fetch('https://api.trongrid.io/wallet/getaccountresource',{method:'POST',headers,body:JSON.stringify(payload)});const resources=await resResources.json();const resDelegatedIndex=await fetch('https://api.trongrid.io/wallet/getdelegatedresourceaccountindexv2',{method:'POST',headers,body:JSON.stringify({"value":address,"visible":true})});const delegatedIndex=await resDelegatedIndex.json();const resAccount=await fetch('https://api.trongrid.io/wallet/getaccount',{method:'POST',headers,body:JSON.stringify(payload)});const account=await resAccount.json();const energyLimit=resources.EnergyLimit||0,energyUsed=resources.EnergyUsed||0;const bandwidthLimit=resources.NetLimit||0,bandwidthUsed=resources.NetUsed||0;const freeBandwidthLimit=resources.freeNetLimit||0,freeBandwidthUsed=resources.freeNetUsed||0;const totalBandwidth=bandwidthLimit+freeBandwidthLimit;const bandwidthAvailable=totalBandwidth-(bandwidthUsed+freeBandwidthUsed);const frozenData=account.frozenV2||[];let selfStakeTRX=0;frozenData.forEach(item=>{if(item.type==="ENERGY")selfStakeTRX+=item.amount||0;});const selfStakeEnergy=(selfStakeTRX/1e6)*TASA_CONVERSION;const fromAccounts=delegatedIndex.fromAccounts||[];let delegatedFromOthers=0;fromAccounts.forEach(item=>{if(item.resource==="ENERGY"){delegatedFromOthers+=item.amount||0;}});let delegatedToOthers=0;const toAccounts=delegatedIndex.toAccounts||[];for(const toAccount of toAccounts){try{const resDelegated=await fetch('https://api.trongrid.io/wallet/getdelegatedresource',{method:'POST',headers,body:JSON.stringify({"fromAddress":address,"toAddress":toAccount.address,"visible":true})});const delegatedData=await resDelegated.json();if(delegatedData.delegatedResource){delegatedData.delegatedResource.forEach(item=>{delegatedToOthers+=item.frozen_balance_for_energy||0;});}}catch(e){}}const totalEnergy=selfStakeEnergy+delegatedFromOthers-delegatedToOthers;const energyAvailable=totalEnergy-energyUsed;const energyPercent=setBar(`${prefix}-energy-bar`,energyAvailable,totalEnergy||1);$(`${prefix}-energy-percent`).textContent=totalEnergy>0?`${energyPercent}%`:"0%";$(`${prefix}-energy-total`).textContent=`⚡ ${formatNumInt(totalEnergy)} ENERGY (${formatNumInt(energyAvailable)} disponible)`;const bandwidthPercent=setBar(`${prefix}-bandwidth-bar`,bandwidthAvailable,totalBandwidth||1,true);$(`${prefix}-bandwidth-percent`).textContent=totalBandwidth>0?`${bandwidthPercent}%`:"0%";$(`${prefix}-bandwidth-total`).textContent=`📶 ${formatNumInt(totalBandwidth)} BANDWIDTH (${formatNumInt(bandwidthAvailable)} disponible)`;$(`${prefix}-status`).textContent="✅ ONLINE";$(`${prefix}-status`).style.color="#31db72";return{success:true};}catch(e){console.error(`❌ Error en ${prefix}:`,e);$(`${prefix}-status`).textContent="⚠️ OFFLINE";$(`${prefix}-status`).style.color="#ff7b87";return{success:false};}}
         let countdown=UPDATE_INTERVAL/1e3,timerInterval=null;
         function updateTimerDisplay(){const timerElement=document.getElementById('update-timer');if(timerElement)timerElement.textContent=`(siguiente: ${countdown}s)`;}
         function startCountdown(){countdown=UPDATE_INTERVAL/1e3;updateTimerDisplay();if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(()=>{countdown--;if(countdown<=0)countdown=UPDATE_INTERVAL/1e3;updateTimerDisplay();},1e3);}
