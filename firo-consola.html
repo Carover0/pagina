@@ -1,171 +1,184 @@
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>FIRO: RPC CONSOLE</title>
-<style>
-body {
-    background: #000;
-    color: #fff;
-    font-family: "Lucida Console", monospace;
-    font-size: 15px;
-    margin: 0;
-    padding: 20px;
-}
-.terminal {
-    max-width: 90ch;
-    white-space: pre-wrap;
-    line-height: 1.4;
-}
-.input-line {
-    display: flex;
-    align-items: center;
-    margin: 0 0 5px 0;
-    gap: 5px;
-}
-#output {
-    margin-top: 0;
-    padding-top: 0;
-}
-.prompt {
-    color: #9B1C2E;
-}
-.cursor-input {
-    background: #000;
-    color: #fff;
-    border: none;
-    font-family: "Lucida Console", monospace;
-    font-size: 15px;
-    padding: 4px 0;
-    width: 50ch;
-    outline: none;
-    caret-color: #9B1C2E;
-    animation: blink 1s step-end infinite;
-    autocomplete: off;
-    autocorrect: off;
-    autocapitalize: off;
-    spellcheck: false;
-}
-@keyframes blink {
-    from, to { caret-color: #9B1C2E; }
-    50% { caret-color: transparent; }
-}
-.cursor-input::selection {
-    background: #9B1C2E;
-    color: #000;
-}
-.hidden-button {
-    display: none;
-}
-.footer {
-  margin-top: 25px;
-  padding-top: 5px;
-  color: #fff;
-  font-size: 15px;
-  line-height: 1.2;
-}
-.node-line {
-    margin: 10px 0;
-    white-space: pre-line;
-}
-a, a:visited, a:hover, a:active {
-    color: #9B1C2E;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
-}
-pre {
-    background: #000;
-    color: #fff;
-    font-family: "Lucida Console", monospace;
-    font-size: 15px;
-    border-left: 3px solid #9B1C2E;
-    padding: 10px;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-.help-box {
-    margin-top: 30px;
-    color: #888;
-    border-left: 3px solid #444;
-    padding-left: 10px;
-}
-.help-box .title {
-    color: #9B1C2E;
-    margin-bottom: 5px;
-}
-.help-box .simple {
-    color: #aaa;
-    margin-bottom: 10px;
-}
-.help-box .params {
-    color: #aaa;
-}
-.help-box .params div {
-    margin-left: 15px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firo · Consola RPC</title>
+  <style>
+    :root { --gold:#9B1C2E; --gold-soft:#c0392b; --green:#31db72; --red:#ff756f; --line:rgba(155,28,46,.5); --panel:rgba(10,2,2,.91); --ui-scale:1; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; color:#fff; font:14px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.48),rgba(10,6,0,.13) 55%,rgba(0,0,0,.56)); }
+    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(192,57,43,.025) 0 1px,transparent 1px 4px); }
+    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
+    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
+    .panel { position:relative; width:min(850px,98%); padding:25px 30px 20px; background:linear-gradient(135deg,rgba(30,10,5,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(155,28,46,.85),0 0 48px rgba(155,28,46,.2),inset 0 0 30px rgba(155,28,46,.08); }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
+    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
+    .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(192,57,43,.65)); }
+    .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
+    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
+    .section { border-top:1px solid var(--line); padding:9px 0 10px; }
+    .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
+    .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
+    .api { font-size:11px; overflow-wrap:anywhere; } 
+    .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
+    .small { color:#afa391; }
+    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
+    
+    .input-line { display:flex; align-items:center; margin:8px 0; gap:8px; }
+    .prompt { color:var(--gold-soft); font-size:13px; white-space:nowrap; }
+    #cmdInput { background:transparent; color:#fff; border:none; border-bottom:1px solid var(--line); font-family:"Lucida Console",Monaco,monospace; font-size:13px; padding:3px 5px; width:100%; outline:none; caret-color:var(--gold); }
+    #cmdInput:focus { border-bottom-color:var(--gold); }
+    
+    #output { margin-top:6px; }
+    #output pre { margin:6px 0 0 0; font-family:"Lucida Console",Monaco,monospace; font-size:12px; white-space:pre-wrap; word-wrap:break-word; color:#e6ddce; line-height:1.5; }
+    #output pre .gold { color:var(--gold-soft); }
+    #output pre .error { color:var(--red); }
+    
+    .result-footer { font-size:10px; color:#7a7060; margin-top:8px; padding-top:6px; border-top:1px solid var(--line); }
+    
+    .server-list-container { max-height:450px; overflow-y:auto; padding-right:5px; }
+    .server-list-container::-webkit-scrollbar { width:3px; }
+    .server-list-container::-webkit-scrollbar-track { background:rgba(155,28,46,.1); }
+    .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
+    
+    .copy-btn { background:transparent; border:1px solid var(--line); color:var(--gold-soft); font-family:'Lucida Console',monospace; font-size:11px; padding:3px 10px; cursor:pointer; margin-top:6px; }
+    .copy-btn:hover { border-color:var(--gold); background:rgba(155,28,46,.1); }
+    
+    .help-box { margin-top:10px; padding:8px 12px; border-left:2px solid var(--line); color:#888; font-size:11px; line-height:1.6; }
+    .help-box .title { color:var(--gold-soft); font-weight:bold; }
+    .help-box .simple { color:#aaa; margin:3px 0 6px 0; }
+    .help-box .params { color:#aaa; }
+    
+    @media (max-width:700px) { 
+      .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
+      main { padding:65px 10px 24px 5px; align-items:flex-start; } 
+      .panel { padding:22px 18px 18px; width:98%; } 
+      .panel-title { font-size:16px; } 
+      #cmdInput { font-size:12px; }
+      #output pre { font-size:11px; }
+      .server-list-container { max-height:300px; }
+      .help-box { font-size:10px; }
+    }
+    @media (min-width:1920px) { 
+      :root { --ui-scale:1.1; } 
+      main { padding:72px 20px 36px 0; } 
+      .panel { width:min(750px,90%); } 
+    }
+  </style>
 </head>
-<body><div class="terminal"><div id="nodeInfo" class="node-line">cΔrovΣr0 • FIRO - CONSOLA RPC
-==================
-<a href="https://carover0.github.io/pagina/firo-nodo.html">[FIRO]</a> <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a> <a href="https://carover0.github.io/pagina/">[INICIO]</a>
-<div class="help-box"><div class="title">COMANDOS BÁSICOS (sin parámetros)</div><div class="simple">getblockchaininfo · getblockcount · getbestblockhash · getdifficulty · 
-getpeerinfo · getmempoolinfo · getrawmempool · getchaintips · gettxoutsetinfo · getinfo · getconnectioncount · getnettotals · getnetworkhashps · getmininginfo</div><div class="title">COMANDOS CON PARÁMETROS</div><div class="params">getblockhash &lt;altura&gt; · getblock &lt;hash&gt; · 
-getrawtransaction &lt;txid&gt; 1 · validateaddress &lt;dirección&gt; · 
-gettxout &lt;txid&gt; &lt;vout&gt;</div></div>
-<div class="input-line"><span class="prompt">firo-cli -> </span>  <input type="text" id="cmdInput" class="cursor-input" placeholder="getblockchaininfo" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-    <button id="sendBtn" class="hidden-button"></button>
-</div><div id="output"><pre>Listo para ejecutar comandos...</pre>
-</div>
-<div class="footer">================================================================================<br>© 2026 Creada con ♥ por cΔrovΣr0 | apoya: carover0.firo</div>
-</div>
+<body>
+  <div class="brand">cΔrovΣr0</div>
+  <main><section class="panel">
+    <div class="panel-title"><img class="logo" src="assets/firo.png" alt="Firo">CONSOLA RPC</div>
+    <nav class="top-links"><a href="https://carover0.github.io/pagina/firo-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
+    
+    <section class="section">
+      <div class="help-box">
+        <div class="title">COMANDOS BÁSICOS (sin parámetros)</div>
+        <div class="simple">getblockchaininfo · getblockcount · getbestblockhash · getdifficulty · getpeerinfo · getmempoolinfo · getrawmempool · getchaintips · gettxoutsetinfo · getinfo · getconnectioncount · getnettotals · getnetworkhashps · getmininginfo</div>
+        <div class="title">COMANDOS CON PARÁMETROS</div>
+        <div class="params">getblockhash &lt;altura&gt; · getblock &lt;hash&gt; · getrawtransaction &lt;txid&gt; 1 · validateaddress &lt;dirección&gt; · gettxout &lt;txid&gt; &lt;vout&gt;</div>
+      </div>
+      
+      <div class="input-line">
+        <span class="prompt">firo></span>
+        <input type="text" id="cmdInput" placeholder="getblockchaininfo" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      
+      <div id="output" class="server-list-container">
+        <pre style="color:#888;">Listo para ejecutar comandos...</pre>
+      </div>
+    </section>
 
-<script>
-const API_URL = "https://carover0.xyz/api/firo/rpc.php";
-const TOKEN = "firo2026";
+    <section class="section"><h2 class="subheader">► API pública</h2>
+      <a class="api" href="https://carover0.xyz/api/firo/rpc.php?token=firo2026" target="_blank" rel="noopener">https://carover0.xyz/api/firo/rpc.php?token=firo2026</a>
+    </section>
 
-async function sendCommand() {
-    const input = document.getElementById('cmdInput');
-    const cmd = input.value.trim();
-    const outputDiv = document.getElementById('output');
-    
-    if (!cmd) return;
-    
-    outputDiv.innerHTML = `<pre>Ejecutando: ${cmd}...</pre>`;
-    
-    try {
+    <footer class="footer">
+      <div class="small">[Enter] ejecutar &nbsp;·&nbsp; [F8] copiar &nbsp;·&nbsp; [F9] limpiar</div>
+      <div class="donation"><br></div>
+    </footer>
+  </section></main>
+
+  <script>
+    const API_URL = "https://carover0.xyz/api/firo/rpc.php";
+    const TOKEN = "firo2026";
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    async function sendCommand() {
+      const input = document.getElementById('cmdInput');
+      const cmd = input.value.trim();
+      const outputDiv = document.getElementById('output');
+      
+      if (!cmd) return;
+      
+      outputDiv.innerHTML = `<pre style="color:#888;">ejecutando: ${escapeHtml(cmd)}...</pre>`;
+      
+      try {
         const response = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
         const data = await response.json();
         
         let output = `<pre>`;
-        output += `<span style="color:#9B1C2E;">firo> ${cmd}</span>\n\n`;
+        output += `<span style="color:#9B1C2E;">firo> ${escapeHtml(cmd)}</span>\n\n`;
         
         if (data.error) {
-            output += `Error: ${JSON.stringify(data.error, null, 2)}`;
+          output += `<span class="error">Error:</span> ${JSON.stringify(data.error, null, 2)}`;
         } else {
-            output += JSON.stringify(data.result || data, null, 2);
+          output += JSON.stringify(data.result || data, null, 2);
         }
         
         output += `\n</pre>`;
+        output += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
         outputDiv.innerHTML = output;
         
-    } catch (error) {
-        outputDiv.innerHTML = `<pre>Error: ${error.message}</pre>`;
+      } catch (error) {
+        outputDiv.innerHTML = `<pre><span class="error">Error:</span> ${escapeHtml(error.message)}</pre>`;
+      }
+      
+      input.value = '';
     }
-    
-    input.value = '';
-}
 
-document.getElementById('cmdInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
+    window.copyResult = function() {
+      const outputPre = document.querySelector('#output pre:last-of-type');
+      if (outputPre) {
+        navigator.clipboard.writeText(outputPre.innerText).then(() => {
+          document.querySelector('.prompt').textContent = '✓';
+          setTimeout(() => document.querySelector('.prompt').textContent = 'firo>', 1000);
+        });
+      }
+    };
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F8') { e.preventDefault(); window.copyResult(); }
+      if (e.key === 'F9') {
+        e.preventDefault();
+        document.getElementById('cmdInput').value = '';
+        document.getElementById('output').innerHTML = '<pre style="color:#888;">Listo para ejecutar comandos...</pre>';
+        document.querySelector('.prompt').textContent = '♥';
+        setTimeout(() => document.querySelector('.prompt').textContent = 'firo>', 1000);
+      }
+    });
+
+    document.getElementById('cmdInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
         e.preventDefault();
         sendCommand();
-    }
-});
+      }
+    });
 
-window.onload = () => document.getElementById('cmdInput').focus();
-</script>
-
+    window.onload = () => document.getElementById('cmdInput').focus();
+  </script>
 </body>
 </html>
