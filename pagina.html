@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zcash · Resumen</title>
+  <style>
+    :root { --gold:#F00F6C; --gold-soft:#ff3d8a; --green:#31db72; --red:#ff756f; --line:rgba(240,15,108,.5); --panel:rgba(0,0,0,.88); --ui-scale:1; }
+    * { box-sizing:border-box; }
+    body { 
+      min-height:100vh; 
+      margin:0; 
+      color:#fff; 
+      font:14px/1.25 "Lucida Console",Monaco,monospace; 
+      background:#020105 url("assets/f8.png") center top/cover fixed no-repeat; 
+    }
+    body::after { 
+      content:""; 
+      position:fixed; 
+      inset:0; 
+      pointer-events:none; 
+      background:repeating-linear-gradient(0deg,rgba(240,15,108,.025) 0 1px,transparent 1px 4px); 
+    }
+    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
+    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 0 36px 10px; display:flex; align-items:center; justify-content:flex-end; transform:scale(var(--ui-scale)); transform-origin:top right; }
+    .panel { position:relative; width:min(570px,95%); padding:25px 30px 20px; background:var(--panel); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(240,15,108,.85),0 0 48px rgba(240,15,108,.2),inset 0 0 30px rgba(240,15,108,.08); }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
+    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
+    .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(240,15,108,.65)); }
+    .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
+    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
+    .section { border-top:1px solid var(--line); padding:9px 0 10px; }
+    .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
+    .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
+    .small { color:#afa391; }
+    
+    .content-container { max-height:500px; overflow-y:auto; padding-right:5px; }
+    .content-container::-webkit-scrollbar { width:3px; }
+    .content-container::-webkit-scrollbar-track { background:rgba(240,15,108,.1); }
+    .content-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
+    
+    .desc-text { 
+      color:#d2c8b7; 
+      font-size:13px; 
+      line-height:1.6; 
+      margin:8px 0; 
+    }
+    .desc-text .highlight { color:var(--gold-soft); }
+    .feature-list { list-style:none; padding:0; margin:8px 0; }
+    .feature-list li { 
+      color:#d2c8b7; 
+      font-size:12px; 
+      line-height:1.6; 
+      padding:3px 0;
+      border-bottom:1px solid rgba(240,15,108,.08);
+    }
+    .feature-list li:last-child { border-bottom:none; }
+    .feature-list .check { color:var(--gold-soft); margin-right:6px; }
+    .feature-list .chain { color:#888; font-size:11px; }
+    
+    .footer-heart { color:var(--gold-soft); }
+    
+    @media (max-width:700px) { 
+      .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
+      main { padding:65px 5px 24px 10px; align-items:flex-start; } 
+      .panel { padding:22px 18px 18px; width:98%; } 
+      .panel-title { font-size:16px; } 
+      .desc-text { font-size:12px; }
+      .feature-list li { font-size:11px; }
+      .content-container { max-height:350px; }
+    }
+    @media (min-width:1920px) { 
+      :root { --ui-scale:1.1; } 
+      main { padding:72px 0 36px 20px; } 
+      .panel { width:min(750px,90%); } 
+    }
+  </style>
+</head>
+<body>
+  <div class="brand">cΔrovΣr0</div>
+  <main><section class="panel">
+    <div class="panel-title"><img class="logo" src="assets/info.png" alt="info">¿QUE ES ESTO?</div>
+    <nav class="top-links"><a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
+    
+    <section class="section">
+      <div class="content-container">
+        <div class="desc-text">
+          ▸ Esta pagina reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Zcash, Firo, Ycash y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
+        </div>
+        
+        <div class="desc-text" style="font-size:12px; color:#888;">
+          Toda la información se procesa a nivel de servidor. El navegador únicamente muestra los datos obtenidos, sin ejecutar scripts de terceros ni depender de servicios externos para el procesamiento.
+        </div>
+        
+        <div class="desc-text" style="margin-top:12px;">
+          <span class="highlight">▸ ¿QUÉ OFRECE?</span>
+        </div>
+        <ul class="feature-list">
+          <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
+          <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
+          <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
+          <li><span class="check">◈</span> <span class="highlight">Estadísticas</span> → Información sobre suministro, pools de valor, halvings y actualizaciones de protocolo.</li>
+          <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Zcash, Firo)</span></li>
+        </ul>
+        
+        <div class="desc-text" style="margin-top:10px;">
+          <span class="highlight">▸ ¿POR QUE?</span><br>
+          Porque creo que la información de una red pública debe ser accesible sin depender de plataformas centralizadas. Toda la infraestructura que alimenta esta página es operada por mí, con el objetivo de ofrecer datos transparentes, verificables y sin filtros.
+        </div>
+        
+        <div class="desc-text" style="margin-top:10px; font-size:11px; color:#888; border-top:1px solid rgba(240,15,108,.15); padding-top:8px;">
+          <span class="footer-heart">♥</span> Hecho con ♥ desde Argentina · <span class="highlight">cΔrovΣr0</span>
+        </div>
+      </div>
+    </section>
+  </section></main>
+</body>
+</html>
