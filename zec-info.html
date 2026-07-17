@@ -31,17 +31,26 @@
     .stats-container::-webkit-scrollbar-track { background:rgba(221,157,52,.1); }
     .stats-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
     
-    .stat-line { display:flex; flex-wrap:wrap; gap:4px 12px; font-size:12px; margin:1px 0; }
+    .stat-line { display:flex; flex-wrap:wrap; gap:4px 12px; font-size:12px; margin:1px 0; align-items:center; }
     .stat-label { color:#888; min-width:22ch; }
     .stat-value { color:var(--gold-soft); }
     .stat-value-green { color:var(--green); }
     .stat-value-red { color:var(--red); }
     .stat-value-white { color:#fff; }
-    .progress-bar { color:var(--gold-soft); letter-spacing:1px; font-size:11px; }
+    .progress-bar { 
+      color:var(--gold-soft); 
+      letter-spacing:1px; 
+      font-size:12px;
+      font-family: "Lucida Console", Monaco, monospace;
+      display:inline-block;
+    }
     .stat-section { margin:6px 0; }
     .stat-section-title { color:#888; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin:4px 0 2px 0; }
     hr { border:none; border-top:1px dashed rgba(221,157,52,.2); margin:4px 0; }
     .status-msg { color:#888; font-size:10px; margin-top:4px; }
+    
+    .progress-wrap { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .progress-wrap .stat-value { min-width:50px; }
     
     @media (max-width:700px) { 
       .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
@@ -51,6 +60,7 @@
       .stat-label { min-width:18ch; font-size:11px; }
       .stat-value { font-size:11px; }
       .stats-container { max-height:350px; }
+      .progress-bar { font-size:11px; }
     }
     @media (min-width:1920px) { 
       :root { --ui-scale:1.1; } 
@@ -71,7 +81,13 @@
           <div class="stat-section-title">► RED</div>
           <div class="stat-line"><span class="stat-label">PRECIO:</span><span class="stat-value" id="price">---</span></div>
           <div class="stat-line"><span class="stat-label">SUMINISTRO TOTAL:</span><span class="stat-value" id="totalSupply">--- ZEC</span></div>
-          <div class="stat-line"><span class="stat-label">PROGRESO MINADO:</span><span class="stat-value" id="minedPercent">---</span> <span class="progress-bar" id="minedBar">[----------]</span></div>
+          <div class="stat-line">
+            <span class="stat-label">PROGRESO MINADO:</span>
+            <div class="progress-wrap">
+              <span class="stat-value" id="minedPercent">---</span>
+              <span class="progress-bar" id="minedBar">[----------]</span>
+            </div>
+          </div>
           <div class="stat-line"><span class="stat-label">BLOQUES:</span><span class="stat-value" id="blocks">---</span></div>
           <div class="stat-line"><span class="stat-label">DIFICULTAD:</span><span class="stat-value" id="difficulty">---</span></div>
           <div class="stat-line"><span class="stat-label">BEST BLOCK:</span><span class="stat-value" id="bestBlock">---</span></div>
@@ -94,7 +110,13 @@
         <div class="stat-section">
           <div class="stat-section-title">► SUMINISTRO BLINDADO</div>
           <div class="stat-line"><span class="stat-label">TOTAL BLINDADO:</span><span class="stat-value" id="shieldedTotal">--- ZEC</span></div>
-          <div class="stat-line"><span class="stat-label">% CIRCULANTE:</span><span class="stat-value" id="shieldedPercent">---%</span> <span class="progress-bar" id="shieldedBar">[----------]</span></div>
+          <div class="stat-line">
+            <span class="stat-label">% CIRCULANTE:</span>
+            <div class="progress-wrap">
+              <span class="stat-value" id="shieldedPercent">---%</span>
+              <span class="progress-bar" id="shieldedBar">[----------]</span>
+            </div>
+          </div>
         </div>
 
         <hr>
@@ -103,7 +125,13 @@
           <div class="stat-section-title">► HALVING</div>
           <div class="stat-line"><span class="stat-label">PROXIMO HALVING:</span><span class="stat-value" id="halvingDate">---</span></div>
           <div class="stat-line"><span class="stat-label">BLOQUE OBJETIVO:</span><span class="stat-value">4,406,400</span></div>
-          <div class="stat-line"><span class="stat-label">BLOQUES RESTANTES:</span><span class="stat-value" id="blocksRemaining">---</span> <span class="progress-bar" id="halvingBar">[----------]</span></div>
+          <div class="stat-line">
+            <span class="stat-label">BLOQUES RESTANTES:</span>
+            <div class="progress-wrap">
+              <span class="stat-value" id="blocksRemaining">---</span>
+              <span class="progress-bar" id="halvingBar">[----------]</span>
+            </div>
+          </div>
           <div class="stat-line"><span class="stat-label">TIEMPO ESTIMADO:</span><span class="stat-value" id="timeToHalving">---</span></div>
           <div class="stat-line"><span class="stat-label">REWARD ACTUAL:</span><span class="stat-value" id="blockReward">--- ZEC</span></div>
         </div>
@@ -183,10 +211,10 @@
       return n.toFixed(2);
     }
 
-    function createProgressBar(percent, size = 10) {
-      if (percent === undefined || percent === null || isNaN(percent) || percent < 0) return '[----------]';
+    function createProgressBar(percent, size = 30) {
+      if (percent === undefined || percent === null || isNaN(percent) || percent < 0) return '[' + ' '.repeat(size) + ']';
       const filled = Math.min(Math.round((percent / 100) * size), size);
-      return '[' + '#'.repeat(filled) + ' '.repeat(size - filled) + ']';
+      return '[' + '█'.repeat(filled) + '░'.repeat(size - filled) + ']';
     }
 
     function formatTimeRemaining(days) {
