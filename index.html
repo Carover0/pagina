@@ -8,8 +8,8 @@
     :root { --cyan:#00d9ff; --green:#31db72; --panel:rgba(1,14,19,.91); --line:rgba(0,217,255,.45); --ui-scale:.9; }
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; color:var(--green); font-family:"Lucida Console","Monaco",monospace; background:#02070a url('assets/f2.png') center/cover fixed no-repeat; }
-    body::before { content:""; position:fixed; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.5),transparent 34%,transparent 66%,rgba(0,0,0,.5)),rgba(0,5,10,.35); }
-    body::after { content:""; pointer-events:none; position:fixed; inset:0; background:repeating-linear-gradient(0deg,rgba(0,217,255,.025) 0 1px,transparent 1px 4px); }
+    /* ELIMINADO: body::before con gradiente */
+    /* ELIMINADO: body::after con líneas de scan */
     .brand { position:fixed; z-index:3; top:18px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--cyan); font-size:clamp(20px,2vw,30px); font-weight:bold; letter-spacing:5px; text-shadow:0 0 18px var(--cyan); font-family:"Lucida Console","Monaco",monospace; }
     
 
@@ -59,7 +59,7 @@ main {
   color:#b8fff0; 
   font-size:15px; 
   text-shadow:0 1px 3px #000; 
-  margin-top: -50px; /* <-- Agrega esto aquí */
+  margin-top: -50px;
 }
 .links a { color:var(--cyan); text-decoration:none; }
 .links a:hover { text-decoration:underline; }
