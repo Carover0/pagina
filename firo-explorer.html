@@ -370,7 +370,7 @@
             if (!esSpark && !esBlindada && !esCoinbase && totalIn > 0) {
               const totalOut = t.vout.reduce((sum, vout) => sum + (vout.value || 0), 0);
               const fee = totalIn - totalOut;
-              if (fee > 0) res += `\n  💸 FEE: ${fee.toFixed(8)} ${moneda}\n`;
+              if (fee > 0) res += `\n  FEE: ${fee.toFixed(8)} ${moneda}\n`;
             }
           }
           
