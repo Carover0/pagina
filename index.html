@@ -8,8 +8,11 @@
     :root { --cyan:#00d9ff; --green:#31db72; --panel:rgba(1,14,19,.91); --line:rgba(0,217,255,.45); --ui-scale:.9; }
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; color:var(--green); font-family:"Lucida Console","Monaco",monospace; background:#02070a url('assets/f2.png') center/cover fixed no-repeat; }
+    /* ELIMINADO: body::before con gradiente */
+    /* ELIMINADO: body::after con líneas de scan */
     .brand { position:fixed; z-index:3; top:18px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--cyan); font-size:clamp(20px,2vw,30px); font-weight:bold; letter-spacing:5px; text-shadow:0 0 18px var(--cyan); font-family:"Lucida Console","Monaco",monospace; }
     
+
 main {
   width:min(1600px,100%);
   min-height:100vh;
@@ -18,7 +21,7 @@ main {
   display:grid;
   grid-template-columns:minmax(330px,412px) 1fr minmax(330px,412px);
   gap:clamp(25px,6vw,120px);
-  align-items:center;
+  align-items:start;
   transform:scale(var(--ui-scale));
   transform-origin:top center;
 }
@@ -106,10 +109,24 @@ main {
       <div class="section"><span class="metric-name">CPU</span><div class="bar-line"><div class="bar" id="cpu-bar"></div><span class="percent" id="cpu-percent">—</span></div></div>
       <div class="section"><span class="metric-name">RAM</span><div class="bar-line"><div class="bar" id="ram-bar"></div><span class="percent" id="ram-percent">—</span></div></div>
       <div class="section"><span class="metric-name">DISK /</span><div class="bar-line"><div class="bar" id="disk-bar"></div><span class="percent" id="disk-percent">—</span></div></div>
-      <div class="section"><span class="metric-name">LOAD AVERAGE</span><div class="info" id="load">—</div></div>
+      
+      <!-- ELIMINADO LOAD AVERAGE -->
+      
       <div class="section"><span class="metric-name">UPTIME</span><div class="info" id="uptime">—</div></div>
       <div class="section"><span class="metric-name">LAST UPDATE</span><div class="info" id="last-update">—</div></div>
       <div class="section"><span class="metric-name">STATUS</span><div class="info status" id="vps-status">CONNECTING…</div></div>
+      
+      <!-- NUEVO: POLYGON BOARD -->
+      <div class="section">
+        <span class="metric-name" style="display:flex; align-items:center; gap:8px;">
+          <img src="assets/pol.png" alt="Polygon" style="height:24px; width:24px; object-fit:contain; filter:drop-shadow(0 0 6px rgba(0,217,255,.3));">
+          POLYGON BOARD
+        </span>
+        <div class="info" style="font-size:13px; color:#b8fff0;">
+          <a href="https://carover0.github.io/pagina/polygon-board.html" target="_self" class="node-link" style="font-size:13px;">Deja un mensaje en la blockchain</a>
+        </div>
+      </div>
+      
       <div class="section"><span class="metric-name">SOBRE MI</span><div class="info" id="last-update"><a href="https://carover0.github.io/pagina/acerca.html" target="_self" class="node-link">Acerca</a> · <a href="https://carover0.github.io/pagina/pagina.html" target="_self" class="node-link">Esta pagina</a> 
 </div>
     </aside>
@@ -135,7 +152,7 @@ main {
       try { const r = await fetch('https://carover0.xyz/firo/status.json'); const d = await r.json(); setNode('firo', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.version}); } catch(e) { offline('firo'); }
       try { const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json'); const d = await r.json(); setNode('pivx', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.software_subversion}); } catch(e) { offline('pivx'); }
       try { const r = await fetch('https://carover0.xyz/cacaX/ycash_status.json'); const d = await r.json(); setNode('ycash', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.software_subversion}); } catch(e) { offline('ycash'); }
-      try { const r = await fetch('https://carover0.xyz/firo/health.json'); const h = await r.json(); const cpu=h.cpu?.percent, ram=h.memory?.percent, disk=h.disk?.root_percent; setBar('cpu-bar',cpu); setBar('ram-bar',ram); setBar('disk-bar',disk); show('cpu-percent',`${cpu}%`); show('ram-percent',`${ram}%`); show('disk-percent',`${disk}%`); show('load',`1m     ${h.load?.['1m'] ?? '—'}\n5m     ${h.load?.['5m'] ?? '—'}\n15m    ${h.load?.['15m'] ?? '—'}`); show('uptime',h.uptime); show('vps-status','ALL SYSTEMS OPERATIONAL'); const date=new Date(h.timestamp); show('last-update',date.toLocaleString('es-AR',{hour12:false})+' UTC'); } catch(e) { show('vps-status','STATUS UNAVAILABLE'); }
+      try { const r = await fetch('https://carover0.xyz/firo/health.json'); const h = await r.json(); const cpu=h.cpu?.percent, ram=h.memory?.percent, disk=h.disk?.root_percent; setBar('cpu-bar',cpu); setBar('ram-bar',ram); setBar('disk-bar',disk); show('cpu-percent',`${cpu}%`); show('ram-percent',`${ram}%`); show('disk-percent',`${disk}%`); show('uptime',h.uptime); show('vps-status','ALL SYSTEMS OPERATIONAL'); const date=new Date(h.timestamp); show('last-update',date.toLocaleString('es-AR',{hour12:false})+' UTC'); } catch(e) { show('vps-status','STATUS UNAVAILABLE'); }
     }
     updateStatus(); setInterval(updateStatus, 30000);
   </script>
