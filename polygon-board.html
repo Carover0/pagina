@@ -275,7 +275,7 @@ contract MessageBoard {
         document.getElementById('totalMsg').textContent = total.toString();
         if (total == 0) {
           document.getElementById('messagesList').innerHTML = '<div class="empty">No hay mensajes aún. ¡Sé el primero!</div>';
-          document.getElementById('sendStatus').textContent = '✅ Conectado';
+          document.getElementById('sendStatus').textContent = '🟢 Conectado';
           document.getElementById('sendStatus').className = 'status-msg ok';
           return;
         }
@@ -297,7 +297,7 @@ contract MessageBoard {
           `;
         }
         document.getElementById('messagesList').innerHTML = html;
-        document.getElementById('sendStatus').textContent = '✅ Conectado';
+        document.getElementById('sendStatus').textContent = '🟢 Conectado';
         document.getElementById('sendStatus').className = 'status-msg ok';
       } catch(e) {
         console.error(e);
@@ -343,18 +343,18 @@ contract MessageBoard {
         sendStatus.textContent = '⏳ Esperando confirmación...';
         await tx.wait();
 
-        sendStatus.textContent = '✅ ¡Mensaje enviado!';
+        sendStatus.textContent = '🟢 ¡Mensaje enviado!';
         sendStatus.className = 'status-msg ok';
         document.getElementById('msgInput').value = '';
         await loadMessages();
       } catch(e) {
         console.error(e);
         if (e.code === 4001) {
-          sendStatus.textContent = '❌ Rechazaste la transacción';
+          sendStatus.textContent = '🔴 Rechazaste la transacción';
         } else if (e.message && e.message.includes('chainId')) {
-          sendStatus.textContent = '❌ Cambiá a Polygon Mainnet en MetaMask';
+          sendStatus.textContent = '🔴 Cambiá a Polygon Mainnet en MetaMask';
         } else {
-          sendStatus.textContent = '❌ ' + (e.message || 'Error desconocido');
+          sendStatus.textContent = '🔴 ' + (e.message || 'Error desconocido');
         }
         sendStatus.className = 'status-msg err';
       }
