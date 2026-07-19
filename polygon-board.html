@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=.9">
+  <title>cΔrovΣr0 · Mensajes Polygon</title>
+  <style>
+    :root { --indigo:#4f46e5; --indigo-soft:#818cf8; --green:#31db72; --panel:rgba(0,0,0,.88); --line:rgba(79,70,229,.5); --ui-scale:1; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:#fff; font-family:"Lucida Console","Monaco",monospace; background:#020105 url('assets/f2.png') center/cover fixed no-repeat; }
+    body::after { content:""; pointer-events:none; position:fixed; inset:0; background:repeating-linear-gradient(0deg,rgba(79,70,229,.025) 0 1px,transparent 1px 4px); }
+    .brand { position:fixed; z-index:3; top:18px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--indigo-soft); font-size:clamp(20px,2vw,30px); font-weight:bold; letter-spacing:5px; text-shadow:0 0 18px var(--indigo); font-family:"Lucida Console","Monaco",monospace; }
+    
+
+main {
+  width:100%;
+  min-height:100vh;
+  margin:0;
+  padding:76px 0 46px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  transform:scale(var(--ui-scale));
+  transform-origin:top center;
+}
+
+    .panel { 
+      position:relative; 
+      z-index:1; 
+      padding:24px 20px 20px; 
+      background:var(--panel); 
+      border:3px solid var(--indigo); 
+      clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); 
+      box-shadow:0 0 15px rgba(79,70,229,.9),0 0 45px rgba(79,70,229,.18),inset 0 0 26px rgba(79,70,229,.06); 
+      width:min(440px,62%);
+      flex-shrink:0;
+      margin:0;
+      min-height:400px;
+    }
+    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--indigo) 0 11px,transparent 11px 18px); }
+    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    
+    .top-nav { 
+      border-bottom:1px solid var(--line); 
+      padding:0 0 8px 0; 
+      margin-bottom:10px; 
+      display:flex; 
+      gap:16px; 
+      flex-wrap:wrap;
+    }
+    .top-nav a { 
+      color:var(--indigo-soft); 
+      text-decoration:none; 
+      font-size:12px; 
+      letter-spacing:1px;
+    }
+    .top-nav a:hover { text-decoration:underline; }
+    
+    h2 { margin:4px 0 10px; color:var(--indigo-soft); font-size:17px; font-weight:normal; letter-spacing:2px; text-shadow:0 0 10px var(--indigo); display:flex; align-items:center; gap:10px; }
+    h2 img { height:26px; width:26px; object-fit:contain; filter:drop-shadow(0 0 6px rgba(79,70,229,.4)); }
+    .section { border-top:1px solid var(--line); padding:10px 0 12px; }
+    .label { color:var(--indigo-soft); font-size:12px; display:block; margin-bottom:5px; }
+    .msg-input { width:100%; background:rgba(0,0,0,.5); border:1px solid var(--indigo); color:#fff; padding:6px 10px; font-family:inherit; font-size:13px; border-radius:0; }
+    .msg-input:focus { outline:2px solid var(--indigo-soft); }
+    .btn { background:var(--indigo); color:#fff; border:none; padding:6px 14px; font-family:inherit; font-size:13px; font-weight:bold; cursor:pointer; transition:opacity .2s; width:100%; margin-top:6px; }
+    .btn:hover { opacity:.8; }
+    .btn:disabled { opacity:.4; cursor:not-allowed; }
+    .btn-sm { background:var(--indigo); color:#fff; border:none; padding:4px 12px; font-family:inherit; font-size:11px; cursor:pointer; transition:opacity .2s; }
+    .btn-sm:hover { opacity:.8; }
+    .status-msg { font-size:12px; color:#888; margin-top:6px; }
+    .status-msg.ok { color:var(--green); }
+    .status-msg.err { color:#ff8b75; }
+    .mensaje { border-bottom:1px solid rgba(79,70,229,.15); padding:8px 0; }
+    .mensaje:last-child { border-bottom:none; }
+    .mensaje .texto { color:#b8fff0; font-size:13px; word-break:break-word; }
+    .mensaje .meta { font-size:10px; color:#888; margin-top:3px; display:flex; gap:12px; flex-wrap:wrap; }
+    .mensaje .meta .remitente { color:var(--indigo-soft); max-width:150px; overflow:hidden; text-overflow:ellipsis; }
+    .mensajes-container { max-height:400px; overflow-y:auto; padding-right:3px; }
+    .mensajes-container::-webkit-scrollbar { width:3px; }
+    .mensajes-container::-webkit-scrollbar-track { background:rgba(79,70,229,.1); }
+    .mensajes-container::-webkit-scrollbar-thumb { background:var(--indigo); border-radius:2px; }
+    .empty { color:#888; font-size:12px; text-align:center; padding:16px 0; }
+    .desc-text { color:#b8fff0; font-size:12px; line-height:1.5; margin:4px 0; }
+    .desc-text .highlight { color:var(--indigo-soft); }
+    .info-row { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-size:11px; color:#666; border-top:1px solid var(--line); padding-top:8px; margin-top:2px; }
+
+    /* --- PANEL DE CÓDIGO (colapsable) --- */
+    .code-panel {
+      margin-top:10px;
+      border-top:1px solid var(--line);
+      padding-top:10px;
+    }
+    .code-toggle {
+      background:var(--indigo);
+      color:#fff;
+      border:none;
+      padding:4px 12px;
+      font-family:inherit;
+      font-size:11px;
+      cursor:pointer;
+      transition:opacity .2s;
+      width:100%;
+      text-align:center;
+    }
+    .code-toggle:hover { opacity:.8; }
+    .code-content {
+      display:none;
+      background:rgba(0,0,0,.6);
+      padding:12px;
+      margin-top:8px;
+      border:1px solid var(--indigo);
+      overflow-x:auto;
+      font-size:11px;
+      line-height:1.4;
+      color:#b8fff0;
+      max-height:400px;
+      overflow-y:auto;
+      white-space:pre;
+      font-family:"Lucida Console","Monaco",monospace;
+    }
+    .code-content::-webkit-scrollbar { width:3px; }
+    .code-content::-webkit-scrollbar-track { background:rgba(79,70,229,.1); }
+    .code-content::-webkit-scrollbar-thumb { background:var(--indigo); border-radius:2px; }
+    .code-content .comment { color:#4f8f6f; }
+    .code-content .highlight-code { color:var(--indigo-soft); }
+    .code-content.show { display:block; }
+
+    @media (max-width:1000px) { 
+      main { flex-direction:column; align-items:center; gap:20px; padding:76px 15px 46px; }
+      .panel { width:min(500px,100%); }
+    }
+    @media (max-width:700px) { 
+      main { padding:72px 10px 28px; }
+      .panel { width:100%; padding:18px 14px 16px; }
+      .brand { font-size:18px; }
+      .code-content { font-size:9px; max-height:200px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="brand">cΔrovΣr0</div>
+  <main>
+    <!-- Panel Izquierdo -->
+    <section class="panel">
+      <div class="top-nav">
+        <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+        <a href="https://carover0.github.io/pagina/acerca.html">[ACERCA]</a>
+      </div>
+      
+      <h2><img src="assets/pol.png" alt="Polygon"> DEJA UN MENSAJE</h2>
+      
+      <div class="desc-text">
+        <span class="highlight">◆</span> Tablero descentralizado en <span class="highlight">Polygon Mainnet</span>.<br>
+        Cada mensaje queda <span class="highlight">guardado para siempre</span> en la blockchain.
+      </div>
+      
+      <div class="section">
+        <span class="label">✎ Tu mensaje (máx 200 caracteres)</span>
+        <input type="text" id="msgInput" class="msg-input" placeholder="Escribe algo..." maxlength="200">
+        <button id="sendBtn" class="btn">ENVIAR</button>
+        <div id="sendStatus" class="status-msg">Cargando mensajes...</div>
+      </div>
+      
+      <div class="info-row">
+        <span><span id="totalMsg">0</span> mensajes · Polygon</span>
+        <button class="btn-sm" onclick="window.open('https://polygonscan.com/address/0x042180CfB667674bD745De4D3447DFf86001A213', '_blank')">VER CONTRATO</button>
+      </div>
+
+      <!-- PANEL DE CÓDIGO COLABSABLE -->
+      <div class="code-panel">
+        <button class="code-toggle" id="codeToggle">▼ VER CÓDIGO DEL CONTRATO</button>
+        <div class="code-content" id="codeContent">
+/*  cΔrovΣr0 · Mensajes descentralizados en Polygon  */
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MessageBoard {
+    struct Message {
+        address sender;
+        string text;
+        uint256 timestamp;
+    }
+    
+    Message[] public messages;
+    
+    function sendMessage(string memory _text) public {
+        require(bytes(_text).length > 0, "Vacio");
+        require(bytes(_text).length <= 200, "Muy largo");
+        messages.push(Message(msg.sender, _text, block.timestamp));
+    }
+    
+    function getMessages(uint256 limit) public view returns (Message[] memory) {
+        uint256 count = messages.length > limit ? limit : messages.length;
+        Message[] memory result = new Message[](count);
+        for (uint i = 0; i < count; i++) {
+            result[i] = messages[messages.length - count + i];
+        }
+        return result;
+    }
+    
+    function getTotalMessages() public view returns (uint256) {
+        return messages.length;
+    }
+}
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel Derecho -->
+    <section class="panel">
+      <h2><img src="assets/pol.png" alt="Polygon"> MENSAJES</h2>
+      <div class="section" style="padding-top:4px;">
+        <div id="messagesList" class="mensajes-container">
+          <div class="empty">Cargando mensajes...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script>
+    const CONTRACT_ADDRESS = "0x042180CfB667674bD745De4D3447DFf86001A213";
+    const ABI = [
+      "function sendMessage(string memory _text) public",
+      "function getMessages(uint256 limit) public view returns (tuple(address sender, string text, uint256 timestamp)[] memory)",
+      "function getTotalMessages() public view returns (uint256)"
+    ];
+    
+    let provider;
+    let contract;
+    let signer = null;
+    let contractWithSigner = null;
+
+    // Toggle código
+    document.getElementById('codeToggle').addEventListener('click', function() {
+      const content = document.getElementById('codeContent');
+      content.classList.toggle('show');
+      this.textContent = content.classList.contains('show') ? '▲ OCULTAR CÓDIGO' : '▼ VER CÓDIGO DEL CONTRATO';
+    });
+
+    function initProvider() {
+      if (typeof window.ethereum === 'undefined') {
+        document.getElementById('sendStatus').textContent = '⚠️ Instala MetaMask';
+        document.getElementById('sendStatus').className = 'status-msg err';
+        return false;
+      }
+      provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+      contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+      return true;
+    }
+
+    async function connectSigner() {
+      if (typeof window.ethereum === 'undefined') {
+        throw new Error('Instala MetaMask para enviar mensajes');
+      }
+      if (!signer) {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x89' }]
+        });
+        const providerMeta = new ethers.providers.Web3Provider(window.ethereum, "any");
+        signer = providerMeta.getSigner();
+        contractWithSigner = contract.connect(signer);
+      }
+      return signer;
+    }
+
+    async function loadMessages() {
+      if (!contract) {
+        if (!initProvider()) return;
+      }
+      try {
+        const total = await contract.getTotalMessages();
+        document.getElementById('totalMsg').textContent = total.toString();
+        if (total == 0) {
+          document.getElementById('messagesList').innerHTML = '<div class="empty">No hay mensajes aún. ¡Sé el primero!</div>';
+          document.getElementById('sendStatus').textContent = '✅ Conectado';
+          document.getElementById('sendStatus').className = 'status-msg ok';
+          return;
+        }
+        const limit = total.gt(20) ? 20 : total;
+        const msgs = await contract.getMessages(limit);
+        let html = '';
+        for (let i = msgs.length - 1; i >= 0; i--) {
+          const m = msgs[i];
+          const fecha = new Date(m.timestamp * 1000).toLocaleString('es-AR', {hour12:false});
+          const addr = m.sender.slice(0, 6) + '...' + m.sender.slice(-4);
+          html += `
+            <div class="mensaje">
+              <div class="texto">${escapeHtml(m.text)}</div>
+              <div class="meta">
+                <span class="remitente">${addr}</span>
+                <span>${fecha}</span>
+              </div>
+            </div>
+          `;
+        }
+        document.getElementById('messagesList').innerHTML = html;
+        document.getElementById('sendStatus').textContent = '✅ Conectado';
+        document.getElementById('sendStatus').className = 'status-msg ok';
+      } catch(e) {
+        console.error(e);
+        if (e.message && e.message.includes('network')) {
+          initProvider();
+        }
+        document.getElementById('messagesList').innerHTML = '<div class="empty" style="color:#ff8b75;">⚠️ Error al cargar mensajes</div>';
+        document.getElementById('sendStatus').textContent = '⚠️ Error de conexión - reintentando...';
+        document.getElementById('sendStatus').className = 'status-msg err';
+        setTimeout(loadMessages, 5000);
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function sendMessage() {
+      const text = document.getElementById('msgInput').value.trim();
+      if (!text) {
+        document.getElementById('sendStatus').textContent = '⚠️ Escribe un mensaje';
+        document.getElementById('sendStatus').className = 'status-msg err';
+        return;
+      }
+      if (text.length > 200) {
+        document.getElementById('sendStatus').textContent = '⚠️ Máximo 200 caracteres';
+        document.getElementById('sendStatus').className = 'status-msg err';
+        return;
+      }
+
+      const sendBtn = document.getElementById('sendBtn');
+      const sendStatus = document.getElementById('sendStatus');
+      sendBtn.disabled = true;
+      sendStatus.textContent = '⏳ Conectando MetaMask...';
+      sendStatus.className = 'status-msg';
+
+      try {
+        await connectSigner();
+        sendStatus.textContent = '⏳ Enviando transacción...';
+        const tx = await contractWithSigner.sendMessage(text);
+        sendStatus.textContent = '⏳ Esperando confirmación...';
+        await tx.wait();
+
+        sendStatus.textContent = '✅ ¡Mensaje enviado!';
+        sendStatus.className = 'status-msg ok';
+        document.getElementById('msgInput').value = '';
+        await loadMessages();
+      } catch(e) {
+        console.error(e);
+        if (e.code === 4001) {
+          sendStatus.textContent = '❌ Rechazaste la transacción';
+        } else if (e.message && e.message.includes('chainId')) {
+          sendStatus.textContent = '❌ Cambiá a Polygon Mainnet en MetaMask';
+        } else {
+          sendStatus.textContent = '❌ ' + (e.message || 'Error desconocido');
+        }
+        sendStatus.className = 'status-msg err';
+      }
+      sendBtn.disabled = false;
+    }
+
+    initProvider();
+    
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('msgInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+    setTimeout(loadMessages, 1000);
+    setInterval(loadMessages, 15000);
+  </script>
+</body>
+</html>
