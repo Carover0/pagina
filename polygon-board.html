@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=.9">
   <title>cΔrovΣr0 · Mensajes Polygon</title>
   <style>
-    :root { --indigo:#4f46e5; --indigo-soft:#818cf8; --green:#31db72; --panel:rgba(0,0,0,.88); --line:rgba(79,70,229,.5); --ui-scale:1; }
+    :root { --indigo:#4f46e5; --indigo-soft:#818cf8; --green:#27A17C; --panel:rgba(0,0,0,.88); --line:rgba(79,70,229,.5); --ui-scale:1; }
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; color:#fff; font-family:"Lucida Console","Monaco",monospace; background:#020105 url('assets/f2.png') center/cover fixed no-repeat; }
     body::after { content:""; pointer-events:none; position:fixed; inset:0; background:repeating-linear-gradient(0deg,rgba(79,70,229,.025) 0 1px,transparent 1px 4px); }
@@ -32,7 +32,7 @@ main {
       border:3px solid var(--indigo); 
       clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); 
       box-shadow:0 0 15px rgba(79,70,229,.9),0 0 45px rgba(79,70,229,.18),inset 0 0 26px rgba(79,70,229,.06); 
-      width:min(440px,62%);
+      width:min(460px,62%);
       flex-shrink:0;
       margin:0;
       min-height:400px;
@@ -69,7 +69,7 @@ main {
     .btn-sm:hover { opacity:.8; }
     .status-msg { font-size:12px; color:#888; margin-top:6px; }
     .status-msg.ok { color:var(--green); }
-    .status-msg.err { color:#ff8b75; }
+    .status-msg.err { color:#9B1C2E; }
     .mensaje { border-bottom:1px solid rgba(79,70,229,.15); padding:8px 0; }
     .mensaje:last-child { border-bottom:none; }
     .mensaje .texto { color:#b8fff0; font-size:13px; word-break:break-word; }
@@ -80,7 +80,7 @@ main {
     .mensajes-container::-webkit-scrollbar-track { background:rgba(79,70,229,.1); }
     .mensajes-container::-webkit-scrollbar-thumb { background:var(--indigo); border-radius:2px; }
     .empty { color:#888; font-size:12px; text-align:center; padding:16px 0; }
-    .desc-text { color:#b8fff0; font-size:12px; line-height:1.5; margin:4px 0; }
+    .desc-text { color:#27A17C; font-size:12px; line-height:1.5; margin:4px 0; }
     .desc-text .highlight { color:var(--indigo-soft); }
     .info-row { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-size:11px; color:#666; border-top:1px solid var(--line); padding-top:8px; margin-top:2px; }
 
@@ -110,10 +110,10 @@ main {
       margin-top:8px;
       border:1px solid var(--indigo);
       overflow-x:auto;
-      font-size:11px;
+      font-size:12px;
       line-height:1.4;
-      color:#b8fff0;
-      max-height:400px;
+      color:#BABABA;
+      max-height:410px;
       overflow-y:auto;
       white-space:pre;
       font-family:"Lucida Console","Monaco",monospace;
@@ -170,7 +170,7 @@ main {
       <div class="code-panel">
         <button class="code-toggle" id="codeToggle">▼ VER CÓDIGO DEL CONTRATO</button>
         <div class="code-content" id="codeContent">
-/*  cΔrovΣr0 · Mensajes descentralizados en Polygon  */
+//  cΔrovΣr0 · Mensajes descentralizados en Polygon  
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
@@ -232,7 +232,6 @@ contract MessageBoard {
     let signer = null;
     let contractWithSigner = null;
 
-    // Toggle código
     document.getElementById('codeToggle').addEventListener('click', function() {
       const content = document.getElementById('codeContent');
       content.classList.toggle('show');
