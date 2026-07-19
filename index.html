@@ -21,7 +21,6 @@ main {
   transform:scale(var(--ui-scale));
   transform-origin:top center;
 }
-
     .panel { position:relative; z-index:1; padding:36px 39px 27px; background:linear-gradient(135deg,rgba(2,20,27,.94),var(--panel)); border:3px solid var(--cyan); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 15px rgba(0,217,255,.9),0 0 45px rgba(0,217,255,.18),inset 0 0 26px rgba(0,217,255,.06); }
     .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--cyan) 0 11px,transparent 11px 18px); }
     .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
