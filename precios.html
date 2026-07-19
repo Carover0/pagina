@@ -1,199 +1,679 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>cΔrovΣr0 · precios</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>cΔrovΣr0 · Precios</title>
   <style>
-    body {
-      background: #000;
-      color: #fff;
-      font-family: "Lucida Console", Monaco, monospace;
-      font-size: 15px;
-      line-height: 1.2;  
-      margin: 0;
-      padding: 20px;
+    :root { 
+      --cyan:#00d9ff; 
+      --green:#31db72; 
+      --panel:rgba(1,14,19,.91); 
+      --line:rgba(0,217,255,.45); 
+      --ui-scale:.9; 
+    }
+    * { box-sizing:border-box; }
+    body { 
+      margin:0; 
+      min-height:100vh; 
+      color:var(--green); 
+      font-family:"Lucida Console","Monaco",monospace; 
+      background:#02070a url('assets/f12.png') center/cover fixed no-repeat; 
+    }
+    body::before { 
+      content:""; 
+      position:fixed; 
+      inset:0; 
+      z-index:-1; 
+      background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,217,255,.08) 55%,rgba(0,0,0,.6)); 
+    }
+    .brand { 
+      position:fixed; 
+      z-index:3; 
+      top:18px; 
+      left:50%; 
+      transform:translateX(-50%) scale(var(--ui-scale)); 
+      transform-origin:center top; 
+      color:var(--cyan); 
+      font-size:clamp(20px,2vw,30px); 
+      font-weight:bold; 
+      letter-spacing:5px; 
+      text-shadow:0 0 18px var(--cyan); 
+      font-family:"Lucida Console","Monaco",monospace; 
     }
 
-    .terminal {
-      max-width: 90ch;
-      width: 100%;
-      margin: 0;
+    main {
+      width:100%;
+      min-height:100vh;
+      margin:0;
+      padding:76px 20px 46px 0;
+      transform:scale(var(--ui-scale));
+      transform-origin:top left;
+      display:flex;
+      justify-content:flex-start;
     }
 
-    .price-line {
-      display: flex;
-      justify-content: space-between;
-      margin: 1px 0;
-      max-width: 90ch;
-      font-family: "Lucida Console", Monaco, monospace;
-      font-size: 15px;
-      line-height: 1.2;
+    .panel { 
+      position:relative; 
+      z-index:1; 
+      padding:28px 32px 22px; 
+      background:linear-gradient(135deg,rgba(2,20,27,.94),var(--panel)); 
+      border:3px solid var(--cyan); 
+      border-left:3px solid var(--cyan);
+      clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); 
+      box-shadow:0 0 15px rgba(0,217,255,.9),0 0 45px rgba(0,217,255,.18),inset 0 0 26px rgba(0,217,255,.06); 
+      max-width:700px;
+      width:100%;
+      margin:0;
+      border-left:3px solid var(--cyan);
+      transition: max-width 0.3s ease, padding 0.3s ease;
+    }
+    .panel.small {
+      max-width:520px;
+      padding:22px 24px 18px;
+    }
+    .panel::before,.panel::after { 
+      content:""; 
+      position:absolute; 
+      width:62px; 
+      height:8px; 
+      background:repeating-linear-gradient(52deg,var(--cyan) 0 11px,transparent 11px 18px); 
+    }
+    .panel::before { top:17px; right:58px; } 
+    .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
+    
+    h2 { 
+      margin:2px 0 14px; 
+      color:var(--cyan); 
+      font-size:18px; 
+      font-weight:normal; 
+      letter-spacing:2px; 
+      text-shadow:0 0 10px var(--cyan); 
     }
 
-    .price-rank {
-      color: #fff;
-      width: 4ch;
-      text-align: right;
-      margin-right: 2ch;
+    .search-box {
+      display:flex;
+      gap:8px;
+      margin-bottom:14px;
+    }
+    .search-box input {
+      flex:1;
+      padding:8px 12px;
+      background:rgba(0,0,0,.5);
+      border:2px solid var(--line);
+      color:var(--green);
+      font-family:inherit;
+      font-size:14px;
+      outline:none;
+      transition:border-color 0.3s;
+      clip-path:polygon(0 8px,8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px));
+    }
+    .search-box input:focus {
+      border-color:var(--cyan);
+      box-shadow:0 0 12px rgba(0,217,255,.2);
+    }
+    .search-box input::placeholder {
+      color:rgba(0,217,255,.4);
+    }
+    .search-box button {
+      padding:8px 18px;
+      background:transparent;
+      border:2px solid var(--cyan);
+      color:var(--cyan);
+      font-family:inherit;
+      font-size:14px;
+      cursor:pointer;
+      transition:all 0.3s;
+      clip-path:polygon(0 8px,8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px));
+    }
+    .search-box button:hover {
+      background:rgba(0,217,255,.15);
+      box-shadow:0 0 20px rgba(0,217,255,.2);
     }
 
-    .price-name {
-      color: #fff;
-      width: 22ch;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .result-box {
+      margin-top:4px;
+      min-height:180px;
     }
 
-    .price-symbol {
-      color: #777;
-      margin-left: 1ch;
-      font-size: 13px;
+    .price-card {
+      border-top:1px solid var(--line);
+      padding:10px 0 12px;
+    }
+    .price-card:first-child {
+      border-top:none;
+      padding-top:0;
     }
 
-    .price-value {
-      width: 14ch;
-      text-align: right;
-      margin-right: 2ch;
+    .coin-header {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .coin-icon {
+      width:38px;
+      height:38px;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      flex-shrink:0;
+    }
+    .coin-icon img {
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+    .coin-name {
+      color:var(--cyan);
+      font-size:20px;
+      font-weight:bold;
+    }
+    .coin-symbol {
+      color:rgba(0,217,255,.5);
+      font-size:15px;
+      margin-left:4px;
     }
 
+    .loading {
+      text-align:center;
+      padding:30px 20px;
+      color:rgba(0,217,255,.5);
+      font-size:14px;
+    }
+    .loading::after {
+      content:'...';
+      animation:dots 1.5s steps(4) infinite;
+    }
+    @keyframes dots {
+      0% { content:''; }
+      25% { content:'.'; }
+      50% { content:'..'; }
+      75% { content:'...'; }
+    }
+
+    .error-msg {
+      color:#ff7b87;
+      padding:10px;
+      border:1px solid #ff7b87;
+      background:rgba(255,123,135,.05);
+      font-size:14px;
+      clip-path:polygon(0 6px,6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px));
+    }
+
+    .last-update {
+      color:rgba(0,217,255,.3);
+      font-size:11px;
+      margin-top:10px;
+      text-align:center;
+    }
+
+    .section-title {
+      color:var(--cyan);
+      font-size:14px;
+      margin-bottom:6px;
+      opacity:0.8;
+      letter-spacing:1px;
+    }
+
+    .main-price {
+      font-size:30px;
+      color:#fff;
+      font-weight:bold;
+      letter-spacing:1px;
+    }
     .price-change {
-      width: 10ch;
-      text-align: right;
-      margin-right: 2ch;
+      font-size:15px;
+      margin-top:2px;
+    }
+    .price-change .source {
+      color:rgba(0,217,255,.3);
+      font-size:12px;
+      margin-left:8px;
     }
 
-    .price-change-7d {
-      width: 10ch;
-      text-align: right;
-      margin-right: 2ch;
+    .cg-data {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:2px 16px;
+      font-size:14px;
+      line-height:1.8;
+    }
+    .cg-data .label {
+      color:rgba(0,217,255,.4);
+      font-size:13px;
+    }
+    .cg-data .value {
+      color:#fff;
+      text-align:right;
+      font-size:14px;
+      font-weight:500;
+    }
+    .cg-data .value.positive {
+      color:var(--green);
+    }
+    .cg-data .value.negative {
+      color:#ff7b87;
     }
 
-    .price-privacy {
-      width: 5ch;
-      text-align: left;
+    /* ===== BRUTUS CARD ===== */
+    .brutus-card {
+      padding-left:56px;
+      margin-top:10px;
+      border-top:1px solid var(--line);
+      padding-top:10px;
+    }
+    .brutus-card .brutus-content {
+      background:rgba(0,217,255,.04);
+      border:1px solid var(--line);
+      border-radius:4px;
+      padding:10px 14px;
+      text-align:center;
+      clip-path:polygon(0 6px,6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px));
+    }
+    .brutus-card .brutus-content img {
+      width:100%;
+      max-width:320px;
+      height:auto;
+      display:block;
+      margin:0 auto 8px auto;
+      border-radius:3px;
+    }
+    .brutus-card .brutus-content .brutus-text {
+      color:#ff7b87;
+      font-size:13px;
+      line-height:1.5;
+    }
+    .brutus-card .brutus-content .brutus-text .highlight {
+      color:var(--cyan);
+      font-weight:bold;
+    }
+    .brutus-card .brutus-content .brutus-link {
+      display:inline-block;
+      margin-top:6px;
+      color:var(--cyan);
+      text-decoration:none;
+      font-size:14px;
+      border:1px solid var(--cyan);
+      padding:4px 16px;
+      clip-path:polygon(0 4px,4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px));
+      transition:all 0.3s;
+    }
+    .brutus-card .brutus-content .brutus-link:hover {
+      background:rgba(0,217,255,.15);
+      box-shadow:0 0 20px rgba(0,217,255,.2);
     }
 
-    .positive { color: #198652; }
-    .negative { color: #9B1C2E; }
-
-    .privacy-marker {
-      color: #b8a0ff;
-      font-weight: normal;
+    @media (max-width:750px) {
+      main { padding:72px 10px 28px 0; }
+      .panel { padding:24px 20px 18px; margin:0; max-width:100%; }
+      .panel.small { max-width:100%; padding:24px 20px 18px; }
+      .cg-data { grid-template-columns:1fr; gap:0; }
+      .cg-data .value { text-align:left; }
+      .brutus-card { padding-left:0; }
+      .brutus-card .brutus-content img { max-width:100%; }
     }
 
-    .sep-raw {
-      color: #fff;
-      white-space: pre;
-      font-size: 15px;
-      margin: 10px 0;
-      letter-spacing: normal;
-    }
-
-    .small {
-      color: #777;
-      font-size: 15px;
-      margin-top: 2px;
-      line-height: 1.2;
+    @media (max-width:450px) {
+      .search-box { flex-direction:column; gap:6px; }
+      .search-box button { width:100%; }
+      .main-price { font-size:24px; }
+      .panel { padding:18px 14px 14px; }
+      .panel.small { padding:18px 14px 14px; }
+      .coin-name { font-size:17px; }
+      .coin-icon { width:32px; height:32px; }
+      .brutus-card .brutus-content { padding:8px 10px; }
     }
   </style>
 </head>
 <body>
-  <div class="terminal">
-    <h1>cΔrovΣr0 • Precios</h1>
-    Sin trackers, ads y scripts basura. Solo datos
-    <div><br></div>
-    <div class="price-line" style="color: #9B1C2E; margin-bottom: 5px;">
-      <span class="price-rank">#</span>
-      <span class="price-name">NOMBRE</span>
-      <span class="price-value">PRECIO</span>
-      <span class="price-change">24H%</span>
-      <span class="price-change-7d">7D%</span>
-      <span class="price-privacy">PRIV</span>
+  <div class="brand">cΔrovΣr0</div>
+  <main>
+    <div style="width:100%; max-width:700px; transition: max-width 0.3s ease;" id="mainContainer">
+      <section class="panel" id="panel">
+        <h2>⟡ CONSULTA DE PRECIOS</h2>
+        
+        <div class="search-box">
+          <input type="text" id="cryptoInput" placeholder="Ej: BTC, ETH, TRX..." spellcheck="false">
+          <button id="searchBtn">BUSCAR</button>
+        </div>
+        
+        <div id="resultContainer" class="result-box">
+          <div class="loading">Esperando consulta</div>
+        </div>
+        
+        <div class="last-update" id="lastUpdate">—</div>
+      </section>
     </div>
-    <div id="crypto-container"></div>
-    <div class="sep-raw">════════════════════════════════════════════════════════════════════════════════ 
-© 2026 Creada con ♥ por cΔrovΣr0 · apoya: carover0.firo
-    </div>
-    <div class="small" id="updated"></div>
-  </div>
-
+  </main>
+  
   <script>
-    const coins = [
-      "bitcoin", "bitcoin-cash", "litecoin", "zcash",
-      "digibyte", "pivx", "zcoin", "pirate-chain", "ycash"
-    ];
+    const $ = id => document.getElementById(id);
+    
+    const cache = {};
+    const CACHE_DURATION = 60000;
+    const SMALL_TOKENS = ['BTT', 'XEC', 'PEPE', 'SHIB', 'FLOKI', 'BONK', 'DOGE'];
+    const TRON_TOKENS = ['TRX', 'JST', 'WIN', 'SUN'];
 
-    const privacyCoins = {
-      "zcash": true,
-      "pivx": true,
-      "zcoin": true,
-      "pirate-chain": true,
-      "ycash": true
+    const COINGECKO_IDS = {
+      'BTC': 'bitcoin',
+      'ETH': 'ethereum',
+      'TRX': 'tron',
+      'ADA': 'cardano',
+      'SOL': 'solana',
+      'DOGE': 'dogecoin',
+      'XRP': 'ripple',
+      'DOT': 'polkadot',
+      'LINK': 'chainlink',
+      'MATIC': 'polygon',
+      'UNI': 'uniswap',
+      'ATOM': 'cosmos',
+      'LTC': 'litecoin',
+      'BCH': 'bitcoin-cash',
+      'XLM': 'stellar',
+      'VET': 'vechain',
+      'FIL': 'filecoin',
+      'ICP': 'internet-computer',
+      'ETC': 'ethereum-classic',
+      'XMR': 'monero',
+      'ZEC': 'zcash',
+      'EOS': 'eos',
+      'AAVE': 'aave',
+      'MKR': 'maker',
+      'COMP': 'compound',
+      'YFI': 'yearn-finance',
+      'SNX': 'synthetix',
+      'CRV': 'curve-dao-token',
+      '1INCH': '1inch',
+      'BTT': 'bittorrent',
+      'JST': 'just',
+      'WIN': 'wink',
+      'SUN': 'sun',
+      'SHIB': 'shiba-inu',
+      'PEPE': 'pepe',
+      'FLOKI': 'floki',
+      'BONK': 'bonk',
+      'XEC': 'ecash'
     };
 
-    function formatPriceLine(coin) {
-      const change24 = coin.price_change_percentage_24h;
-      const change7d = coin.price_change_percentage_7d_in_currency;
-      
-      const change24Class = change24 >= 0 ? "positive" : "negative";
-      const change7dClass = change7d >= 0 ? "positive" : "negative";
-      
-      const isPrivacy = privacyCoins[coin.id] || false;
-      const privacyIcon = isPrivacy ? '<span class="privacy-marker">🛡</span>' : '·';
-      
-      const price = coin.current_price < 1 
-        ? `$${coin.current_price.toFixed(6)}` 
-        : `$${coin.current_price.toFixed(2)}`;
-
-      const change24Display = change24 ? (change24 >= 0 ? `+${change24.toFixed(2)}` : `${change24.toFixed(2)}`) : '0.00';
-      const change7dDisplay = change7d ? (change7d >= 0 ? `+${change7d.toFixed(2)}` : `${change7d.toFixed(2)}`) : '0.00';
-
-      return `
-        <div class="price-line">
-          <span class="price-rank">${coin.market_cap_rank}</span>
-          <span class="price-name">
-            ${coin.name}<span class="price-symbol">${coin.symbol.toUpperCase()}</span>
-          </span>
-          <span class="price-value">${price}</span>
-          <span class="price-change ${change24Class}">${change24Display}%</span>
-          <span class="price-change-7d ${change7dClass}">${change7dDisplay}%</span>
-          <span class="price-privacy">${privacyIcon}</span>
-        </div>
-      `;
+    function formatPrice(num, symbol) {
+      if (num === undefined || num === null || isNaN(num)) return '—';
+      const isSmall = SMALL_TOKENS.includes(symbol.toUpperCase());
+      if (isSmall) return `$${num.toFixed(10)}`;
+      if (num < 0.00001) return `$${num.toFixed(12)}`;
+      if (num < 0.0001) return `$${num.toFixed(10)}`;
+      if (num < 0.001) return `$${num.toFixed(8)}`;
+      if (num < 0.01) return `$${num.toFixed(7)}`;
+      if (num < 0.1) return `$${num.toFixed(6)}`;
+      if (num < 1) return `$${num.toFixed(5)}`;
+      if (num < 10) return `$${num.toFixed(4)}`;
+      if (num < 1000) return `$${num.toFixed(2)}`;
+      return `$${num.toFixed(2)}`;
     }
 
-    async function fetchData() {
-      try {
-        const res = await fetch(
-          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coins.join(",")}&order=market_cap_desc&price_change_percentage=24h,7d`
-        );
+    function formatNumber(num) {
+      if (num === undefined || num === null || isNaN(num)) return '—';
+      if (num >= 1e12) return `$${(num/1e12).toFixed(2)}T`;
+      if (num >= 1e9) return `$${(num/1e9).toFixed(2)}B`;
+      if (num >= 1e6) return `$${(num/1e6).toFixed(2)}M`;
+      if (num >= 1e3) return `$${(num/1e3).toFixed(2)}K`;
+      return `$${num.toFixed(2)}`;
+    }
 
-        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+    function getCryptoIcon(symbol) {
+      return `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/${symbol.toLowerCase()}.png`;
+    }
 
-        const data = await res.json();
-        data.sort((a, b) => a.market_cap_rank - b.market_cap_rank);
+    function isTronToken(symbol) {
+      return TRON_TOKENS.includes(symbol.toUpperCase());
+    }
 
-        const container = document.getElementById("crypto-container");
-        
-        let lines = '';
-        data.forEach(coin => {
-          lines += formatPriceLine(coin);
-        });
-
-        container.innerHTML = lines;
-
-        document.getElementById("updated").innerText =
-          `actualizado: ${new Date().toLocaleTimeString()}  ·  fuente: coingecko`;
-
-      } catch (error) {
-        document.getElementById("crypto-container").innerHTML = 
-          `<div class="price-line" style="color: #9B1C2E;">ERROR: ${error.message}</div>`;
+    function setPanelSize(isTron) {
+      const panel = $('panel');
+      const container = document.getElementById('mainContainer');
+      
+      if (isTron) {
+        panel.classList.remove('small');
+        container.style.maxWidth = '700px';
+      } else {
+        panel.classList.add('small');
+        container.style.maxWidth = '520px';
       }
     }
 
-    fetchData();
-    setInterval(fetchData, 60000);
+    async function getCoinGeckoData(symbol) {
+      try {
+        const upperSymbol = symbol.toUpperCase();
+        let coinId = COINGECKO_IDS[upperSymbol];
+        
+        if (!coinId) {
+          const searchUrl = `https://api.coingecko.com/api/v3/search?query=${upperSymbol}`;
+          const searchResp = await fetch(searchUrl);
+          
+          if (!searchResp.ok) {
+            throw new Error(`CoinGecko search error: ${searchResp.status}`);
+          }
+          
+          const searchData = await searchResp.json();
+          const coins = searchData.coins || [];
+          
+          for (const coin of coins) {
+            if (coin.symbol.toUpperCase() === upperSymbol) {
+              coinId = coin.id;
+              break;
+            }
+          }
+          
+          if (!coinId && coins.length > 0) {
+            coinId = coins[0].id;
+          }
+        }
+        
+        if (!coinId) {
+          return null;
+        }
+        
+        const detailUrl = `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+        const detailResp = await fetch(detailUrl);
+        
+        if (!detailResp.ok) {
+          throw new Error(`CoinGecko detail error: ${detailResp.status}`);
+        }
+        
+        const detail = await detailResp.json();
+        
+        return {
+          nombre: detail.name || symbol,
+          ticker: detail.symbol?.toUpperCase() || symbol,
+          precio: detail.market_data?.current_price?.usd || 0,
+          market_cap: detail.market_data?.market_cap?.usd || 0,
+          cambio_24h: detail.market_data?.price_change_percentage_24h || 0,
+          volumen_24h: detail.market_data?.total_volume?.usd || 0,
+          ranking: detail.market_cap_rank || 'N/A',
+          icono: detail.image?.large || getCryptoIcon(symbol),
+          high_24h: detail.market_data?.high_24h?.usd || 0,
+          low_24h: detail.market_data?.low_24h?.usd || 0,
+          ath: detail.market_data?.ath?.usd || 0,
+          atl: detail.market_data?.atl?.usd || 0,
+          price_change_24h: detail.market_data?.price_change_24h || 0,
+        };
+      } catch (e) {
+        console.error('CoinGecko error:', e);
+        return null;
+      }
+    }
+
+    async function queryPrice(symbol) {
+      const upperSymbol = symbol.toUpperCase().trim();
+      if (!upperSymbol) return;
+      
+      const cacheKey = upperSymbol;
+      const now = Date.now();
+      if (cache[cacheKey] && (now - cache[cacheKey].timestamp) < CACHE_DURATION) {
+        renderResult(cache[cacheKey].data);
+        return;
+      }
+      
+      const container = $('resultContainer');
+      container.innerHTML = '<div class="loading">Consultando precios</div>';
+      
+      try {
+        const coinData = await getCoinGeckoData(upperSymbol);
+        
+        const result = {
+          symbol: upperSymbol,
+          coinData,
+          timestamp: Date.now()
+        };
+        
+        cache[cacheKey] = { data: result, timestamp: now };
+        renderResult(result);
+        updateLastUpdate();
+        
+        setPanelSize(isTronToken(upperSymbol));
+        
+      } catch (e) {
+        console.error('Error general:', e);
+        container.innerHTML = `
+          <div class="error-msg">
+            ❌ Error al consultar: ${e.message || 'Intenta nuevamente'}<br>
+            <small style="color:rgba(0,217,255,.4);">Verifica tu conexión a internet</small>
+          </div>
+        `;
+      }
+    }
+
+    function renderResult(result) {
+      const container = $('resultContainer');
+      const { symbol, coinData } = result;
+      
+      let html = '';
+      
+      if (!coinData) {
+        html = `
+          <div class="error-msg">
+            ⚠️ No se encontraron datos para "${symbol}"<br>
+            <small style="color:rgba(0,217,255,.4);">Verifica el símbolo o intenta con otro</small>
+          </div>
+        `;
+        container.innerHTML = html;
+        return;
+      }
+      
+      html += `<div class="price-card">`;
+      
+      html += `
+        <div class="coin-header">
+          <div class="coin-icon">
+            <img src="${coinData.icono || getCryptoIcon(symbol)}" alt="${symbol}" 
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2244%22 height=%2244%22 viewBox=%220 0 44 44%22%3E%3Ctext x=%2222%22 y=%2228%22 text-anchor=%22middle%22 fill=%22%2300d9ff%22 font-size=%2220%22 font-family=%22monospace%22%3E${symbol.slice(0,4)}%3C/text%3E%3C/svg%3E'">
+          </div>
+          <div>
+            <span class="coin-name">${coinData.nombre}</span>
+            <span class="coin-symbol">${coinData.ticker}/USDT</span>
+          </div>
+        </div>
+      `;
+      
+      if (coinData.precio > 0) {
+        const cambio = coinData.cambio_24h || 0;
+        const cambioColor = cambio >= 0 ? 'var(--green)' : '#ff7b87';
+        const cambioEmoji = cambio >= 0 ? '📈' : '📉';
+        
+        html += `
+          <div style="padding-left:56px; margin-bottom:10px;">
+            <div class="main-price">
+              ${formatPrice(coinData.precio, symbol)}
+            </div>
+            <div class="price-change" style="color:${cambioColor};">
+              ${cambioEmoji} ${cambio >= 0 ? '+' : ''}${cambio.toFixed(2)}% (24h)
+              <span class="source">CoinGecko</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      const cambio = coinData.cambio_24h || 0;
+      const cambioClass = cambio >= 0 ? 'positive' : 'negative';
+      const cambioEmoji = cambio >= 0 ? '🔋' : '🪫';
+      
+      html += `
+        <div style="padding-left:56px; margin-top:10px; border-top:1px solid var(--line); padding-top:10px;">
+          <div class="section-title">📈 DATOS COINGECKO</div>
+          <div class="cg-data">
+            <span class="label">Market Cap</span>
+            <span class="value">${formatNumber(coinData.market_cap)}</span>
+            
+            <span class="label">Volumen 24h</span>
+            <span class="value">${formatNumber(coinData.volumen_24h)}</span>
+            
+            <span class="label">Cambio 24h</span>
+            <span class="value ${cambioClass}">${cambio >= 0 ? '+' : ''}${cambio.toFixed(2)}% ${cambioEmoji}</span>
+            
+            <span class="label">Ranking</span>
+            <span class="value">#${coinData.ranking}</span>
+            
+            ${coinData.high_24h ? `<span class="label">Máx 24h</span><span class="value">${formatPrice(coinData.high_24h, symbol)}</span>` : ''}
+            ${coinData.low_24h ? `<span class="label">Mín 24h</span><span class="value">${formatPrice(coinData.low_24h, symbol)}</span>` : ''}
+            
+            ${coinData.ath ? `<span class="label">ATH</span><span class="value">${formatPrice(coinData.ath, symbol)}</span>` : ''}
+            ${coinData.atl ? `<span class="label">ATL</span><span class="value">${formatPrice(coinData.atl, symbol)}</span>` : ''}
+          </div>
+        </div>
+      `;
+      
+      if (isTronToken(symbol)) {
+        html += `
+          <div class="brutus-card">
+            <div class="brutus-content">
+              <img src="assets/f14.png" alt="Brutus Finance" loading="lazy">
+              <div class="brutus-text">
+                🚀 ¿Necesitas recursos Tron?<br>
+                <span class="highlight">Energía</span> y <span class="highlight">Banda ancha</span> disponibles
+              </div>
+              <a href="https://brutus.finance" target="_blank" class="brutus-link">
+                🔗 Ir a Brutus Finance
+              </a>
+            </div>
+          </div>
+        `;
+      }
+      
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    function updateLastUpdate() {
+      const now = new Date();
+      const el = $('lastUpdate');
+      if (el) {
+        el.textContent = `Última actualización: ${now.toLocaleString('es-AR', { hour12: false })}`;
+      }
+    }
+
+    $('searchBtn').addEventListener('click', () => {
+      const input = $('cryptoInput');
+      if (input.value.trim()) {
+        queryPrice(input.value);
+      }
+    });
+    
+    $('cryptoInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        $('searchBtn').click();
+      }
+    });
+
+    setTimeout(() => {
+      queryPrice('TRX');
+    }, 500);
+
+    setInterval(() => {
+      const input = $('cryptoInput');
+      if (input.value.trim()) {
+        queryPrice(input.value);
+      }
+    }, 60000);
   </script>
 </body>
 </html>
