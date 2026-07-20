@@ -677,11 +677,11 @@
       
       const cambio = coinData.cambio_24h || 0;
       const cambioClass = cambio >= 0 ? 'positive' : 'negative';
-      const cambioEmoji = cambio >= 0 ? '🔋' : '🪫';
+      const cambioEmoji = cambio >= 0 ? '🟢' : '🔴';
       
       html += `
         <div style="padding-left:56px; margin-top:10px; border-top:1px solid var(--line); padding-top:10px;">
-          <div class="section-title">📈 DATOS COINGECKO</div>
+          <div class="section-title">🔎 DATOS COINGECKO</div>
           <div class="cg-data">
             <span class="label">Market Cap</span>
             <span class="value">${formatNumber(coinData.market_cap)}</span>
