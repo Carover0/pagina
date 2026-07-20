@@ -95,6 +95,7 @@
       display:flex;
       gap:8px;
       margin-bottom:14px;
+      align-items:center;
     }
     .search-box input {
       flex:1;
@@ -125,10 +126,36 @@
       cursor:pointer;
       transition:all 0.3s;
       clip-path:polygon(0 8px,8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px));
+      white-space:nowrap;
     }
     .search-box button:hover {
       background:rgba(0,217,255,.15);
       box-shadow:0 0 20px rgba(0,217,255,.2);
+    }
+
+    /* ===== BOTÓN INICIO ===== */
+    .search-box .btn-inicio {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 14px;
+      background:transparent;
+      border:2px solid var(--line);
+      color:rgba(0,217,255,.5);
+      font-family:inherit;
+      font-size:12px;
+      cursor:pointer;
+      transition:all 0.3s;
+      clip-path:polygon(0 8px,8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px));
+      white-space:nowrap;
+      text-decoration:none;
+      height:auto;
+    }
+    .search-box .btn-inicio:hover {
+      background:rgba(0,217,255,.08);
+      box-shadow:0 0 15px rgba(0,217,255,.1);
+      border-color:rgba(0,217,255,.7);
+      color:var(--cyan);
     }
 
     .result-box {
@@ -304,6 +331,25 @@
       box-shadow:0 0 20px rgba(0,217,255,.2);
     }
 
+    /* ===== ESTADO VACÍO ===== */
+    .empty-state {
+      text-align:center;
+      padding:40px 20px;
+      color:rgba(0,217,255,.3);
+      font-size:14px;
+    }
+    .empty-state .icon {
+      font-size:48px;
+      margin-bottom:12px;
+      display:block;
+      opacity:0.4;
+    }
+    .empty-state .hint {
+      color:rgba(0,217,255,.2);
+      font-size:12px;
+      margin-top:6px;
+    }
+
     @media (max-width:750px) {
       main { padding:72px 10px 28px 0; }
       .panel { padding:24px 20px 18px; margin:0; max-width:100%; }
@@ -312,11 +358,22 @@
       .cg-data .value { text-align:left; }
       .brutus-card { padding-left:0; }
       .brutus-card .brutus-content img { max-width:100%; }
+      .search-box .btn-inicio {
+        font-size:11px;
+        padding:6px 10px;
+      }
     }
 
     @media (max-width:450px) {
-      .search-box { flex-direction:column; gap:6px; }
-      .search-box button { width:100%; }
+      .search-box { 
+        flex-direction:column; 
+        gap:6px; 
+        align-items:stretch;
+      }
+      .search-box button,
+      .search-box .btn-inicio { 
+        width:100%; 
+      }
       .main-price { font-size:24px; }
       .panel { padding:18px 14px 14px; }
       .panel.small { padding:18px 14px 14px; }
@@ -336,10 +393,15 @@
         <div class="search-box">
           <input type="text" id="cryptoInput" placeholder="Ej: BTC, ETH, TRX..." spellcheck="false">
           <button id="searchBtn">BUSCAR</button>
+          <a href="https://carover0.github.io/pagina/" id="inicioBtn" class="btn-inicio">⌂ INICIO</a>
         </div>
         
         <div id="resultContainer" class="result-box">
-          <div class="loading">Esperando consulta</div>
+          <div class="empty-state">
+            <span class="icon">⌨️</span>
+            <div>Ingresa un símbolo para consultar</div>
+            <div class="hint">Ej: BTC, ETH, TRX, ADA, SOL...</div>
+          </div>
         </div>
         
         <div class="last-update" id="lastUpdate">—</div>
@@ -441,6 +503,23 @@
       }
     }
 
+    function showEmptyState() {
+      const container = $('resultContainer');
+      container.innerHTML = `
+        <div class="empty-state">
+          <span class="icon">⌨️</span>
+          <div>Ingresa un símbolo para consultar</div>
+          <div class="hint">Ej: BTC, ETH, TRX, ADA, SOL...</div>
+        </div>
+      `;
+      const panel = $('panel');
+      const containerMain = document.getElementById('mainContainer');
+      panel.classList.remove('small');
+      containerMain.style.maxWidth = '700px';
+      $('cryptoInput').value = '';
+      $('lastUpdate').textContent = '—';
+    }
+
     async function getCoinGeckoData(symbol) {
       try {
         const upperSymbol = symbol.toUpperCase();
@@ -505,7 +584,10 @@
 
     async function queryPrice(symbol) {
       const upperSymbol = symbol.toUpperCase().trim();
-      if (!upperSymbol) return;
+      if (!upperSymbol) {
+        showEmptyState();
+        return;
+      }
       
       const cacheKey = upperSymbol;
       const now = Date.now();
@@ -655,6 +737,8 @@
       const input = $('cryptoInput');
       if (input.value.trim()) {
         queryPrice(input.value);
+      } else {
+        showEmptyState();
       }
     });
     
@@ -663,10 +747,6 @@
         $('searchBtn').click();
       }
     });
-
-    setTimeout(() => {
-      queryPrice('TRX');
-    }, 500);
 
     setInterval(() => {
       const input = $('cryptoInput');
