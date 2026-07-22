@@ -177,32 +177,37 @@
                 // ─── OBTENER DELEGACIONES A OTROS ────────────────────
                 const delegatedToOthers = await getDelegatedEnergy(address);
 
-                // ─── ENERGA ──────────────────────────────────────────
-                const energyLimit = resources.EnergyLimit || 0;      
-                const energyUsed = resources.EnergyUsed || 0;        
-                const energyTotal = energyLimit + energyUsed;
+                // ─── ENERGÍA ──────────────────────────────────────────
+                const energyLimit = resources.EnergyLimit || 0;      // Disponible
+                const energyUsed = resources.EnergyUsed || 0;        // Usado
 
-		// ─── BANDWIDTH ──────────────────────────────────────
-		const netLimit = resources.NetLimit || 0;        // 6,215
-		const netUsed = resources.NetUsed || 0;          // 565
-		const freeNetLimit = resources.freeNetLimit || 0; // 600
-		const freeNetUsed = resources.freeNetUsed || 0;  // 0
+                let energyTotal;
+                let showDelegated = false;
+                if (delegatedToOthers > 0 && energyLimit < 1000) {
+                    energyTotal = energyLimit + energyUsed + delegatedToOthers;
+                    showDelegated = true;
+                } else {
+                    energyTotal = energyLimit + energyUsed;
+                }
 
-		// Total = limite por stake + limite gratuito
-		const totalBandwidth = netLimit + freeNetLimit;  // 6,815
-		// Usado = usado del stake + usado gratuito
-		const bandwidthUsed = netUsed + freeNetUsed;     // 565
-		// Disponible = total - usado
-		const bandwidthAvailable = Math.max(0, totalBandwidth - bandwidthUsed); // 6,250
+                // ─── BANDWIDTH ──────────────────────────────────────
+                const netLimit = resources.NetLimit || 0;
+                const netUsed = resources.NetUsed || 0;
+                const freeNetLimit = resources.freeNetLimit || 0;
+                const freeNetUsed = resources.freeNetUsed || 0;
+                const totalBandwidth = netLimit + freeNetLimit;
+                const bandwidthUsed = netUsed + freeNetUsed;
+                const bandwidthAvailable = Math.max(0, totalBandwidth - bandwidthUsed);
+
                 // ─── ACTUALIZAR UI ─────────────────────────────────
                 const energyPercent = setBar(`${prefix}-energy-bar`, energyLimit, energyTotal, false);
                 $(`${prefix}-energy-percent`).textContent = energyTotal>0 ? `${energyPercent}%` : "0%";
 
                 let energyText = `⚡ ${formatNumInt(energyTotal)} BRUTO`;
-                if (delegatedToOthers > 0 && energyLimit < 1000) {
-                    energyText += ` (${formatNumInt(energyLimit)} disp. · ${formatNumInt(delegatedToOthers)} del)`;
+                if (showDelegated) {
+                    energyText += ` (${formatNumInt(energyLimit)} disp. · ${formatNumInt(delegatedToOthers)} del.)`;
                 } else {
-                    energyText += ` (${formatNumInt(energyUsed)} del. · ${formatNumInt(energyLimit)} disp.)`;
+                    energyText += ` (${formatNumInt(energyUsed)} usado · ${formatNumInt(energyLimit)} disp.)`;
                 }
                 $(`${prefix}-energy-total`).textContent = energyText;
 
