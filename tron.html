@@ -139,7 +139,6 @@
 
                         if (detailData.delegatedResource) {
                             detailData.delegatedResource.forEach(item => {
-
                                 const trxStaked = (item.frozen_balance_for_energy || 0) / 1_000_000;
                                 const energyFromStake = trxStaked * TASA_CONVERSION;
                                 totalDelegatedEnergy += energyFromStake;
@@ -176,7 +175,7 @@
                 // ─── ENERGIA ──────────────────────────────────────────
                 const energyLimit = resources.EnergyLimit || 0;      // Disponible
                 const energyUsed = resources.EnergyUsed || 0;        // Usado
-                const energyTotal = energyLimit + energyUsed + delegatedToOthers; // BRUTO REAL
+                const energyTotal = energyLimit + energyUsed;
 
                 // ─── BANDWIDTH ──────────────────────────────────────
                 const netLimit = resources.NetLimit || 0;
@@ -192,16 +191,16 @@
                 $(`${prefix}-energy-percent`).textContent = energyTotal>0 ? `${energyPercent}%` : "0%";
 
                 let energyText = `⚡ ${formatNumInt(energyTotal)} BRUTO`;
-                if (delegatedToOthers > 0) {
-                    energyText += ` (${formatNumInt(energyLimit)} disp. · ${formatNumInt(energyUsed)} usado · ${formatNumInt(delegatedToOthers)} delegado)`;
+                if (delegatedToOthers > 0 && energyLimit < 1000) {
+                    energyText += ` (${formatNumInt(energyLimit)} disp. · ${formatNumInt(delegatedToOthers)} del.)`;
                 } else {
-                    energyText += ` (${formatNumInt(energyUsed)} usado · ${formatNumInt(energyLimit)} disp.)`;
+                    energyText += ` (${formatNumInt(energyUsed)} del. · ${formatNumInt(energyLimit)} disp.)`;
                 }
                 $(`${prefix}-energy-total`).textContent = energyText;
 
                 const bandwidthPercent = setBar(`${prefix}-bandwidth-bar`, bandwidthAvailable, totalBandwidth, true);
                 $(`${prefix}-bandwidth-percent`).textContent = totalBandwidth>0 ? `${bandwidthPercent}%` : "0%";
-                $(`${prefix}-bandwidth-total`).textContent = `📶 ${formatNumInt(totalBandwidth)} BRUTO (${formatNumInt(bandwidthUsed)} usado · ${formatNumInt(bandwidthAvailable)} disp.)`;
+                $(`${prefix}-bandwidth-total`).textContent = `📶 ${formatNumInt(totalBandwidth)} BRUTO (${formatNumInt(bandwidthUsed)} del. · ${formatNumInt(bandwidthAvailable)} disp.)`;
 
                 $(`${prefix}-status`).textContent="✅ ONLINE";
                 $(`${prefix}-status`).style.color="#31db72";
