@@ -1,4 +1,3 @@
-<!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -32,6 +31,7 @@
         .links a:hover { text-decoration: underline; }
         .reactor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .footer-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 4px; font-size: 12px; }
+        .energy-detail { font-size: 11px; color: #6a8faa; margin-top: 2px; }
         @media (max-width: 1024px) { 
             main { padding: 72px 15px 28px; } 
             .panel { width: 95%; max-width: 100%; padding: 24px 20px 18px; margin-top: 420px; margin-left: 0; } 
@@ -49,9 +49,10 @@
                 <div>
                     <div class="node-title"><span>⚛️ R1</span><span class="online" id="r1-status">CONECTANDO...</span></div>
                     <div class="section" style="border-top:none;padding-top:0;">
-                        <span class="metric-name">⚡ ENERGIA</span>
+                        <span class="metric-name">⚡ ENERGIA BRUTA</span>
                         <div class="bar-line"><div class="bar" id="r1-energy-bar"></div><span class="percent" id="r1-energy-percent">—</span></div>
                         <div class="info" id="r1-energy-total" style="font-size:12px;color:#b8aacc;margin-top:3px;">—</div>
+                        <div class="energy-detail" id="r1-energy-detail">—</div>
                         <span class="metric-name" style="margin-top:8px;">📶 BANDWIDTH</span>
                         <div class="bar-line"><div class="bar" id="r1-bandwidth-bar"></div><span class="percent" id="r1-bandwidth-percent">—</span></div>
                         <div class="info" id="r1-bandwidth-total" style="font-size:12px;color:#b8aacc;margin-top:3px;">—</div>
@@ -60,9 +61,10 @@
                 <div>
                     <div class="node-title"><span>⚛️ R2</span><span class="online" id="r2-status">CONECTANDO...</span></div>
                     <div class="section" style="border-top:none;padding-top:0;">
-                        <span class="metric-name">⚡ ENERGIA</span>
+                        <span class="metric-name">⚡ ENERGIA BRUTA</span>
                         <div class="bar-line"><div class="bar" id="r2-energy-bar"></div><span class="percent" id="r2-energy-percent">—</span></div>
                         <div class="info" id="r2-energy-total" style="font-size:12px;color:#b8aacc;margin-top:3px;">—</div>
+                        <div class="energy-detail" id="r2-energy-detail">—</div>
                         <span class="metric-name" style="margin-top:8px;">📶 BANDWIDTH</span>
                         <div class="bar-line"><div class="bar" id="r2-bandwidth-bar"></div><span class="percent" id="r2-bandwidth-percent">—</span></div>
                         <div class="info" id="r2-bandwidth-total" style="font-size:12px;color:#b8aacc;margin-top:3px;">—</div>
@@ -77,206 +79,229 @@
         </section>
     </main>
     <script>
-        const TRONGRID_KEY='a9d4c385-3529-46a5-94b4-1d3adbc45978';
-        const R1_ADDRESS='TS1k7yVS6PLNRP3xSms65YVa5sARj2JgVd';
-        const R2_ADDRESS='TN8tyafAodF5Yez4yuKv6QqvycQoMPYt2D';
-        const UPDATE_INTERVAL=30000;
-        const TASA_CONVERSION = 9.5;
+        const TRONSCAN_KEY = 'eba0f317-25ee-4027-bff9-a692fecbd85f';
+        const R1_ADDRESS = 'TS1k7yVS6PLNRP3xSms65YVa5sARj2JgVd';
+        const R2_ADDRESS = 'TN8tyafAodF5Yez4yuKv6QqvycQoMPYt2D';
+        const UPDATE_INTERVAL = 30000;
 
-        function $(id){return document.getElementById(id);}
+        function $(id){ return document.getElementById(id); }
 
-        function formatNumInt(num){
-            if(num===undefined||num===null||isNaN(num)) return'0';
-            if(num>=1e9) return (num/1e9).toFixed(1)+'B';
-            if(num>=1e6) return (num/1e6).toFixed(1)+'M';
-            if(num>=1e3) return (num/1e3).toFixed(1)+'K';
+        function formatNumInt(num) {
+            if(num === undefined || num === null || isNaN(num) || num === 0) return '0';
+            if(num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if(num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if(num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
             return Math.round(num).toString();
         }
 
-        function setBar(barId, available, total, isBandwidth=false){
-            const bar=document.getElementById(barId);
+        function setBar(barId, available, total, isBandwidth = false) {
+            const bar = document.getElementById(barId);
             if(!bar) return 0;
             const percent = total > 0 ? Math.min(100, Math.round((available / total) * 100)) : 0;
-            const segments=10;
+            const segments = 10;
             const filled = Math.round((percent / 100) * segments);
-            bar.innerHTML='';
-            for(let i=0; i<segments; i++){
-                const segment=document.createElement('i');
-                if(i < filled){
-                    if(isBandwidth) segment.className='on bw';
-                    else segment.className='on';
+            bar.innerHTML = '';
+            for(let i = 0; i < segments; i++) {
+                const segment = document.createElement('i');
+                if(i < filled) {
+                    if(isBandwidth) segment.className = 'on bw';
+                    else segment.className = 'on';
                 }
                 bar.appendChild(segment);
             }
             return percent;
         }
 
-        async function getDelegatedEnergy(address) {
+        function safeValue(val, defaultValue = 0) {
+            if (val === undefined || val === null || isNaN(val)) return defaultValue;
+            return val;
+        }
+
+        async function getDelegatedResources(address, resourceType = 2) { // 2 = energy
             try {
-                const headers = {
-                    "accept": "application/json",
-                    "content-type": "application/json",
-                    "TRON-PRO-API-KEY": TRONGRID_KEY
-                };
+                let allDelegations = [];
+                let start = 0;
+                const limit = 100;
+                let hasMore = true;
 
-                const resIndex = await fetch('https://api.trongrid.io/wallet/getdelegatedresourceaccountindexv2', {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({ "value": address, "visible": true })
-                });
-                const indexData = await resIndex.json();
+                while (hasMore) {
+                    const url = `https://apilist.tronscan.org/api/account/resourcev2?address=${address}&start=${start}&limit=${limit}&type=2&resourceType=${resourceType}`;
+                    
+                    const response = await fetch(url, {
+                        headers: { 'TRON-PRO-API-KEY': TRONSCAN_KEY }
+                    });
 
-                let totalDelegatedEnergy = 0;
-                const toAccounts = indexData.toAccounts || [];
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
 
-                for (const toAddress of toAccounts) {
-                    try {
-                        const resDetail = await fetch('https://api.trongrid.io/wallet/getdelegatedresourcev2', {
-                            method: 'POST',
-                            headers,
-                            body: JSON.stringify({
-                                "fromAddress": address,
-                                "toAddress": toAddress,
-                                "visible": true
-                            })
-                        });
-                        const detailData = await resDetail.json();
-
-                        if (detailData.delegatedResource) {
-                            detailData.delegatedResource.forEach(item => {
-                                const trxStaked = (item.frozen_balance_for_energy || 0) / 1_000_000;
-                                const energyFromStake = trxStaked * TASA_CONVERSION;
-                                totalDelegatedEnergy += energyFromStake;
-                            });
+                    const data = await response.json();
+                    
+                    if (data.data && data.data.length > 0) {
+                        allDelegations = allDelegations.concat(data.data);
+                        start += limit;
+                        if (start >= data.total) {
+                            hasMore = false;
                         }
-                    } catch (e) {
-                        console.warn(`Error obteniendo detalle de delegación a ${toAddress}:`, e);
+                    } else {
+                        hasMore = false;
                     }
                 }
-                return totalDelegatedEnergy;
+
+                let totalDelegatedEnergy = 0;
+                let delegationDetails = [];
+                
+                allDelegations.forEach(item => {
+                    const resourceValue = safeValue(item.resourceValue);
+                    const receiverAddress = item.receiverAddress || 'unknown';
+                    totalDelegatedEnergy += resourceValue;
+                    delegationDetails.push({
+                        to: receiverAddress,
+                        value: resourceValue
+                    });
+                });
+
+                return {
+                    total: totalDelegatedEnergy,
+                    details: delegationDetails,
+                    count: allDelegations.length
+                };
             } catch (e) {
-                console.warn('Error obteniendo índice de delegaciones:', e);
-                return 0;
+                console.error('Error obteniendo delegaciones:', e);
+                return { total: 0, details: [], count: 0 };
             }
         }
 
-        async function fetchReactorData(address, prefix){
-            try{
-                const headers={
-                    "accept":"application/json",
-                    "content-type":"application/json",
-                    "TRON-PRO-API-KEY":TRONGRID_KEY
-                };
-                const payload={"address":address,"visible":true};
-
-                const resResources=await fetch('https://api.trongrid.io/wallet/getaccountresource',{
-                    method:'POST', headers, body:JSON.stringify(payload)
+        async function fetchReactorData(address, prefix) {
+            try {
+                const urlDetail = `https://apilist.tronscan.org/api/accountv2?address=${address}`;
+                const responseDetail = await fetch(urlDetail, {
+                    headers: { 'TRON-PRO-API-KEY': TRONSCAN_KEY }
                 });
-                const resources=await resResources.json();
 
-                // ─── OBTENER DELEGACIONES A OTROS ────────────────────
-                const delegatedToOthers = await getDelegatedEnergy(address);
-
-                // ─── ENERGÍA ──────────────────────────────────────────
-                const energyLimit = resources.EnergyLimit || 0;      // Disponible
-                const energyUsed = resources.EnergyUsed || 0;        // Usado
-
-                let energyTotal;
-                let showDelegated = false;
-                if (delegatedToOthers > 0 && energyLimit < 1000) {
-                    energyTotal = energyLimit + energyUsed + delegatedToOthers;
-                    showDelegated = true;
-                } else {
-                    energyTotal = energyLimit + energyUsed;
+                if (!responseDetail.ok) {
+                    throw new Error(`HTTP error! status: ${responseDetail.status}`);
                 }
+
+                const data = await responseDetail.json();
+
+                const delegatedData = await getDelegatedResources(address, 2);
+                const totalDelegatedEnergy = delegatedData.total;
+
+                const get = (field) => safeValue(data[field]);
+
+                // ─── ENERGÍA ─────────────────────────────────────────
+                const selfEnergyV2 = get('frozenForEnergyV2Value');
+                const selfEnergyV1 = get('frozenForEnergyValue');
+                const selfEnergyTotal = selfEnergyV2 + selfEnergyV1;
+
+                // Delegaciones recibidas de otros
+                const acquiredEnergyV2 = get('acquiredDelegatedFrozenV2BalanceForEnergyValue');
+                const acquiredEnergyV1 = get('acquiredDelegatedFrozenBalanceForEnergyValue');
+                const acquiredEnergyTotal = acquiredEnergyV2 + acquiredEnergyV1;
+
+                // Energía bruta total = propia + recibida + delegada (enviada)
+                const energiaBruta = selfEnergyTotal + acquiredEnergyTotal + totalDelegatedEnergy;
+
+                // Energía disponible (de la API)
+                const energyDisponible = get('totalEnergyRemaining');
+                const energyUsado = energiaBruta - energyDisponible;
 
                 // ─── BANDWIDTH ──────────────────────────────────────
-                const netLimit = resources.NetLimit || 0;
-                const netUsed = resources.NetUsed || 0;
-                const freeNetLimit = resources.freeNetLimit || 0;
-                const freeNetUsed = resources.freeNetUsed || 0;
-                const totalBandwidth = netLimit + freeNetLimit;
-                const bandwidthUsed = netUsed + freeNetUsed;
-                const bandwidthAvailable = Math.max(0, totalBandwidth - bandwidthUsed);
+                const totalNet = get('totalNet');
+                const netRemaining = get('totalNetRemaining');
 
                 // ─── ACTUALIZAR UI ─────────────────────────────────
-                const energyPercent = setBar(`${prefix}-energy-bar`, energyLimit, energyTotal, false);
-                $(`${prefix}-energy-percent`).textContent = energyTotal>0 ? `${energyPercent}%` : "0%";
-
-                let energyText = `⚡ ${formatNumInt(energyTotal)} BRUTO`;
-                if (showDelegated) {
-                    energyText += ` (${formatNumInt(energyLimit)} disp. · ${formatNumInt(delegatedToOthers)} del.)`;
-                } else {
-                    energyText += ` (${formatNumInt(energyUsed)} usado · ${formatNumInt(energyLimit)} disp.)`;
+                // Barra de energía
+                const energyPercent = setBar(`${prefix}-energy-bar`, energyDisponible, energiaBruta, false);
+                $(`${prefix}-energy-percent`).textContent = energiaBruta > 0 ? `${energyPercent}%` : "0%";
+                
+                $(`${prefix}-energy-total`).textContent = `⚡ ${formatNumInt(energiaBruta)} BRUTA · ${formatNumInt(energyDisponible)} DISPONIBLE`;
+                
+                let detailParts = [];
+                if (selfEnergyTotal > 0) {
+                    detailParts.push(`Propio: ${formatNumInt(selfEnergyTotal)}`);
                 }
-                $(`${prefix}-energy-total`).textContent = energyText;
+                if (acquiredEnergyTotal > 0) {
+                    detailParts.push(`Recibido: ${formatNumInt(acquiredEnergyTotal)}`);
+                }
+                if (totalDelegatedEnergy > 0) {
+                    detailParts.push(`Delegado: ${formatNumInt(totalDelegatedEnergy)} (${delegatedData.count} destinos)`);
+                }
+                
+                $(`${prefix}-energy-detail`).textContent = detailParts.length > 0 ? detailParts.join(' · ') : 'Sin staking activo';
 
-                const bandwidthPercent = setBar(`${prefix}-bandwidth-bar`, bandwidthAvailable, totalBandwidth, true);
-                $(`${prefix}-bandwidth-percent`).textContent = totalBandwidth>0 ? `${bandwidthPercent}%` : "0%";
-                $(`${prefix}-bandwidth-total`).textContent = `📶 ${formatNumInt(totalBandwidth)} BRUTO (${formatNumInt(bandwidthUsed)} usado · ${formatNumInt(bandwidthAvailable)} disp.)`;
+                // Barra de bandwidth
+                const bandwidthPercent = setBar(`${prefix}-bandwidth-bar`, netRemaining, totalNet, true);
+                $(`${prefix}-bandwidth-percent`).textContent = totalNet > 0 ? `${bandwidthPercent}%` : "0%";
+                $(`${prefix}-bandwidth-total`).textContent = `📶 ${formatNumInt(totalNet)} BRUTA · ${formatNumInt(netRemaining)} DISPONIBLE`;
 
-                $(`${prefix}-status`).textContent="✅ ONLINE";
-                $(`${prefix}-status`).style.color="#31db72";
-                return{success:true};
-            } catch(e){
-                console.error(`❌ Error en ${prefix}:`,e);
-                $(`${prefix}-status`).textContent="⚠️ OFFLINE";
-                $(`${prefix}-status`).style.color="#ff7b87";
-                return{success:false};
+                // ─── ACTUALIZAR ESTADO ─────────────────────────────
+                $(`${prefix}-status`).textContent = "✅ ONLINE";
+                $(`${prefix}-status`).style.color = "#31db72";
+                
+                return { success: true };
+            } catch(e) {
+                console.error(`❌ Error en ${prefix}:`, e);
+                $(`${prefix}-status`).textContent = "⚠️ OFFLINE";
+                $(`${prefix}-status`).style.color = "#ff7b87";
+                return { success: false };
             }
         }
 
-        let countdown=UPDATE_INTERVAL/1000;
-        let timerInterval=null;
+        let countdown = UPDATE_INTERVAL / 1000;
+        let timerInterval = null;
 
-        function updateTimerDisplay(){
-            const timerElement=document.getElementById('update-timer');
-            if(timerElement) timerElement.textContent=`(siguiente: ${countdown}s)`;
+        function updateTimerDisplay() {
+            const timerElement = document.getElementById('update-timer');
+            if(timerElement) timerElement.textContent = `(siguiente: ${countdown}s)`;
         }
 
-        function startCountdown(){
-            countdown=UPDATE_INTERVAL/1000;
+        function startCountdown() {
+            countdown = UPDATE_INTERVAL / 1000;
             updateTimerDisplay();
             if(timerInterval) clearInterval(timerInterval);
-            timerInterval=setInterval(()=>{
+            timerInterval = setInterval(() => {
                 countdown--;
-                if(countdown<=0) countdown=UPDATE_INTERVAL/1000;
+                if(countdown <= 0) countdown = UPDATE_INTERVAL / 1000;
                 updateTimerDisplay();
-            },1000);
+            }, 1000);
         }
 
-        let isUpdating=false;
+        let isUpdating = false;
 
-        async function updateReactors(){
+        async function updateReactors() {
             if(isUpdating) return;
-            isUpdating=true;
-            const statusElement=document.getElementById('global-status');
-            statusElement.textContent='🔄 ACTUALIZANDO...';
-            statusElement.style.color='#ffd700';
-            try{
+            isUpdating = true;
+            const statusElement = document.getElementById('global-status');
+            statusElement.textContent = '🔄 ACTUALIZANDO...';
+            statusElement.style.color = '#ffd700';
+            
+            try {
                 await Promise.all([
-                    fetchReactorData(R1_ADDRESS,'r1'),
-                    fetchReactorData(R2_ADDRESS,'r2')
+                    fetchReactorData(R1_ADDRESS, 'r1'),
+                    fetchReactorData(R2_ADDRESS, 'r2')
                 ]);
-                document.getElementById('last-update').textContent=new Date().toLocaleTimeString();
-                statusElement.textContent='🟢 SISTEMA OPERATIVO';
-                statusElement.style.color='#31db72';
+                
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                statusElement.textContent = '🟢 SISTEMA OPERATIVO';
+                statusElement.style.color = '#31db72';
                 startCountdown();
-            }catch(error){
-                console.error('Error en actualización:',error);
-                statusElement.textContent='⚠️ ERROR DE ACTUALIZACIÓN';
-                statusElement.style.color='#ff7b87';
-            }finally{
-                isUpdating=false;
+            } catch(error) {
+                console.error('Error en actualización:', error);
+                statusElement.textContent = '⚠️ ERROR DE ACTUALIZACIÓN';
+                statusElement.style.color = '#ff7b87';
+            } finally {
+                isUpdating = false;
             }
         }
 
-        async function initReactors(){
+        async function initReactors() {
             await updateReactors();
-            setInterval(updateReactors,UPDATE_INTERVAL);
+            setInterval(updateReactors, UPDATE_INTERVAL);
         }
 
-        document.addEventListener('DOMContentLoaded',initReactors);
+        document.addEventListener('DOMContentLoaded', initReactors);
     </script>
 </body>
 </html>
