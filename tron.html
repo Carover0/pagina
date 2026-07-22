@@ -1,3 +1,4 @@
+<!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -20,9 +21,9 @@
         .status { letter-spacing: 1px; }
         .bar-line { display: flex; align-items: center; gap: 9px; }
         .bar { display: flex; flex: 1; gap: 3px; }
-        .bar i { display: block; width: 10px; height: 12px; border: 1px solid rgba(49,219,114,.24); }
-        .bar i.on { background: #32d772; box-shadow: 0 0 8px rgba(49,219,114,.42); }
-        .bar i.on.bw { background: #00d9ff; box-shadow: 0 0 8px rgba(0,217,255,.42); }
+        .bar i { display: block; width: 10px; height: 12px; border: 1px solid rgba(49,219,114,.24); background: rgba(49,219,114,.06); }
+        .bar i.on { background: #32d772; box-shadow: 0 0 8px rgba(49,219,114,.42); border-color: #32d772; }
+        .bar i.on.bw { background: #00d9ff; box-shadow: 0 0 8px rgba(0,217,255,.42); border-color: #00d9ff; }
         .percent { min-width: 35px; font-size: 12px; }
         .node-title { display: flex; align-items: center; gap: 10px; color: var(--cyan); font-size: 13px; margin-bottom: 6px; }
         .online { margin-left: auto; font-size: 11px; color: var(--green); }
@@ -41,7 +42,7 @@
             <h2>☢️ REACTORES TRON</h2>
             <div class="reactor-grid">
                 <div>
-                    <div class="node-title"><span>⚛️ R1 (3hs max)</span><span class="online" id="r1-status">CONECTANDO...</span></div>
+                    <div class="node-title"><span>⚛️ R1</span><span class="online" id="r1-status">CONECTANDO...</span></div>
                     <div class="section" style="border-top:none;padding-top:0;">
                         <span class="metric-name">⚡ ENERGIA</span>
                         <div class="bar-line"><div class="bar" id="r1-energy-bar"></div><span class="percent" id="r1-energy-percent">—</span></div>
@@ -52,7 +53,7 @@
                     </div>
                 </div>
                 <div>
-                    <div class="node-title"><span>⚛️ R2 (3 dias)</span><span class="online" id="r2-status">CONECTANDO...</span></div>
+                    <div class="node-title"><span>⚛️ R2</span><span class="online" id="r2-status">CONECTANDO...</span></div>
                     <div class="section" style="border-top:none;padding-top:0;">
                         <span class="metric-name">⚡ ENERGIA</span>
                         <div class="bar-line"><div class="bar" id="r2-energy-bar"></div><span class="percent" id="r2-energy-percent">—</span></div>
@@ -71,37 +72,198 @@
         </section>
     </main>
     <script>
-        const TRONGRID_KEY='a9d4c385-3529-46a5-94b4-1d3adbc45978',R1_ADDRESS='TS1k7yVS6PLNRP3xSms65YVa5sARj2JgVd',R2_ADDRESS='TN8tyafAodF5Yez4yuKv6QqvycQoMPYt2D',UPDATE_INTERVAL=3e4;
+        const TRONGRID_KEY='a9d4c385-3529-46a5-94b4-1d3adbc45978';
+        const R1_ADDRESS='TS1k7yVS6PLNRP3xSms65YVa5sARj2JgVd';
+        const R2_ADDRESS='TN8tyafAodF5Yez4yuKv6QqvycQoMPYt2D';
+        const UPDATE_INTERVAL=30000;
+        const TASA_CONVERSION = 9.5;
+
         function $(id){return document.getElementById(id);}
-        function formatNumInt(num){if(num===undefined||num===null)return'0';if(num>=1e9)return(num/1e9).toFixed(1)+'B';if(num>=1e6)return(num/1e6).toFixed(1)+'M';if(num>=1e3)return(num/1e3).toFixed(1)+'K';return Math.round(num).toString();}
-        function setBar(barId,value,max,isBandwidth=false){const bar=document.getElementById(barId);if(!bar)return 0;const percent=max>0?Math.min(100,Math.round((value/max)*100)):0,segments=10,filled=Math.round((percent/100)*segments);bar.innerHTML='';for(let i=0;i<segments;i++){const segment=document.createElement('i');if(i<filled){if(isBandwidth)segment.className='on bw';else segment.className='on';}bar.appendChild(segment);}return percent;}
-        async function fetchReactorData(address,prefix){try{const headers={"accept":"application/json","content-type":"application/json","TRON-PRO-API-KEY":TRONGRID_KEY};const payload={"address":address,"visible":true};const resResources=await fetch('https://api.trongrid.io/wallet/getaccountresource',{method:'POST',headers,body:JSON.stringify(payload)});const resources=await resResources.json();const resAccount=await fetch('https://api.trongrid.io/wallet/getaccount',{method:'POST',headers,body:JSON.stringify(payload)});const account=await resAccount.json();
-            const energyLimit=resources.EnergyLimit||0;
-            const energyUsed=resources.EnergyUsed||0;
-            const energyAvailable=Math.max(0,energyLimit-energyUsed);
-            // ─── BANDWIDTH ──────────────────────────────────────────
-            const bandwidthLimit=resources.NetLimit||0;
-            const bandwidthUsed=resources.NetUsed||0;
-            const freeBandwidthLimit=resources.freeNetLimit||0;
-            const freeBandwidthUsed=resources.freeNetUsed||0;
-            const totalBandwidth=bandwidthLimit+freeBandwidthLimit;
-            const bandwidthAvailable=Math.max(0,totalBandwidth-(bandwidthUsed+freeBandwidthUsed));
-            // ─── ACTUALIZAR UI ─────────────────────────────────────
-            const energyPercent=setBar(`${prefix}-energy-bar`,energyAvailable,energyLimit||1);
-            $(`${prefix}-energy-percent`).textContent=energyLimit>0?`${energyPercent}%`:"0%";
-            $(`${prefix}-energy-total`).textContent=`⚡ ${formatNumInt(energyLimit)} ENERGY (${formatNumInt(energyAvailable)} disponible)`;
-            const bandwidthPercent=setBar(`${prefix}-bandwidth-bar`,bandwidthAvailable,totalBandwidth||1,true);
-            $(`${prefix}-bandwidth-percent`).textContent=totalBandwidth>0?`${bandwidthPercent}%`:"0%";
-            $(`${prefix}-bandwidth-total`).textContent=`📶 ${formatNumInt(totalBandwidth)} BANDWIDTH (${formatNumInt(bandwidthAvailable)} disponible)`;
-            $(`${prefix}-status`).textContent="✅ ONLINE";
-            $(`${prefix}-status`).style.color="#31db72";
-            return{success:true};}catch(e){console.error(`❌ Error en ${prefix}:`,e);$(`${prefix}-status`).textContent="⚠️ OFFLINE";$(`${prefix}-status`).style.color="#ff7b87";return{success:false};}}
-        let countdown=UPDATE_INTERVAL/1e3,timerInterval=null;
-        function updateTimerDisplay(){const timerElement=document.getElementById('update-timer');if(timerElement)timerElement.textContent=`(siguiente: ${countdown}s)`;}
-        function startCountdown(){countdown=UPDATE_INTERVAL/1e3;updateTimerDisplay();if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(()=>{countdown--;if(countdown<=0)countdown=UPDATE_INTERVAL/1e3;updateTimerDisplay();},1e3);}
+
+        function formatNumInt(num){
+            if(num===undefined||num===null||isNaN(num)) return'0';
+            if(num>=1e9) return (num/1e9).toFixed(1)+'B';
+            if(num>=1e6) return (num/1e6).toFixed(1)+'M';
+            if(num>=1e3) return (num/1e3).toFixed(1)+'K';
+            return Math.round(num).toString();
+        }
+
+        function setBar(barId, available, total, isBandwidth=false){
+            const bar=document.getElementById(barId);
+            if(!bar) return 0;
+            const percent = total > 0 ? Math.min(100, Math.round((available / total) * 100)) : 0;
+            const segments=10;
+            const filled = Math.round((percent / 100) * segments);
+            bar.innerHTML='';
+            for(let i=0; i<segments; i++){
+                const segment=document.createElement('i');
+                if(i < filled){
+                    if(isBandwidth) segment.className='on bw';
+                    else segment.className='on';
+                }
+                bar.appendChild(segment);
+            }
+            return percent;
+        }
+
+        async function getDelegatedEnergy(address) {
+            try {
+                const headers = {
+                    "accept": "application/json",
+                    "content-type": "application/json",
+                    "TRON-PRO-API-KEY": TRONGRID_KEY
+                };
+
+                const resIndex = await fetch('https://api.trongrid.io/wallet/getdelegatedresourceaccountindexv2', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ "value": address, "visible": true })
+                });
+                const indexData = await resIndex.json();
+
+                let totalDelegatedEnergy = 0;
+                const toAccounts = indexData.toAccounts || [];
+
+                for (const toAddress of toAccounts) {
+                    try {
+                        const resDetail = await fetch('https://api.trongrid.io/wallet/getdelegatedresourcev2', {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify({
+                                "fromAddress": address,
+                                "toAddress": toAddress,
+                                "visible": true
+                            })
+                        });
+                        const detailData = await resDetail.json();
+
+                        if (detailData.delegatedResource) {
+                            detailData.delegatedResource.forEach(item => {
+
+                                const trxStaked = (item.frozen_balance_for_energy || 0) / 1_000_000;
+                                const energyFromStake = trxStaked * TASA_CONVERSION;
+                                totalDelegatedEnergy += energyFromStake;
+                            });
+                        }
+                    } catch (e) {
+                        console.warn(`Error obteniendo detalle de delegación a ${toAddress}:`, e);
+                    }
+                }
+                return totalDelegatedEnergy;
+            } catch (e) {
+                console.warn('Error obteniendo índice de delegaciones:', e);
+                return 0;
+            }
+        }
+
+        async function fetchReactorData(address, prefix){
+            try{
+                const headers={
+                    "accept":"application/json",
+                    "content-type":"application/json",
+                    "TRON-PRO-API-KEY":TRONGRID_KEY
+                };
+                const payload={"address":address,"visible":true};
+
+                const resResources=await fetch('https://api.trongrid.io/wallet/getaccountresource',{
+                    method:'POST', headers, body:JSON.stringify(payload)
+                });
+                const resources=await resResources.json();
+
+                // ─── OBTENER DELEGACIONES A OTROS ────────────────────
+                const delegatedToOthers = await getDelegatedEnergy(address);
+
+                // ─── ENERGIA ──────────────────────────────────────────
+                const energyLimit = resources.EnergyLimit || 0;      // Disponible
+                const energyUsed = resources.EnergyUsed || 0;        // Usado
+                const energyTotal = energyLimit + energyUsed + delegatedToOthers; // BRUTO REAL
+
+                // ─── BANDWIDTH ──────────────────────────────────────
+                const netLimit = resources.NetLimit || 0;
+                const netUsed = resources.NetUsed || 0;
+                const freeNetLimit = resources.freeNetLimit || 0;
+                const freeNetUsed = resources.freeNetUsed || 0;
+                const totalBandwidth = netLimit + freeNetLimit + netUsed + freeNetUsed;
+                const bandwidthUsed = netUsed + freeNetUsed;
+                const bandwidthAvailable = Math.max(0, netLimit + freeNetLimit);
+
+                // ─── ACTUALIZAR UI ─────────────────────────────────
+                const energyPercent = setBar(`${prefix}-energy-bar`, energyLimit, energyTotal, false);
+                $(`${prefix}-energy-percent`).textContent = energyTotal>0 ? `${energyPercent}%` : "0%";
+
+                let energyText = `⚡ ${formatNumInt(energyTotal)} BRUTO`;
+                if (delegatedToOthers > 0) {
+                    energyText += ` (${formatNumInt(energyLimit)} disp. · ${formatNumInt(energyUsed)} usado · ${formatNumInt(delegatedToOthers)} delegado)`;
+                } else {
+                    energyText += ` (${formatNumInt(energyUsed)} usado · ${formatNumInt(energyLimit)} disp.)`;
+                }
+                $(`${prefix}-energy-total`).textContent = energyText;
+
+                const bandwidthPercent = setBar(`${prefix}-bandwidth-bar`, bandwidthAvailable, totalBandwidth, true);
+                $(`${prefix}-bandwidth-percent`).textContent = totalBandwidth>0 ? `${bandwidthPercent}%` : "0%";
+                $(`${prefix}-bandwidth-total`).textContent = `📶 ${formatNumInt(totalBandwidth)} BRUTO (${formatNumInt(bandwidthUsed)} usado · ${formatNumInt(bandwidthAvailable)} disp.)`;
+
+                $(`${prefix}-status`).textContent="✅ ONLINE";
+                $(`${prefix}-status`).style.color="#31db72";
+                return{success:true};
+            } catch(e){
+                console.error(`❌ Error en ${prefix}:`,e);
+                $(`${prefix}-status`).textContent="⚠️ OFFLINE";
+                $(`${prefix}-status`).style.color="#ff7b87";
+                return{success:false};
+            }
+        }
+
+        let countdown=UPDATE_INTERVAL/1000;
+        let timerInterval=null;
+
+        function updateTimerDisplay(){
+            const timerElement=document.getElementById('update-timer');
+            if(timerElement) timerElement.textContent=`(siguiente: ${countdown}s)`;
+        }
+
+        function startCountdown(){
+            countdown=UPDATE_INTERVAL/1000;
+            updateTimerDisplay();
+            if(timerInterval) clearInterval(timerInterval);
+            timerInterval=setInterval(()=>{
+                countdown--;
+                if(countdown<=0) countdown=UPDATE_INTERVAL/1000;
+                updateTimerDisplay();
+            },1000);
+        }
+
         let isUpdating=false;
-        async function updateReactors(){if(isUpdating)return;isUpdating=true;const statusElement=document.getElementById('global-status');statusElement.textContent='🔄 ACTUALIZANDO...';statusElement.style.color='#ffd700';try{await fetchReactorData(R1_ADDRESS,'r1');await fetchReactorData(R2_ADDRESS,'r2');document.getElementById('last-update').textContent=new Date().toLocaleTimeString();statusElement.textContent='🟢 SISTEMA OPERATIVO';statusElement.style.color='#31db72';startCountdown();}catch(error){console.error('Error en actualización:',error);statusElement.textContent='⚠️ ERROR DE ACTUALIZACIÓN';statusElement.style.color='#ff7b87';}finally{isUpdating=false;}}
-        async function initReactors(){await updateReactors();setInterval(updateReactors,UPDATE_INTERVAL);}
+
+        async function updateReactors(){
+            if(isUpdating) return;
+            isUpdating=true;
+            const statusElement=document.getElementById('global-status');
+            statusElement.textContent='🔄 ACTUALIZANDO...';
+            statusElement.style.color='#ffd700';
+            try{
+                await Promise.all([
+                    fetchReactorData(R1_ADDRESS,'r1'),
+                    fetchReactorData(R2_ADDRESS,'r2')
+                ]);
+                document.getElementById('last-update').textContent=new Date().toLocaleTimeString();
+                statusElement.textContent='🟢 SISTEMA OPERATIVO';
+                statusElement.style.color='#31db72';
+                startCountdown();
+            }catch(error){
+                console.error('Error en actualización:',error);
+                statusElement.textContent='⚠️ ERROR DE ACTUALIZACIÓN';
+                statusElement.style.color='#ff7b87';
+            }finally{
+                isUpdating=false;
+            }
+        }
+
+        async function initReactors(){
+            await updateReactors();
+            setInterval(updateReactors,UPDATE_INTERVAL);
+        }
+
         document.addEventListener('DOMContentLoaded',initReactors);
     </script>
 </body>
