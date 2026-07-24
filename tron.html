@@ -32,12 +32,143 @@
         .reactor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .footer-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 4px; font-size: 12px; }
         .energy-detail { font-size: 11px; color: #6a8faa; margin-top: 2px; }
+        
+        /* BOTÓN RADIACIÓN */
+        .delegate-btn {
+            background: none;
+            border: 1px solid rgba(0,217,255,.3);
+            color: var(--cyan);
+            font-family: "Lucida Console", "Monaco", monospace;
+            font-size: 12px;
+            padding: 2px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            background: rgba(0,217,255,.08);
+            transition: all .3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .delegate-btn:hover {
+            background: rgba(0,217,255,.2);
+            border-color: var(--cyan);
+            box-shadow: 0 0 12px rgba(0,217,255,.2);
+            text-shadow: 0 0 8px var(--cyan);
+        }
+        .delegate-btn .icon { font-size: 14px; }
+        
+        /* MODAL / VENTANA EMERGENTE */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,.82);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: linear-gradient(145deg, #0a1a20, #051015);
+            border: 2px solid var(--cyan);
+            border-radius: 8px;
+            padding: 28px 32px 24px;
+            max-width: 580px;
+            width: 92%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 40px rgba(0,217,255,.25), 0 0 80px rgba(0,217,255,.08);
+            position: relative;
+            animation: fadeIn .35s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(.94) translateY(12px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-box h3 {
+            color: var(--cyan);
+            font-size: 16px;
+            margin: 0 0 6px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 12px rgba(0,217,255,.3);
+        }
+        .modal-box .sub {
+            color: #8ab4c8;
+            font-size: 11px;
+            margin-bottom: 16px;
+            word-break: break-all;
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px; right: 18px;
+            color: #ff7b87;
+            font-size: 22px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .2s;
+        }
+        .modal-close:hover { text-shadow: 0 0 20px #ff7b87; transform: scale(1.2); }
+        .modal-delegation-item {
+            border-bottom: 1px solid rgba(0,217,255,.12);
+            padding: 8px 0;
+            font-size: 12px;
+            color: #b0d4e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-delegation-item:last-child { border-bottom: none; }
+        .modal-delegation-item .addr {
+            color: var(--cyan);
+            font-size: 11px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .modal-delegation-item .val {
+            color: var(--green);
+            font-weight: bold;
+        }
+        .modal-empty {
+            color: #6a8faa;
+            font-size: 13px;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .modal-total {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 2px solid var(--line);
+            color: var(--cyan);
+            font-size: 14px;
+            text-align: right;
+        }
+        .modal-total span { color: var(--green); font-weight: bold; }
+        .modal-loader {
+            color: #6a8faa;
+            font-size: 13px;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .modal-loader::after {
+            content: '...';
+            animation: dots 1.2s steps(3) infinite;
+        }
+        @keyframes dots { 0% { content: ''; } 33% { content: '.'; } 66% { content: '..'; } 100% { content: '...'; } }
+
         @media (max-width: 1024px) { 
             main { padding: 72px 15px 28px; } 
             .panel { width: 95%; max-width: 100%; padding: 24px 20px 18px; margin-top: 420px; margin-left: 0; } 
             .reactor-grid { grid-template-columns: 1fr; gap: 15px; } 
             .footer-info { grid-template-columns: 1fr; text-align: center; } 
             .links { font-size: 12px; } 
+            .modal-box { padding: 20px 18px; }
+            .modal-delegation-item { flex-wrap: wrap; gap: 4px; }
+            .modal-delegation-item .addr { max-width: 100%; }
         }
     </style>
 <body>
@@ -47,7 +178,13 @@
             <h2>☢️ REACTORES TRON</h2>
             <div class="reactor-grid">
                 <div>
-                    <div class="node-title"><span>⚛️ R1</span><span class="online" id="r1-status">CONECTANDO...</span></div>
+                    <div class="node-title">
+                        <span>⚛️ R1</span>
+                        <span class="online" id="r1-status">CONECTANDO...</span>
+                        <button class="delegate-btn" data-address="TS1k7yVS6PLNRP3xSms65YVa5sARj2JgVd" data-name="R1">
+                            <span class="icon">☢️</span> Delegación
+                        </button>
+                    </div>
                     <div class="section" style="border-top:none;padding-top:0;">
                         <span class="metric-name">⚡ ENERGIA BRUTA</span>
                         <div class="bar-line"><div class="bar" id="r1-energy-bar"></div><span class="percent" id="r1-energy-percent">—</span></div>
@@ -59,7 +196,13 @@
                     </div>
                 </div>
                 <div>
-                    <div class="node-title"><span>⚛️ R2</span><span class="online" id="r2-status">CONECTANDO...</span></div>
+                    <div class="node-title">
+                        <span>⚛️ R2</span>
+                        <span class="online" id="r2-status">CONECTANDO...</span>
+                        <button class="delegate-btn" data-address="TN8tyafAodF5Yez4yuKv6QqvycQoMPYt2D" data-name="R2">
+                            <span class="icon">☢️</span> Delegación
+                        </button>
+                    </div>
                     <div class="section" style="border-top:none;padding-top:0;">
                         <span class="metric-name">⚡ ENERGIA BRUTA</span>
                         <div class="bar-line"><div class="bar" id="r2-energy-bar"></div><span class="percent" id="r2-energy-percent">—</span></div>
@@ -78,6 +221,19 @@
             <div class="links"><a href="https://carover0.github.io/pagina/" target="_self">[INICIO]</a></div>
         </section>
     </main>
+
+    <!-- MODAL / VENTANA EMERGENTE -->
+    <div class="modal-overlay" id="delegationModal">
+        <div class="modal-box">
+            <button class="modal-close" id="modalClose">✕</button>
+            <h3 id="modalTitle">☢️ Delegaciones</h3>
+            <div class="sub" id="modalAddress">—</div>
+            <div id="modalContent">
+                <div class="modal-loader">Cargando delegaciones</div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const TRONSCAN_KEY = 'eba0f317-25ee-4027-bff9-a692fecbd85f';
         const R1_ADDRESS = 'TS1k7yVS6PLNRP3xSms65YVa5sARj2JgVd';
@@ -117,7 +273,8 @@
             return val;
         }
 
-        async function getDelegatedResources(address, resourceType = 2) { // 2 = energy
+        // ─── OBTENER DELEGACIONES (Stake 2.0) ────────────────────
+        async function getDelegatedResources(address, resourceType = 2) {
             try {
                 let allDelegations = [];
                 let start = 0;
@@ -172,6 +329,75 @@
             }
         }
 
+        // ─── MOSTRAR MODAL CON DELEGACIONES ──────────────────────
+        async function showDelegationModal(address, name) {
+            const modal = document.getElementById('delegationModal');
+            const title = document.getElementById('modalTitle');
+            const addrDisplay = document.getElementById('modalAddress');
+            const content = document.getElementById('modalContent');
+
+            title.textContent = `☢️ Delegaciones · ${name}`;
+            addrDisplay.textContent = `📬 ${address}`;
+            content.innerHTML = '<div class="modal-loader">Consultando delegaciones</div>';
+            modal.classList.add('active');
+
+            try {
+                const data = await getDelegatedResources(address, 2);
+                
+                if (data.count === 0 || data.total === 0) {
+                    content.innerHTML = `<div class="modal-empty">🌙 No hay delegaciones activas de energía desde esta cuenta.</div>`;
+                } else {
+                    let html = '';
+                    data.details.forEach((item, idx) => {
+                        const shortAddr = item.to.length > 12 ? 
+                            item.to.slice(0, 6) + '...' + item.to.slice(-6) : 
+                            item.to;
+                        html += `
+                            <div class="modal-delegation-item">
+                                <span class="addr" title="${item.to}">${shortAddr}</span>
+                                <span class="val">⚡ ${formatNumInt(item.value)}</span>
+                            </div>
+                        `;
+                    });
+                    html += `
+                        <div class="modal-total">
+                            Total delegado: <span>⚡ ${formatNumInt(data.total)}</span> · 
+                            ${data.count} destino${data.count > 1 ? 's' : ''}
+                        </div>
+                    `;
+                    content.innerHTML = html;
+                }
+            } catch (e) {
+                content.innerHTML = `<div class="modal-empty" style="color:#ff7b87;">⚠️ Error al cargar las delegaciones: ${e.message}</div>`;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('delegationModal').classList.remove('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.delegate-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const address = btn.dataset.address;
+                    const name = btn.dataset.name;
+                    showDelegationModal(address, name);
+                });
+            });
+
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+
+            document.getElementById('delegationModal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeModal();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
+        });
+
+        // ─── FUNCIONES PRINCIPALES DE REACTORES ──────────────────
         async function fetchReactorData(address, prefix) {
             try {
                 const urlDetail = `https://apilist.tronscan.org/api/accountv2?address=${address}`;
@@ -184,59 +410,39 @@
                 }
 
                 const data = await responseDetail.json();
-
                 const delegatedData = await getDelegatedResources(address, 2);
                 const totalDelegatedEnergy = delegatedData.total;
 
                 const get = (field) => safeValue(data[field]);
 
-                // ─── ENERGÍA ─────────────────────────────────────────
                 const selfEnergyV2 = get('frozenForEnergyV2Value');
                 const selfEnergyV1 = get('frozenForEnergyValue');
                 const selfEnergyTotal = selfEnergyV2 + selfEnergyV1;
 
-                // Delegaciones recibidas de otros
                 const acquiredEnergyV2 = get('acquiredDelegatedFrozenV2BalanceForEnergyValue');
                 const acquiredEnergyV1 = get('acquiredDelegatedFrozenBalanceForEnergyValue');
                 const acquiredEnergyTotal = acquiredEnergyV2 + acquiredEnergyV1;
 
-                // Energía bruta total = propia + recibida + delegada (enviada)
                 const energiaBruta = selfEnergyTotal + acquiredEnergyTotal + totalDelegatedEnergy;
-
-                // Energía disponible (de la API)
                 const energyDisponible = get('totalEnergyRemaining');
-                const energyUsado = energiaBruta - energyDisponible;
 
-                // ─── BANDWIDTH ──────────────────────────────────────
                 const totalNet = get('totalNet');
                 const netRemaining = get('totalNetRemaining');
 
-                // ─── ACTUALIZAR UI ─────────────────────────────────
-                // Barra de energía
                 const energyPercent = setBar(`${prefix}-energy-bar`, energyDisponible, energiaBruta, false);
                 $(`${prefix}-energy-percent`).textContent = energiaBruta > 0 ? `${energyPercent}%` : "0%";
-                
                 $(`${prefix}-energy-total`).textContent = `⚡ ${formatNumInt(energiaBruta)} BRUTA · ${formatNumInt(energyDisponible)} DISPONIBLE`;
                 
                 let detailParts = [];
-                if (selfEnergyTotal > 0) {
-                    detailParts.push(`Actual: ${formatNumInt(selfEnergyTotal)}`);
-                }
-                if (acquiredEnergyTotal > 0) {
-                    detailParts.push(`Recibido: ${formatNumInt(acquiredEnergyTotal)}`);
-                }
-                if (totalDelegatedEnergy > 0) {
-                    detailParts.push(`Delegado: ${formatNumInt(totalDelegatedEnergy)} (${delegatedData.count} destinos)`);
-                }
-                
+                if (selfEnergyTotal > 0) detailParts.push(`Propio: ${formatNumInt(selfEnergyTotal)}`);
+                if (acquiredEnergyTotal > 0) detailParts.push(`Recibido: ${formatNumInt(acquiredEnergyTotal)}`);
+                if (totalDelegatedEnergy > 0) detailParts.push(`Delegado: ${formatNumInt(totalDelegatedEnergy)} (${delegatedData.count} destinos)`);
                 $(`${prefix}-energy-detail`).textContent = detailParts.length > 0 ? detailParts.join(' · ') : 'Sin staking activo';
 
-                // Barra de bandwidth
                 const bandwidthPercent = setBar(`${prefix}-bandwidth-bar`, netRemaining, totalNet, true);
                 $(`${prefix}-bandwidth-percent`).textContent = totalNet > 0 ? `${bandwidthPercent}%` : "0%";
                 $(`${prefix}-bandwidth-total`).textContent = `📶 ${formatNumInt(totalNet)} BRUTA · ${formatNumInt(netRemaining)} DISPONIBLE`;
 
-                // ─── ACTUALIZAR ESTADO ─────────────────────────────
                 $(`${prefix}-status`).textContent = "✅ ONLINE";
                 $(`${prefix}-status`).style.color = "#31db72";
                 
