@@ -161,6 +161,10 @@ main {
     };
     
     async function updateStatus() {
+      const now = new Date();
+      const timeStr = now.toLocaleString('es-AR', { hour12: false });
+      show('last-update', timeStr + ' UTC');
+      
       try { 
         const r = await fetch('https://carover0.xyz/zec/status.json'); 
         const d = await r.json(); 
@@ -231,8 +235,6 @@ main {
         show('disk-percent', `${disk || 0}%`); 
         show('uptime', h.uptime || '—'); 
         show('vps-status', h.status || 'ALL SYSTEMS OPERATIONAL'); 
-        const date = new Date(h.timestamp || Date.now()); 
-        show('last-update', date.toLocaleString('es-AR', {hour12: false}) + ' UTC'); 
       } catch(e) { 
         console.log('VPS error:', e);
         show('vps-status', 'STATUS UNAVAILABLE'); 
