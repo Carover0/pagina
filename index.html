@@ -89,7 +89,6 @@ main {
   transform: translateX(60px);
 }
 
-
   </style>
 </head>
 <body>
@@ -126,19 +125,122 @@ main {
   </main>
   <script>
     const $ = id => document.getElementById(id);
-    const show = (id, value) => $(id).textContent = value ?? '—';
+    const show = (id, value) => {
+      const el = $(id);
+      if (el) el.textContent = value ?? '—';
+    };
     const format = value => Number(value || 0).toLocaleString('en-US');
-    const setNode = (coin, data) => { show(`${coin}-height`, format(data.height)); show(`${coin}-peers`, data.connections); show(`${coin}-mempool`, data.mempool); show(`${coin}-version`, data.version); $( `${coin}-online`).textContent = 'ONLINE'; };
-    const offline = coin => { $( `${coin}-online`).textContent = 'OFFLINE'; $( `${coin}-online`).style.color = '#ff8b75'; };
-    const setBar = (id, value) => { const safe = Math.max(0, Math.min(100, Number(value) || 0)); $(id).innerHTML = Array.from({length:10}, (_, i) => `<i class="${i < Math.ceil(safe / 10) ? 'on' : ''}"></i>`).join(''); };
+    
+    const setNode = (coin, data) => { 
+      show(`${coin}-height`, format(data.height)); 
+      show(`${coin}-peers`, data.connections); 
+      show(`${coin}-mempool`, data.mempool); 
+      show(`${coin}-version`, data.version); 
+      const onlineEl = $(`${coin}-online`);
+      if (onlineEl) {
+        onlineEl.textContent = 'ONLINE';
+        onlineEl.style.color = 'var(--green)';
+      }
+    };
+    
+    const offline = coin => { 
+      const onlineEl = $(`${coin}-online`);
+      if (onlineEl) {
+        onlineEl.textContent = 'OFFLINE';
+        onlineEl.style.color = '#ff8b75';
+      }
+    };
+    
+    const setBar = (id, value) => { 
+      const el = $(id);
+      if (!el) return;
+      const safe = Math.max(0, Math.min(100, Number(value) || 0)); 
+      el.innerHTML = Array.from({length:10}, (_, i) => 
+        `<i class="${i < Math.ceil(safe / 10) ? 'on' : ''}"></i>`
+      ).join(''); 
+    };
+    
     async function updateStatus() {
-      try { const r = await fetch('https://carover0.xyz/zec/status.json'); const d = await r.json(); setNode('zec', {height:d.chain?.height, connections:d.network?.connections, mempool:d.mempool?.size, version:d.network?.subversion || '—'}); } catch(e) { offline('zec'); }
-      try { const r = await fetch('https://carover0.xyz/firo/status.json'); const d = await r.json(); setNode('firo', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.version}); } catch(e) { offline('firo'); }
-      try { const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json'); const d = await r.json(); setNode('pivx', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.software_subversion}); } catch(e) { offline('pivx'); }
-      try { const r = await fetch('https://carover0.xyz/cacaX/ycash_status.json'); const d = await r.json(); setNode('ycash', {height:d.height, connections:d.connections, mempool:d.mempool, version:d.software_subversion}); } catch(e) { offline('ycash'); }
-      try { const r = await fetch('https://carover0.xyz/firo/health.json'); const h = await r.json(); const cpu=h.cpu?.percent, ram=h.memory?.percent, disk=h.disk?.root_percent; setBar('cpu-bar',cpu); setBar('ram-bar',ram); setBar('disk-bar',disk); show('cpu-percent',`${cpu}%`); show('ram-percent',`${ram}%`); show('disk-percent',`${disk}%`); show('uptime',h.uptime); show('vps-status','ALL SYSTEMS OPERATIONAL'); const date=new Date(h.timestamp); show('last-update',date.toLocaleString('es-AR',{hour12:false})+' UTC'); } catch(e) { show('vps-status','STATUS UNAVAILABLE'); }
+      try { 
+        const r = await fetch('https://carover0.xyz/zec/status.json'); 
+        const d = await r.json(); 
+        setNode('zec', {
+          height: d.chain?.height || d.height, 
+          connections: d.network?.connections || d.connections, 
+          mempool: d.mempool?.size || d.mempool, 
+          version: d.network?.subversion || d.version || '—'
+        }); 
+      } catch(e) { 
+        console.log('Zcash error:', e);
+        offline('zec'); 
+      }
+      
+      try { 
+        const r = await fetch('https://carover0.xyz/firo/status.json'); 
+        const d = await r.json(); 
+        setNode('firo', {
+          height: d.height, 
+          connections: d.connections, 
+          mempool: d.mempool, 
+          version: d.version
+        }); 
+      } catch(e) { 
+        console.log('Firo error:', e);
+        offline('firo'); 
+      }
+      
+      try { 
+        const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json'); 
+        const d = await r.json(); 
+        setNode('pivx', {
+          height: d.height, 
+          connections: d.connections, 
+          mempool: d.mempool, 
+          version: d.software_subversion
+        }); 
+      } catch(e) { 
+        console.log('PIVX error:', e);
+        offline('pivx'); 
+      }
+      
+      try { 
+        const r = await fetch('https://carover0.xyz/cacaX/ycash_status.json'); 
+        const d = await r.json(); 
+        setNode('ycash', {
+          height: d.height, 
+          connections: d.connections, 
+          mempool: d.mempool, 
+          version: d.software_subversion
+        }); 
+      } catch(e) { 
+        console.log('Ycash error:', e);
+        offline('ycash'); 
+      }
+      
+      try { 
+        const r = await fetch('https://carover0.xyz/firo/health.json'); 
+        const h = await r.json(); 
+        const cpu = h.cpu?.percent, 
+              ram = h.memory?.percent, 
+              disk = h.disk?.root_percent; 
+        setBar('cpu-bar', cpu); 
+        setBar('ram-bar', ram); 
+        setBar('disk-bar', disk); 
+        show('cpu-percent', `${cpu || 0}%`); 
+        show('ram-percent', `${ram || 0}%`); 
+        show('disk-percent', `${disk || 0}%`); 
+        show('uptime', h.uptime || '—'); 
+        show('vps-status', h.status || 'ALL SYSTEMS OPERATIONAL'); 
+        const date = new Date(h.timestamp || Date.now()); 
+        show('last-update', date.toLocaleString('es-AR', {hour12: false}) + ' UTC'); 
+      } catch(e) { 
+        console.log('VPS error:', e);
+        show('vps-status', 'STATUS UNAVAILABLE'); 
+      }
     }
-    updateStatus(); setInterval(updateStatus, 30000);
+    
+    updateStatus();
+    setInterval(updateStatus, 30000);
   </script>
 </body>
 </html>
