@@ -13,8 +13,6 @@
     .panel::after{content:"BLOCK " attr(data-block);position:absolute;bottom:-10px;right:24px;font-size:9px;color:#4a6a8a;letter-spacing:1px;background:var(--bg);padding:0 10px;z-index:10}
     .header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line);position:relative;z-index:5}
     .header h1{font-size:15px;font-weight:normal;color:var(--cyan);letter-spacing:2px;text-shadow:0 0 30px rgba(51,204,255,0.15)}
-    .header .height{font-size:11px;color:#4a6a8a;letter-spacing:1px}
-    .header .height strong{color:var(--cyan)}
     .turnstile{display:grid;grid-template-columns:160px 1fr 100px;gap:0;align-items:center;margin:4px 0 10px;padding:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;min-height:150px}
     .logo-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;width:56px;height:56px;display:flex;align-items:center;justify-content:center}
     .logo-center svg{width:46px;height:46px;transition:all .3s ease}
@@ -74,7 +72,7 @@
 </head>
 <body>
 <div class="panel" data-block="---" id="app">
-  <div class="header"><h1>◈ ORCHARD → IRONWOOD</h1><span class="height">BLOQUE <strong id="currentHeight">---</strong></span></div>
+  <div class="header"><h1>◈ ORCHARD → IRONWOOD</h1></div>
   <div class="turnstile" id="turnstile">
     <div class="logo-center" id="logoCenter"><svg viewBox="0 0 100 100"><circle class="logo-bg" cx="50" cy="50" r="45"/><polygon class="logo-fg" points="50,15 85,50 50,85 15,50"/><line x1="50" y1="15" x2="50" y2="85" stroke="rgba(0,0,0,0.2)" stroke-width="1"/><line x1="15" y1="50" x2="85" y2="50" stroke="rgba(0,0,0,0.2)" stroke-width="1"/></svg></div>
     <div class="light-ray" id="ray1"></div><div class="light-ray" id="ray2"></div><div class="light-ray" id="ray3"></div><div class="light-ray" id="ray4"></div><div class="light-ray" id="ray5"></div><div class="light-ray" id="ray6"></div><div class="light-ray" id="ray7"></div><div class="light-ray" id="ray8"></div>
@@ -102,7 +100,6 @@ function formatPct(v,t){if(!t||t===0||v===undefined||v===null)return'---';return
 async function callRPC(m,p=[]){try{const u=`${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(m+(p.length?' '+p.join(' '):''))}`;const r=await fetch(u),d=await r.json();return d.result}catch(e){console.error('RPC error:',e);return null}}
 async function getLightwalletStatus(){try{const r=await fetch(LIGHTWALLET_URL),d=await r.json();return d}catch(e){console.error('Lightwallet error:',e);return null}}
 function updateUI(d){const{h,transparent,sprout,sapling,orchard,ironwood,totalSupply,ironwoodUsd,shielded}=d;
-document.getElementById('currentHeight').textContent=formatNum(h);
 document.getElementById('transparentAmount').textContent=formatNum(transparent,0);
 document.getElementById('sproutAmount').textContent=formatNum(sprout,0);
 document.getElementById('saplingAmount').textContent=formatNum(sapling,0);
