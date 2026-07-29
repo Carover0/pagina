@@ -5,69 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orchard → Ironwood · Turnstile</title>
   <style>
-    :root{--petrol:#0C1626;--electric:#00A8FF;--cyan:#33CCFF;--indigo:#1E4DFF;--magenta:#FF1FAF;--violet:#9A3DFF;--white-blue:#EAF7FF;--electric-glow:rgba(0,168,255,0.4);--cyan-glow:rgba(51,204,255,0.3);--violet-glow:rgba(154,61,255,0.5);--magenta-glow:rgba(255,31,175,0.3);--line:rgba(0,168,255,0.2);--panel:rgba(12,22,38,0.92);--bg:#080e1a}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{min-height:100vh;margin:0;color:var(--white-blue);font:13px/1.3 "Lucida Console",Monaco,monospace;background:var(--bg) url("assets/f16.png") center center/cover fixed no-repeat;display:flex;align-items:center;justify-content:flex-start;padding:20px}
-    .panel{width:min(740px,100%);padding:16px 18px 14px;background:var(--panel);border:2px solid var(--electric);clip-path:polygon(0 28px,28px 0,calc(100% - 28px) 0,100% 28px,100% calc(100% - 28px),calc(100% - 28px) 100%,28px 100%,0 calc(100% - 28px));box-shadow:0 0 40px rgba(0,168,255,0.08),inset 0 0 60px rgba(0,168,255,0.02);position:relative;overflow:hidden;margin-left:10px}
-    .panel::before{content:"ZCASH · NU6.3 IRONWOOD";position:absolute;top:-10px;right:24px;font-size:9px;color:#4a6a8a;letter-spacing:2px;background:var(--bg);padding:0 10px;z-index:10}
-    .panel::after{content:"BLOCK " attr(data-block);position:absolute;bottom:-10px;right:24px;font-size:9px;color:#4a6a8a;letter-spacing:1px;background:var(--bg);padding:0 10px;z-index:10}
-    .header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line);position:relative;z-index:5}
-    .header h1{font-size:15px;font-weight:normal;color:var(--cyan);letter-spacing:2px;text-shadow:0 0 30px rgba(51,204,255,0.15)}
-    .turnstile{display:grid;grid-template-columns:160px 1fr 100px;gap:0;align-items:center;margin:4px 0 10px;padding:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;min-height:150px}
-    .logo-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;width:56px;height:56px;display:flex;align-items:center;justify-content:center}
-    .logo-center svg{width:46px;height:46px;transition:all .3s ease}
-    .logo-center .logo-bg{fill:none;stroke:var(--violet);stroke-width:2;filter:drop-shadow(0 0 12px var(--violet-glow));transition:stroke .5s ease,filter .5s ease}
-    .logo-center .logo-fg{fill:var(--violet);transition:fill .5s ease}
-    .logo-center.glow-cyan .logo-bg{stroke:var(--cyan);filter:drop-shadow(0 0 25px var(--cyan-glow))}
-    .logo-center.glow-cyan .logo-fg{fill:var(--cyan)}
-    .pool-list{display:flex;flex-direction:column;gap:2px;position:relative;z-index:4;padding:0;margin-left:-6px;grid-column:1}
-    .pool-item{display:flex;justify-content:space-between;align-items:center;padding:2px 4px 2px 0;font-size:12px;line-height:1.3;border-bottom:1px solid rgba(0,168,255,0.05)}
-    .pool-item .pool-name{color:#6a8aaa;letter-spacing:1.5px;text-transform:uppercase;font-size:10px;min-width:65px;font-weight:600}
-    .pool-item .pool-amount{font-weight:bold;color:var(--white-blue);font-size:14px;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.5px}
-    .pool-item .pool-amount.purple{color:var(--violet)}
-    .pool-item .pool-amount.cyan{color:var(--cyan)}
-    .pool-item .pool-amount.green{color:#4ae0a0}
-    .pool-item .pool-amount.electric{color:var(--electric)}
-    .pool-item .pool-amount.magenta{color:var(--magenta)}
-    .pool-box{text-align:center;padding:4px 2px;position:relative;z-index:4;margin-right:-6px;grid-column:3}
-    .pool-box .label{font-size:10px;letter-spacing:2px;color:#6a8aaa;text-transform:uppercase;margin-bottom:4px}
-    .pool-box .label.ironwood{color:var(--electric)}
-    .pool-box .amount{font-size:20px;font-weight:bold;color:var(--cyan);letter-spacing:1px;text-shadow:0 0 30px rgba(51,204,255,0.15)}
-    .pool-box .usd{font-size:11px;color:#4a6a8a;margin-top:1px}
-    .pool-box .note{font-size:8px;color:#3a5a7a;margin-top:4px;line-height:1.2}
-    .pool-center{grid-column:2}
-    .particle-container{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:2}
-    .particle{position:absolute;border-radius:50%;animation:fly-particle linear infinite;opacity:0;will-change:transform,opacity}
-    .particle.from-pool{animation-name:fly-pool-to-logo}
-    .particle.to-ironwood{background:var(--cyan);box-shadow:0 0 14px var(--cyan),0 0 35px var(--cyan-glow);animation-name:fly-logo-to-ironwood}
-    @keyframes fly-pool-to-logo{0%{opacity:0;transform:translate(0,0) scale(.2)}15%{opacity:1;transform:translate(calc(var(--tx)*.3),calc(var(--ty)*.3)) scale(.6)}50%{opacity:1;transform:translate(calc(var(--tx)*.7),calc(var(--ty)*.7)) scale(1.2)}75%{opacity:.9;transform:translate(calc(var(--tx)*.95),calc(var(--ty)*.95)) scale(.8)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.1)}}
-    @keyframes fly-logo-to-ironwood{0%{opacity:0;transform:translate(0,0) scale(.1)}15%{opacity:1;transform:translate(calc(var(--tx2)*.05),calc(var(--ty2)*.05)) scale(.5)}50%{opacity:1;transform:translate(calc(var(--tx2)*.3),calc(var(--ty2)*.3)) scale(1.1)}75%{opacity:.9;transform:translate(calc(var(--tx2)*.6),calc(var(--ty2)*.6)) scale(.9)}100%{opacity:0;transform:translate(var(--tx2),var(--ty2)) scale(.2)}}
-    .light-ray{position:absolute;top:50%;left:50%;width:2px;height:65px;background:linear-gradient(to bottom,transparent,var(--violet),transparent);transform-origin:center center;opacity:0;animation:ray-flash 2.5s ease-in-out infinite;z-index:1;filter:blur(1px)}
-    .light-ray:nth-child(1){transform:translate(-50%,-50%) rotate(0deg);animation-delay:0s}
-    .light-ray:nth-child(2){transform:translate(-50%,-50%) rotate(45deg);animation-delay:.3s}
-    .light-ray:nth-child(3){transform:translate(-50%,-50%) rotate(90deg);animation-delay:.6s}
-    .light-ray:nth-child(4){transform:translate(-50%,-50%) rotate(135deg);animation-delay:.9s}
-    .light-ray:nth-child(5){transform:translate(-50%,-50%) rotate(180deg);animation-delay:1.2s}
-    .light-ray:nth-child(6){transform:translate(-50%,-50%) rotate(225deg);animation-delay:1.5s}
-    .light-ray:nth-child(7){transform:translate(-50%,-50%) rotate(270deg);animation-delay:1.8s}
-    .light-ray:nth-child(8){transform:translate(-50%,-50%) rotate(315deg);animation-delay:2.1s}
-    .light-ray.cyan{background:linear-gradient(to bottom,transparent,var(--cyan),transparent)}
-    @keyframes ray-flash{0%{opacity:0;height:12px}20%{opacity:.6;height:65px}40%{opacity:.15;height:45px}60%{opacity:.7;height:75px}80%{opacity:.1;height:25px}100%{opacity:0;height:12px}}
-    .ironwood-big{text-align:center;padding:6px 0 4px;border-bottom:1px solid var(--line);position:relative;z-index:5}
-    .ironwood-big .number{font-size:34px;font-weight:bold;color:var(--cyan);letter-spacing:2px;text-shadow:0 0 40px rgba(51,204,255,0.12)}
-    .ironwood-big .label{font-size:10px;color:#4a6a8a;letter-spacing:1px;text-transform:uppercase;display:block;margin-top:1px}
-    .note-bottom{font-size:10px;color:#3a5a7a;margin-top:4px;padding-top:4px;border-top:1px solid rgba(0,168,255,0.06);line-height:1.4;position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
-    .note-bottom strong{color:#6a8aaa}
-    .note-bottom .lightwallet{color:var(--cyan);text-decoration:none;border-bottom:1px dotted var(--electric)}
-    .note-bottom .lightwallet:hover{color:var(--electric);border-bottom:1px solid var(--electric)}
-    .footer{margin-top:6px;padding-top:4px;border-top:1px solid var(--line);font-size:9px;color:#3a5a7a;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px 8px;position:relative;z-index:5}
-    .footer .countdown{color:var(--cyan);font-weight:bold;font-size:12px;letter-spacing:1px}
-    .footer .status{color:#4ae0a0}
-    .footer .status.error{color:#ff5a7a}
-    .footer-back{margin-top:12px;padding-top:8px;border-top:1px solid var(--line);text-align:center;position:relative;z-index:5}
-    .footer-back a{color:#6a8aaa;text-decoration:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .3s ease}
-    .footer-back a:hover{color:var(--cyan)}
-    @media(max-width:640px){body{padding:10px}.panel{padding:12px 12px 10px;width:min(460px,100%);margin-left:0}.header h1{font-size:12px;letter-spacing:1px}.turnstile{grid-template-columns:1fr 1fr;gap:4px;min-height:auto;padding:6px 0}.pool-list{margin-left:0}.pool-box{margin-right:0}.pool-center{display:none}.pool-item .pool-name{font-size:8px;min-width:50px}.pool-item .pool-amount{font-size:11px}.pool-box .amount{font-size:16px}.ironwood-big .number{font-size:24px}.footer{flex-direction:column;text-align:center;gap:2px}.footer-back{margin-top:8px;padding-top:6px}.logo-center{width:32px;height:32px}.logo-center svg{width:26px;height:26px}.light-ray{display:none}.particle-container{display:none}.note-bottom{flex-direction:column;text-align:center;gap:2px}}
+
+:root{--petrol:#0C1626;--electric:#00A8FF;--cyan:#33CCFF;--indigo:#1E4DFF;--magenta:#FF1FAF;--violet:#9A3DFF;--white-blue:#EAF7FF;--electric-glow:rgba(0,168,255,0.4);--cyan-glow:rgba(51,204,255,0.3);--violet-glow:rgba(154,61,255,0.5);--magenta-glow:rgba(255,31,175,0.3);--line:rgba(0,168,255,0.2);--panel:rgba(12,22,38,0.92);--bg:#080e1a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;margin:0;color:var(--white-blue);font:13px/1.3 "Lucida Console",Monaco,monospace;background:var(--bg) url("assets/f16.png") center center/cover fixed no-repeat;display:flex;align-items:center;justify-content:flex-start;padding:20px}
+.panel{width:min(740px,100%);padding:16px 18px 14px;background:var(--panel);border:2px solid var(--electric);clip-path:polygon(0 28px,28px 0,calc(100% - 28px) 0,100% 28px,100% calc(100% - 28px),calc(100% - 28px) 100%,28px 100%,0 calc(100% - 28px));box-shadow:0 0 40px rgba(0,168,255,0.08),inset 0 0 60px rgba(0,168,255,0.02);position:relative;overflow:hidden;margin-left:10px}
+.panel::before{content:"ZCASH · NU6.3 IRONWOOD";position:absolute;top:-10px;right:24px;font-size:9px;color:#4a6a8a;letter-spacing:2px;background:var(--bg);padding:0 10px;z-index:10}
+.panel::after{content:"BLOCK " attr(data-block);position:absolute;bottom:-10px;right:24px;font-size:9px;color:#4a6a8a;letter-spacing:1px;background:var(--bg);padding:0 10px;z-index:10}
+.header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line);position:relative;z-index:5}
+.header h1{font-size:15px;font-weight:normal;color:var(--cyan);letter-spacing:2px;text-shadow:0 0 30px rgba(51,204,255,0.15)}
+.turnstile{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:center;margin:4px 0 10px;padding:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;min-height:150px}
+.logo-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;width:56px;height:56px;display:flex;align-items:center;justify-content:center}
+.logo-center svg{width:46px;height:46px;transition:all .3s ease}
+.logo-center .logo-bg{fill:none;stroke:var(--violet);stroke-width:2;filter:drop-shadow(0 0 12px var(--violet-glow));transition:stroke .5s ease,filter .5s ease}
+.logo-center .logo-fg{fill:var(--violet);transition:fill .5s ease}
+.logo-center.glow-cyan .logo-bg{stroke:var(--cyan);filter:drop-shadow(0 0 25px var(--cyan-glow))}
+.logo-center.glow-cyan .logo-fg{fill:var(--cyan)}
+.pool-list{display:flex;flex-direction:column;gap:2px;position:relative;z-index:4;padding:0;grid-column:1;margin-left:10px;align-items:flex-start}
+.pool-item{display:flex;justify-content:space-between;align-items:center;padding:2px 4px 2px 0;font-size:12px;line-height:1.3;border-bottom:1px solid rgba(0,168,255,0.05);width:auto;gap:30px}
+.pool-item .pool-name{color:#6a8aaa;letter-spacing:1.5px;text-transform:uppercase;font-size:10px;min-width:65px;font-weight:600}
+.pool-item .pool-amount{font-weight:bold;color:var(--white-blue);font-size:14px;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.pool-item .pool-amount.purple{color:var(--violet)}
+.pool-item .pool-amount.cyan{color:var(--cyan)}
+.pool-item .pool-amount.green{color:#4ae0a0}
+.pool-item .pool-amount.electric{color:var(--electric)}
+.pool-item .pool-amount.magenta{color:var(--magenta)}
+.pool-box{text-align:center;padding:4px 2px;position:relative;z-index:4;margin-right:20px;grid-column:4}
+.pool-box .label{font-size:10px;letter-spacing:2px;color:#6a8aaa;text-transform:uppercase;margin-bottom:4px}
+.pool-box .label.ironwood{color:var(--electric)}
+.pool-box .amount{font-size:20px;font-weight:bold;color:var(--cyan);letter-spacing:1px;text-shadow:0 0 30px rgba(51,204,255,0.15)}
+.pool-box .usd{font-size:11px;color:#4a6a8a;margin-top:1px}
+.pool-box .note{font-size:8px;color:#3a5a7a;margin-top:4px;line-height:1.2}
+.pool-center{grid-column:2}
+.particle-container{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:2}
+.particle{position:absolute;border-radius:50%;animation:fly-particle linear infinite;opacity:0;will-change:transform,opacity}
+.particle.from-pool{animation-name:fly-pool-to-logo}
+.particle.to-ironwood{background:var(--cyan);box-shadow:0 0 14px var(--cyan),0 0 35px var(--cyan-glow);animation-name:fly-logo-to-ironwood}
+@keyframes fly-pool-to-logo{0%{opacity:0;transform:translate(0,0) scale(.2)}15%{opacity:1;transform:translate(calc(var(--tx)*.3),calc(var(--ty)*.3)) scale(.6)}50%{opacity:1;transform:translate(calc(var(--tx)*.7),calc(var(--ty)*.7)) scale(1.2)}75%{opacity:.9;transform:translate(calc(var(--tx)*.95),calc(var(--ty)*.95)) scale(.8)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.1)}}
+@keyframes fly-logo-to-ironwood{0%{opacity:0;transform:translate(0,0) scale(.1)}15%{opacity:1;transform:translate(calc(var(--tx2)*.05),calc(var(--ty2)*.05)) scale(.5)}50%{opacity:1;transform:translate(calc(var(--tx2)*.3),calc(var(--ty2)*.3)) scale(1.1)}75%{opacity:.9;transform:translate(calc(var(--tx2)*.6),calc(var(--ty2)*.6)) scale(.9)}100%{opacity:0;transform:translate(var(--tx2),var(--ty2)) scale(.2)}}
+.light-ray{position:absolute;top:50%;left:50%;width:2px;height:65px;background:linear-gradient(to bottom,transparent,var(--violet),transparent);transform-origin:center center;opacity:0;animation:ray-flash 2.5s ease-in-out infinite;z-index:1;filter:blur(1px)}
+.light-ray:nth-child(1){transform:translate(-50%,-50%) rotate(0deg);animation-delay:0s}
+.light-ray:nth-child(2){transform:translate(-50%,-50%) rotate(45deg);animation-delay:.3s}
+.light-ray:nth-child(3){transform:translate(-50%,-50%) rotate(90deg);animation-delay:.6s}
+.light-ray:nth-child(4){transform:translate(-50%,-50%) rotate(135deg);animation-delay:.9s}
+.light-ray:nth-child(5){transform:translate(-50%,-50%) rotate(180deg);animation-delay:1.2s}
+.light-ray:nth-child(6){transform:translate(-50%,-50%) rotate(225deg);animation-delay:1.5s}
+.light-ray:nth-child(7){transform:translate(-50%,-50%) rotate(270deg);animation-delay:1.8s}
+.light-ray:nth-child(8){transform:translate(-50%,-50%) rotate(315deg);animation-delay:2.1s}
+.light-ray.cyan{background:linear-gradient(to bottom,transparent,var(--cyan),transparent)}
+@keyframes ray-flash{0%{opacity:0;height:12px}20%{opacity:.6;height:65px}40%{opacity:.15;height:45px}60%{opacity:.7;height:75px}80%{opacity:.1;height:25px}100%{opacity:0;height:12px}}
+.ironwood-big{text-align:center;padding:6px 0 4px;border-bottom:1px solid var(--line);position:relative;z-index:5}
+.ironwood-big .number{font-size:34px;font-weight:bold;color:var(--cyan);letter-spacing:2px;text-shadow:0 0 40px rgba(51,204,255,0.12)}
+.ironwood-big .label{font-size:10px;color:#4a6a8a;letter-spacing:1px;text-transform:uppercase;display:block;margin-top:1px}
+.note-bottom{font-size:10px;color:#3a5a7a;margin-top:4px;padding-top:4px;border-top:1px solid rgba(0,168,255,0.06);line-height:1.4;position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.note-bottom strong{color:#6a8aaa}
+.note-bottom .lightwallet{color:var(--cyan);text-decoration:none;border-bottom:1px dotted var(--electric)}
+.note-bottom .lightwallet:hover{color:var(--electric);border-bottom:1px solid var(--electric)}
+.footer{margin-top:6px;padding-top:4px;border-top:1px solid var(--line);font-size:9px;color:#3a5a7a;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px 8px;position:relative;z-index:5}
+.footer .countdown{color:var(--cyan);font-weight:bold;font-size:12px;letter-spacing:1px}
+.footer .status{color:#4ae0a0}
+.footer .status.error{color:#ff5a7a}
+.footer-back{margin-top:12px;padding-top:8px;border-top:1px solid var(--line);text-align:center;position:relative;z-index:5}
+.footer-back a{color:#6a8aaa;text-decoration:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;transition:color .3s ease}
+.footer-back a:hover{color:var(--cyan)}
+@media(max-width:640px){body{padding:10px}.panel{padding:12px 12px 10px;width:min(460px,100%);margin-left:0}.header h1{font-size:12px;letter-spacing:1px}.turnstile{grid-template-columns:1fr 1fr;gap:4px;min-height:auto;padding:6px 0}.pool-list{margin-left:0}.pool-box{margin-right:0}.pool-center{display:none}.pool-item .pool-name{font-size:8px;min-width:50px}.pool-item .pool-amount{font-size:11px}.pool-box .amount{font-size:16px}.ironwood-big .number{font-size:24px}.footer{flex-direction:column;text-align:center;gap:2px}.footer-back{margin-top:8px;padding-top:6px}.logo-center{width:32px;height:32px}.logo-center svg{width:26px;height:26px}.light-ray{display:none}.particle-container{display:none}.note-bottom{flex-direction:column;text-align:center;gap:2px}}
+
   </style>
 </head>
 <body>
@@ -89,25 +91,27 @@
   <div class="ironwood-big"><span class="number" id="ironwoodBigPct">---</span><span class="label">del supply total en Ironwood</span></div>
   <div class="note-bottom"><span><strong>Blindado total:</strong> <span id="shieldedTotal">---</span> ZEC</span><span><strong>Lightwallet:</strong> <a href="https://carover0.xyz:9067" target="_blank" class="lightwallet">carover0.xyz:9067</a></span></div>
   <div class="footer"><span>REFRESH <span class="countdown" id="countdown">60</span>s</span><span><span id="timestamp">⏱ Cargando...</span> · <span class="status" id="statusText">● CONECTANDO</span></span></div>
-  <div class="footer-back"><a href="https://carover0.github.io/pagina/zec-nodo.html">[ VOLVER ]</a></div>
+  <div class="footer-back"><a href="https://carover0.github.io/pagina/zec-nodo.html">[VOLVER]</a></div>
 </div>
 <script>
 const RPC_URL="https://carover0.xyz/api/zec/rpc.php",TOKEN="zec2026",LIGHTWALLET_URL="https://carover0.xyz:9067",REFRESH_INTERVAL=60;
 let currentPrice=0,countdown=REFRESH_INTERVAL,countdownInterval=null,glowInterval=null;
-function formatNum(n,d=0){if(n===undefined||n===null)return'---';return Number(n).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d})}
+function formatNum(n,d=2){if(n===undefined||n===null)return'---';return Number(n).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d})}
 function formatUSD(n){if(n===undefined||n===null||n===0)return'---';if(n>=1e9)return'$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return'$'+(n/1e6).toFixed(2)+'M';return'$'+formatNum(n,2)}
 function formatPct(v,t){if(!t||t===0||v===undefined||v===null)return'---';return((v/t)*100).toFixed(2)+'%'}
 async function callRPC(m,p=[]){try{const u=`${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(m+(p.length?' '+p.join(' '):''))}`;const r=await fetch(u),d=await r.json();return d.result}catch(e){console.error('RPC error:',e);return null}}
 async function getLightwalletStatus(){try{const r=await fetch(LIGHTWALLET_URL),d=await r.json();return d}catch(e){console.error('Lightwallet error:',e);return null}}
 function updateUI(d){const{h,transparent,sprout,sapling,orchard,ironwood,totalSupply,ironwoodUsd,shielded}=d;
-document.getElementById('transparentAmount').textContent=formatNum(transparent,0);
-document.getElementById('sproutAmount').textContent=formatNum(sprout,0);
-document.getElementById('saplingAmount').textContent=formatNum(sapling,0);
-document.getElementById('orchardAmount').textContent=formatNum(orchard,0);
-document.getElementById('ironwoodAmount').textContent=formatNum(ironwood,0);
-document.getElementById('ironwoodUsd').textContent=formatUSD(ironwoodUsd);
-document.getElementById('ironwoodBigPct').textContent=formatPct(ironwood,totalSupply);
-document.getElementById('shieldedTotal').textContent=formatNum(shielded,0);
+document.getElementById('transparentAmount').textContent=formatNum(transparent);
+document.getElementById('sproutAmount').textContent=formatNum(sprout);
+document.getElementById('saplingAmount').textContent=formatNum(sapling);
+document.getElementById('orchardAmount').textContent=formatNum(orchard);
+document.getElementById('ironwoodAmount').textContent=formatNum(ironwood);
+document.getElementById('shieldedTotal').textContent=formatNum(shielded);
+
+document.getElementById('ironwoodBigPct').textContent = formatPct(ironwood, totalSupply);
+document.getElementById('ironwoodUsd').textContent = formatUSD(ironwoodUsd);
+
 const n=new Date();document.getElementById('timestamp').textContent='⏱ '+n.toISOString().replace('T',' ').slice(0,16)+' UTC';document.getElementById('statusText').textContent='● EN VIVO';document.getElementById('statusText').className='status';document.querySelector('.panel').setAttribute('data-block',formatNum(h))}
 function setError(m){document.getElementById('statusText').textContent='⚠ '+m;document.getElementById('statusText').className='status error'}
 async function loadData(){try{const b=await callRPC('getblockchaininfo');if(!b)throw new Error('No se pudo obtener blockchainInfo');const l=await getLightwalletStatus();if(l&&l.price&&l.price.usd)currentPrice=l.price.usd;let transparent=0,orchard=0,sapling=0,sprout=0,ironwood=0;if(b.valuePools&&Array.isArray(b.valuePools)){b.valuePools.forEach(p=>{const v=p.chainValue||0;switch(p.id){case'transparent':transparent=v;break;case'orchard':orchard=v;break;case'sapling':sapling=v;break;case'sprout':sprout=v;break;case'ironwood':ironwood=v;break}})}else throw new Error('No se encontraron valuePools');const h=b.blocks||0,totalSupply=transparent+orchard+sapling+sprout+ironwood,ironwoodUsd=ironwood*currentPrice,shielded=orchard+sapling+sprout+ironwood;updateUI({height:h,transparent,sprout,sapling,orchard,ironwood,totalSupply,ironwoodUsd,shielded});countdown=REFRESH_INTERVAL;document.getElementById('countdown').textContent=countdown}catch(e){console.error('Error:',e);setError('ERROR: '+e.message)}}
