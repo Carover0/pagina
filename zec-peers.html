@@ -1,200 +1,715 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zcash · Peers Conectados</title>
-  <style>
-    :root { --gold:#dd9d34; --gold-soft:#ffd170; --green:#31db72; --red:#ff756f; --line:rgba(221,157,52,.5); --panel:rgba(16,10,2,.91); --ui-scale:.9; }
-    * { box-sizing:border-box; }
-    body { min-height:100vh; margin:0; color:#fff; font:15px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
-    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,209,112,.025) 0 1px,transparent 1px 4px); }
-    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 15px var(--gold); }
-    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
-    .panel { position:relative; width:min(780px,95%); padding:28px 32px 22px; background:linear-gradient(135deg,rgba(30,19,3,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(221,157,52,.85),0 0 48px rgba(221,157,52,.2),inset 0 0 30px rgba(221,157,52,.08); }
-    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
-    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
-    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:18px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
-    .logo { width:38px; height:38px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(255,193,65,.65)); }
-    .top-links { border-top:1px solid var(--line); padding:9px 0; font-size:12px; line-height:1.6; }
-    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
-    .section { border-top:1px solid var(--line); padding:10px 0 11px; }
-    .subheader { margin:0 0 6px; color:var(--gold-soft); font-size:13px; letter-spacing:.5px; text-transform:uppercase; }
-    .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
-    .api { font-size:11px; overflow-wrap:anywhere; } .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:10px; color:#e6ddce; font-size:11px; line-height:1.4; } .small { color:#afa391; }
-    .server-item { margin-bottom:10px; padding-left:1px; }
-    .server-header { font-size:14px; margin-bottom:2px; }
-    .server-details { color:#888; font-size:13px; margin-left:22px; line-height:1.4; }
-    .height-number { color:#fff; }
-    .version { color:#AAAAAA; }
-    .warning { color:var(--gold-soft); }
-    .ips { color:#555; font-size:12px; }
-    .status-online { color:var(--green); }
-    .status-offline { color:var(--red); }
-    .status-in { color:#198652; }
-    .status-out { color:#9B1C2E; }
-    .timestamp { color:#666; font-size:11px; margin-bottom:8px; }
-    .server-list-container { max-height:400px; overflow-y:auto; padding-right:5px; }
-    .server-list-container::-webkit-scrollbar { width:3px; }
-    .server-list-container::-webkit-scrollbar-track { background:rgba(221,157,52,.1); }
-    .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
-    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
-    .peer-count { color:var(--gold-soft); font-size:13px; margin-bottom:5px; }
-    @media (max-width:700px) { .brand { position:absolute; font-size:18px; letter-spacing:3px; } main { padding:65px 10px 24px 5px; align-items:flex-start; } .panel { padding:24px 20px 20px; width:98%; } .panel-title { font-size:15px; } .server-header { font-size:13px; } .server-details { font-size:12px; margin-left:12px; } .server-list-container { max-height:300px; } }
-    @media (min-width:1920px) { :root { --ui-scale:1.1; } main { padding:72px 20px 36px 0; } .panel { width:min(700px,90%); } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zcash · Peers Conectados</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(221, 157, 52, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(221, 157, 52, 0.04) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(221, 157, 52, 0.08);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(221, 157, 52, 0.25));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(221, 157, 52, 0.4));
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(221, 157, 52, 0.1);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #dd9d34;
+            border-bottom-color: #dd9d34;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(221, 157, 52, 0.06);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel:hover {
+            border-color: rgba(221, 157, 52, 0.1);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #dd9d34;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(221, 157, 52, 0.06);
+        }
+
+        .panel-title img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 12px rgba(221, 157, 52, 0.2));
+        }
+
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px 20px;
+            padding: 10px 0 14px 0;
+            border-bottom: 1px solid rgba(221, 157, 52, 0.06);
+            margin-bottom: 16px;
+        }
+
+        .info-bar .peer-count {
+            color: #f5ede4;
+            font-size: 14px;
+        }
+
+        .info-bar .peer-count span {
+            color: #dd9d34;
+        }
+
+        .info-bar .timestamp {
+            color: #5a5348;
+            font-size: 11px;
+        }
+
+        .info-bar .note {
+            color: #6a6255;
+            font-size: 11px;
+            width: 100%;
+        }
+
+        .peers-list {
+            flex: 1;
+            max-height: 900px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .peers-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .peers-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .peers-list::-webkit-scrollbar-thumb {
+            background: rgba(221, 157, 52, 0.2);
+            border-radius: 10px;
+        }
+
+        .peer-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 6px;
+            border-left: 2px solid rgba(221, 157, 52, 0.08);
+            transition: all 0.15s;
+        }
+
+        .peer-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-left-color: rgba(221, 157, 52, 0.2);
+        }
+
+        .peer-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px 12px;
+            font-size: 13px;
+        }
+
+        .peer-header .addr {
+            color: #dd9d34;
+            word-break: break-all;
+        }
+
+        .peer-header .direction {
+            font-size: 11px;
+            padding: 1px 10px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+        }
+
+        .peer-header .direction.in {
+            color: #31db72;
+            border-color: rgba(49, 219, 114, 0.15);
+            background: rgba(49, 219, 114, 0.05);
+        }
+
+        .peer-header .direction.out {
+            color: #ff756f;
+            border-color: rgba(255, 117, 111, 0.15);
+            background: rgba(255, 117, 111, 0.05);
+        }
+
+        .peer-header .full-addr {
+            color: #5a5348;
+            font-size: 11px;
+            word-break: break-all;
+        }
+
+        .peer-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            padding-left: 4px;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #6a6255;
+        }
+
+        .peer-details .label {
+            color: #4a443a;
+        }
+
+        .peer-details .value {
+            color: #b0a897;
+        }
+
+        .peer-details .value.ping {
+            color: #dd9d34;
+        }
+
+        .peer-details .value.bytes {
+            color: #8a8275;
+        }
+
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(221, 157, 52, 0.06);
+            font-size: 11px;
+            color: #4a443a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #dd9d34;
+        }
+
+        .footer .api-link {
+            font-size: 11px;
+            color: #5a5348;
+            word-break: break-all;
+        }
+
+        .footer .api-link:hover {
+            color: #dd9d34;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(221, 157, 52, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(221, 157, 52, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .placeholder {
+            color: #4a443a;
+            text-align: center;
+            padding: 30px 0;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px 18px;
+            }
+
+            .brand h1 {
+                font-size: 17px;
+            }
+
+            .brand img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-links {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .panel {
+                padding: 18px 16px;
+            }
+
+            .panel-title {
+                font-size: 16px;
+            }
+
+            .panel-title img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .info-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .info-bar .peer-count {
+                font-size: 13px;
+            }
+
+            .peers-list {
+                max-height: 350px;
+            }
+
+            .peer-header {
+                font-size: 12px;
+            }
+
+            .peer-details {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 8px 10px;
+                gap: 10px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .brand h1 {
+                font-size: 15px;
+            }
+
+            .brand h1 small {
+                font-size: 10px;
+            }
+
+            .brand img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .panel {
+                padding: 14px 12px;
+                border-radius: 10px;
+            }
+
+            .panel-title {
+                font-size: 14px;
+                gap: 10px;
+                margin-bottom: 14px;
+                padding-bottom: 10px;
+            }
+
+            .panel-title img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .info-bar .peer-count {
+                font-size: 12px;
+            }
+
+            .info-bar .timestamp {
+                font-size: 10px;
+            }
+
+            .info-bar .note {
+                font-size: 10px;
+            }
+
+            .peers-list {
+                max-height: 280px;
+            }
+
+            .peer-item {
+                padding: 8px 12px;
+            }
+
+            .peer-header {
+                font-size: 11px;
+                gap: 2px 8px;
+            }
+
+            .peer-header .direction {
+                font-size: 10px;
+                padding: 0 8px;
+            }
+
+            .peer-header .full-addr {
+                font-size: 10px;
+            }
+
+            .peer-details {
+                font-size: 10px;
+                gap: 2px 10px;
+            }
+
+            .footer {
+                font-size: 10px;
+            }
+
+            .footer .api-link {
+                font-size: 10px;
+            }
+
+            .placeholder {
+                font-size: 11px;
+                padding: 20px 0;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .app {
+                max-width: 1600px;
+                padding: 24px 40px;
+            }
+
+            .peers-list {
+                max-height: 600px;
+            }
+
+            .peer-header {
+                font-size: 14px;
+            }
+
+            .peer-details {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main><section class="panel">
-    <div class="panel-title"><img class="logo" src="assets/zcash.png" alt="Zcash">PEERS CONECTADOS</div>
-    <nav class="top-links"><a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
-    
-    <section class="section"><h2 class="subheader">► Lista de peers carover0.xyz</h2>
-      <div class="note" style="margin-bottom:8px;">Actualización cada 60 segundos. Ordenados por ping (menor a mayor).</div>
-      <div id="peerCount" class="peer-count">Peers: 0</div>
-      <div id="timestamp" class="timestamp">Cargando...</div>
-      <div id="serversList" class="server-list-container">Cargando peers...</div>
-    </section>
 
-    <section class="section"><h2 class="subheader">► API pública</h2>
-      <a class="api" href="https://carover0.xyz/zec/status.json" target="_blank" rel="noopener">https://carover0.xyz/zec/status.json</a>
-    </section>
+    <div class="app">
 
-    <footer class="footer">
-      <div class="small">actualizado: <span id="update-time">---</span></div>
-      <div class="donation"><br></div>
-    </footer>
-  </section></main>
+        <header class="header">
+            <div class="brand">
+                <img src="assets/zcash.png" alt="Zcash">
+                <h1>Zcash <small>peers</small></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a>
+                <a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
 
-  <script>
-    const API_URL = "https://carover0.xyz/api/zec/rpc.php";
-    const TOKEN = "zec2026";
-    let peersData = [];
+            <div class="info-bar">
+                <div class="peer-count">Peers: <span id="peerCount">0</span></div>
+                <div class="timestamp" id="timestamp">Cargando...</div>
+                <div class="note">Actualización cada 60 segundos · Ordenados por ping (menor a mayor)</div>
+            </div>
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
+            <!-- Peers List -->
+            <div class="peers-list" id="peersList">
+                <div class="placeholder">Cargando peers...</div>
+            </div>
 
-    function shortAddr(addr) {
-      if (!addr) return '?';
-      return addr.split(':')[0];
-    }
+            <!-- Footer -->
+            <footer class="footer">
+                <a href="https://carover0.xyz/api/zec/rpc.php?token=zec2026&cmd=getpeerinfo" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/api/zec/rpc.php?token=zec2026&cmd=getpeerinfo</a>
+                <span>actualizado: <span id="update-time">---</span></span>
+            </footer>
+        </div>
 
-    function formatPing(pingtime) {
-      if (!pingtime && pingtime !== 0) return '-';
-      var ms = pingtime * 1000;
-      if (ms < 1) return '<1ms';
-      return ms.toFixed(0) + 'ms';
-    }
+    </div>
 
-    function formatVersion(version) {
-      if (!version) return '';
-      if (typeof version === 'number') {
-        const major = Math.floor(version / 1000000);
-        const minor = Math.floor((version % 1000000) / 10000);
-        const patch = Math.floor((version % 10000) / 100);
-        return `${major}.${minor}.${patch}`;
-      }
-      return version;
-    }
+    <div class="toast" id="toast"></div>
 
-    function mostrarTimestamp() {
-      const ahora = new Date();
-      document.getElementById('timestamp').innerHTML = `última actualización: ${ahora.toLocaleString()}`;
-      document.getElementById('update-time').textContent = ahora.toLocaleString();
-    }
+    <script>
+        const API_URL = "https://carover0.xyz/api/zec/rpc.php";
+        const TOKEN = "zec2026";
+        let peersData = [];
 
-    function renderizarLista() {
-      const container = document.getElementById('serversList');
-      container.innerHTML = '';
-      
-      if (!peersData || peersData.length === 0) {
-        container.innerHTML = '<div class="server-item"><span class="status-offline">No se encontraron peers</span></div>';
-        document.getElementById('peerCount').textContent = 'Peers: 0';
-        return;
-      }
-      
-      document.getElementById('peerCount').textContent = `Peers: ${peersData.length}`;
-      
-      const ordenados = [...peersData].sort((a, b) => {
-        const pingA = a.pingtime ? a.pingtime * 1000 : 999999;
-        const pingB = b.pingtime ? b.pingtime * 1000 : 999999;
-        return pingA - pingB;
-      });
-      
-      ordenados.forEach(peer => {
-        const div = document.createElement('div');
-        div.className = 'server-item';
-        
-        const pingMs = peer.pingtime ? (peer.pingtime * 1000).toFixed(0) : '?';
-        const pingDisplay = formatPing(peer.pingtime);
-        const direccion = peer.inbound ? 'IN' : 'OUT';
-        const estadoClass = peer.inbound ? 'status-in' : 'status-out';
-        const estadoIcon = peer.inbound ? '⬇' : '⬆';
-        
-        let headerHTML = `${estadoIcon} ${escapeHtml(shortAddr(peer.addr))} <span class="${estadoClass}">[${direccion}]</span>`;
-        
-        if (peer.addr) {
-          headerHTML += ` <span class="version">(${escapeHtml(peer.addr)})</span>`;
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
-        
-        let detailsHTML = `<div class="server-details">└─ ping: <span class="height-number">${pingMs}ms</span>`;
-        
-        const versionStr = formatVersion(peer.version);
-        if (versionStr) {
-          detailsHTML += `  |  version: <span class="version">${escapeHtml(versionStr)}</span>`;
-        }
-        
-        if (peer.subver) {
-          let subver = peer.subver.replace(/[\/\\]/g, '');
-          if (subver.length > 30) subver = subver.substring(0, 27) + '...';
-          detailsHTML += `  |  subver: <span class="version">${escapeHtml(subver)}</span>`;
-        }
-        
-        if (peer.bytesrecv || peer.bytessent) {
-          const recv = peer.bytesrecv ? (peer.bytesrecv / 1024).toFixed(0) : '0';
-          const sent = peer.bytessent ? (peer.bytessent / 1024).toFixed(0) : '0';
-          detailsHTML += `  |  tráfico: <span class="version">${recv}KB ↓ ${sent}KB ↑</span>`;
-        }
-        
-        detailsHTML += `</div>`;
-        
-        div.innerHTML = `<div class="server-header">${headerHTML}</div>${detailsHTML}`;
-        container.appendChild(div);
-      });
-    }
 
-    async function cargarDatos() {
-      try {
-        const response = await fetch(API_URL + '?token=' + TOKEN + '&cmd=getpeerinfo');
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        
-        if (data.error) {
-          document.getElementById('serversList').innerHTML = `<div class="server-item"><span class="status-offline">ERROR: ${escapeHtml(data.error)}</span></div>`;
-          document.getElementById('timestamp').innerHTML = 'Error cargando datos';
-          return;
+        function shortAddr(addr) {
+            if (!addr) return '?';
+            return addr.split(':')[0];
         }
-        
-        peersData = data.result || [];
-        mostrarTimestamp();
-        renderizarLista();
-        
-      } catch (error) {
-        console.error('Error cargando datos:', error);
-        document.getElementById('serversList').innerHTML = '<div class="server-item"><span class="status-offline">ERROR: No se pudo cargar la lista de peers</span></div>';
-        document.getElementById('timestamp').innerHTML = 'Error cargando datos';
-      }
-    }
 
-    cargarDatos();
-    setInterval(cargarDatos, 60000);
-  </script>
+        function formatPing(pingtime) {
+            if (!pingtime && pingtime !== 0) return '-';
+            var ms = pingtime * 1000;
+            if (ms < 1) return '<1ms';
+            return ms.toFixed(0) + 'ms';
+        }
+
+        function formatVersion(version) {
+            if (!version) return '';
+            if (typeof version === 'number') {
+                const major = Math.floor(version / 1000000);
+                const minor = Math.floor((version % 1000000) / 10000);
+                const patch = Math.floor((version % 10000) / 100);
+                return `${major}.${minor}.${patch}`;
+            }
+            return version;
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes) return '0';
+            if (bytes < 1024) return bytes + 'B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
+        }
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+        }
+
+        function updateTimestamp() {
+            const ahora = new Date();
+            const timeStr = ahora.toLocaleString();
+            document.getElementById('timestamp').textContent = 'última actualización: ' + timeStr;
+            document.getElementById('update-time').textContent = timeStr;
+        }
+
+        function renderPeers() {
+            const container = document.getElementById('peersList');
+
+            if (!peersData || peersData.length === 0) {
+                container.innerHTML = '<div class="placeholder">No se encontraron peers conectados</div>';
+                document.getElementById('peerCount').textContent = '0';
+                return;
+            }
+
+            document.getElementById('peerCount').textContent = peersData.length;
+
+            // Ordenar por ping
+            const ordenados = [...peersData].sort((a, b) => {
+                const pingA = a.pingtime ? a.pingtime * 1000 : 999999;
+                const pingB = b.pingtime ? b.pingtime * 1000 : 999999;
+                return pingA - pingB;
+            });
+
+            let html = '';
+            ordenados.forEach(peer => {
+                const pingMs = peer.pingtime ? (peer.pingtime * 1000).toFixed(0) : '?';
+                const direccion = peer.inbound ? 'IN' : 'OUT';
+                const dirClass = peer.inbound ? 'in' : 'out';
+                const dirIcon = peer.inbound ? '⬇' : '⬆';
+
+                const versionStr = formatVersion(peer.version);
+                const subver = peer.subver ? peer.subver.replace(/[\/\\]/g, '') : '';
+
+                html += `<div class="peer-item">`;
+                html += `<div class="peer-header">`;
+                html += `<span class="addr">${dirIcon} ${escapeHtml(shortAddr(peer.addr))}</span>`;
+                html += `<span class="direction ${dirClass}">[${direccion}]</span>`;
+                if (peer.addr) {
+                    html += `<span class="full-addr">(${escapeHtml(peer.addr)})</span>`;
+                }
+                html += `</div>`;
+
+                html += `<div class="peer-details">`;
+                html += `<span><span class="label">ping</span> <span class="value ping">${pingMs}ms</span></span>`;
+                if (versionStr) {
+                    html += `<span><span class="label">version</span> <span class="value">${escapeHtml(versionStr)}</span></span>`;
+                }
+                if (subver) {
+                    const shortSubver = subver.length > 30 ? subver.substring(0, 27) + '...' : subver;
+                    html +=
+                        `<span><span class="label">subver</span> <span class="value">${escapeHtml(shortSubver)}</span></span>`;
+                }
+                if (peer.bytesrecv || peer.bytessent) {
+                    const recv = formatBytes(peer.bytesrecv);
+                    const sent = formatBytes(peer.bytessent);
+                    html +=
+                        `<span><span class="label">tráfico</span> <span class="value bytes">↓${recv} ↑${sent}</span></span>`;
+                }
+                if (peer.lastsend) {
+                    const last = new Date(peer.lastsend * 1000).toLocaleTimeString();
+                    html += `<span><span class="label">último</span> <span class="value">${last}</span></span>`;
+                }
+                html += `</div>`;
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // ─── FETCH ──────────────────────────────────────────────────────
+        async function cargarDatos() {
+            try {
+                const response = await fetch(API_URL + '?token=' + TOKEN + '&cmd=getpeerinfo');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('peersList').innerHTML =
+                        `<div class="placeholder" style="color:#ff756f;">ERROR: ${escapeHtml(JSON.stringify(data.error))}</div>`;
+                    document.getElementById('timestamp').textContent = 'Error cargando datos';
+                    return;
+                }
+
+                peersData = data.result || [];
+                updateTimestamp();
+                renderPeers();
+
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                document.getElementById('peersList').innerHTML =
+                    '<div class="placeholder" style="color:#ff756f;">ERROR: No se pudo cargar la lista de peers</div>';
+                document.getElementById('timestamp').textContent = 'Error cargando datos';
+            }
+        }
+
+        // ─── INIT ────────────────────────────────────────────────────────
+        cargarDatos();
+        setInterval(cargarDatos, 60000);
+    </script>
+
 </body>
 </html>
