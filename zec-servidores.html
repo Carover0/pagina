@@ -1,172 +1,841 @@
-<!doctype html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zcash · Servidores Lightwalletd</title>
-  <style>
-    :root { --gold:#dd9d34; --gold-soft:#ffd170; --green:#31db72; --red:#ff756f; --line:rgba(221,157,52,.5); --panel:rgba(16,10,2,.91); --ui-scale:.9; }
-    * { box-sizing:border-box; }
-    body { min-height:100vh; margin:0; color:#fff; font:15px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
-    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,209,112,.025) 0 1px,transparent 1px 4px); }
-    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 15px var(--gold); }
-    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
-    .panel { position:relative; width:min(740px,90%); padding:28px 32px 22px; background:linear-gradient(135deg,rgba(30,19,3,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(221,157,52,.85),0 0 48px rgba(221,157,52,.2),inset 0 0 30px rgba(221,157,52,.08); }
-    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
-    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
-    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:18px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
-    .logo { width:38px; height:38px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(255,193,65,.65)); }
-    .top-links { border-top:1px solid var(--line); padding:9px 0; font-size:12px; line-height:1.6; }
-    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
-    .section { border-top:1px solid var(--line); padding:10px 0 11px; }
-    .subheader { margin:0 0 6px; color:var(--gold-soft); font-size:13px; letter-spacing:.5px; text-transform:uppercase; }
-    .row { display:grid; grid-template-columns:1fr auto; gap:12px; min-height:17px; }
-    .label { color:#d2c8b7; font-size:14px; } .value { color:#fff; text-align:right; overflow-wrap:anywhere; font-size:14px; }
-    .positive { color:var(--green); } .negative { color:var(--red); } .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
-    .api { font-size:11px; overflow-wrap:anywhere; } .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:10px; color:#e6ddce; font-size:11px; line-height:1.4; } .small { color:#afa391; }
-    .server-item { margin-bottom:10px; padding-left:1px; }
-    .server-header { font-size:14px; margin-bottom:2px; }
-    .server-details { color:#888; font-size:13px; margin-left:22px; line-height:1.4; }
-    .height-number { color:#fff; }
-    .version { color:#AAAAAA; }
-    .warning { color:var(--gold-soft); }
-    .ips { color:#555; font-size:12px; }
-    .status-online { color:var(--green); }
-    .status-offline { color:var(--red); }
-    .timestamp { color:#666; font-size:11px; margin-bottom:8px; }
-    .server-list-container { max-height:350px; overflow-y:auto; padding-right:5px; }
-    .server-list-container::-webkit-scrollbar { width:3px; }
-    .server-list-container::-webkit-scrollbar-track { background:rgba(221,157,52,.1); }
-    .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
-    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
-    @media (max-width:700px) { .brand { position:absolute; font-size:18px; letter-spacing:3px; } main { padding:65px 10px 24px 5px; align-items:flex-start; } .panel { padding:24px 20px 20px; width:98%; } .panel-title { font-size:15px; } .row { grid-template-columns:1fr; gap:1px; margin-bottom:5px; } .value { text-align:left; } .server-header { font-size:13px; } .server-details { font-size:12px; margin-left:12px; } .server-list-container { max-height:250px; } }
-    @media (min-width:1920px) { :root { --ui-scale:1.1; } main { padding:72px 20px 36px 0; } .panel { width:min(700px,90%); } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zcash · Servidores Lightwalletd</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(221, 157, 52, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(221, 157, 52, 0.04) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(221, 157, 52, 0.08);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(221, 157, 52, 0.25));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(221, 157, 52, 0.4));
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(221, 157, 52, 0.1);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #dd9d34;
+            border-bottom-color: #dd9d34;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(221, 157, 52, 0.06);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel:hover {
+            border-color: rgba(221, 157, 52, 0.1);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #dd9d34;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(221, 157, 52, 0.06);
+        }
+
+        .panel-title img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 12px rgba(221, 157, 52, 0.2));
+        }
+
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px 20px;
+            padding: 10px 0 14px 0;
+            border-bottom: 1px solid rgba(221, 157, 52, 0.06);
+            margin-bottom: 16px;
+        }
+
+        .info-bar .server-count {
+            color: #f5ede4;
+            font-size: 14px;
+        }
+
+        .info-bar .server-count span {
+            color: #dd9d34;
+        }
+
+        .info-bar .timestamp {
+            color: #5a5348;
+            font-size: 11px;
+        }
+
+        .info-bar .note {
+            color: #6a6255;
+            font-size: 11px;
+            width: 100%;
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .filters .filter-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(221, 157, 52, 0.08);
+            color: #6a6255;
+            font-family: 'Lucida Console', monospace;
+            font-size: 11px;
+            padding: 4px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s;
+            letter-spacing: 0.3px;
+        }
+
+        .filters .filter-btn:hover {
+            border-color: rgba(221, 157, 52, 0.2);
+            color: #b0a897;
+        }
+
+        .filters .filter-btn.active {
+            border-color: #dd9d34;
+            color: #dd9d34;
+            background: rgba(221, 157, 52, 0.06);
+        }
+
+        .filters .filter-btn.active-all {
+            border-color: #dd9d34;
+            color: #dd9d34;
+            background: rgba(221, 157, 52, 0.06);
+        }
+
+        .filters .filter-btn .count {
+            color: #4a443a;
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        .filters .filter-btn.active .count {
+            color: #8a8275;
+        }
+
+        .filters .filter-btn.online {
+            border-color: rgba(49, 219, 114, 0.15);
+        }
+
+        .filters .filter-btn.online:hover {
+            border-color: rgba(49, 219, 114, 0.3);
+        }
+
+        .filters .filter-btn.online.active {
+            border-color: #31db72;
+            color: #31db72;
+            background: rgba(49, 219, 114, 0.06);
+        }
+
+        .filters .filter-btn.offline {
+            border-color: rgba(255, 117, 111, 0.15);
+        }
+
+        .filters .filter-btn.offline:hover {
+            border-color: rgba(255, 117, 111, 0.3);
+        }
+
+        .filters .filter-btn.offline.active {
+            border-color: #ff756f;
+            color: #ff756f;
+            background: rgba(255, 117, 111, 0.06);
+        }
+
+        .servers-list {
+            flex: 1;
+            max-height: 700px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .servers-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .servers-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .servers-list::-webkit-scrollbar-thumb {
+            background: rgba(221, 157, 52, 0.2);
+            border-radius: 10px;
+        }
+
+        .server-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 6px;
+            border-left: 2px solid rgba(221, 157, 52, 0.08);
+            transition: all 0.15s;
+        }
+
+        .server-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-left-color: rgba(221, 157, 52, 0.2);
+        }
+
+        .server-item.online {
+            border-left-color: rgba(49, 219, 114, 0.2);
+        }
+
+        .server-item.online:hover {
+            border-left-color: rgba(49, 219, 114, 0.4);
+        }
+
+        .server-item.offline {
+            border-left-color: rgba(255, 117, 111, 0.15);
+        }
+
+        .server-item.offline:hover {
+            border-left-color: rgba(255, 117, 111, 0.3);
+        }
+
+        .server-item.hidden {
+            display: none;
+        }
+
+        .server-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px 12px;
+            font-size: 13px;
+        }
+
+        .server-header .hostname {
+            color: #dd9d34;
+            word-break: break-all;
+        }
+
+        .server-header .status {
+            font-size: 11px;
+            padding: 1px 10px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+        }
+
+        .server-header .status.online {
+            color: #31db72;
+            border-color: rgba(49, 219, 114, 0.15);
+            background: rgba(49, 219, 114, 0.05);
+        }
+
+        .server-header .status.offline {
+            color: #ff756f;
+            border-color: rgba(255, 117, 111, 0.15);
+            background: rgba(255, 117, 111, 0.05);
+        }
+
+        .server-header .favorite {
+            color: #dd9d34;
+            font-size: 14px;
+        }
+
+        .server-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            padding-left: 4px;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #6a6255;
+        }
+
+        .server-details .label {
+            color: #4a443a;
+        }
+
+        .server-details .value {
+            color: #b0a897;
+        }
+
+        .server-details .value.height {
+            color: #dd9d34;
+        }
+
+        .server-details .value.ips {
+            color: #5a5348;
+            font-size: 11px;
+        }
+
+        .server-details .reason {
+            color: #ff756f;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(221, 157, 52, 0.06);
+            font-size: 11px;
+            color: #4a443a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #dd9d34;
+        }
+
+        .footer .api-link {
+            font-size: 11px;
+            color: #5a5348;
+            word-break: break-all;
+        }
+
+        .footer .api-link:hover {
+            color: #dd9d34;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(221, 157, 52, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(221, 157, 52, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .placeholder {
+            color: #4a443a;
+            text-align: center;
+            padding: 30px 0;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px 18px;
+            }
+
+            .brand h1 {
+                font-size: 17px;
+            }
+
+            .brand img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-links {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .panel {
+                padding: 18px 16px;
+            }
+
+            .panel-title {
+                font-size: 16px;
+            }
+
+            .panel-title img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .info-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .info-bar .server-count {
+                font-size: 13px;
+            }
+
+            .filters {
+                gap: 6px;
+            }
+
+            .filters .filter-btn {
+                font-size: 10px;
+                padding: 3px 12px;
+            }
+
+            .servers-list {
+                max-height: 350px;
+            }
+
+            .server-header {
+                font-size: 12px;
+            }
+
+            .server-details {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 8px 10px;
+                gap: 10px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .brand h1 {
+                font-size: 15px;
+            }
+
+            .brand h1 small {
+                font-size: 10px;
+            }
+
+            .brand img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .panel {
+                padding: 14px 12px;
+                border-radius: 10px;
+            }
+
+            .panel-title {
+                font-size: 14px;
+                gap: 10px;
+                margin-bottom: 14px;
+                padding-bottom: 10px;
+            }
+
+            .panel-title img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .info-bar .server-count {
+                font-size: 12px;
+            }
+
+            .info-bar .timestamp {
+                font-size: 10px;
+            }
+
+            .info-bar .note {
+                font-size: 10px;
+            }
+
+            .filters {
+                gap: 4px;
+            }
+
+            .filters .filter-btn {
+                font-size: 9px;
+                padding: 2px 10px;
+            }
+
+            .servers-list {
+                max-height: 280px;
+            }
+
+            .server-item {
+                padding: 8px 12px;
+            }
+
+            .server-header {
+                font-size: 11px;
+                gap: 2px 8px;
+            }
+
+            .server-header .status {
+                font-size: 10px;
+                padding: 0 8px;
+            }
+
+            .server-details {
+                font-size: 10px;
+                gap: 2px 10px;
+            }
+
+            .server-details .value.ips {
+                font-size: 10px;
+            }
+
+            .footer {
+                font-size: 10px;
+            }
+
+            .footer .api-link {
+                font-size: 10px;
+            }
+
+            .placeholder {
+                font-size: 11px;
+                padding: 20px 0;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .app {
+                max-width: 1600px;
+                padding: 24px 40px;
+            }
+
+            .servers-list {
+                max-height: 600px;
+            }
+
+            .server-header {
+                font-size: 14px;
+            }
+
+            .server-details {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main><section class="panel">
-    <div class="panel-title"><img class="logo" src="assets/zcash.png" alt="Zcash">SERVIDORES LIGHTWALLETD</div>
-    <nav class="top-links"><a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
-    
-    <section class="section"><h2 class="subheader">► Estado de servidores</h2>
-      <div class="note" style="margin-bottom:8px;">Datos actualizados cada 12 horas.<br>Si querés aparecer en esta lista (o preferís no estar), contactame por Telegram: @Cvg_1995.</div>
-      <div id="timestamp" class="timestamp">Cargando...</div>
-      <div id="serversList" class="server-list-container">Cargando servidores...</div>
-    </section>
 
-    <section class="section"><h2 class="subheader">► API pública</h2>
-      <a class="api" href="https://carover0.xyz/zec/lightwalletd_status.json" target="_blank" rel="noopener">https://carover0.xyz/zec/lightwalletd_status.json</a>
-    </section>
+    <div class="app">
 
-    <footer class="footer">
-      <div class="small">actualizado: <span id="update-time">---</span></div>
-      <div class="donation"><br></div>
-    </footer>
-  </section></main>
+        <header class="header">
+            <div class="brand">
+                <img src="assets/zcash.png" alt="Zcash">
+                <h1>Zcash <small>servidores</small></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a>
+                <a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
+            <!-- Info Bar -->
+            <div class="info-bar">
+                <div class="server-count">Servidores: <span id="serverCount">0</span></div>
+                <div class="timestamp" id="timestamp">Cargando...</div>
+                <div class="note">Datos actualizados cada 12 horas · Si querés aparecer en esta lista, contactá a @Cvg_1995</div>
+            </div>
 
-  <script>
-    const STATUS_URL = "https://carover0.xyz/zec/lightwalletd_status.json";
-    let serversData = [];
+            <!-- Filtros -->
+            <div class="filters" id="filters">
+                <button class="filter-btn active-all" data-filter="all" onclick="setFilter('all')">Todos <span class="count" id="count-all">0</span></button>
+                <button class="filter-btn online" data-filter="online" onclick="setFilter('online')">Online <span class="count" id="count-online">0</span></button>
+                <button class="filter-btn offline" data-filter="offline" onclick="setFilter('offline')">Offline <span class="count" id="count-offline">0</span></button>
+            </div>
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
+            <!-- Servers List -->
+            <div class="servers-list" id="serversList">
+                <div class="placeholder">Cargando servidores...</div>
+            </div>
 
-    function mostrarTimestamp(timestamp) {
-      const fecha = new Date(timestamp);
-      document.getElementById('timestamp').innerHTML = `última actualización: ${fecha.toLocaleString()}`;
-      document.getElementById('update-time').textContent = fecha.toLocaleString();
-    }
+            <!-- Footer -->
+            <footer class="footer">
+                <a href="https://carover0.xyz/zec/lightwalletd_status.json" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/zec/lightwalletd_status.json</a>
+                <span>actualizado: <span id="update-time">---</span></span>
+            </footer>
+        </div>
 
-    function renderizarLista() {
-      const container = document.getElementById('serversList');
-      container.innerHTML = '';
-      
-      if (!serversData || serversData.length === 0) {
-        container.innerHTML = '<div class="server-item"><span class="version">No hay servidores disponibles</span></div>';
-        return;
-      }
-      
-      const ordenados = [...serversData].sort((a, b) => {
-        if (a.status === 'online' && b.status !== 'online') return -1;
-        if (a.status !== 'online' && b.status === 'online') return 1;
-        return (a.hostname || '').localeCompare(b.hostname || '');
-      });
-      
-      ordenados.forEach(server => {
-        const div = document.createElement('div');
-        div.className = 'server-item';
-        
-        let estadoIcon = '';
-        let estadoTexto = '';
-        
-        if (server.status === 'online') {
-          estadoIcon = '►';
-          estadoTexto = '<span class="status-online">ONLINE</span>';
-        } else {
-          estadoIcon = '■';
-          estadoTexto = '<span class="status-offline">OFFLINE</span>';
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STATUS_URL = "https://carover0.xyz/zec/lightwalletd_status.json";
+        let serversData = [];
+        let currentFilter = 'all';
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
-        
-        let headerHTML = `${estadoIcon} ${escapeHtml(server.hostname || 'desconocido')}`;
-        
-        if (server.hostname === 'carover0.xyz:9067' && server.status === 'online') {
-          headerHTML += ' <span class="warning">💛</span>';
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
         }
-        
-        headerHTML += ` ${estadoTexto}`;
-        
-        let detailsHTML = '';
-        if (server.status === 'online' && server.height) {
-          detailsHTML = `<div class="server-details">└─ altura: <span class="height-number">${Number(server.height).toLocaleString()}</span>  |  lightwalletd: <span class="version">${escapeHtml(server.lightwalletd || '---')}</span>  |  nodo: <span class="version">${escapeHtml((server.node || '---').replace(/^\//, '').replace(/\/$/, ''))}</span>`;
-          
-          if (server.ips) {
-            const ips = [];
-            if (server.ips.ipv4) ips.push(`ipv4: ${server.ips.ipv4}`);
-            if (server.ips.ipv6) ips.push(`ipv6: ${server.ips.ipv6}`);
-            if (ips.length > 0) {
-              detailsHTML += `<br>└─ <span class="ips">${ips.join(' | ')}</span>`;
+
+        function updateTimestamp(timestamp) {
+            const fecha = new Date(timestamp);
+            const timeStr = fecha.toLocaleString();
+            document.getElementById('timestamp').textContent = 'última actualización: ' + timeStr;
+            document.getElementById('update-time').textContent = timeStr;
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'active-all');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+            renderServers();
+        }
+
+        function renderServers() {
+            const container = document.getElementById('serversList');
+
+            if (!serversData || serversData.length === 0) {
+                container.innerHTML = '<div class="placeholder">No hay servidores disponibles</div>';
+                document.getElementById('serverCount').textContent = '0';
+                return;
             }
-          }
-          detailsHTML += `</div>`;
-        } else if (server.status === 'offline') {
-          const razon = server.reason || 'timeout';
-          detailsHTML = `<div class="server-details">└─ <span class="version">razón: ${escapeHtml(razon)}</span></div>`;
-        } else {
-          detailsHTML = `<div class="server-details">└─ <span class="version">sin datos</span></div>`;
+
+            // Contar por estado
+            const onlineCount = serversData.filter(s => s.status === 'online').length;
+            const offlineCount = serversData.filter(s => s.status !== 'online').length;
+            document.getElementById('serverCount').textContent = serversData.length;
+            document.getElementById('count-all').textContent = serversData.length;
+            document.getElementById('count-online').textContent = onlineCount;
+            document.getElementById('count-offline').textContent = offlineCount;
+
+            // Filtrar
+            let filtered = serversData;
+            if (currentFilter === 'online') {
+                filtered = serversData.filter(s => s.status === 'online');
+            } else if (currentFilter === 'offline') {
+                filtered = serversData.filter(s => s.status !== 'online');
+            }
+
+            const ordenados = [...filtered].sort((a, b) => {
+                if (a.status === 'online' && b.status !== 'online') return -1;
+                if (a.status !== 'online' && b.status === 'online') return 1;
+                return (a.hostname || '').localeCompare(b.hostname || '');
+            });
+
+            if (ordenados.length === 0) {
+                container.innerHTML = `<div class="placeholder">No hay servidores ${currentFilter === 'online' ? 'online' : 'offline'}</div>`;
+                return;
+            }
+
+            let html = '';
+            ordenados.forEach(server => {
+                const isOnline = server.status === 'online';
+                const statusClass = isOnline ? 'online' : 'offline';
+                const statusText = isOnline ? 'ONLINE' : 'OFFLINE';
+                const itemClass = isOnline ? 'online' : 'offline';
+                const icon = isOnline ? '⬤' : '○';
+                const isFavorite = server.hostname === 'carover0.xyz:9067' && isOnline;
+
+                html += `<div class="server-item ${itemClass}">`;
+                html += `<div class="server-header">`;
+                html += `<span class="hostname">${icon} ${escapeHtml(server.hostname || 'desconocido')}</span>`;
+                if (isFavorite) {
+                    html += `<span class="favorite">💛</span>`;
+                }
+                html += `<span class="status ${statusClass}">[${statusText}]</span>`;
+                html += `</div>`;
+
+                html += `<div class="server-details">`;
+                if (isOnline && server.height) {
+                    html +=
+                        `<span><span class="label">altura</span> <span class="value height">${Number(server.height).toLocaleString()}</span></span>`;
+                    if (server.lightwalletd) {
+                        html +=
+                            `<span><span class="label">lightwalletd</span> <span class="value">${escapeHtml(server.lightwalletd)}</span></span>`;
+                    }
+                    if (server.node) {
+                        const nodeStr = server.node.replace(/^\//, '').replace(/\/$/, '');
+                        html +=
+                            `<span><span class="label">nodo</span> <span class="value">${escapeHtml(nodeStr)}</span></span>`;
+                    }
+                    if (server.ips) {
+                        const ips = [];
+                        if (server.ips.ipv4) ips.push(`ipv4: ${server.ips.ipv4}`);
+                        if (server.ips.ipv6) ips.push(`ipv6: ${server.ips.ipv6}`);
+                        if (ips.length > 0) {
+                            html +=
+                                `<span class="value ips">${ips.join(' · ')}</span>`;
+                        }
+                    }
+                } else if (!isOnline) {
+                    const razon = server.reason || 'timeout';
+                    html += `<span><span class="label">razón</span> <span class="value reason">${escapeHtml(razon)}</span></span>`;
+                } else {
+                    html += `<span class="value" style="color:#4a443a;">sin datos</span>`;
+                }
+                html += `</div>`;
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
         }
-        
-        div.innerHTML = `<div class="server-header">${headerHTML}</div>${detailsHTML}`;
-        container.appendChild(div);
-      });
-    }
 
-    async function cargarDatos() {
-      try {
-        const urlConTimestamp = `${STATUS_URL}?t=${new Date().getTime()}`;
-        const response = await fetch(urlConTimestamp);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        
-        serversData = data.servers || [];
-        if (data.timestamp) mostrarTimestamp(data.timestamp);
-        renderizarLista();
-        
-      } catch (error) {
-        console.error('Error cargando datos:', error);
-        document.getElementById('serversList').innerHTML = '<div class="server-item"><span class="status-offline">ERROR: No se pudo cargar el estado de los servidores</span></div>';
-        document.getElementById('timestamp').innerHTML = 'Error cargando datos';
-      }
-    }
+        async function cargarDatos() {
+            try {
+                const urlConTimestamp = `${STATUS_URL}?t=${new Date().getTime()}`;
+                const response = await fetch(urlConTimestamp);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
 
-    cargarDatos();
-    setInterval(cargarDatos, 300000);
-  </script>
+                serversData = data.servers || [];
+                if (data.timestamp) updateTimestamp(data.timestamp);
+                renderServers();
+
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                document.getElementById('serversList').innerHTML =
+                    '<div class="placeholder" style="color:#ff756f;">ERROR: No se pudo cargar el estado de los servidores</div>';
+                document.getElementById('timestamp').textContent = 'Error cargando datos';
+            }
+        }
+
+        window.setFilter = setFilter;
+
+        // ─── INIT ────────────────────────────────────────────────────────
+        cargarDatos();
+        setInterval(cargarDatos, 300000); // 5 minutos
+    </script>
+
 </body>
 </html>
