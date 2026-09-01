@@ -1,246 +1,1616 @@
-<html lang="es"> 
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=.9">
-  <title>cΔrovΣr0 · Nodos</title>
-  <style>
-    :root { --cyan:#00d9ff; --green:#31db72; --panel:rgba(1,14,19,.91); --line:rgba(0,217,255,.45); --ui-scale:.9; }
-    * { box-sizing:border-box; }
-    body { margin:0; min-height:100vh; color:var(--green); font-family:"Lucida Console","Monaco",monospace; background:#02070a url('assets/f2.png') center/cover fixed no-repeat; }
-    .brand { position:fixed; z-index:3; top:18px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--cyan); font-size:clamp(20px,2vw,30px); font-weight:bold; letter-spacing:5px; text-shadow:0 0 18px var(--cyan); font-family:"Lucida Console","Monaco",monospace; }
-    
-main {
-  width:min(1600px,100%);
-  min-height:100vh;
-  margin:auto;
-  padding:76px 10px 46px;
-  display:grid;
-  grid-template-columns:minmax(330px,412px) 1fr minmax(330px,412px);
-  gap:clamp(25px,6vw,120px);
-  align-items:start;
-  transform:scale(var(--ui-scale));
-  transform-origin:top center;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cΔrovΣr0 · Nodos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .panel { position:relative; z-index:1; padding:36px 39px 27px; background:linear-gradient(135deg,rgba(2,20,27,.94),var(--panel)); border:3px solid var(--cyan); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 15px rgba(0,217,255,.9),0 0 45px rgba(0,217,255,.18),inset 0 0 26px rgba(0,217,255,.06); }
-    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--cyan) 0 11px,transparent 11px 18px); }
-    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
-    h2 { margin:4px 0 18px; color:var(--cyan); font-size:20px; font-weight:normal; letter-spacing:2px; text-shadow:0 0 10px var(--cyan); }
-    .node,.section { border-top:1px solid var(--line); padding:14px 0 16px; }
-    .node-title { display:flex; align-items:center; gap:12px; margin-bottom:7px; color:var(--cyan); font-size:18px; }
-    .node-link {
-      color:var(--cyan);
-      text-decoration:none;
-      font-weight:bold;
-      transition:color 0.2s;
-      font-family:"Lucida Console","Monaco",monospace;
-    }
-    .node-link:hover {
-      color:#fff;
-      text-decoration:underline;
-    }
-    .coin { flex:none; width:40px; height:40px; display:grid; place-items:center; }
-    .coin img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 6px rgba(255,255,255,.25)); }
-    .online { margin-left:auto; font-size:13px; color:var(--green); }
-    .data { display:grid; grid-template-columns:1fr auto; gap:4px 12px; padding-left:52px; font-size:15px; line-height:1.18; }
-    .data strong { min-width:116px; color:var(--green); font-weight:normal; }
-    .metric-name { display:block; margin-bottom:9px; color:var(--cyan); font-size:16px; }
-    .bar-line { display:flex; align-items:center; gap:9px; } .bar { display:flex; flex:1; gap:4px; } .bar i { display:block; width:14px; height:16px; border:1px solid rgba(49,219,114,.24); } .bar i.on { background:#32d772; box-shadow:0 0 8px rgba(49,219,114,.42); } .percent { min-width:40px; font-size:15px; }
-    .info { font-size:15px; line-height:1.4; white-space:pre-line; } .status { letter-spacing:1px; } .error { color:#ff8b75; font-size:14px; }
-.links { 
-  position:relative; 
-  z-index:1; 
-  grid-column:1 / -1; 
-  text-align:center; 
-  color:#b8fff0; 
-  font-size:15px; 
-  text-shadow:0 1px 3px #000; 
-  margin-top: -50px;
-}
-.links a { color:var(--cyan); text-decoration:none; }
-.links a:hover { text-decoration:underline; }
+        :root {
+            --violet: #4f46e5;
+            --violet-soft: #818cf8;
+            --violet-neon: #4338ca;
+            --green: #31db72;
+            --red: #ff756f;
+            --gold: #ffb530;
+            --line: rgba(160, 68, 255, .48);
+            --panel: rgba(6, 2, 13, .91);
+            --ui-scale: .9;
+        }
 
-    @media (max-width:1050px) { main { grid-template-columns:1fr 1fr; gap:25px; padding:74px 24px 35px; } .status-panel { grid-column:2; } .links { grid-column:1 / -1; } }
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
 
-@media (max-width:700px) {
-  main { display:block; padding:72px 15px 28px; }
-  .panel { padding:31px 27px 24px; margin-bottom:22px; }
-  .data { padding-left:48px; font-size:14px; }
-  .data strong { min-width:98px; }
-  .node-title { font-size:17px; gap:10px; }
-  .coin { width:36px; height:36px; font-size:20px; }
-  .online { font-size:12px; }
-  h2 { font-size:20px; }
-  .links { font-size:12px; }
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            backdrop-filter: blur(8px);
+        }
 
-  .panel:first-child,
-  .status-panel {
-    transform:none;
-  }
-}
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
 
-.panel:first-child {
-  transform: translateX(-60px);
-}
+        .brand .logo-text {
+            color: var(--violet-soft);
+            font-size: 23px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(79, 70, 229, 0.15);
+        }
 
-.status-panel {
-  transform: translateX(60px);
-}
+        .brand .logo-text small {
+            font-size: 13px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
 
-  </style>
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 18px;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--violet-soft);
+            border-bottom-color: var(--violet-soft);
+        }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #0d0b14;
+            border-radius: 16px;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            padding: 32px 36px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 60px rgba(79, 70, 229, 0.05);
+        }
+
+        .modal::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .modal::-webkit-scrollbar-thumb {
+            background: rgba(79, 70, 229, 0.2);
+            border-radius: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            color: #4a443a;
+            font-size: 22px;
+            cursor: pointer;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            font-family: 'Lucida Console', monospace;
+        }
+
+        .modal-close:hover {
+            color: var(--violet-soft);
+        }
+
+        .modal-title {
+            color: var(--violet-soft);
+            font-size: 19px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(79, 70, 229, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-title .icon {
+            font-size: 24px;
+        }
+
+        .modal-body {
+            color: #d2c8b7;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .modal-body .highlight {
+            color: var(--violet-soft);
+        }
+
+        .modal-body .desc {
+            margin: 8px 0;
+        }
+
+        .modal-body .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0;
+        }
+
+        .modal-body .feature-list li {
+            color: #b0a897;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(79, 70, 229, 0.04);
+        }
+
+        .modal-body .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .modal-body .feature-list .check {
+            color: var(--violet-soft);
+            margin-right: 6px;
+        }
+
+        .modal-body .feature-list .chain {
+            color: #5a5348;
+            font-size: 12px;
+        }
+
+        .modal-body .divider {
+            border-top: 1px solid rgba(79, 70, 229, 0.06);
+            margin: 12px 0;
+            padding-top: 12px;
+        }
+
+        /* ─── DONACION ADDRESSES ─── */
+        .donation-addr {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 12px;
+            padding: 7px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(79, 70, 229, 0.04);
+            margin: 4px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .donation-addr:hover {
+            background: rgba(79, 70, 229, 0.04);
+            border-color: rgba(79, 70, 229, 0.1);
+        }
+
+        .donation-addr .coin-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donation-addr .coin-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 6px rgba(79, 70, 229, 0.1));
+        }
+
+        .donation-addr .coin-name {
+            color: #6a6255;
+            font-size: 12px;
+            min-width: 60px;
+        }
+
+        .donation-addr .address {
+            color: var(--violet-soft);
+            font-size: 13px;
+            word-break: break-all;
+            flex: 1;
+        }
+
+        .donation-addr .copy-hint {
+            color: #3d3830;
+            font-size: 11px;
+        }
+
+        .donation-note {
+            color: #5a5348;
+            font-size: 12px;
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(79, 70, 229, 0.04);
+            text-align: center;
+        }
+
+        /* ─── CARD GRILLA ─── */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .card-full {
+            grid-column: 1 / -1;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(79, 70, 229, 0.08);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s, transform 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(79, 70, 229, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            color: var(--violet-soft);
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(79, 70, 229, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .count {
+            color: #4a443a;
+            font-size: 13px;
+            font-weight: 300;
+            margin-left: auto;
+        }
+
+        /* ─── NODOS ITEMS ─── */
+        .node-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(79, 70, 229, 0.03);
+        }
+
+        .node-item:last-child {
+            border-bottom: none;
+        }
+
+        .node-item .coin-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .node-item .coin-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.1));
+        }
+
+        .node-item .node-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .node-item .node-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .node-item .node-name a {
+            color: #f5ede4;
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .node-item .node-name a:hover {
+            color: var(--violet-soft);
+        }
+
+        .node-item .status {
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+        }
+
+        .node-item .status.online {
+            color: var(--green);
+            border-color: rgba(49, 219, 114, 0.15);
+            background: rgba(49, 219, 114, 0.05);
+        }
+
+        .node-item .status.offline {
+            color: var(--red);
+            border-color: rgba(255, 117, 111, 0.15);
+            background: rgba(255, 117, 111, 0.05);
+        }
+
+        .node-item .node-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            color: #5a5348;
+            margin-top: 2px;
+        }
+
+        .node-item .node-stats span {
+            color: #8a8275;
+        }
+
+        .node-item .node-stats .val {
+            color: #f5ede4;
+        }
+
+        /* ─── VPS STATUS ─── */
+        .vps-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0;
+        }
+
+        .vps-item .label {
+            color: #6a6255;
+            font-size: 13px;
+            min-width: 60px;
+        }
+
+        .vps-item .bar-track {
+            flex: 1;
+            height: 7px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            min-width: 60px;
+        }
+
+        .vps-item .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+            background: linear-gradient(90deg, var(--violet), var(--violet-soft));
+        }
+
+        .vps-item .bar-fill.orange {
+            background: linear-gradient(90deg, var(--gold), #ffd170);
+        }
+
+        .vps-item .bar-fill.green {
+            background: linear-gradient(90deg, var(--green), #5ae89a);
+        }
+
+        .vps-item .bar-fill.red {
+            background: linear-gradient(90deg, var(--red), #ff9a94);
+        }
+
+        .vps-item .percent {
+            color: #8a8275;
+            font-size: 13px;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .vps-info {
+            font-size: 13px;
+            color: #5a5348;
+            padding: 3px 0;
+        }
+
+        .vps-info .val {
+            color: #b0a897;
+        }
+
+        .vps-status-text {
+            font-size: 13px;
+            padding: 3px 0;
+        }
+
+        .vps-status-text.online {
+            color: var(--green);
+        }
+
+        .vps-status-text.offline {
+            color: var(--red);
+        }
+
+        /* ─── REACTORES TRON ─── */
+        .reactor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .reactor-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 16px 18px;
+            border: 1px solid rgba(79, 70, 229, 0.04);
+        }
+
+        .reactor-item:hover {
+            border-color: rgba(79, 70, 229, 0.1);
+        }
+
+        .reactor-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--violet-soft);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .reactor-title .status {
+            margin-left: auto;
+            font-size: 12px;
+        }
+
+        .reactor-title .status.online {
+            color: var(--green);
+        }
+
+        .reactor-title .status.offline {
+            color: var(--red);
+        }
+
+        .reactor-title .status.waiting {
+            color: var(--gold);
+        }
+
+        .metric-name {
+            display: block;
+            color: #6a6255;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .bar-line {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .bar-line .bar {
+            display: flex;
+            flex: 1;
+            gap: 3px;
+            min-width: 60px;
+        }
+
+        .bar-line .bar i {
+            display: block;
+            width: 11px;
+            height: 13px;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            background: rgba(79, 70, 229, 0.05);
+            border-radius: 2px;
+        }
+
+        .bar-line .bar i.on {
+            background: var(--violet);
+            box-shadow: 0 0 8px rgba(79, 70, 229, 0.3);
+            border-color: var(--violet);
+        }
+
+        .bar-line .bar i.on.bw {
+            background: var(--violet-soft);
+            box-shadow: 0 0 8px rgba(129, 140, 248, 0.3);
+            border-color: var(--violet-soft);
+        }
+
+        .bar-line .percent {
+            min-width: 38px;
+            font-size: 12px;
+            color: #8a8275;
+        }
+
+        .reactor-info {
+            font-size: 12px;
+            color: #8a8275;
+            margin-top: 3px;
+        }
+
+        .reactor-detail {
+            font-size: 11px;
+            color: #5a5348;
+            margin-top: 2px;
+        }
+
+        .reactor-footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(79, 70, 229, 0.04);
+            font-size: 12px;
+            color: #5a5348;
+        }
+
+        .reactor-footer .val {
+            color: var(--violet-soft);
+        }
+
+        .reactor-footer .status-text {
+            color: var(--green);
+        }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            padding-top: 14px;
+            border-top: 1px solid rgba(79, 70, 229, 0.06);
+            font-size: 12px;
+            color: #4a443a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .footer a:hover {
+            color: var(--violet-soft);
+        }
+
+        .footer .heart {
+            color: var(--violet-soft);
+        }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(79, 70, 229, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(79, 70, 229, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 13px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 1000;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reactor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px 18px;
+            }
+
+            .brand .logo-text {
+                font-size: 19px;
+            }
+
+            .nav-links {
+                font-size: 12px;
+                gap: 2px 14px;
+            }
+
+            .card {
+                padding: 18px 16px;
+            }
+
+            .card-title {
+                font-size: 16px;
+            }
+
+            .modal {
+                padding: 24px 20px;
+                margin: 10px;
+            }
+
+            .modal-title {
+                font-size: 17px;
+            }
+
+            .donation-addr {
+                padding: 4px 8px;
+                gap: 4px 8px;
+            }
+
+            .donation-addr .coin-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .donation-addr .address {
+                font-size: 12px;
+            }
+
+            .reactor-item {
+                padding: 12px 14px;
+            }
+
+            .bar-line .bar i {
+                width: 9px;
+                height: 11px;
+            }
+
+            .node-item .node-name a {
+                font-size: 14px;
+            }
+
+            .node-item .node-stats {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 8px 10px;
+                gap: 10px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .brand .logo-text {
+                font-size: 16px;
+            }
+
+            .brand .logo-text small {
+                font-size: 11px;
+            }
+
+            .card {
+                padding: 14px 12px;
+                border-radius: 10px;
+            }
+
+            .card-title {
+                font-size: 14px;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+            }
+
+            .node-item {
+                padding: 5px 0;
+                gap: 8px;
+            }
+
+            .node-item .coin-icon {
+                width: 28px;
+                height: 28px;
+            }
+
+            .node-item .node-name a {
+                font-size: 13px;
+            }
+
+            .node-item .node-stats {
+                font-size: 10px;
+                gap: 2px 10px;
+            }
+
+            .vps-item .label {
+                font-size: 11px;
+                min-width: 44px;
+            }
+
+            .vps-item .percent {
+                font-size: 11px;
+                min-width: 32px;
+            }
+
+            .modal {
+                padding: 18px 14px;
+            }
+
+            .modal-title {
+                font-size: 15px;
+            }
+
+            .modal-body {
+                font-size: 13px;
+            }
+
+            .modal-body .feature-list li {
+                font-size: 12px;
+            }
+
+            .donation-addr {
+                padding: 3px 6px;
+                gap: 3px 6px;
+            }
+
+            .donation-addr .coin-icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .donation-addr .coin-name {
+                font-size: 11px;
+                min-width: 44px;
+            }
+
+            .donation-addr .address {
+                font-size: 11px;
+            }
+
+            .donation-addr .copy-hint {
+                font-size: 10px;
+            }
+
+            .reactor-item {
+                padding: 10px 12px;
+            }
+
+            .reactor-title {
+                font-size: 13px;
+            }
+
+            .bar-line .bar i {
+                width: 8px;
+                height: 10px;
+            }
+
+            .bar-line .percent {
+                font-size: 11px;
+                min-width: 30px;
+            }
+
+            .reactor-info {
+                font-size: 11px;
+            }
+
+            .reactor-footer {
+                font-size: 11px;
+            }
+
+            .footer {
+                font-size: 11px;
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .app {
+                max-width: 1600px;
+                padding: 24px 40px;
+            }
+
+            .card-grid {
+                gap: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main>
-    <section class="panel">
-      <h2>FULL NODOS</h2>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/zcash.png" alt="Zcash"></span><a class="node-link" href="https://carover0.github.io/pagina/zec-nodo.html">ZCASH</a> <span class="online" id="zec-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="zec-height">—</strong><span>Peers</span><strong id="zec-peers">—</strong><span>Mempool</span><strong id="zec-mempool">—</strong><span>Version</span><strong id="zec-version">—</strong></div></article>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/firo.png" alt="Firo"></span><a class="node-link" href="https://carover0.github.io/pagina/firo-nodo.html">FIRO</a> <span class="online" id="firo-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="firo-height">—</strong><span>Peers</span><strong id="firo-peers">—</strong><span>Mempool</span><strong id="firo-mempool">—</strong><span>Version</span><strong id="firo-version">—</strong></div></article>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/pivx.png" alt="PIVX"></span><a class="node-link" href="https://carover0.github.io/pagina/pivx-nodo.html">PIVX</a> <span class="online" id="pivx-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="pivx-height">—</strong><span>Peers</span><strong id="pivx-peers">—</strong><span>Mempool</span><strong id="pivx-mempool">—</strong><span>Version</span><strong id="pivx-version">—</strong></div></article>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/ycash.png" alt="Ycash"></span><a class="node-link" href="https://carover0.github.io/pagina/ycash-nodo.html">YCASH</a> <span class="online" id="ycash-online">ONLINE</span></div><div class="data"><span>Height</span><strong id="ycash-height">—</strong><span>Peers</span><strong id="ycash-peers">—</strong><span>Mempool</span><strong id="ycash-mempool">—</strong><span>Version</span><strong id="ycash-version">—</strong></div></article>
-      <article class="node"><div class="node-title"><span class="coin"><img src="assets/radiacion.png" alt="Tron Energia"></span><a class="node-link" href="https://carover0.github.io/pagina/tron.html">Tron Energia</a> </div></article></section><div></div>
-    <aside class="panel status-panel"><h2>ESTADO DE VPS</h2>
-      <div class="section"><span class="metric-name">CPU</span><div class="bar-line"><div class="bar" id="cpu-bar"></div><span class="percent" id="cpu-percent">—</span></div></div>
-      <div class="section"><span class="metric-name">RAM</span><div class="bar-line"><div class="bar" id="ram-bar"></div><span class="percent" id="ram-percent">—</span></div></div>
-      <div class="section"><span class="metric-name">DISK /</span><div class="bar-line"><div class="bar" id="disk-bar"></div><span class="percent" id="disk-percent">—</span></div></div>
-      
-      
-      <div class="section"><span class="metric-name">UPTIME</span><div class="info" id="uptime">—</div></div>
-      <div class="section"><span class="metric-name">LAST UPDATE</span><div class="info" id="last-update">—</div></div>
-      <div class="section"><span class="metric-name">STATUS</span><div class="info status" id="vps-status">CONNECTING…</div></div>
-      
-      <div class="section">
-        <span class="metric-name" style="display:flex; align-items:center; gap:8px;">
-          <img src="assets/pol.png" alt="Polygon" style="height:40px; width:40px; object-fit:contain; filter:drop-shadow(0 0 6px rgba(0,217,255,.3));">
-        <a href="https://carover0.github.io/pagina/polygon-board.html" target="_self" class="node-link">POLYGON BOARD</a></span></div>
-      <span class="metric-name" style="display:flex; align-items:center; gap:8px;">
-          <img src="assets/coingecko.png" alt="Cg" style="height:40px; width:40px; object-fit:contain; filter:drop-shadow(0 0 6px rgba(0,217,255,.3));">
-        <a href="https://carover0.github.io/pagina/precios.html" target="_self" class="node-link">COINGECKO (sin rastreadores)</a></span></div></div>      </div>
-      
-      <div class="section"><span class="metric-name">ACERCA</span><div class="info" id="last-update"> <a href="https://carover0.github.io/pagina/pagina.html" target="_self" class="node-link">Esta pagina</a> · <a href="https://carover0.github.io/pagina/tips.html" target="_self" class="node-link">Colabora</a> 
-</div>
-    </aside>
-  </main>
-  <script>
-    const $ = id => document.getElementById(id);
-    const show = (id, value) => {
-      const el = $(id);
-      if (el) el.textContent = value ?? '—';
-    };
-    const format = value => Number(value || 0).toLocaleString('en-US');
-    
-    const setNode = (coin, data) => { 
-      show(`${coin}-height`, format(data.height)); 
-      show(`${coin}-peers`, data.connections); 
-      show(`${coin}-mempool`, data.mempool); 
-      show(`${coin}-version`, data.version); 
-      const onlineEl = $(`${coin}-online`);
-      if (onlineEl) {
-        onlineEl.textContent = 'ONLINE';
-        onlineEl.style.color = 'var(--green)';
-      }
-    };
-    
-    const offline = coin => { 
-      const onlineEl = $(`${coin}-online`);
-      if (onlineEl) {
-        onlineEl.textContent = 'OFFLINE';
-        onlineEl.style.color = '#ff8b75';
-      }
-    };
-    
-    const setBar = (id, value) => { 
-      const el = $(id);
-      if (!el) return;
-      const safe = Math.max(0, Math.min(100, Number(value) || 0)); 
-      el.innerHTML = Array.from({length:10}, (_, i) => 
-        `<i class="${i < Math.ceil(safe / 10) ? 'on' : ''}"></i>`
-      ).join(''); 
-    };
-    
-    async function updateStatus() {
-      const now = new Date();
-      const timeStr = now.toLocaleString('es-AR', { hour12: false });
-      show('last-update', timeStr + ' UTC');
-      
-      try { 
-        const r = await fetch('https://carover0.xyz/zec/status.json'); 
-        const d = await r.json(); 
-        setNode('zec', {
-          height: d.chain?.height || d.height, 
-          connections: d.network?.connections || d.connections, 
-          mempool: d.mempool?.size || d.mempool, 
-          version: d.network?.subversion || d.version || '—'
-        }); 
-      } catch(e) { 
-        console.log('Zcash error:', e);
-        offline('zec'); 
-      }
-      
-      try { 
-        const r = await fetch('https://carover0.xyz/firo/status.json'); 
-        const d = await r.json(); 
-        setNode('firo', {
-          height: d.height, 
-          connections: d.connections, 
-          mempool: d.mempool, 
-          version: d.version
-        }); 
-      } catch(e) { 
-        console.log('Firo error:', e);
-        offline('firo'); 
-      }
-      
-      try { 
-        const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json'); 
-        const d = await r.json(); 
-        setNode('pivx', {
-          height: d.height, 
-          connections: d.connections, 
-          mempool: d.mempool, 
-          version: d.software_subversion
-        }); 
-      } catch(e) { 
-        console.log('PIVX error:', e);
-        offline('pivx'); 
-      }
-      
-      try { 
-        const r = await fetch('https://carover0.xyz/cacaX/ycash_status.json'); 
-        const d = await r.json(); 
-        setNode('ycash', {
-          height: d.height, 
-          connections: d.connections, 
-          mempool: d.mempool, 
-          version: d.software_subversion
-        }); 
-      } catch(e) { 
-        console.log('Ycash error:', e);
-        offline('ycash'); 
-      }
-      
-      try { 
-        const r = await fetch('https://carover0.xyz/firo/health.json'); 
-        const h = await r.json(); 
-        const cpu = h.cpu?.percent, 
-              ram = h.memory?.percent, 
-              disk = h.disk?.root_percent; 
-        setBar('cpu-bar', cpu); 
-        setBar('ram-bar', ram); 
-        setBar('disk-bar', disk); 
-        show('cpu-percent', `${cpu || 0}%`); 
-        show('ram-percent', `${ram || 0}%`); 
-        show('disk-percent', `${disk || 0}%`); 
-        show('uptime', h.uptime || '—'); 
-        show('vps-status', h.status || 'ALL SYSTEMS OPERATIONAL'); 
-      } catch(e) { 
-        console.log('VPS error:', e);
-        show('vps-status', 'STATUS UNAVAILABLE'); 
-      }
-    }
-    
-    updateStatus();
-    setInterval(updateStatus, 30000);
-  </script>
+
+    <div class="app">
+
+        <header class="header">
+            <div class="brand">
+                <span class="logo-text">cΔrovΣr0 <small>nodos</small></span>
+            </div>
+            <nav class="nav-links">
+                <a onclick="openModal('info')">[ACERCA]</a>
+                <a onclick="openModal('donate')">[APOYAR]</a>
+                <a href="https://carover0.github.io/pagina/precios.html">[PRECIOS]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
+
+        <!-- ─── CARD GRID ─── -->
+        <div class="card-grid">
+
+            <!-- Card 1: Full Nodos -->
+            <div class="card">
+                <div class="card-title">FULL NODOS <span class="count">· 4</span></div>
+
+                <div class="node-item">
+                    <div class="coin-icon"><img src="assets/zcash.png" alt="Zcash"></div>
+                    <div class="node-info">
+                        <div class="node-name">
+                            <a href="https://carover0.github.io/pagina/zec-nodo.html">ZCASH</a>
+                            <span class="status online" id="zec-status">ONLINE</span>
+                        </div>
+                        <div class="node-stats">
+                            <span>Height: <span class="val" id="zec-height">—</span></span>
+                            <span>Peers: <span class="val" id="zec-peers">—</span></span>
+                            <span>Mempool: <span class="val" id="zec-mempool">—</span></span>
+                            <span>Version: <span class="val" id="zec-version">—</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="node-item">
+                    <div class="coin-icon"><img src="assets/firo.png" alt="Firo"></div>
+                    <div class="node-info">
+                        <div class="node-name">
+                            <a href="https://carover0.github.io/pagina/firo-nodo.html">FIRO</a>
+                            <span class="status online" id="firo-status">ONLINE</span>
+                        </div>
+                        <div class="node-stats">
+                            <span>Height: <span class="val" id="firo-height">—</span></span>
+                            <span>Peers: <span class="val" id="firo-peers">—</span></span>
+                            <span>Mempool: <span class="val" id="firo-mempool">—</span></span>
+                            <span>Version: <span class="val" id="firo-version">—</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="node-item">
+                    <div class="coin-icon"><img src="assets/pivx.png" alt="PIVX"></div>
+                    <div class="node-info">
+                        <div class="node-name">
+                            <a href="https://carover0.github.io/pagina/pivx-nodo.html">PIVX</a>
+                            <span class="status online" id="pivx-status">ONLINE</span>
+                        </div>
+                        <div class="node-stats">
+                            <span>Height: <span class="val" id="pivx-height">—</span></span>
+                            <span>Peers: <span class="val" id="pivx-peers">—</span></span>
+                            <span>Mempool: <span class="val" id="pivx-mempool">—</span></span>
+                            <span>Version: <span class="val" id="pivx-version">—</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="node-item">
+                    <div class="coin-icon"><img src="assets/ycash.png" alt="Ycash"></div>
+                    <div class="node-info">
+                        <div class="node-name">
+                            <a href="https://carover0.github.io/pagina/ycash-nodo.html">YCASH</a>
+                            <span class="status online" id="ycash-status">ONLINE</span>
+                        </div>
+                        <div class="node-stats">
+                            <span>Height: <span class="val" id="ycash-height">—</span></span>
+                            <span>Peers: <span class="val" id="ycash-peers">—</span></span>
+                            <span>Mempool: <span class="val" id="ycash-mempool">—</span></span>
+                            <span>Version: <span class="val" id="ycash-version">—</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Estado del VPS -->
+            <div class="card">
+                <div class="card-title">ESTADO DEL VPS</div>
+
+                <div class="vps-item">
+                    <span class="label">CPU</span>
+                    <div class="bar-track"><div class="bar-fill" id="cpu-bar" style="width:0%"></div></div>
+                    <span class="percent" id="cpu-percent">—</span>
+                </div>
+
+                <div class="vps-item">
+                    <span class="label">RAM</span>
+                    <div class="bar-track"><div class="bar-fill" id="ram-bar" style="width:0%"></div></div>
+                    <span class="percent" id="ram-percent">—</span>
+                </div>
+
+                <div class="vps-item">
+                    <span class="label">DISK</span>
+                    <div class="bar-track"><div class="bar-fill" id="disk-bar" style="width:0%"></div></div>
+                    <span class="percent" id="disk-percent">—</span>
+                </div>
+
+                <div class="vps-info">
+                    Uptime: <span class="val" id="vps-uptime">—</span>
+                </div>
+
+                <div class="vps-info">
+                    Last update: <span class="val" id="vps-update">—</span>
+                </div>
+
+                <div class="vps-status-text online" id="vps-status">ALL SYSTEMS OPERATIONAL</div>
+            </div>
+
+            <!-- Card 3: TRON -->
+            <div class="card card-full">
+                <div class="card-title">
+                    <img src="assets/tron.png" alt="Tron" style="height:30px;width:30px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(79,70,229,0.2));">
+                    ENERGIA TRON
+                    <span class="count" id="global-status" style="color:var(--green);font-size:12px;">INICIALIZANDO...</span>
+                </div>
+
+                <div class="reactor-grid">
+                    <!-- Reactor 1 -->
+                    <div class="reactor-item">
+                        <div class="reactor-title">
+                            <span>⚛️ R1</span>
+                            <span class="status waiting" id="r1-status">CONECTANDO...</span>
+                        </div>
+
+                        <span class="metric-name">⚡ ENERGÍA BRUTA</span>
+                        <div class="bar-line">
+                            <div class="bar" id="r1-energy-bar"></div>
+                            <span class="percent" id="r1-energy-percent">—</span>
+                        </div>
+                        <div class="reactor-info" id="r1-energy-total">—</div>
+                        <div class="reactor-detail" id="r1-energy-detail">—</div>
+
+                        <span class="metric-name" style="margin-top:8px;">📶 BANDWIDTH</span>
+                        <div class="bar-line">
+                            <div class="bar" id="r1-bandwidth-bar"></div>
+                            <span class="percent" id="r1-bandwidth-percent">—</span>
+                        </div>
+                        <div class="reactor-info" id="r1-bandwidth-total">—</div>
+                    </div>
+
+                    <!-- Reactor 2 -->
+                    <div class="reactor-item">
+                        <div class="reactor-title">
+                            <span>⚛️ R2</span>
+                            <span class="status waiting" id="r2-status">CONECTANDO...</span>
+                        </div>
+
+                        <span class="metric-name">⚡ ENERGÍA BRUTA</span>
+                        <div class="bar-line">
+                            <div class="bar" id="r2-energy-bar"></div>
+                            <span class="percent" id="r2-energy-percent">—</span>
+                        </div>
+                        <div class="reactor-info" id="r2-energy-total">—</div>
+                        <div class="reactor-detail" id="r2-energy-detail">—</div>
+
+                        <span class="metric-name" style="margin-top:8px;">📶 BANDWIDTH</span>
+                        <div class="bar-line">
+                            <div class="bar" id="r2-bandwidth-bar"></div>
+                            <span class="percent" id="r2-bandwidth-percent">—</span>
+                        </div>
+                        <div class="reactor-info" id="r2-bandwidth-total">—</div>
+                    </div>
+                </div>
+
+                <div class="reactor-footer">
+                    <span>⏱ <span class="val" id="last-update">—</span></span>
+                    <span>siguiente: <span class="val" id="update-timer">30s</span></span>
+                    <span class="status-text" id="global-status-text">🟢 SISTEMA OPERATIVO</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ─── FOOTER ─── -->
+        <footer class="footer">
+            <span>cΔrovΣr0 · <span class="heart">♥</span> desde Argentina</span>
+            <span>
+                <a onclick="openModal('info')">Acerca</a> ·
+                <a onclick="openModal('donate')">Apoyar</a>
+            </span>
+        </footer>
+
+    </div>
+
+    <!-- ─── TOAST ─── -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ─── MODAL INFO ─── -->
+    <div class="modal-overlay" id="modal-info">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('info')">✕</button>
+            <div class="modal-title"><span class="icon">⧫</span> ¿QUÉ ES ESTO?</div>
+            <div class="modal-body">
+                <div class="desc">
+                    ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Zcash, Firo, Ycash y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
+                </div>
+
+                <div class="desc" style="font-size:13px; color:#5a5348;">
+                    Toda la información se procesa a nivel de servidor. El navegador únicamente muestra los datos obtenidos, sin ejecutar scripts de terceros ni depender de servicios externos para el procesamiento.
+                </div>
+
+                <div class="desc" style="margin-top:12px;">
+                    <span class="highlight">▸ ¿QUÉ OFRECE?</span>
+                </div>
+
+                <ul class="feature-list">
+                    <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Estadísticas</span> → Información sobre suministro, pools de valor, halvings y actualizaciones de protocolo.</li>
+                    <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Zcash, Firo)</span></li>
+                </ul>
+
+                <div class="desc" style="margin-top:10px;">
+                    <span class="highlight">▸ ¿POR QUÉ?</span><br>
+                    Porque la información de una red pública debe ser accesible sin depender de plataformas centralizadas. Toda la infraestructura que alimenta esta página es operada por mí, con el objetivo de ofrecer datos transparentes, verificables y sin filtros.
+                </div>
+
+                <div class="divider">
+                    <span style="color:#3d3830;font-size:12px;"><span class="highlight">♥</span> Hecho con ♥ desde Argentina · <span class="highlight">cΔrovΣr0</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── MODAL DONAR ─── -->
+    <div class="modal-overlay" id="modal-donate">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('donate')">✕</button>
+            <div class="modal-title"><span class="icon">◆</span> APOYA EL PROYECTO</div>
+            <div class="modal-body">
+                <div class="desc">
+                    Las colaboraciones siempre son bienvenidas y ayudan a mantener la infraestructura.
+                </div>
+
+                <div class="desc" style="margin-top:12px;">
+                    <span class="highlight">✧ Direcciones de donación</span>
+                </div>
+
+                <div class="donation-addr" onclick="copyAddress('t1Xi5Ha5EvGVEHGHhrF4HvYMrcUXMgJTpBU', 'Zcash ZEC')">
+                    <span class="coin-icon"><img src="assets/zcash.png" alt="Zcash"></span>
+                    <span class="coin-name">Zcash ZEC</span>
+                    <span class="address">t1Xi5Ha5EvGVEHGHhrF4HvYMrcUXMgJTpBU</span>
+                    <span class="copy-hint">[copiar]</span>
+                </div>
+
+                <div class="donation-addr" onclick="copyAddress('D8pDEJC7G8DZJK4972H4q4tKBPerskvTY7', 'PIVX')">
+                    <span class="coin-icon"><img src="assets/pivx.png" alt="PIVX"></span>
+                    <span class="coin-name">PIVX</span>
+                    <span class="address">D8pDEJC7G8DZJK4972H4q4tKBPerskvTY7</span>
+                    <span class="copy-hint">[copiar]</span>
+                </div>
+
+                <div class="donation-addr" onclick="copyAddress('carover0.firo', 'Firo FIRO')">
+                    <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
+                    <span class="coin-name">Firo FIRO</span>
+                    <span class="address">carover0.firo</span>
+                    <span class="copy-hint">[copiar]</span>
+                </div>
+
+                <div class="donation-addr" onclick="copyAddress('0x387c28001b5002Be7a62eb4c8CB90D002163C41A', 'Polygon POL')">
+                    <span class="coin-icon"><img src="assets/pol.png" alt="Polygon"></span>
+                    <span class="coin-name">Polygon POL</span>
+                    <span class="address">0x387c28001b5002Be7a62eb4c8CB90D002163C41A</span>
+                    <span class="copy-hint">[copiar]</span>
+                </div>
+
+                <div class="donation-addr" onclick="copyAddress('s1MnYtobqQZZ2gfmUzVbJA6k3qukfVQSGJE', 'Ycash YEC')">
+                    <span class="coin-icon"><img src="assets/ycash.png" alt="Ycash"></span>
+                    <span class="coin-name">Ycash YEC</span>
+                    <span class="address">s1MnYtobqQZZ2gfmUzVbJA6k3qukfVQSGJE</span>
+                    <span class="copy-hint">[copiar]</span>
+                </div>
+
+                <div class="donation-note">
+                    ◆ Hacé clic en cualquier dirección para copiarla al portapapeles.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── MODALES ──────────────────────────────────────────────────────
+        function openModal(type) {
+            const modal = document.getElementById('modal-' + type);
+            if (modal) modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(type) {
+            const modal = document.getElementById('modal-' + type);
+            if (modal) modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 2000);
+        }
+
+        function copyAddress(address, coin) {
+            navigator.clipboard.writeText(address).then(() => {
+                showToast('✓ ' + coin + ' copiado');
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = address;
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('✓ ' + coin + ' copiado');
+                } catch (_) {}
+                document.body.removeChild(ta);
+            });
+        }
+
+        // ─── HELPERS ────────────────────────────────────────────────────
+        function $(id) { return document.getElementById(id); }
+
+        function show(id, value) {
+            const el = $(id);
+            if (el) el.textContent = value ?? '—';
+        }
+
+        function format(num) {
+            return Number(num || 0).toLocaleString('es-AR');
+        }
+
+        function setNode(coin, data) {
+            show(coin + '-height', format(data.height));
+            show(coin + '-peers', data.connections);
+            show(coin + '-mempool', data.mempool);
+            show(coin + '-version', data.version);
+            const statusEl = $(coin + '-status');
+            if (statusEl) {
+                statusEl.textContent = 'ONLINE';
+                statusEl.className = 'status online';
+            }
+        }
+
+        function offline(coin) {
+            const statusEl = $(coin + '-status');
+            if (statusEl) {
+                statusEl.textContent = 'OFFLINE';
+                statusEl.className = 'status offline';
+            }
+        }
+
+        function setBar(id, value) {
+            const el = $(id);
+            if (!el) return;
+            const safe = Math.max(0, Math.min(100, Number(value) || 0));
+            el.style.width = safe + '%';
+            if (safe > 80) {
+                el.className = 'bar-fill red';
+            } else if (safe > 60) {
+                el.className = 'bar-fill orange';
+            } else {
+                el.className = 'bar-fill green';
+            }
+        }
+
+        // ─── UPDATE STATUS ─────────────────────────────────────────────
+        async function updateStatus() {
+            const now = new Date();
+            show('vps-update', now.toLocaleString('es-AR', { hour12: false }) + ' UTC');
+
+            try {
+                const r = await fetch('https://carover0.xyz/zec/status.json');
+                const d = await r.json();
+                setNode('zec', {
+                    height: d.chain?.height || d.height,
+                    connections: d.network?.connections || d.connections,
+                    mempool: d.mempool?.size || d.mempool,
+                    version: d.network?.subversion || d.version || '—'
+                });
+            } catch (e) {
+                console.log('Zcash error:', e);
+                offline('zec');
+            }
+
+            try {
+                const r = await fetch('https://carover0.xyz/firo/status.json');
+                const d = await r.json();
+                setNode('firo', {
+                    height: d.height,
+                    connections: d.connections,
+                    mempool: d.mempool,
+                    version: d.version
+                });
+            } catch (e) {
+                console.log('Firo error:', e);
+                offline('firo');
+            }
+
+            try {
+                const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json');
+                const d = await r.json();
+                setNode('pivx', {
+                    height: d.height,
+                    connections: d.connections,
+                    mempool: d.mempool,
+                    version: d.software_subversion
+                });
+            } catch (e) {
+                console.log('PIVX error:', e);
+                offline('pivx');
+            }
+
+            try {
+                const r = await fetch('https://carover0.xyz/cacaX/ycash_status.json');
+                const d = await r.json();
+                setNode('ycash', {
+                    height: d.height,
+                    connections: d.connections,
+                    mempool: d.mempool,
+                    version: d.software_subversion
+                });
+            } catch (e) {
+                console.log('Ycash error:', e);
+                offline('ycash');
+            }
+
+            try {
+                const r = await fetch('https://carover0.xyz/firo/health.json');
+                const h = await r.json();
+                const cpu = h.cpu?.percent,
+                    ram = h.memory?.percent,
+                    disk = h.disk?.root_percent;
+                setBar('cpu-bar', cpu);
+                setBar('ram-bar', ram);
+                setBar('disk-bar', disk);
+                show('cpu-percent', (cpu || 0) + '%');
+                show('ram-percent', (ram || 0) + '%');
+                show('disk-percent', (disk || 0) + '%');
+                show('vps-uptime', h.uptime || '—');
+                const statusEl = document.getElementById('vps-status');
+                if (h.status) {
+                    statusEl.textContent = h.status;
+                    statusEl.className = 'vps-status-text online';
+                } else {
+                    statusEl.textContent = 'ALL SYSTEMS OPERATIONAL';
+                    statusEl.className = 'vps-status-text online';
+                }
+            } catch (e) {
+                console.log('VPS error:', e);
+                const statusEl = document.getElementById('vps-status');
+                statusEl.textContent = 'STATUS UNAVAILABLE';
+                statusEl.className = 'vps-status-text offline';
+            }
+        }
+
+        const TRONSCAN_KEY = 'eba0f317-25ee-4027-bff9-a692fecbd85f';
+        const R1_ADDRESS = 'TS1k7yVS6PLNRP3xSms65YVa5sARj2JgVd';
+        const R2_ADDRESS = 'TN8tyafAodF5Yez4yuKv6QqvycQoMPYt2D';
+        const UPDATE_INTERVAL = 30000;
+
+        function formatNumInt(num) {
+            if (num === undefined || num === null || isNaN(num) || num === 0) return '0';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+            return Math.round(num).toString();
+        }
+
+        function setReactorBar(barId, available, total, isBandwidth = false) {
+            const bar = document.getElementById(barId);
+            if (!bar) return 0;
+            const percent = total > 0 ? Math.min(100, Math.round((available / total) * 100)) : 0;
+            const segments = 10;
+            const filled = Math.round((percent / 100) * segments);
+            bar.innerHTML = '';
+            for (let i = 0; i < segments; i++) {
+                const segment = document.createElement('i');
+                if (i < filled) {
+                    if (isBandwidth) segment.className = 'on bw';
+                    else segment.className = 'on';
+                }
+                bar.appendChild(segment);
+            }
+            return percent;
+        }
+
+        function safeValue(val, defaultValue = 0) {
+            if (val === undefined || val === null || isNaN(val)) return defaultValue;
+            return val;
+        }
+
+        async function getDelegatedResources(address, resourceType = 2) {
+            try {
+                let allDelegations = [];
+                let start = 0;
+                const limit = 100;
+                let hasMore = true;
+
+                while (hasMore) {
+                    const url =
+                        `https://apilist.tronscan.org/api/account/resourcev2?address=${address}&start=${start}&limit=${limit}&type=2&resourceType=${resourceType}`;
+
+                    const response = await fetch(url, {
+                        headers: { 'TRON-PRO-API-KEY': TRONSCAN_KEY }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (data.data && data.data.length > 0) {
+                        allDelegations = allDelegations.concat(data.data);
+                        start += limit;
+                        if (start >= data.total) {
+                            hasMore = false;
+                        }
+                    } else {
+                        hasMore = false;
+                    }
+                }
+
+                let totalDelegatedEnergy = 0;
+                let delegationDetails = [];
+
+                allDelegations.forEach(item => {
+                    const resourceValue = safeValue(item.resourceValue);
+                    const receiverAddress = item.receiverAddress || 'unknown';
+                    totalDelegatedEnergy += resourceValue;
+                    delegationDetails.push({
+                        to: receiverAddress,
+                        value: resourceValue
+                    });
+                });
+
+                return {
+                    total: totalDelegatedEnergy,
+                    details: delegationDetails,
+                    count: allDelegations.length
+                };
+            } catch (e) {
+                console.error('Error obteniendo delegaciones:', e);
+                return { total: 0, details: [], count: 0 };
+            }
+        }
+
+        async function fetchReactorData(address, prefix) {
+            try {
+                const urlDetail = `https://apilist.tronscan.org/api/accountv2?address=${address}`;
+                const responseDetail = await fetch(urlDetail, {
+                    headers: { 'TRON-PRO-API-KEY': TRONSCAN_KEY }
+                });
+
+                if (!responseDetail.ok) {
+                    throw new Error(`HTTP error! status: ${responseDetail.status}`);
+                }
+
+                const data = await responseDetail.json();
+
+                const delegatedData = await getDelegatedResources(address, 2);
+                const totalDelegatedEnergy = delegatedData.total;
+
+                const get = (field) => safeValue(data[field]);
+
+                // ─── ENERGIA ─────────────────────────────────────────
+                const selfEnergyV2 = get('frozenForEnergyV2Value');
+                const selfEnergyV1 = get('frozenForEnergyValue');
+                const selfEnergyTotal = selfEnergyV2 + selfEnergyV1;
+
+                const acquiredEnergyV2 = get('acquiredDelegatedFrozenV2BalanceForEnergyValue');
+                const acquiredEnergyV1 = get('acquiredDelegatedFrozenBalanceForEnergyValue');
+                const acquiredEnergyTotal = acquiredEnergyV2 + acquiredEnergyV1;
+
+                const energiaBruta = selfEnergyTotal + acquiredEnergyTotal + totalDelegatedEnergy;
+                const energyDisponible = get('totalEnergyRemaining');
+
+                // ─── BANDWIDTH ──────────────────────────────────────
+                const totalNet = get('totalNet');
+                const netRemaining = get('totalNetRemaining');
+
+                // ─── ACTUALIZAR UI ─────────────────────────────────
+                const energyPercent = setReactorBar(`${prefix}-energy-bar`, energyDisponible, energiaBruta, false);
+                $(`${prefix}-energy-percent`).textContent = energiaBruta > 0 ? `${energyPercent}%` : "0%";
+
+                $(`${prefix}-energy-total`).textContent =
+                    `⚡ ${formatNumInt(energiaBruta)} BRUTA · ${formatNumInt(energyDisponible)} DISPONIBLE`;
+
+                let detailParts = [];
+                if (selfEnergyTotal > 0) {
+                    detailParts.push(`Actual: ${formatNumInt(selfEnergyTotal)}`);
+                }
+                if (acquiredEnergyTotal > 0) {
+                    detailParts.push(`Recibido: ${formatNumInt(acquiredEnergyTotal)}`);
+                }
+                if (totalDelegatedEnergy > 0) {
+                    detailParts.push(`Delegado: ${formatNumInt(totalDelegatedEnergy)} (${delegatedData.count} destinos)`);
+                }
+
+                $(`${prefix}-energy-detail`).textContent = detailParts.length > 0 ? detailParts.join(' · ') :
+                    'Sin staking activo';
+
+                const bandwidthPercent = setReactorBar(`${prefix}-bandwidth-bar`, netRemaining, totalNet, true);
+                $(`${prefix}-bandwidth-percent`).textContent = totalNet > 0 ? `${bandwidthPercent}%` : "0%";
+                $(`${prefix}-bandwidth-total`).textContent =
+                    `📶 ${formatNumInt(totalNet)} BRUTA · ${formatNumInt(netRemaining)} DISPONIBLE`;
+
+                $(`${prefix}-status`).textContent = "✅ ONLINE";
+                $(`${prefix}-status`).className = "status online";
+
+                return { success: true };
+            } catch (e) {
+                console.error(`❌ Error en ${prefix}:`, e);
+                $(`${prefix}-status`).textContent = "⚠️ OFFLINE";
+                $(`${prefix}-status`).className = "status offline";
+                return { success: false };
+            }
+        }
+
+        let countdown = UPDATE_INTERVAL / 1000;
+        let timerInterval = null;
+
+        function updateTimerDisplay() {
+            const timerElement = document.getElementById('update-timer');
+            if (timerElement) timerElement.textContent = countdown + 's';
+        }
+
+        function startCountdown() {
+            countdown = UPDATE_INTERVAL / 1000;
+            updateTimerDisplay();
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) countdown = UPDATE_INTERVAL / 1000;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        let isUpdating = false;
+
+        async function updateReactors() {
+            if (isUpdating) return;
+            isUpdating = true;
+            const statusText = document.getElementById('global-status-text');
+            const globalStatus = document.getElementById('global-status');
+            statusText.textContent = '🔄 ACTUALIZANDO...';
+            statusText.style.color = '#ffd700';
+            globalStatus.textContent = 'ACTUALIZANDO...';
+            globalStatus.style.color = '#ffd700';
+
+            try {
+                await Promise.all([
+                    fetchReactorData(R1_ADDRESS, 'r1'),
+                    fetchReactorData(R2_ADDRESS, 'r2')
+                ]);
+
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+                statusText.textContent = '🟢 SISTEMA OPERATIVO';
+                statusText.style.color = '#31db72';
+                globalStatus.textContent = 'OPERATIVO';
+                globalStatus.style.color = '#31db72';
+                startCountdown();
+            } catch (error) {
+                console.error('Error en actualización:', error);
+                statusText.textContent = '⚠️ ERROR DE ACTUALIZACIÓN';
+                statusText.style.color = '#ff756f';
+                globalStatus.textContent = 'ERROR';
+                globalStatus.style.color = '#ff756f';
+            } finally {
+                isUpdating = false;
+            }
+        }
+
+        async function initReactors() {
+            await updateReactors();
+            setInterval(updateReactors, UPDATE_INTERVAL);
+        }
+
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.copyAddress = copyAddress;
+
+        // ─── INIT ────────────────────────────────────────────────────────
+        updateStatus();
+        setInterval(updateStatus, 30000);
+        initReactors();
+    </script>
+
 </body>
 </html>
