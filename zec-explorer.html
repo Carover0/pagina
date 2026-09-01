@@ -512,7 +512,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ── BREADCRUMB ── */
         .breadcrumb {
             display: flex;
             flex-wrap: wrap;
@@ -546,7 +545,6 @@
             color: #3d3830;
         }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 1024px) {
             .app {
                 padding: 16px 20px;
@@ -736,7 +734,6 @@
             <div class="badge">● LIVE</div>
         </div>
 
-        <!-- BREADCRUMB -->
         <div class="breadcrumb" id="breadcrumb"></div>
 
         <div class="search-section">
@@ -768,12 +765,10 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const API_URL = "https://carover0.xyz/api/zec/rpc.php";
         const TOKEN = "zec2026";
         const STATUS_URL = "https://carover0.xyz/zec/status.json";
 
-        // ─── HISTORIAL ──────────────────────────────────────────────────
         let historyStack = [];
         let currentIndex = -1;
 
@@ -860,7 +855,6 @@
             }
         }
 
-        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -884,9 +878,7 @@
                 input.value = decoded;
                 const cmd = detectCommand(decoded);
                 const label = getLabelForQuery(cmd);
-                // Guardar el comando completo en el historial, pero la URL solo tendrá el valor limpio
                 pushHistory(cmd, label);
-                // Actualizar URL con el valor limpio (sin comandos)
                 const cleanValue = getCleanValue(cmd);
                 updateUrlWithSearch(cleanValue);
                 executeSearch(cmd);
@@ -894,7 +886,6 @@
         }
 
         function getCleanValue(cmd) {
-            // Extraer el valor limpio del comando
             if (cmd.startsWith('getblock ')) {
                 return cmd.replace('getblock ', '');
             }
@@ -957,7 +948,6 @@
             return input;
         }
 
-        // ─── STATS ──────────────────────────────────────────────────────
         async function loadNetworkStats() {
             try {
                 const r = await fetch(STATUS_URL);
@@ -968,7 +958,6 @@
             } catch (e) {}
         }
 
-        // ─── VIN HELPER ─────────────────────────────────────────────────
         async function getVinValue(txid, voutIndex) {
             try {
                 const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`).then(r => r.json());
@@ -977,7 +966,6 @@
             } catch (e) { return null; }
         }
 
-        // ─── RENDER ─────────────────────────────────────────────────────
         function renderOutput(html) {
             document.getElementById('output').innerHTML = html;
         }
@@ -1049,7 +1037,7 @@
                 return 'UA ' + formatAddressLabel(s.substring(3));
             }
 
-            // Dirección directa
+            // Direccin directa
             if (s.startsWith('t1') || s.startsWith('t3') || s.startsWith('zs') || s.startsWith('u1')) {
                 if (s.startsWith('zs')) return 'Z-Address ' + formatAddressLabel(s);
                 if (s.startsWith('u1')) return 'UA ' + formatAddressLabel(s);
@@ -1076,7 +1064,7 @@
 
             renderLoading();
 
-            // --- UA ---
+            // UA 
             if (raw.startsWith('UA:')) {
                 const ua = raw.substring(3);
                 let res = `<div class="cmd-line"><span class="tag">UA</span> <span style="color:#6a6255;font-size:13px;word-break:break-all;">${escapeHtml(ua)}</span></div>`;
@@ -1189,7 +1177,7 @@
                     return;
                 }
 
-                // ── TRANSACCIÓN ──
+                // TRANSACCION ──
                 if (cmd.includes('getrawtransaction') && result.txid) {
                     const t = result;
                     const esBlindada = t.orchard?.actions?.length > 0 || t.vShieldedSpend?.length > 0 || t
@@ -1351,7 +1339,7 @@
                     return;
                 }
 
-                // ── DIRECCIÓN / BALANCE ──
+                // ── DIRECCION / BALANCE ──
                 if ((cmd.includes('getaddressbalance') || cmd.includes('validateaddress') || cmd.includes(
                         'z_validateaddress') || cmd.includes('z_getbalance')) && result) {
                     const esBalance = cmd.includes('getaddressbalance') || cmd.includes('z_getbalance');
