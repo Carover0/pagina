@@ -1,182 +1,773 @@
-<!doctype html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Firo · Consola RPC</title>
-  <style>
-    :root { --gold:#9B1C2E; --gold-soft:#c0392b; --green:#31db72; --red:#ff756f; --line:rgba(155,28,46,.5); --panel:rgba(10,2,2,.91); --ui-scale:1; }
-    * { box-sizing:border-box; }
-    body { min-height:100vh; margin:0; color:#fff; font:14px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
-    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(192,57,43,.025) 0 1px,transparent 1px 4px); }
-    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
-    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
-    .panel { position:relative; width:min(800px,98%); padding:25px 30px 20px; background:linear-gradient(135deg,rgba(30,10,5,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(155,28,46,.85),0 0 48px rgba(155,28,46,.2),inset 0 0 30px rgba(155,28,46,.08); }
-    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
-    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
-    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
-    .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(192,57,43,.65)); }
-    .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
-    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
-    .section { border-top:1px solid var(--line); padding:9px 0 10px; }
-    .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
-    .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
-    .api { font-size:11px; overflow-wrap:anywhere; } 
-    .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
-    .small { color:#afa391; }
-    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
-    
-    .input-line { display:flex; align-items:center; margin:8px 0; gap:8px; }
-    .prompt { color:var(--gold-soft); font-size:13px; white-space:nowrap; }
-    #cmdInput { background:transparent; color:#fff; border:none; border-bottom:1px solid var(--line); font-family:"Lucida Console",Monaco,monospace; font-size:13px; padding:3px 5px; width:100%; outline:none; caret-color:var(--gold); }
-    #cmdInput:focus { border-bottom-color:var(--gold); }
-    
-    #output { margin-top:6px; }
-    #output pre { margin:6px 0 0 0; font-family:"Lucida Console",Monaco,monospace; font-size:12px; white-space:pre-wrap; word-wrap:break-word; color:#e6ddce; line-height:1.5; }
-    #output pre .gold { color:var(--gold-soft); }
-    #output pre .error { color:var(--red); }
-    
-    .result-footer { font-size:10px; color:#7a7060; margin-top:8px; padding-top:6px; border-top:1px solid var(--line); }
-    
-    .server-list-container { max-height:450px; overflow-y:auto; padding-right:5px; }
-    .server-list-container::-webkit-scrollbar { width:3px; }
-    .server-list-container::-webkit-scrollbar-track { background:rgba(155,28,46,.1); }
-    .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
-    
-    .copy-btn { background:transparent; border:1px solid var(--line); color:var(--gold-soft); font-family:'Lucida Console',monospace; font-size:11px; padding:3px 10px; cursor:pointer; margin-top:6px; }
-    .copy-btn:hover { border-color:var(--gold); background:rgba(155,28,46,.1); }
-    
-    .help-box { margin-top:10px; padding:8px 12px; border-left:2px solid var(--line); color:#888; font-size:11px; line-height:1.6; }
-    .help-box .title { color:var(--gold-soft); font-weight:bold; }
-    .help-box .simple { color:#aaa; margin:3px 0 6px 0; }
-    .help-box .params { color:#aaa; }
-    
-    @media (max-width:700px) { 
-      .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
-      main { padding:65px 10px 24px 5px; align-items:flex-start; } 
-      .panel { padding:22px 18px 18px; width:98%; } 
-      .panel-title { font-size:16px; } 
-      #cmdInput { font-size:12px; }
-      #output pre { font-size:11px; }
-      .server-list-container { max-height:300px; }
-      .help-box { font-size:10px; }
-    }
-    @media (min-width:1920px) { 
-      :root { --ui-scale:1.1; } 
-      main { padding:72px 20px 36px 0; } 
-      .panel { width:min(750px,90%); } 
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firo · Consola RPC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(155, 28, 46, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(155, 28, 46, 0.3));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5));
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(155, 28, 46, 0.15);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #ff7b87;
+            border-bottom-color: #ff7b87;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(155, 28, 46, 0.06);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel:hover {
+            border-color: rgba(155, 28, 46, 0.12);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #ff7b87;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(155, 28, 46, 0.06);
+        }
+
+        .panel-title img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 12px rgba(155, 28, 46, 0.25));
+        }
+
+        /* ── HELP BOX ── */
+        .help-box {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(155, 28, 46, 0.06);
+        }
+
+        .help-box .title {
+            color: #8a8275;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 8px;
+        }
+
+        .help-box .title:first-child {
+            margin-top: 0;
+        }
+
+        .help-box .simple,
+        .help-box .params {
+            color: #b0a897;
+            font-size: 12px;
+            line-height: 1.6;
+            padding: 4px 0 8px 0;
+            word-break: break-all;
+        }
+
+        .help-box .simple .cmd,
+        .help-box .params .cmd {
+            color: #ff7b87;
+            cursor: pointer;
+            transition: color 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .help-box .simple .cmd:hover,
+        .help-box .params .cmd:hover {
+            color: #ff9ba9;
+            border-bottom-color: rgba(155, 28, 46, 0.2);
+        }
+
+        /* ── INPUT ── */
+        .input-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 2px 2px 2px 18px;
+            border: 1px solid rgba(155, 28, 46, 0.12);
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .input-line:focus-within {
+            border-color: rgba(155, 28, 46, 0.4);
+            box-shadow: 0 0 0 4px rgba(155, 28, 46, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .input-line .prompt {
+            color: #ff7b87;
+            font-size: 13px;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .input-line input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 13px 8px 13px 4px;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 14px;
+            color: #f5ede4;
+            outline: none;
+            min-width: 0;
+        }
+
+        .input-line input::placeholder {
+            color: #3d3830;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── OUTPUT ── */
+        .output-wrapper {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            padding: 16px 20px;
+            border: 1px solid rgba(155, 28, 46, 0.04);
+            flex: 1;
+            min-height: 100px;
+            overflow-y: auto;
+        }
+
+        .output-wrapper::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .output-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .output-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(155, 28, 46, 0.2);
+            border-radius: 10px;
+        }
+
+        #output {
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            color: #e0d8cc;
+        }
+
+        #output .cmd-line {
+            color: #ff7b87;
+            margin-bottom: 8px;
+        }
+
+        #output .cmd-line .prompt-icon {
+            color: #ff7b87;
+        }
+
+        #output .result {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #e0d8cc;
+        }
+
+        #output .result .error {
+            color: #ff756f;
+        }
+
+        #output .result .gold {
+            color: #ff7b87;
+        }
+
+        #output .result .green {
+            color: #31db72;
+        }
+
+        #output .copy-btn {
+            margin-top: 12px;
+            background: rgba(155, 28, 46, 0.06);
+            border: 1px solid rgba(155, 28, 46, 0.12);
+            color: #ff7b87;
+            font-family: 'Lucida Console', monospace;
+            font-size: 11px;
+            padding: 5px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        #output .copy-btn:hover {
+            background: rgba(155, 28, 46, 0.1);
+            border-color: #ff7b87;
+        }
+
+        #output .placeholder {
+            color: #4a443a;
+        }
+
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(155, 28, 46, 0.06);
+            font-size: 11px;
+            color: #4a443a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #ff7b87;
+        }
+
+        .footer .api-link {
+            font-size: 11px;
+            color: #5a5348;
+            word-break: break-all;
+        }
+
+        .footer .api-link:hover {
+            color: #ff7b87;
+        }
+
+        .footer .shortcuts {
+            display: flex;
+            gap: 12px;
+            font-size: 10px;
+            color: #3d3830;
+        }
+
+        .footer .shortcuts kbd {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: #5a5348;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-family: 'Lucida Console', monospace;
+            font-size: 9px;
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(155, 28, 46, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(155, 28, 46, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px 18px;
+            }
+
+            .brand h1 {
+                font-size: 17px;
+            }
+
+            .brand img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-links {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .panel {
+                padding: 18px 16px;
+            }
+
+            .panel-title {
+                font-size: 16px;
+            }
+
+            .panel-title img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .help-box {
+                padding: 12px 14px;
+            }
+
+            .help-box .simple,
+            .help-box .params {
+                font-size: 11px;
+            }
+
+            .input-line {
+                padding: 2px 2px 2px 14px;
+            }
+
+            .input-line input {
+                font-size: 13px;
+                padding: 11px 4px;
+            }
+
+            .output-wrapper {
+                padding: 14px 16px;
+                min-height: 120px;
+            }
+
+            #output {
+                font-size: 11px;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .footer .shortcuts {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 8px 10px;
+                gap: 10px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .brand h1 {
+                font-size: 15px;
+            }
+
+            .brand h1 small {
+                font-size: 10px;
+            }
+
+            .brand img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .panel {
+                padding: 14px 12px;
+                border-radius: 10px;
+            }
+
+            .panel-title {
+                font-size: 14px;
+                gap: 10px;
+                margin-bottom: 14px;
+                padding-bottom: 10px;
+            }
+
+            .panel-title img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .help-box {
+                padding: 10px 12px;
+            }
+
+            .help-box .title {
+                font-size: 9px;
+            }
+
+            .help-box .simple,
+            .help-box .params {
+                font-size: 10px;
+            }
+
+            .input-line {
+                padding: 2px 2px 2px 12px;
+            }
+
+            .input-line .prompt {
+                font-size: 12px;
+            }
+
+            .input-line input {
+                font-size: 12px;
+                padding: 9px 4px;
+            }
+
+            .output-wrapper {
+                padding: 12px 14px;
+                min-height: 100px;
+            }
+
+            #output {
+                font-size: 10px;
+                line-height: 1.5;
+            }
+
+            #output .copy-btn {
+                font-size: 10px;
+                padding: 4px 16px;
+            }
+
+            .footer {
+                font-size: 10px;
+            }
+
+            .footer .shortcuts {
+                font-size: 9px;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+
+            .footer .shortcuts kbd {
+                font-size: 8px;
+                padding: 1px 8px;
+            }
+
+            .footer .api-link {
+                font-size: 10px;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .app {
+                max-width: 1600px;
+                padding: 24px 40px;
+            }
+
+            #output {
+                font-size: 13px;
+            }
+
+            .help-box .simple,
+            .help-box .params {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main><section class="panel">
-    <div class="panel-title"><img class="logo" src="assets/firo.png" alt="Firo">CONSOLA RPC</div>
-    <nav class="top-links"><a href="https://carover0.github.io/pagina/firo-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
-    
-    <section class="section">
-      <div class="help-box">
-        <div class="title">COMANDOS BÁSICOS (sin parámetros)</div>
-        <div class="simple">getblockchaininfo · getblockcount · getbestblockhash · getdifficulty · getpeerinfo · getmempoolinfo · getrawmempool · getchaintips · gettxoutsetinfo · getinfo · getconnectioncount · getnettotals · getnetworkhashps · getmininginfo</div>
-        <div class="title">COMANDOS CON PARÁMETROS</div>
-        <div class="params">getblockhash &lt;altura&gt; · getblock &lt;hash&gt; · getrawtransaction &lt;txid&gt; 1 · validateaddress &lt;dirección&gt; · gettxout &lt;txid&gt; &lt;vout&gt;</div>
-      </div>
-      
-      <div class="input-line">
-        <span class="prompt">firo></span>
-        <input type="text" id="cmdInput" placeholder="getblockchaininfo" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      </div>
-      
-      <div id="output" class="server-list-container">
-        <pre style="color:#888;">Listo para ejecutar comandos...</pre>
-      </div>
-    </section>
 
-    <section class="section"><h2 class="subheader">► API pública</h2>
-      <a class="api" href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener">https://carover0.xyz/api/firo.json</a>
-    </section>
+    <div class="app">
 
-    <footer class="footer">
-      <div class="small">[Enter] ejecutar &nbsp;·&nbsp; [F8] copiar &nbsp;·&nbsp; [F9] limpiar</div>
-      <div class="donation"><br></div>
-    </footer>
-  </section></main>
+        <header class="header">
+            <div class="brand">
+                <img src="assets/firo.png" alt="Firo">
+                <h1>Firo <small>consola RPC</small></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/firo-nodo.html">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
+            <!-- Help Box -->
+            <div class="help-box">
+                <div class="title">COMANDOS BÁSICOS (sin parámetros)</div>
+                <div class="simple">
+                    <span class="cmd" onclick="fillCommand('getblockchaininfo')">getblockchaininfo</span> ·
+                    <span class="cmd" onclick="fillCommand('getblockcount')">getblockcount</span> ·
+                    <span class="cmd" onclick="fillCommand('getbestblockhash')">getbestblockhash</span> ·
+                    <span class="cmd" onclick="fillCommand('getdifficulty')">getdifficulty</span> ·
+                    <span class="cmd" onclick="fillCommand('getpeerinfo')">getpeerinfo</span> ·
+                    <span class="cmd" onclick="fillCommand('getmempoolinfo')">getmempoolinfo</span> ·
+                    <span class="cmd" onclick="fillCommand('getrawmempool')">getrawmempool</span> ·
+                    <span class="cmd" onclick="fillCommand('getchaintips')">getchaintips</span> ·
+                    <span class="cmd" onclick="fillCommand('gettxoutsetinfo')">gettxoutsetinfo</span> ·
+                    <span class="cmd" onclick="fillCommand('getinfo')">getinfo</span> ·
+                    <span class="cmd" onclick="fillCommand('getconnectioncount')">getconnectioncount</span> ·
+                    <span class="cmd" onclick="fillCommand('getnettotals')">getnettotals</span> ·
+                    <span class="cmd" onclick="fillCommand('getnetworkhashps')">getnetworkhashps</span> ·
+                    <span class="cmd" onclick="fillCommand('getmininginfo')">getmininginfo</span>
+                </div>
+                <div class="title">COMANDOS CON PARÁMETROS</div>
+                <div class="params">
+                    <span class="cmd" onclick="fillCommand('getblockhash ')" style="color:#ff7b87;">getblockhash</span> &lt;altura&gt; ·
+                    <span class="cmd" onclick="fillCommand('getblock ')" style="color:#ff7b87;">getblock</span> &lt;hash&gt; ·
+                    <span class="cmd" onclick="fillCommand('getrawtransaction ')" style="color:#ff7b87;">getrawtransaction</span> &lt;txid&gt; 1 ·
+                    <span class="cmd" onclick="fillCommand('validateaddress ')" style="color:#ff7b87;">validateaddress</span> &lt;dirección&gt; ·
+                    <span class="cmd" onclick="fillCommand('gettxout ')" style="color:#ff7b87;">gettxout</span> &lt;txid&gt; &lt;vout&gt;
+                </div>
+            </div>
 
-  <script>
-    const API_URL = "https://carover0.xyz/api/firo/rpc.php";
-    const TOKEN = "firo2026";
+            <!-- Input -->
+            <div class="input-line">
+                <span class="prompt">firo></span>
+                <input type="text" id="cmdInput" placeholder="getblockchaininfo" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            </div>
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
+            <!-- Output -->
+            <div class="output-wrapper">
+                <div id="output">
+                    <div class="placeholder">Listo para ejecutar comandos...</div>
+                </div>
+            </div>
 
-    async function sendCommand() {
-      const input = document.getElementById('cmdInput');
-      const cmd = input.value.trim();
-      const outputDiv = document.getElementById('output');
-      
-      if (!cmd) return;
-      
-      outputDiv.innerHTML = `<pre style="color:#888;">ejecutando: ${escapeHtml(cmd)}...</pre>`;
-      
-      try {
-        const response = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
-        const data = await response.json();
-        
-        let output = `<pre>`;
-        output += `<span style="color:#9B1C2E;">firo> ${escapeHtml(cmd)}</span>\n\n`;
-        
-        if (data.error) {
-          output += `<span class="error">Error:</span> ${JSON.stringify(data.error, null, 2)}`;
-        } else {
-          output += JSON.stringify(data.result || data, null, 2);
+            <!-- Footer -->
+            <footer class="footer">
+                <a href="https://carover0.xyz/api/firo/rpc.php?token=firo2026" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/api/firo/rpc.php?token=firo2026</a>
+                <div class="shortcuts">
+                    <kbd>Enter</kbd> ejecutar
+                    <kbd>F8</kbd> copiar
+                    <kbd>F9</kbd> limpiar
+                </div>
+            </footer>
+        </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_URL = "https://carover0.xyz/api/firo/rpc.php";
+        const TOKEN = "firo2026";
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
-        
-        output += `\n</pre>`;
-        output += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
-        outputDiv.innerHTML = output;
-        
-      } catch (error) {
-        outputDiv.innerHTML = `<pre><span class="error">Error:</span> ${escapeHtml(error.message)}</pre>`;
-      }
-      
-      input.value = '';
-    }
 
-    window.copyResult = function() {
-      const outputPre = document.querySelector('#output pre:last-of-type');
-      if (outputPre) {
-        navigator.clipboard.writeText(outputPre.innerText).then(() => {
-          document.querySelector('.prompt').textContent = '✓';
-          setTimeout(() => document.querySelector('.prompt').textContent = 'firo>', 1000);
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+        }
+
+        function fillCommand(cmd) {
+            const input = document.getElementById('cmdInput');
+            input.value = cmd;
+            input.focus();
+            if (cmd.endsWith(' ')) {
+                input.setSelectionRange(cmd.length, cmd.length);
+            }
+        }
+
+        async function sendCommand() {
+            const input = document.getElementById('cmdInput');
+            const cmd = input.value.trim();
+            const outputDiv = document.getElementById('output');
+
+            if (!cmd) return;
+
+            outputDiv.innerHTML = `<div class="result" style="color:#5a5348;">ejecutando: ${escapeHtml(cmd)}...</div>`;
+
+            try {
+                const response = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
+                const data = await response.json();
+
+                let output = `<div class="cmd-line"><span class="prompt-icon">firo></span> ${escapeHtml(cmd)}</div>`;
+                output += `<div class="result">`;
+
+                if (data.error) {
+                    output += `<span class="error">Error:</span> ${escapeHtml(JSON.stringify(data.error, null, 2))}`;
+                } else {
+                    const jsonStr = JSON.stringify(data.result || data, null, 2);
+                    output += escapeHtml(jsonStr);
+                }
+
+                output += `</div>`;
+                output += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
+                outputDiv.innerHTML = output;
+
+                const wrapper = outputDiv.parentElement;
+                wrapper.scrollTop = 0;
+
+            } catch (error) {
+                outputDiv.innerHTML =
+                    `<div class="result"><span class="error">Error:</span> ${escapeHtml(error.message)}</div>`;
+            }
+
+            input.value = '';
+            input.focus();
+        }
+
+        window.copyResult = function() {
+            const outputDiv = document.getElementById('output');
+            const resultEl = outputDiv.querySelector('.result');
+            if (resultEl) {
+                const text = resultEl.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('✓ copiado');
+                }).catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try { document.execCommand('copy');
+                        showToast('✓ copiado'); } catch (_) {}
+                    document.body.removeChild(ta);
+                });
+            }
+        };
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F8') { e.preventDefault();
+                window.copyResult(); }
+            if (e.key === 'F9') {
+                e.preventDefault();
+                document.getElementById('cmdInput').value = '';
+                document.getElementById('output').innerHTML = '<div class="placeholder">Listo para ejecutar comandos...</div>';
+                const prompt = document.querySelector('.prompt');
+                if (prompt) {
+                    prompt.textContent = '♥';
+                    setTimeout(() => prompt.textContent = 'firo>', 700);
+                }
+                document.getElementById('cmdInput').focus();
+            }
         });
-      }
-    };
 
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'F8') { e.preventDefault(); window.copyResult(); }
-      if (e.key === 'F9') {
-        e.preventDefault();
-        document.getElementById('cmdInput').value = '';
-        document.getElementById('output').innerHTML = '<pre style="color:#888;">Listo para ejecutar comandos...</pre>';
-        document.querySelector('.prompt').textContent = '♥';
-        setTimeout(() => document.querySelector('.prompt').textContent = 'firo>', 1000);
-      }
-    });
+        document.getElementById('cmdInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendCommand();
+            }
+        });
 
-    document.getElementById('cmdInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        sendCommand();
-      }
-    });
+        window.addEventListener('load', () => {
+            document.getElementById('cmdInput').focus();
+        });
 
-    window.onload = () => document.getElementById('cmdInput').focus();
-  </script>
+        window.fillCommand = fillCommand;
+    </script>
+
 </body>
 </html>
