@@ -1,461 +1,1415 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ycash · Explorador de Bloques</title>
-  <style>
-    :root { --gold:#F56733; --gold-soft:#f58a5c; --green:#31db72; --red:#ff756f; --line:rgba(245,103,51,.5); --panel:rgba(20,10,4,.91); --ui-scale:1; }
-    * { box-sizing:border-box; }
-    body { min-height:100vh; margin:0; color:#fff; font:14px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
-    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(245,103,51,.025) 0 1px,transparent 1px 4px); }
-    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
-    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
-    .panel { position:relative; width:min(750px,98%); padding:25px 30px 20px; background:linear-gradient(135deg,rgba(40,20,8,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(245,103,51,.85),0 0 48px rgba(245,103,51,.2),inset 0 0 30px rgba(245,103,51,.08); }
-    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
-    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
-    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
-    .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(245,103,51,.65)); }
-    .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
-    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
-    .section { border-top:1px solid var(--line); padding:9px 0 10px; }
-    .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
-    .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
-    .api { font-size:11px; overflow-wrap:anywhere; } 
-    .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
-    .small { color:#afa391; }
-    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
-    
-    .stats-row { display:flex; flex-wrap:wrap; gap:5px 18px; font-size:12px; margin-bottom:4px; color:#d2c8b7; }
-    .stats-row span { color:#fff; }
-    .stats-label { color:#d2c8b7; }
-    .stats-value { color:#fff; }
-    
-    .input-line { display:flex; align-items:center; margin:8px 0; gap:8px; }
-    .prompt { color:var(--gold-soft); font-size:13px; white-space:nowrap; }
-    #searchInput { background:transparent; color:#fff; border:none; border-bottom:1px solid var(--line); font-family:"Lucida Console",Monaco,monospace; font-size:13px; padding:3px 5px; width:100%; outline:none; caret-color:var(--gold); }
-    #searchInput:focus { border-bottom-color:var(--gold); }
-    
-    #output { margin-top:6px; }
-    #output pre { margin:6px 0 0 0; font-family:"Lucida Console",Monaco,monospace; font-size:12px; white-space:pre-wrap; word-wrap:break-word; color:#e6ddce; line-height:1.5; }
-    #output pre .gold { color:var(--gold-soft); }
-    
-    .result-footer { font-size:10px; color:#7a7060; margin-top:8px; padding-top:6px; border-top:1px solid var(--line); }
-    
-    .server-list-container { max-height:450px; overflow-y:auto; padding-right:5px; }
-    .server-list-container::-webkit-scrollbar { width:3px; }
-    .server-list-container::-webkit-scrollbar-track { background:rgba(245,103,51,.1); }
-    .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
-    
-    .copy-btn { background:transparent; border:1px solid var(--line); color:var(--gold-soft); font-family:'Lucida Console',monospace; font-size:11px; padding:3px 10px; cursor:pointer; margin-top:6px; }
-    .copy-btn:hover { border-color:var(--gold); background:rgba(245,103,51,.1); }
-    
-    @media (max-width:700px) { 
-      .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
-      main { padding:65px 10px 24px 5px; align-items:flex-start; } 
-      .panel { padding:22px 18px 18px; width:98%; } 
-      .panel-title { font-size:16px; } 
-      .stats-row { font-size:11px; gap:3px 12px; }
-      #searchInput { font-size:12px; }
-      #output pre { font-size:11px; }
-      .server-list-container { max-height:300px; }
-    }
-    @media (min-width:1920px) { 
-      :root { --ui-scale:1.1; } 
-      main { padding:72px 20px 36px 0; } 
-      .panel { width:min(750px,90%); } 
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ycash · Explorador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(245, 103, 51, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(245, 103, 51, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(245, 103, 51, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(245, 103, 51, 0.3));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(245, 103, 51, 0.5));
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(245, 103, 51, 0.15);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #ff9a6b;
+            border-bottom-color: #ff9a6b;
+        }
+
+        .back-btn {
+            color: #ff9a6b;
+            cursor: pointer;
+            padding: 4px 12px;
+            border: 1px solid rgba(245, 103, 51, 0.15);
+            border-radius: 20px;
+            font-size: 11px;
+            transition: all 0.25s;
+            background: rgba(245, 103, 51, 0.05);
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn:hover {
+            background: rgba(245, 103, 51, 0.1);
+            border-color: rgba(245, 103, 51, 0.3);
+        }
+
+        .back-btn.show {
+            display: inline-flex;
+        }
+
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 32px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(245, 103, 51, 0.1);
+            font-size: 13px;
+        }
+
+        .stats-bar .stat {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .stats-bar .label {
+            color: #4a443a;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stats-bar .value {
+            color: #f5ede4;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .stats-bar .badge {
+            background: rgba(245, 103, 51, 0.12);
+            padding: 2px 16px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: #ff9a6b;
+            border: 1px solid rgba(245, 103, 51, 0.12);
+            margin-left: auto;
+            letter-spacing: 0.5px;
+        }
+
+        .search-section {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 2px 2px 2px 22px;
+            border: 1px solid rgba(245, 103, 51, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .search-section:focus-within {
+            border-color: rgba(245, 103, 51, 0.4);
+            box-shadow: 0 0 0 4px rgba(245, 103, 51, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .search-section .prompt {
+            color: #ff9a6b;
+            font-size: 16px;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .search-section:focus-within .prompt {
+            transform: scale(1.1);
+        }
+
+        .search-section input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px 8px 15px 4px;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 15px;
+            color: #f5ede4;
+            outline: none;
+            min-width: 0;
+            letter-spacing: 0.2px;
+        }
+
+        .search-section input::placeholder {
+            color: #3d3830;
+            letter-spacing: 0.5px;
+        }
+
+        .search-section .shortcuts {
+            display: flex;
+            gap: 4px;
+            padding-right: 16px;
+            font-size: 10px;
+            color: #3d3830;
+        }
+
+        .search-section .shortcuts kbd {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 12px;
+            border-radius: 6px;
+            color: #5a5348;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-family: 'Lucida Console', monospace;
+            font-size: 9px;
+            letter-spacing: 0.3px;
+            transition: all 0.2s;
+        }
+
+        .search-section .shortcuts kbd:hover {
+            background: rgba(245, 103, 51, 0.06);
+            border-color: rgba(245, 103, 51, 0.1);
+            color: #8a8275;
+        }
+
+        .output-wrapper {
+            flex: 1;
+            min-height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px;
+            border: 1px solid rgba(245, 103, 51, 0.06);
+            padding: 24px 28px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+            transition: border-color 0.3s;
+        }
+
+        .output-wrapper:hover {
+            border-color: rgba(245, 103, 51, 0.1);
+        }
+
+        .output-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .output-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .output-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(245, 103, 51, 0.2);
+            border-radius: 10px;
+        }
+
+        #output {
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #e0d8cc;
+        }
+
+        #output .cmd-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ff9a6b;
+            font-size: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(245, 103, 51, 0.06);
+            margin-bottom: 18px;
+        }
+
+        #output .cmd-line .tag {
+            background: rgba(245, 103, 51, 0.1);
+            padding: 2px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #ff9a6b;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(245, 103, 51, 0.06);
+        }
+
+        #output .row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 2px 12px;
+            padding: 3px 0;
+        }
+
+        #output .row .key {
+            color: #5a5348;
+            font-size: 12px;
+            min-width: 100px;
+            letter-spacing: 0.2px;
+        }
+
+        #output .row .val {
+            color: #f5ede4;
+            word-break: break-all;
+        }
+
+        #output .row .val.orange {
+            color: #ff9a6b;
+        }
+
+        #output .row .val .link {
+            color: #ff9a6b;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(245, 103, 51, 0.15);
+            padding-bottom: 1px;
+            word-break: break-all;
+            cursor: pointer;
+        }
+
+        #output .row .val .link:hover {
+            color: #ffb88a;
+            border-bottom-color: #ff9a6b;
+        }
+
+        #output .divider {
+            height: 1px;
+            background: linear-gradient(to right, rgba(245, 103, 51, 0.08), transparent);
+            margin: 14px 0;
+        }
+
+        #output .tx-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 10px 16px;
+            border-left: 2px solid rgba(245, 103, 51, 0.12);
+            margin: 4px 0;
+            transition: all 0.15s;
+        }
+
+        #output .tx-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-left-color: rgba(245, 103, 51, 0.25);
+        }
+
+        #output .tx-item .txid-link {
+            color: #ff9a6b;
+            text-decoration: none;
+            font-size: 13px;
+            word-break: break-all;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(245, 103, 51, 0.1);
+            cursor: pointer;
+        }
+
+        #output .tx-item .txid-link:hover {
+            color: #ffb88a;
+            border-bottom-color: #ff9a6b;
+        }
+
+        #output .tx-item .tx-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px 20px;
+            font-size: 12px;
+            color: #6a6255;
+            margin-top: 2px;
+        }
+
+        #output .copy-btn {
+            margin-top: 18px;
+            background: rgba(245, 103, 51, 0.06);
+            border: 1px solid rgba(245, 103, 51, 0.12);
+            color: #ff9a6b;
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            padding: 7px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.25s;
+            letter-spacing: 0.3px;
+        }
+
+        #output .copy-btn:hover {
+            background: rgba(245, 103, 51, 0.1);
+            border-color: #ff9a6b;
+            box-shadow: 0 0 30px rgba(245, 103, 51, 0.04);
+        }
+
+        #output .placeholder {
+            color: #3d3830;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            gap: 12px;
+        }
+
+        #output .placeholder .icon {
+            font-size: 48px;
+            opacity: 0.12;
+        }
+
+        #output .placeholder .sub {
+            font-size: 13px;
+            color: #2d2820;
+            letter-spacing: 0.5px;
+        }
+
+        #output .loading {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #4a443a;
+            padding: 20px 0;
+        }
+
+        #output .loading .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(245, 103, 51, 0.1);
+            border-top-color: #ff9a6b;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .footer-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 12px;
+            border: 1px solid rgba(245, 103, 51, 0.04);
+            font-size: 11px;
+            color: #3d3830;
+        }
+
+        .footer-bar a {
+            color: #5a5348;
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+
+        .footer-bar a:hover {
+            color: #ff9a6b;
+        }
+
+        .footer-bar .api {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 3px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s;
+        }
+
+        .footer-bar .api:hover {
+            border-color: rgba(245, 103, 51, 0.08);
+            background: rgba(245, 103, 51, 0.02);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(245, 103, 51, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(245, 103, 51, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── BREADCRUMB ── */
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 12px;
+            padding: 6px 0;
+            font-size: 11px;
+            color: #4a443a;
+            min-height: 28px;
+        }
+
+        .breadcrumb .crumb {
+            color: #6a6255;
+            cursor: pointer;
+            transition: color 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .breadcrumb .crumb:hover {
+            color: #ff9a6b;
+            border-bottom-color: rgba(245, 103, 51, 0.2);
+        }
+
+        .breadcrumb .crumb.current {
+            color: #ff9a6b;
+            cursor: default;
+            border-bottom-color: transparent;
+        }
+
+        .breadcrumb .sep {
+            color: #3d3830;
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px 18px;
+            }
+
+            .brand h1 {
+                font-size: 17px;
+            }
+
+            .brand img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-links {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .stats-bar {
+                font-size: 11px;
+                padding: 8px 14px;
+                gap: 4px 16px;
+            }
+
+            .stats-bar .badge {
+                margin-left: 0;
+                font-size: 9px;
+                padding: 1px 12px;
+            }
+
+            .search-section {
+                padding: 2px 2px 2px 14px;
+            }
+
+            .search-section input {
+                font-size: 14px;
+                padding: 12px 4px;
+            }
+
+            .search-section .shortcuts {
+                display: none;
+            }
+
+            .output-wrapper {
+                padding: 16px 18px;
+                min-height: 200px;
+            }
+
+            #output {
+                font-size: 12px;
+            }
+
+            #output .row .key {
+                min-width: 70px;
+                font-size: 11px;
+            }
+
+            .footer-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                padding: 12px 18px;
+            }
+
+            .footer-bar .api {
+                font-size: 10px;
+                padding: 2px 14px;
+            }
+
+            .breadcrumb {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 8px 10px;
+                gap: 10px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .brand h1 {
+                font-size: 15px;
+            }
+
+            .brand h1 small {
+                font-size: 10px;
+            }
+
+            .brand img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .stats-bar {
+                font-size: 10px;
+                padding: 6px 12px;
+                gap: 3px 12px;
+            }
+
+            .stats-bar .value {
+                font-size: 12px;
+            }
+
+            .search-section input {
+                font-size: 13px;
+                padding: 10px 4px;
+            }
+
+            .output-wrapper {
+                padding: 12px 14px;
+                min-height: 150px;
+            }
+
+            #output {
+                font-size: 11px;
+                line-height: 1.6;
+            }
+
+            #output .row .key {
+                min-width: 60px;
+                font-size: 10px;
+            }
+
+            #output .tx-item {
+                padding: 8px 12px;
+            }
+
+            #output .copy-btn {
+                font-size: 11px;
+                padding: 5px 16px;
+            }
+
+            .breadcrumb {
+                font-size: 9px;
+                gap: 4px 8px;
+            }
+
+            .breadcrumb .sep {
+                display: none;
+            }
+
+            .breadcrumb .crumb {
+                border: 1px solid rgba(245, 103, 51, 0.06);
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 9px;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .app {
+                max-width: 1600px;
+                padding: 24px 40px;
+            }
+
+            #output {
+                font-size: 14px;
+            }
+
+            #output .row .key {
+                min-width: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main><section class="panel">
-    <div class="panel-title"><img class="logo" src="assets/ycash.png" alt="Ycash">EXPLORADOR DE BLOQUES</div>
-    <nav class="top-links"><a href="https://carover0.github.io/pagina/ycash-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/ycash-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
-    
-    <section class="section">
-      <div class="stats-row">
-        <span><span class="stats-label">ALTURA:</span> <span class="stats-value" id="stat-height">---</span></span>
-        <span><span class="stats-label">CONEXIONES:</span> <span class="stats-value" id="stat-connections">---</span></span>
-        <span><span class="stats-label">MEMPOOL:</span> <span class="stats-value" id="stat-mempool">---</span> tx</span>
-      </div>
-      
-      <div class="input-line">
-        <span class="prompt">►</span>
-        <input type="text" id="searchInput" placeholder="bloque / hash / txid / dirección" autofocus>
-      </div>
-      
-      <div id="output" class="server-list-container"></div>
-    </section>
 
-    <section class="section"><h2 class="subheader">► API pública</h2>
-      <a class="api" href="https://carover0.xyz/cacaX/ycash_status.json" target="_blank" rel="noopener">https://carover0.xyz/cacaX/ycash_status.json</a>
-    </section>
+    <div class="app">
 
-    <footer class="footer">
-      <div class="small">[F8] copiar &nbsp;·&nbsp; [F9] limpiar</div>
-      <div class="donation"><br></div>
-    </footer>
-  </section></main>
+        <header class="header">
+            <div class="brand">
+                <img src="assets/ycash.png" alt="Ycash">
+                <h1>Ycash <small>explorador</small></h1>
+            </div>
+            <nav class="nav-links">
+                <span class="back-btn" id="backBtn" onclick="goBack()">← volver</span>
+                <a href="https://carover0.github.io/pagina/ycash-nodo.html">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/ycash-consola.html">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
 
-  <script>
-    const API_URL = "https://carover0.xyz/api/ycash/ycash.php";
-    const TOKEN = "ycash2026";
-    const STATUS_URL = "https://carover0.xyz/cacaX/ycash_status.json";
+        <div class="stats-bar">
+            <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
+            <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
+            <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
+            <div class="badge">● LIVE</div>
+        </div>
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
+        <!-- BREADCRUMB -->
+        <div class="breadcrumb" id="breadcrumb"></div>
 
-    function detectSearchFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const queryParam = urlParams.get('q');
-      if (queryParam) return queryParam;
-      const path = window.location.pathname;
-      const match = path.match(/\/ycash-explorer\/(.+)$/);
-      if (match && match[1]) return match[1];
-      return null;
-    }
+        <div class="search-section">
+            <span class="prompt">►</span>
+            <input type="text" id="searchInput" placeholder="bloque · hash · txid · dirección" autofocus spellcheck="false">
+            <div class="shortcuts">
+                <kbd>F8</kbd> copiar
+                <kbd>F9</kbd> limpiar
+            </div>
+        </div>
 
-    function updateUrlWithSearch(parametro) {
-      const newUrl = window.location.origin + '/pagina/ycash-explorer/' + encodeURIComponent(parametro);
-      window.history.replaceState({}, '', newUrl);
-    }
+        <div class="output-wrapper">
+            <div id="output">
+                <div class="placeholder">
+                    <div class="icon">⧫</div>
+                    <div>explorador de bloques Ycash</div>
+                    <div class="sub">bloque · transacción · dirección</div>
+                </div>
+            </div>
+        </div>
 
-    function detectCommand(input) {
-      input = input.trim();
-      if (!input) return input;
-      if (/^\d{1,7}$/.test(input)) return `getblock ${input}`;
-      if (/^0{4,}[a-fA-F0-9]{60}$/.test(input)) return `getblock ${input}`;
-      if (/^[a-fA-F0-9]{64}$/.test(input) && !/^0{4,}/.test(input)) return `getrawtransaction ${input} 1`;
-      if (/^(s1|s3|t1)[a-zA-Z0-9]{33}$/.test(input)) return `validateaddress ${input}`;
-      if (/^(ys1|yu1)[a-zA-Z0-9]{75,}$/.test(input)) return `z_validateaddress ${input}`;
-      if (input.startsWith('getblock') || input.startsWith('getrawtransaction') || 
-          input.startsWith('validateaddress') || input.startsWith('z_validateaddress') ||
-          input.startsWith('z_getbalance') || input.startsWith('getblockchaininfo') ||
-          input.startsWith('getaddressbalance')) return input;
-      return input;
-    }
+        <footer class="footer-bar">
+            <span>API · <a href="https://carover0.xyz/cacaX/ycash_status.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/cacaX/ycash_status.json</a></span>
+            <span style="font-size:10px;color:#2d2820;">Ycash mainnet</span>
+        </footer>
 
-    async function loadNetworkStats() {
-      try {
-        const r = await fetch(STATUS_URL);
-        const d = await r.json();
-        document.getElementById('stat-height').textContent = d.height?.toLocaleString() || '---';
-        document.getElementById('stat-connections').textContent = d.connections || '---';
-        document.getElementById('stat-mempool').textContent = d.mempool || '0';
-      } catch(e) {}
-    }
+    </div>
 
-    async function getVinValue(txid, voutIndex) {
-      try {
-        const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
-          .then(r => r.json()).then(r => r.result);
-        if (!prevTx || !prevTx.vout || !prevTx.vout[voutIndex]) return null;
-        return prevTx.vout[voutIndex].value;
-      } catch(e) { return null; }
-    }
+    <div class="toast" id="toast"></div>
 
-    async function executeSearch(q) {
-      const out = document.getElementById('output');
-      out.innerHTML = '<pre style="color:#888;">ejecutando...</pre>';
+    <script>
+        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
+        const API_URL = "https://carover0.xyz/api/ycash/ycash.php";
+        const TOKEN = "ycash2026";
+        const STATUS_URL = "https://carover0.xyz/cacaX/ycash_status.json";
 
-      let rawParam = '';
-      if (q.startsWith('getblock ')) rawParam = q.replace('getblock ', '');
-      else if (q.startsWith('getrawtransaction ')) rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
-      else if (/^[a-fA-F0-9]{64}$/.test(q)) rawParam = q;
-      else if (/^\d+$/.test(q)) rawParam = q;
-      if (rawParam) updateUrlWithSearch(rawParam);
+        // ─── HISTORIAL ──────────────────────────────────────────────────
+        let historyStack = [];
+        let currentIndex = -1;
 
-      try {
-        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
-        const data = await r.json();
-        let res = `<pre style="color:#F56733;">ycash> ${escapeHtml(q)}</pre><pre style="color:#e6ddce;">\n`;
-
-        if (q.includes('getblock') && data.result?.hash) {
-          const b = data.result;
-          res += `BLOQUE #${b.height}\n`;
-          res += `hash: ${b.hash}\n`;
-          res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
-          res += `transacciones: ${b.tx?.length || 0}\n`;
-          res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
-          if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
-          if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
-          if (b.size) res += `tamaño: ${b.size} bytes\n`;
-          
-          if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
-            res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
-            b.tx.forEach((tx, i) => {
-              res += `\n  TX #${i+1}: ${tx.txid}\n`;
-              if (tx.vout && tx.vout.length > 0) {
-                let totalOut = 0;
-                tx.vout.forEach(vout => totalOut += vout.value || 0);
-                res += `    total salida: ${totalOut.toFixed(8)} YEC\n`;
-                tx.vout.forEach(vout => {
-                  let addr = 'privada';
-                  if (vout.scriptPubKey?.addresses?.[0]) {
-                    addr = vout.scriptPubKey.addresses[0];
-                    if (addr.length > 64) addr = addr.substring(0,64) + '...';
-                  }
-                  res += `    → ${vout.value.toFixed(8)} YEC a ${addr}\n`;
-                });
-              }
-            });
-          } else if (b.tx && b.tx.length > 0) {
-            res += `\n► TXIDS (${b.tx.length})\n`;
-            b.tx.forEach((txid, i) => res += `   ${i+1}. ${txid}\n`);
-          }
+        function pushHistory(query, label) {
+            historyStack = historyStack.slice(0, currentIndex + 1);
+            historyStack.push({ query: query, label: label || query });
+            currentIndex = historyStack.length - 1;
+            updateBackButton();
+            updateBreadcrumb();
         }
-        else if (q.includes('getrawtransaction') && data.result?.txid) {
-          const t = data.result;
-          
-          const tieneShieldedSpend = t.vShieldedSpend && t.vShieldedSpend.length > 0;
-          const tieneShieldedOutput = t.vShieldedOutput && t.vShieldedOutput.length > 0;
-          const esTransaccionBlindada = (tieneShieldedSpend || tieneShieldedOutput) && (!t.vin || t.vin.length === 0) && (!t.vout || t.vout.length === 0);
-          
-          if (esTransaccionBlindada) {
-            const balance = t.valueBalance || 0;
-            res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
-            res += `TXID: ${t.txid}\n`;
-            res += `bloque: #${t.height || t.blockheight || 'no confirmada'}\n`;
-            res += `confirmaciones: ${t.confirmations || 0}\n`;
-            if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
-            res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
-            if (t.size) res += `tamaño: ${t.size} bytes\n`;
-            if (t.expiryheight) res += `expira: bloque ${t.expiryheight}\n`;
-            
-            res += `\n🛡 SHIELDED\n`;
-            if (t.vShieldedSpend) res += `  gastos: ${t.vShieldedSpend.length}\n`;
-            if (t.vShieldedOutput) res += `  salidas: ${t.vShieldedOutput.length}\n`;
-            res += `  balance: ${balance.toFixed(8)} YEC\n`;
-            if (t.vShieldedSpend?.[0]?.anchor) res += `  anchor: ${t.vShieldedSpend[0].anchor}\n`;
-            if (t.bindingSig) res += `  bindingSig: ${t.bindingSig}\n`;
-          } else {
-            const tieneShieldedSpendMix = t.vShieldedSpend && t.vShieldedSpend.length > 0;
-            const tieneShieldedOutputMix = t.vShieldedOutput && t.vShieldedOutput.length > 0;
-            
-            res += `📄 TRANSACCIÓN\n`;
-            res += `TXID: ${t.txid}\n`;
-            res += `bloque: #${t.height || t.blockheight || 'no confirmada'}\n`;
-            res += `confirmaciones: ${t.confirmations || 0}\n`;
-            if (t.blocktime || t.time) res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
-            res += `versión: ${t.version || 'N/A'} · locktime: ${t.locktime || 0}\n`;
-            if (t.size) res += `tamaño: ${t.size} bytes\n`;
-            if (t.expiryheight) res += `expira: bloque ${t.expiryheight}\n`;
-            
-            let totalIn = 0, totalOut = 0, utxosGastados = 0, utxosCreados = 0;
-            let pagos = [];
-            let esCoinbase = false;
-            let tieneInputsTransparentes = false;
-            let tieneOutputsTransparentes = false;
-            
-            if (t.vin && t.vin.length > 0) {
-              res += `\n▶ ENTRADAS (${t.vin.length})\n`;
-              utxosGastados = t.vin.length;
-              for (const [i, vin] of t.vin.entries()) {
-                if (vin.coinbase) {
-                  esCoinbase = true;
-                  res += `  [#${i}] COINBASE (nuevos YEC)\n`;
-                } else if (vin.txid) {
-                  const shortTxid = vin.txid.substring(0,24) + '...' + vin.txid.substring(46);
-                  let value = vin.value;
-                  if (!value) value = await getVinValue(vin.txid, vin.vout);
-                  if (value) totalIn += value;
-                  const valStr = value ? ` ${value.toFixed(8)} YEC` : '';
-                  res += `  [#${i}] desde ${shortTxid}:${vin.vout}${valStr}\n`;
-                  tieneInputsTransparentes = true;
+
+        function goBack() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                const entry = historyStack[currentIndex];
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    input.value = entry.query;
+                    executeSearch(entry.query);
                 }
-              }
-              if (totalIn > 0) res += `  total entradas: ${totalIn.toFixed(8)} YEC\n`;
+                updateBackButton();
+                updateBreadcrumb();
             }
-            
-            if (t.vout && t.vout.length > 0) {
-              res += `\n◀ SALIDAS (${t.vout.length})\n`;
-              utxosCreados = t.vout.length;
-              for (const [i, vout] of t.vout.entries()) {
-                const valor = vout.value || 0;
-                totalOut += valor;
-                
-                let addr = '';
-                if (vout.scriptPubKey?.addresses?.[0]) {
-                  addr = vout.scriptPubKey.addresses[0];
-                  tieneOutputsTransparentes = true;
-                } else if (vout.scriptPubKey?.address) {
-                  addr = vout.scriptPubKey.address;
-                  tieneOutputsTransparentes = true;
-                } else if (vout.scriptPubKey?.type === 'nulldata') {
-                  addr = 'OP_RETURN (datos)';
-                } else {
-                  addr = '🛡 OUTPUT BLINDADO (Sapling)';
-                }
-                
-                if (addr.length > 64) addr = addr.substring(0,64) + '...';
-                pagos.push({ value: valor, addr });
-                res += `  [#${i}] ${valor.toFixed(8)} YEC → ${addr}\n`;
-              }
-              if (totalOut > 0) res += `  total salida: ${totalOut.toFixed(8)} YEC\n`;
-            }
-            
-            if (tieneShieldedSpendMix || tieneShieldedOutputMix) {
-              res += `\n🛡 DATOS BLINDADOS\n`;
-              if (tieneShieldedSpendMix) res += `   gastos blindados: ${t.vShieldedSpend.length}\n`;
-              if (tieneShieldedOutputMix) res += `   salidas blindadas: ${t.vShieldedOutput.length}\n`;
-              if (t.valueBalance) res += `   balance blindado: ${t.valueBalance.toFixed(8)} YEC\n`;
-            }
-            
-            res += `\nRESUMEN:\n`;
-            if (esCoinbase) {
-              res += `   0 UTXOs gastados (nueva emisión - coinbase)\n`;
-              res += `   ${utxosCreados} UTXOs creados\n`;
-              res += `   ■ Recompensa total: ${totalOut.toFixed(8)} YEC\n`;
-            } else if (tieneInputsTransparentes && tieneShieldedOutputMix && !tieneOutputsTransparentes) {
-              const montoBlindado = Math.abs(t.valueBalance || 0);
-              const fee = totalIn - montoBlindado;
-              res += `   ◄ Blindaje de fondos (s → y)\n`;
-              res += `   ${utxosGastados} UTXOs gastados\n`;
-              res += `   0 UTXOs transparentes creados\n`;
-              res += `   ${t.vShieldedOutput?.length || 0} salida(s) blindada(s)\n`;
-              res += `   → ${montoBlindado.toFixed(8)} YEC enviados al pool blindado\n`;
-              if (fee > 0.00000001) res += `   fee: ${fee.toFixed(8)} YEC\n`;
-            } else if (tieneShieldedSpendMix && tieneOutputsTransparentes && !tieneInputsTransparentes) {
-              const totalSalidaPool = Math.abs(t.valueBalance || 0);
-              const montoTransparente = totalOut;
-              const fee = totalSalidaPool - montoTransparente;
-              res += `   ► Desblindaje de fondos (y → s)\n`;
-              res += `   ${t.vShieldedSpend?.length || 0} gasto(s) blindado(s)\n`;
-              res += `   ${utxosCreados} UTXO(s) transparente(s) creado(s)\n`;
-              if (montoTransparente > 0) {
-                res += `   → ${montoTransparente.toFixed(8)} YEC enviados a dirección transparente\n`;
-              }
-              res += `   Total extraído del pool blindado: ${totalSalidaPool.toFixed(8)} YEC\n`;
-              if (fee > 0.00000001) res += `   fee: ${fee.toFixed(8)} YEC\n`;
+        }
+
+        function updateBackButton() {
+            const btn = document.getElementById('backBtn');
+            if (currentIndex > 0) {
+                btn.classList.add('show');
             } else {
-              res += `   ${utxosGastados} UTXOs gastados\n`;
-              res += `   ${utxosCreados} UTXOs creados\n`;
-              if (pagos.length >= 2) {
-                const ordenados = [...pagos].sort((a, b) => b.value - a.value);
-                const cambioTotal = ordenados.slice(1).reduce((sum, p) => sum + p.value, 0);
-                res += `   Pago principal: ${ordenados[0].value.toFixed(8)} YEC\n`;
-                if (cambioTotal > 0) res += `   Cambio: ${cambioTotal.toFixed(8)} YEC\n`;
-              } else if (pagos.length === 1) {
-                res += `   Salida única: ${pagos[0].value.toFixed(8)} YEC\n`;
-              }
-              if (totalIn > 0 && totalOut > 0 && !esCoinbase) {
-                const fee = totalIn - totalOut;
-                if (fee > 0.00000001) res += `   Fee red: ${fee.toFixed(8)} YEC\n`;
-              }
+                btn.classList.remove('show');
             }
-          }
         }
-        else if ((q.includes('getaddressbalance') || q.includes('validateaddress') || q.includes('z_validateaddress')) && data.result) {
-          const esBalance = q.includes('getaddressbalance');
-          const esZValidate = q.includes('z_validateaddress');
-          
-          if (esBalance) {
-            const b = data.result;
-            const direccion = q.split(' ')[1] || b.address || 'desconocida';
-            res += `DIRECCIÓN\n`;
-            res += `dirección: ${direccion}\n`;
-            res += `balance: ${(b.balance / 1e8).toFixed(6)} YEC\n`;
-            if (b.received) res += `recibido: ${(b.received / 1e8).toFixed(6)} YEC\n`;
-            if (b.immature) res += `inmaduro: ${(b.immature / 1e8).toFixed(6)} YEC\n`;
-          } else {
-            const v = data.result;
-            const direccion = v.address || q.split(' ')[1] || 'desconocida';
-            const esShielded = esZValidate || direccion.startsWith('ys');
-            res += `${esShielded ? 'DIRECCIÓN BLINDADA (SHIELDED)' : 'DIRECCIÓN TRANSPARENTE'}\n`;
-            res += `dirección: ${direccion}\n`;
-            res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
-            if (v.isvalid && !esShielded) {
-              let tipo = 'transparente';
-              if (v.isscript) tipo = 'script';
-              else if (v.iswatchonly) tipo = 'watchonly';
-              res += `subtipo: ${tipo}\n`;
+
+        function updateBreadcrumb() {
+            const container = document.getElementById('breadcrumb');
+            if (historyStack.length === 0) {
+                container.innerHTML = '';
+                return;
             }
-            if (v.ismine !== undefined) res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
-          }
+
+            let html = '';
+            const maxDisplay = 4;
+            const start = Math.max(0, historyStack.length - maxDisplay);
+            const entries = historyStack.slice(start);
+
+            if (start > 0) {
+                html += `<span class="crumb" onclick="goToHistory(0)">⏪</span><span class="sep">·</span>`;
+            }
+
+            for (let i = 0; i < entries.length; i++) {
+                const idx = start + i;
+                const entry = entries[i];
+                const isCurrent = idx === currentIndex;
+                const label = entry.label.length > 30 ? entry.label.substring(0, 28) + '…' : entry.label;
+                if (isCurrent) {
+                    html += `<span class="crumb current">${escapeHtml(label)}</span>`;
+                } else {
+                    html += `<span class="crumb" onclick="goToHistory(${idx})">${escapeHtml(label)}</span>`;
+                }
+                if (i < entries.length - 1) {
+                    html += `<span class="sep">›</span>`;
+                }
+            }
+
+            container.innerHTML = html;
         }
-        else if (data.error) {
-          res += `ERROR\ncomando: ${q}\nmotivo: ${data.error}\n`;
+
+        function goToHistory(index) {
+            if (index >= 0 && index < historyStack.length && index !== currentIndex) {
+                currentIndex = index;
+                const entry = historyStack[index];
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    input.value = entry.query;
+                    executeSearch(entry.query);
+                }
+                updateBackButton();
+                updateBreadcrumb();
+            }
         }
-        else {
-          res += `SIN RESULTADOS\n`;
+
+        // ─── HELPERS ────────────────────────────────────────────────────
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
 
-        res += `\n\n</pre>`;
-        res += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
-        res += `<div class="result-footer"><br>	</div>`;
-        out.innerHTML = res;
-        
-      } catch(e) {
-        out.innerHTML = `<pre style="color:var(--red);">error: ${escapeHtml(e.message)}</pre>`;
-      }
-      
-      document.getElementById('searchInput').value = '';
-    }
+        function makeLink(text, label) {
+            if (!text) return '';
+            const encoded = encodeURIComponent(text);
+            const display = label || text;
+            return `<span class="link" onclick="navigateTo('${encoded}')">${escapeHtml(display)}</span>`;
+        }
 
-    window.copyResult = function() {
-      const outputPre = document.querySelector('#output pre:last-of-type');
-      if (outputPre) {
-        navigator.clipboard.writeText(outputPre.innerText).then(() => {
-          document.querySelector('.prompt').textContent = '✓';
-          setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
-        });
-      }
-    };
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'F8') { e.preventDefault(); window.copyResult(); }
-      if (e.key === 'F9') {
-        e.preventDefault();
-        document.getElementById('searchInput').value = '';
-        document.getElementById('output').innerHTML = '';
-        document.querySelector('.prompt').textContent = '♥';
-        setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
-        const baseUrl = window.location.origin + '/pagina/ycash-explorer';
-        window.history.replaceState({}, '', baseUrl);
-        loadNetworkStats();
-      }
-    });
-
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const rawInput = searchInput.value.trim();
-        if (rawInput) executeSearch(detectCommand(rawInput));
-      }
-    });
-    searchInput.addEventListener('paste', () => {
-      setTimeout(() => {
-        const input = searchInput.value;
-        const cmd = detectCommand(input);
-        if (cmd !== input) searchInput.value = cmd;
-      }, 10);
-    });
-
-    (function() {
-      const searchParam = detectSearchFromUrl();
-      if (searchParam) {
-        window.addEventListener('load', () => {
-          setTimeout(() => {
+        function navigateTo(query) {
+            const decoded = decodeURIComponent(query);
             const input = document.getElementById('searchInput');
             if (input) {
-              input.value = searchParam;
-              executeSearch(detectCommand(searchParam));
+                input.value = decoded;
+                const label = getLabelForQuery(decoded);
+                pushHistory(decoded, label);
+                executeSearch(decoded);
             }
-          }, 500);
-        });
-      }
-    })();
+        }
 
-    loadNetworkStats();
-    setInterval(loadNetworkStats, 30000);
-  </script>
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+        }
+
+        function getLabelForQuery(q) {
+            const s = q.trim();
+            if (s.startsWith('getblock ')) return 'Bloque ' + s.replace('getblock ', '');
+            if (s.startsWith('getrawtransaction ')) {
+                const txid = s.replace('getrawtransaction ', '').replace(' 1', '');
+                return 'TX ' + txid.substring(0, 16) + '…';
+            }
+            if (s.startsWith('validateaddress ') || s.startsWith('z_validateaddress ')) {
+                const addr = s.split(' ')[1];
+                return 'Dirección ' + (addr ? addr.substring(0, 12) + '…' : '');
+            }
+            if (/^\d+$/.test(s)) return 'Bloque ' + s;
+            if (/^[a-fA-F0-9]{64}$/.test(s)) return 'TX ' + s.substring(0, 16) + '…';
+            return s.substring(0, 20) + (s.length > 20 ? '…' : '');
+        }
+
+        function detectSearchFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryParam = urlParams.get('q');
+            if (queryParam) return queryParam;
+            const path = window.location.pathname;
+            const match = path.match(/\/ycash-explorer\/(.+)$/);
+            if (match && match[1]) return match[1];
+            return null;
+        }
+
+        function updateUrlWithSearch(parametro) {
+            const basePath = window.location.origin + '/pagina';
+            const newUrl = basePath + '/ycash-explorer/' + encodeURIComponent(parametro);
+            window.history.replaceState({}, '', newUrl);
+        }
+
+        function detectCommand(input) {
+            input = input.trim();
+            if (!input) return input;
+            if (/^\d{1,7}$/.test(input)) return `getblock ${input}`;
+            if (/^0{4,}[a-fA-F0-9]{60}$/.test(input)) return `getblock ${input}`;
+            if (/^[a-fA-F0-9]{64}$/.test(input) && !/^0{4,}/.test(input)) return `getrawtransaction ${input} 1`;
+            if (/^(s1|s3|t1)[a-zA-Z0-9]{33}$/.test(input)) return `validateaddress ${input}`;
+            if (/^(ys1|yu1)[a-zA-Z0-9]{75,}$/.test(input)) return `z_validateaddress ${input}`;
+            if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
+                input.startsWith('validateaddress') || input.startsWith('z_validateaddress') ||
+                input.startsWith('z_getbalance') || input.startsWith('getblockchaininfo') ||
+                input.startsWith('getaddressbalance')) return input;
+            return input;
+        }
+
+        // ─── STATS ──────────────────────────────────────────────────────
+        async function loadNetworkStats() {
+            try {
+                const r = await fetch(STATUS_URL);
+                const d = await r.json();
+                document.getElementById('stat-height').textContent = d.height?.toLocaleString() || '---';
+                document.getElementById('stat-connections').textContent = d.connections || '---';
+                document.getElementById('stat-mempool').textContent = d.mempool || '0';
+            } catch (e) {}
+        }
+
+        // ─── VIN HELPER ─────────────────────────────────────────────────
+        async function getVinValue(txid, voutIndex) {
+            try {
+                const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
+                    .then(r => r.json()).then(r => r.result);
+                if (!prevTx || !prevTx.vout || !prevTx.vout[voutIndex]) return null;
+                return prevTx.vout[voutIndex].value;
+            } catch (e) { return null; }
+        }
+
+        // ─── RENDER ─────────────────────────────────────────────────────
+        function renderOutput(html) {
+            document.getElementById('output').innerHTML = html;
+        }
+
+        function renderPlaceholder() {
+            renderOutput(`
+            <div class="placeholder">
+              <div class="icon">⧫</div>
+              <div>explorador de bloques Ycash</div>
+              <div class="sub">bloque · transacción · dirección</div>
+            </div>
+          `);
+        }
+
+        function renderLoading() {
+            renderOutput(`
+            <div class="loading">
+              <span class="spinner"></span>
+              consultando red…
+            </div>
+          `);
+        }
+
+        // ─── EXECUTE SEARCH ─────────────────────────────────────────────
+        async function executeSearch(q) {
+            const raw = q.trim();
+            if (!raw) { renderPlaceholder(); return; }
+
+            renderLoading();
+
+            const cmd = detectCommand(raw);
+
+            // Actualizar URL con el valor limpio
+            const cleanValue = cmd.replace('getblock ', '').replace('getrawtransaction ', '').replace(' 1', '')
+                .replace('validateaddress ', '').replace('z_validateaddress ', '')
+                .replace('z_getbalance ', '').replace('getaddressbalance ', '');
+            if (cleanValue && !cmd.startsWith('getblockchaininfo')) {
+                updateUrlWithSearch(cleanValue);
+            }
+
+            try {
+                const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
+                const data = await r.json();
+
+                if (data.error) {
+                    renderOutput(`
+                <div class="cmd-line"><span class="tag">✕</span> ${escapeHtml(cmd)}</div>
+                <div style="color:#ff756f;padding:6px 0;">error: ${escapeHtml(JSON.stringify(data.error))}</div>
+                <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+              `);
+                    return;
+                }
+
+                const result = data.result;
+                if (!result) {
+                    renderOutput(`
+                <div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>
+                <div style="color:#3d3830;">sin resultado</div>
+                <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+              `);
+                    return;
+                }
+
+                // ── BLOQUE ──
+                if (cmd.includes('getblock') && result.hash) {
+                    const b = result;
+                    let res = `<div class="cmd-line"><span class="tag">⧫ BLOQUE</span> #${b.height}</div>`;
+                    res += `<div class="row"><span class="key">hash</span><span class="val">${makeLink(b.hash)}</span></div>`;
+                    res += `<div class="row"><span class="key">fecha</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">dificultad</span><span class="val">${b.difficulty?.toFixed(2) ?? '—'}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">tamaño</span><span class="val">${b.size ? b.size + ' bytes' : '—'}</span></div>`;
+                    if (b.previousblockhash) res +=
+                        `<div class="row"><span class="key">anterior</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
+                    if (b.nextblockhash) res +=
+                        `<div class="row"><span class="key">siguiente</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
+                    res += `<div class="divider"></div>`;
+                    res +=
+                        `<div class="row"><span class="key">transacciones</span><span class="val orange">${b.tx?.length ?? 0}</span></div>`;
+
+                    if (b.tx && b.tx.length > 0) {
+                        const txs = b.tx.slice(0, 50);
+                        for (const tx of txs) {
+                            const txid = typeof tx === 'object' ? tx.txid || tx : tx;
+                            const txLabel = 'TX ' + txid.substring(0, 16) + '…';
+                            res += `<div class="tx-item">
+                        <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
+                        ${typeof tx === 'object' && tx.txid ? `<div class="tx-meta"><span>transacción</span></div>` : ''}
+                      </div>`;
+                        }
+                        if (b.tx.length > 50) res +=
+                            `<div style="color:#3d3830;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
+                    }
+
+                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    renderOutput(res);
+                    return;
+                }
+
+                // ── TRANSACCIÓN ──
+                if (cmd.includes('getrawtransaction') && result.txid) {
+                    const t = result;
+
+                    const tieneShieldedSpend = t.vShieldedSpend && t.vShieldedSpend.length > 0;
+                    const tieneShieldedOutput = t.vShieldedOutput && t.vShieldedOutput.length > 0;
+                    const esTransaccionBlindada = (tieneShieldedSpend || tieneShieldedOutput) && (!t.vin || t.vin.length ===
+                        0) && (!t.vout || t.vout.length === 0);
+
+                    let res = `<div class="cmd-line"><span class="tag">`;
+                    if (esTransaccionBlindada) {
+                        res += '🛡 SHIELDED';
+                    } else if (tieneShieldedSpend || tieneShieldedOutput) {
+                        res += '🛡 MIXTA';
+                    } else {
+                        res += '📄 TX';
+                    }
+                    res += `</span> ${makeLink(t.txid)}</div>`;
+
+                    res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(t.txid)}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">bloque</span><span class="val">${t.height || t.blockheight ? makeLink(String(t.height || t.blockheight)) : 'no confirmada'}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">confirmaciones</span><span class="val">${t.confirmations || 0}</span></div>`;
+                    if (t.blocktime || t.time) {
+                        res +=
+                            `<div class="row"><span class="key">fecha</span><span class="val">${new Date((t.blocktime || t.time)*1000).toLocaleString()}</span></div>`;
+                    }
+                    res +=
+                        `<div class="row"><span class="key">versión</span><span class="val">${t.version || 'N/A'} · locktime: ${t.locktime || 0}</span></div>`;
+                    if (t.size) res += `<div class="row"><span class="key">tamaño</span><span class="val">${t.size} bytes</span></div>`;
+                    if (t.expiryheight) res +=
+                        `<div class="row"><span class="key">expira</span><span class="val">bloque ${t.expiryheight}</span></div>`;
+
+                    res += `<div class="divider"></div>`;
+
+                    if (esTransaccionBlindada) {
+                        const balance = t.valueBalance || 0;
+                        res += `<div class="row"><span class="key">🛡 SHIELDED</span></div>`;
+                        if (t.vShieldedSpend) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">gastos</span><span class="val">${t.vShieldedSpend.length}</span></div>`;
+                        }
+                        if (t.vShieldedOutput) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas</span><span class="val">${t.vShieldedOutput.length}</span></div>`;
+                        }
+                        res +=
+                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">balance</span><span class="val orange">${balance.toFixed(8)} YEC</span></div>`;
+                        if (t.vShieldedSpend?.[0]?.anchor) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">anchor</span><span class="val mono">${t.vShieldedSpend[0].anchor.substring(0, 32)}…</span></div>`;
+                        }
+                        if (t.bindingSig) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">bindingSig</span><span class="val mono">${t.bindingSig.substring(0, 32)}…</span></div>`;
+                        }
+                        res +=
+                            `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">🔒 privacidad</span><span class="val">montos ocultos</span></div>`;
+                    } else {
+                        // ── ENTRADAS ──
+                        if (t.vin && t.vin.length > 0) {
+                            res +=
+                                `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val orange">${t.vin.length}</span></div>`;
+                            let totalIn = 0;
+                            for (const [i, vin] of t.vin.entries()) {
+                                if (vin.coinbase) {
+                                    res +=
+                                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff9a6b;">COINBASE</span></div>`;
+                                } else if (vin.txid) {
+                                    let value = vin.value;
+                                    if (!value) value = await getVinValue(vin.txid, vin.vout);
+                                    if (value) totalIn += value;
+                                    const valStr = value ? ` ${value.toFixed(8)} YEC` : '';
+                                    res +=
+                                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${makeLink(vin.txid)}:${vin.vout}</span>${valStr ? `<span class="val orange">${valStr}</span>` : ''}</div>`;
+                                }
+                            }
+                            if (totalIn > 0) {
+                                res +=
+                                    `<div class="row" style="margin-top:2px;"><span class="key">total entradas</span><span class="val orange">${totalIn.toFixed(8)} YEC</span></div>`;
+                            }
+                        }
+
+                        // ── SALIDAS ──
+                        if (t.vout && t.vout.length > 0) {
+                            res += `<div class="divider"></div>`;
+                            res +=
+                                `<div class="row"><span class="key">◀ SALIDAS</span><span class="val orange">${t.vout.length}</span></div>`;
+
+                            let totalOut = 0;
+                            let pagos = [];
+                            for (const [i, vout] of t.vout.entries()) {
+                                const valor = vout.value || 0;
+                                totalOut += valor;
+
+                                let addr = '';
+                                if (vout.scriptPubKey?.addresses?.[0]) {
+                                    addr = vout.scriptPubKey.addresses[0];
+                                } else if (vout.scriptPubKey?.address) {
+                                    addr = vout.scriptPubKey.address;
+                                } else if (vout.scriptPubKey?.type === 'nulldata') {
+                                    addr = 'OP_RETURN (datos)';
+                                } else {
+                                    addr = '🛡 OUTPUT BLINDADO (Sapling)';
+                                }
+
+                                pagos.push({ value: valor, addr });
+                                const addrDisplay = addr === '🛡 OUTPUT BLINDADO (Sapling)' ?
+                                    `<span style="color:#8a8275;">🔒 blindado</span>` :
+                                    makeLink(addr);
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val orange">${valor.toFixed(8)} YEC</span> → ${addrDisplay}</div>`;
+                            }
+                            if (totalOut > 0) {
+                                res +=
+                                    `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val orange">${totalOut.toFixed(8)} YEC</span></div>`;
+                            }
+
+                            // Fee
+                            if (t.vin && t.vin.length > 0 && !t.vin[0]?.coinbase) {
+                                const totalIn = t.vin.reduce((sum, vin) => sum + (vin.value || 0), 0);
+                                if (totalIn > 0 && totalOut > 0) {
+                                    const fee = totalIn - totalOut;
+                                    if (fee > 0.00000001) {
+                                        res +=
+                                            `<div class="row"><span class="key">fee</span><span class="val" style="color:#ff756f;">${fee.toFixed(8)} YEC</span></div>`;
+                                    }
+                                }
+                            }
+                        }
+
+                        // ── SHIELDED ──
+                        if (tieneShieldedSpend || tieneShieldedOutput) {
+                            res += `<div class="divider"></div>`;
+                            res += `<div class="row"><span class="key">🛡 DATOS BLINDADOS</span></div>`;
+                            if (tieneShieldedSpend) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">gastos blindados</span><span class="val">${t.vShieldedSpend.length}</span></div>`;
+                            }
+                            if (tieneShieldedOutput) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas blindadas</span><span class="val">${t.vShieldedOutput.length}</span></div>`;
+                            }
+                            if (t.valueBalance) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">balance blindado</span><span class="val orange">${t.valueBalance.toFixed(8)} YEC</span></div>`;
+                            }
+                        }
+
+                        // ── RESUMEN ──
+                        res += `<div class="divider"></div>`;
+                        res += `<div class="row"><span class="key">RESUMEN</span></div>`;
+                        res +=
+                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">entradas</span><span class="val">${t.vin?.length || 0}</span></div>`;
+                        res +=
+                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas</span><span class="val">${t.vout?.length || 0}</span></div>`;
+                        if (tieneShieldedSpend || tieneShieldedOutput) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">actividad shielded</span><span class="val orange">sí 🛡</span></div>`;
+                        }
+                        if (t.vin && t.vin.length > 0 && t.vin[0]?.coinbase) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val orange">coinbase</span></div>`;
+                        } else if (tieneShieldedSpend && !tieneShieldedOutput) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val orange">desblindaje</span></div>`;
+                            if (t.valueBalance) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos visibles</span><span class="val orange">${Math.abs(t.valueBalance).toFixed(8)} YEC</span></div>`;
+                            }
+                        } else if (tieneShieldedOutput && !tieneShieldedSpend) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val orange">blindaje</span></div>`;
+                            if (t.valueBalance) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos blindados</span><span class="val orange">${Math.abs(t.valueBalance).toFixed(8)} YEC</span></div>`;
+                            }
+                        } else {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">transparente</span></div>`;
+                        }
+                    }
+
+                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    renderOutput(res);
+                    return;
+                }
+
+                // ── VALIDAR DIRECCIÓN ──
+                if ((cmd.includes('validateaddress') || cmd.includes('z_validateaddress')) && result) {
+                    const v = result;
+                    const direccion = v.address || cmd.split(' ')[1] || 'desconocida';
+                    const esShielded = cmd.includes('z_validateaddress') || direccion.startsWith('ys');
+
+                    let res = `<div class="cmd-line"><span class="tag">◈ DIRECCIÓN</span> ${makeLink(direccion)}</div>`;
+                    res += `<div class="row"><span class="key">dirección</span><span class="val">${makeLink(direccion)}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">válida</span><span class="val">${v.isvalid ? '✅ sí' : '❌ no'}</span></div>`;
+                    if (v.isvalid && !esShielded) {
+                        let tipo = 'transparente';
+                        if (v.isscript) tipo = 'script';
+                        else if (v.iswatchonly) tipo = 'watchonly';
+                        res += `<div class="row"><span class="key">subtipo</span><span class="val">${tipo}</span></div>`;
+                    }
+                    if (v.isvalid && esShielded) {
+                        res += `<div class="row"><span class="key">tipo</span><span class="val orange">shielded</span></div>`;
+                    }
+                    if (v.ismine !== undefined) {
+                        res +=
+                            `<div class="row"><span class="key">pertenece a wallet</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
+                    }
+
+                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    renderOutput(res);
+                    return;
+                }
+
+                // ── FALLBACK ──
+                let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
+                res +=
+                    `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
+                res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                renderOutput(res);
+
+            } catch (e) {
+                renderOutput(`
+              <div class="cmd-line"><span class="tag">✕</span> error</div>
+              <div style="color:#ff756f;padding:6px 0;">${escapeHtml(e.message)}</div>
+              <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+            `);
+            }
+
+            document.getElementById('searchInput').value = '';
+        }
+
+        // ─── COPY RESULT ────────────────────────────────────────────────
+        window.copyResult = function() {
+            const outputPre = document.querySelector('#output pre:last-of-type');
+            if (outputPre) {
+                navigator.clipboard.writeText(outputPre.innerText).then(() => {
+                    document.querySelector('.prompt').textContent = '✓';
+                    setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
+                    showToast('✓ copiado');
+                });
+            } else {
+                const out = document.getElementById('output');
+                const text = out.textContent;
+                if (text) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('✓ copiado');
+                    });
+                }
+            }
+        };
+
+        // ─── EXPONER FUNCIONES GLOBALES ────────────────────────────────
+        window.navigateTo = navigateTo;
+        window.executeSearch = executeSearch;
+        window.goBack = goBack;
+        window.goToHistory = goToHistory;
+
+        // ─── EVENTOS ─────────────────────────────────────────────────────
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F8') { e.preventDefault();
+                window.copyResult(); }
+            if (e.key === 'F9') {
+                e.preventDefault();
+                document.getElementById('searchInput').value = '';
+                renderPlaceholder();
+                document.querySelector('.prompt').textContent = '♥';
+                setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
+                const baseUrl = window.location.origin + '/pagina/ycash-explorer';
+                window.history.replaceState({}, '', baseUrl);
+                historyStack = [];
+                currentIndex = -1;
+                updateBackButton();
+                updateBreadcrumb();
+                loadNetworkStats();
+            }
+            if (e.key === 'ArrowLeft' && (e.altKey || e.metaKey)) {
+                e.preventDefault();
+                goBack();
+            }
+        });
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const rawInput = searchInput.value.trim();
+                if (rawInput) {
+                    const cmd = detectCommand(rawInput);
+                    const label = getLabelForQuery(cmd);
+                    pushHistory(cmd, label);
+                    const cleanValue = cmd.replace('getblock ', '').replace('getrawtransaction ', '').replace(' 1', '')
+                        .replace('validateaddress ', '').replace('z_validateaddress ', '')
+                        .replace('z_getbalance ', '').replace('getaddressbalance ', '');
+                    if (cleanValue && !cmd.startsWith('getblockchaininfo')) {
+                        updateUrlWithSearch(cleanValue);
+                    }
+                    executeSearch(cmd);
+                }
+            }
+        });
+        searchInput.addEventListener('paste', () => {
+            setTimeout(() => {
+                const input = searchInput.value;
+                const cmd = detectCommand(input);
+                if (cmd !== input) searchInput.value = cmd;
+            }, 10);
+        });
+
+        // ─── RESTORE URL ─────────────────────────────────────────────────
+        (function() {
+            const searchParam = detectSearchFromUrl();
+            if (searchParam) {
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        const input = document.getElementById('searchInput');
+                        if (input) {
+                            const cmd = detectCommand(searchParam);
+                            input.value = cmd;
+                            const label = getLabelForQuery(cmd);
+                            pushHistory(cmd, label);
+                            executeSearch(cmd);
+                        }
+                    }, 500);
+                });
+            }
+        })();
+
+        // ─── INIT ────────────────────────────────────────────────────────
+        loadNetworkStats();
+        setInterval(loadNetworkStats, 30000);
+    </script>
+
 </body>
 </html>
