@@ -1,472 +1,1416 @@
-<!doctype html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Firo · Explorador de Bloques</title>
-  <style>
-    :root { --gold:#9B1C2E; --gold-soft:#c0392b; --green:#31db72; --red:#ff756f; --line:rgba(155,28,46,.5); --panel:rgba(10,2,2,.91); --ui-scale:1; }
-    * { box-sizing:border-box; }
-    body { min-height:100vh; margin:0; color:#fff; font:14px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
-    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(192,57,43,.025) 0 1px,transparent 1px 4px); }
-    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
-    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
-    .panel { position:relative; width:min(800px,98%); padding:25px 30px 20px; background:linear-gradient(135deg,rgba(30,10,5,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(155,28,46,.85),0 0 48px rgba(155,28,46,.2),inset 0 0 30px rgba(155,28,46,.08); }
-    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
-    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
-    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
-    .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(192,57,43,.65)); }
-    .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
-    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
-    .section { border-top:1px solid var(--line); padding:9px 0 10px; }
-    .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
-    .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
-    .api { font-size:11px; overflow-wrap:anywhere; } 
-    .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
-    .small { color:#afa391; }
-    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
-    
-    .stats-row { display:flex; flex-wrap:wrap; gap:5px 18px; font-size:12px; margin-bottom:4px; color:#d2c8b7; }
-    .stats-row span { color:#fff; }
-    .stats-label { color:#d2c8b7; }
-    .stats-value { color:#fff; }
-    
-    .input-line { display:flex; align-items:center; margin:8px 0; gap:8px; }
-    .prompt { color:var(--gold-soft); font-size:13px; white-space:nowrap; }
-    #searchInput { background:transparent; color:#fff; border:none; border-bottom:1px solid var(--line); font-family:"Lucida Console",Monaco,monospace; font-size:13px; padding:3px 5px; width:100%; outline:none; caret-color:var(--gold); }
-    #searchInput:focus { border-bottom-color:var(--gold); }
-    
-    #output { margin-top:6px; }
-    #output pre { margin:6px 0 0 0; font-family:"Lucida Console",Monaco,monospace; font-size:12px; white-space:pre-wrap; word-wrap:break-word; color:#e6ddce; line-height:1.5; }
-    #output pre .gold { color:var(--gold-soft); }
-    
-    .result-footer { font-size:10px; color:#7a7060; margin-top:8px; padding-top:6px; border-top:1px solid var(--line); }
-    
-    .server-list-container { max-height:450px; overflow-y:auto; padding-right:5px; }
-    .server-list-container::-webkit-scrollbar { width:3px; }
-    .server-list-container::-webkit-scrollbar-track { background:rgba(155,28,46,.1); }
-    .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
-    
-    .copy-btn { background:transparent; border:1px solid var(--line); color:var(--gold-soft); font-family:'Lucida Console',monospace; font-size:11px; padding:3px 10px; cursor:pointer; margin-top:6px; }
-    .copy-btn:hover { border-color:var(--gold); background:rgba(155,28,46,.1); }
-    
-    @media (max-width:700px) { 
-      .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
-      main { padding:65px 10px 24px 5px; align-items:flex-start; } 
-      .panel { padding:22px 18px 18px; width:98%; } 
-      .panel-title { font-size:16px; } 
-      .stats-row { font-size:11px; gap:3px 12px; }
-      #searchInput { font-size:12px; }
-      #output pre { font-size:11px; }
-      .server-list-container { max-height:300px; }
-    }
-    @media (min-width:1920px) { 
-      :root { --ui-scale:1.1; } 
-      main { padding:72px 20px 36px 0; } 
-      .panel { width:min(750px,90%); } 
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firo · Explorador Moderno</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(155, 28, 46, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(155, 28, 46, 0.3));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5));
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(155, 28, 46, 0.15);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #ff7b87;
+            border-bottom-color: #ff7b87;
+        }
+
+        .back-btn {
+            color: #ff7b87;
+            cursor: pointer;
+            padding: 4px 12px;
+            border: 1px solid rgba(155, 28, 46, 0.15);
+            border-radius: 20px;
+            font-size: 11px;
+            transition: all 0.25s;
+            background: rgba(155, 28, 46, 0.05);
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn:hover {
+            background: rgba(155, 28, 46, 0.1);
+            border-color: rgba(155, 28, 46, 0.3);
+        }
+
+        .back-btn.show {
+            display: inline-flex;
+        }
+
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 32px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(155, 28, 46, 0.1);
+            font-size: 13px;
+        }
+
+        .stats-bar .stat {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .stats-bar .label {
+            color: #4a443a;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stats-bar .value {
+            color: #f5ede4;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .stats-bar .badge {
+            background: rgba(155, 28, 46, 0.12);
+            padding: 2px 16px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: #ff7b87;
+            border: 1px solid rgba(155, 28, 46, 0.12);
+            margin-left: auto;
+            letter-spacing: 0.5px;
+        }
+
+        .search-section {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 2px 2px 2px 22px;
+            border: 1px solid rgba(155, 28, 46, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .search-section:focus-within {
+            border-color: rgba(155, 28, 46, 0.4);
+            box-shadow: 0 0 0 4px rgba(155, 28, 46, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .search-section .prompt {
+            color: #ff7b87;
+            font-size: 16px;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .search-section:focus-within .prompt {
+            transform: scale(1.1);
+        }
+
+        .search-section input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px 8px 15px 4px;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 15px;
+            color: #f5ede4;
+            outline: none;
+            min-width: 0;
+            letter-spacing: 0.2px;
+        }
+
+        .search-section input::placeholder {
+            color: #3d3830;
+            letter-spacing: 0.5px;
+        }
+
+        .search-section .shortcuts {
+            display: flex;
+            gap: 4px;
+            padding-right: 16px;
+            font-size: 10px;
+            color: #3d3830;
+        }
+
+        .search-section .shortcuts kbd {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 12px;
+            border-radius: 6px;
+            color: #5a5348;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-family: 'Lucida Console', monospace;
+            font-size: 9px;
+            letter-spacing: 0.3px;
+            transition: all 0.2s;
+        }
+
+        .search-section .shortcuts kbd:hover {
+            background: rgba(155, 28, 46, 0.06);
+            border-color: rgba(155, 28, 46, 0.1);
+            color: #8a8275;
+        }
+
+        .output-wrapper {
+            flex: 1;
+            min-height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px;
+            border: 1px solid rgba(155, 28, 46, 0.06);
+            padding: 24px 28px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+            transition: border-color 0.3s;
+        }
+
+        .output-wrapper:hover {
+            border-color: rgba(155, 28, 46, 0.1);
+        }
+
+        .output-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .output-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .output-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(155, 28, 46, 0.2);
+            border-radius: 10px;
+        }
+
+        #output {
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #e0d8cc;
+        }
+
+        #output .cmd-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ff7b87;
+            font-size: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(155, 28, 46, 0.06);
+            margin-bottom: 18px;
+        }
+
+        #output .cmd-line .tag {
+            background: rgba(155, 28, 46, 0.1);
+            padding: 2px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #ff7b87;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(155, 28, 46, 0.06);
+        }
+
+        #output .row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 2px 12px;
+            padding: 3px 0;
+        }
+
+        #output .row .key {
+            color: #5a5348;
+            font-size: 12px;
+            min-width: 100px;
+            letter-spacing: 0.2px;
+        }
+
+        #output .row .val {
+            color: #f5ede4;
+            word-break: break-all;
+        }
+
+        #output .row .val.gold {
+            color: #ff7b87;
+        }
+
+        #output .row .val .link {
+            color: #ff7b87;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(155, 28, 46, 0.15);
+            padding-bottom: 1px;
+            word-break: break-all;
+            cursor: pointer;
+        }
+
+        #output .row .val .link:hover {
+            color: #ff9ba9;
+            border-bottom-color: #ff7b87;
+        }
+
+        #output .divider {
+            height: 1px;
+            background: linear-gradient(to right, rgba(155, 28, 46, 0.08), transparent);
+            margin: 14px 0;
+        }
+
+        #output .tx-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 10px 16px;
+            border-left: 2px solid rgba(155, 28, 46, 0.12);
+            margin: 4px 0;
+            transition: all 0.15s;
+        }
+
+        #output .tx-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-left-color: rgba(155, 28, 46, 0.25);
+        }
+
+        #output .tx-item .txid-link {
+            color: #ff7b87;
+            text-decoration: none;
+            font-size: 13px;
+            word-break: break-all;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(155, 28, 46, 0.1);
+            cursor: pointer;
+        }
+
+        #output .tx-item .txid-link:hover {
+            color: #ff9ba9;
+            border-bottom-color: #ff7b87;
+        }
+
+        #output .tx-item .tx-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px 20px;
+            font-size: 12px;
+            color: #6a6255;
+            margin-top: 2px;
+        }
+
+        #output .copy-btn {
+            margin-top: 18px;
+            background: rgba(155, 28, 46, 0.06);
+            border: 1px solid rgba(155, 28, 46, 0.12);
+            color: #ff7b87;
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            padding: 7px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.25s;
+            letter-spacing: 0.3px;
+        }
+
+        #output .copy-btn:hover {
+            background: rgba(155, 28, 46, 0.1);
+            border-color: #ff7b87;
+            box-shadow: 0 0 30px rgba(155, 28, 46, 0.04);
+        }
+
+        #output .placeholder {
+            color: #3d3830;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            gap: 12px;
+        }
+
+        #output .placeholder .icon {
+            font-size: 48px;
+            opacity: 0.12;
+        }
+
+        #output .placeholder .sub {
+            font-size: 13px;
+            color: #2d2820;
+            letter-spacing: 0.5px;
+        }
+
+        #output .loading {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #4a443a;
+            padding: 20px 0;
+        }
+
+        #output .loading .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(155, 28, 46, 0.1);
+            border-top-color: #ff7b87;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .footer-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 12px;
+            border: 1px solid rgba(155, 28, 46, 0.04);
+            font-size: 11px;
+            color: #3d3830;
+        }
+
+        .footer-bar a {
+            color: #5a5348;
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+
+        .footer-bar a:hover {
+            color: #ff7b87;
+        }
+
+        .footer-bar .api {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 3px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s;
+        }
+
+        .footer-bar .api:hover {
+            border-color: rgba(155, 28, 46, 0.08);
+            background: rgba(155, 28, 46, 0.02);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(155, 28, 46, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(155, 28, 46, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── BREADCRUMB ── */
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 12px;
+            padding: 6px 0;
+            font-size: 11px;
+            color: #4a443a;
+            min-height: 28px;
+        }
+
+        .breadcrumb .crumb {
+            color: #6a6255;
+            cursor: pointer;
+            transition: color 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .breadcrumb .crumb:hover {
+            color: #ff7b87;
+            border-bottom-color: rgba(155, 28, 46, 0.2);
+        }
+
+        .breadcrumb .crumb.current {
+            color: #ff7b87;
+            cursor: default;
+            border-bottom-color: transparent;
+        }
+
+        .breadcrumb .sep {
+            color: #3d3830;
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px 18px;
+            }
+
+            .brand h1 {
+                font-size: 17px;
+            }
+
+            .brand img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-links {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .stats-bar {
+                font-size: 11px;
+                padding: 8px 14px;
+                gap: 4px 16px;
+            }
+
+            .stats-bar .badge {
+                margin-left: 0;
+                font-size: 9px;
+                padding: 1px 12px;
+            }
+
+            .search-section {
+                padding: 2px 2px 2px 14px;
+            }
+
+            .search-section input {
+                font-size: 14px;
+                padding: 12px 4px;
+            }
+
+            .search-section .shortcuts {
+                display: none;
+            }
+
+            .output-wrapper {
+                padding: 16px 18px;
+                min-height: 200px;
+            }
+
+            #output {
+                font-size: 12px;
+            }
+
+            #output .row .key {
+                min-width: 70px;
+                font-size: 11px;
+            }
+
+            .footer-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                padding: 12px 18px;
+            }
+
+            .footer-bar .api {
+                font-size: 10px;
+                padding: 2px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 8px 10px;
+                gap: 10px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .brand h1 {
+                font-size: 15px;
+            }
+
+            .brand h1 small {
+                font-size: 10px;
+            }
+
+            .brand img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .stats-bar {
+                font-size: 10px;
+                padding: 6px 12px;
+                gap: 3px 12px;
+            }
+
+            .stats-bar .value {
+                font-size: 12px;
+            }
+
+            .search-section input {
+                font-size: 13px;
+                padding: 10px 4px;
+            }
+
+            .output-wrapper {
+                padding: 12px 14px;
+                min-height: 150px;
+            }
+
+            #output {
+                font-size: 11px;
+                line-height: 1.6;
+            }
+
+            #output .row .key {
+                min-width: 60px;
+                font-size: 10px;
+            }
+
+            #output .tx-item {
+                padding: 8px 12px;
+            }
+
+            #output .copy-btn {
+                font-size: 11px;
+                padding: 5px 16px;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .app {
+                max-width: 1600px;
+                padding: 24px 40px;
+            }
+
+            #output {
+                font-size: 14px;
+            }
+
+            #output .row .key {
+                min-width: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main><section class="panel">
-    <div class="panel-title"><img class="logo" src="assets/firo.png" alt="Firo">EXPLORADOR DE BLOQUES</div>
-    <nav class="top-links"><a href="https://carover0.github.io/pagina/firo-nodo">[NODO]</a> · <a href="https://carover0.github.io/pagina/firo-consola">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
-    
-    <section class="section">
-      <div class="stats-row">
-        <span><span class="stats-label">ALTURA:</span> <span class="stats-value" id="stat-height">---</span></span>
-        <span><span class="stats-label">DIFICULTAD:</span> <span class="stats-value" id="stat-difficulty">---</span></span>
-        <span><span class="stats-label">CONEXIONES:</span> <span class="stats-value" id="stat-connections">---</span></span>
-        <span><span class="stats-label">MEMPOOL:</span> <span class="stats-value" id="stat-mempool">---</span> tx</span>
-      </div>
-      
-      <div class="input-line">
-        <span class="prompt">►</span>
-        <input type="text" id="searchInput" placeholder="bloque / hash / txid / dirección" autofocus>
-      </div>
-      
-      <div id="output" class="server-list-container"></div>
-    </section>
 
-    <section class="section"><h2 class="subheader">► API pública</h2>
-      <a class="api" href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener">https://carover0.xyz/api/firo.json</a>
-    </section>
+    <div class="app">
 
-    <footer class="footer">
-      <div class="small">[F8] copiar &nbsp;·&nbsp; [F9] limpiar</div>
-      <div class="donation"><br></div>
-    </footer>
-  </section></main>
+        <header class="header">
+            <div class="brand">
+                <img src="assets/firo.png" alt="Firo">
+                <h1>Firo <small>explorador</small></h1>
+            </div>
+            <nav class="nav-links">
+                <span class="back-btn" id="backBtn" onclick="goBack()">← volver</span>
+                <a href="https://carover0.github.io/pagina/firo-nodo">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/firo-consola">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
 
-  <script>
-    const API_URL = "https://carover0.xyz/api/firo/rpc.php";
-    const TOKEN = "firo2026";
-    const STATUS_URL = "https://carover0.xyz/api/firo.json";
+        <div class="stats-bar">
+            <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
+            <div class="stat"><span class="label">DIFICULTAD</span><span class="value" id="stat-difficulty">—</span></div>
+            <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
+            <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
+            <div class="badge">● LIVE</div>
+        </div>
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text).replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
+        <div class="breadcrumb" id="breadcrumb"></div>
 
-    function detectSearchFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const queryParam = urlParams.get('q');
-      if (queryParam) return queryParam;
-      const path = window.location.pathname;
-      const match = path.match(/\/firo-explorer\/(.+)$/);
-      if (match && match[1]) return match[1];
-      return null;
-    }
+        <div class="search-section">
+            <span class="prompt">►</span>
+            <input type="text" id="searchInput" placeholder="bloque · hash · txid · dirección" autofocus spellcheck="false">
+            <div class="shortcuts">
+                <kbd>F8</kbd> copiar
+                <kbd>F9</kbd> limpiar
+            </div>
+        </div>
 
-    function updateUrlWithSearch(parametro) {
-      const basePath = window.location.origin + '/pagina';
-      const newUrl = basePath + '/firo-explorer/' + encodeURIComponent(parametro);
-      window.history.replaceState({}, '', newUrl);
-    }
+        <div class="output-wrapper">
+            <div id="output">
+                <div class="placeholder">
+                    <div class="icon">⧫</div>
+                    <div>explorador de bloques Firo</div>
+                    <div class="sub">bloque · transacción · dirección</div>
+                </div>
+            </div>
+        </div>
 
-    function detectCommand(input) {
-      input = input.trim();
-      if (input.startsWith('getblock') || input.startsWith('getrawtransaction') || 
-          input.startsWith('validateaddress') || input.startsWith('getaddressbalance') ||
-          input.startsWith('HASH:')) {
-        return input;
-      }
-      if (/^\d+$/.test(input)) return `getblockhash ${input}`;
-      if (/^[a-fA-F0-9]{64}$/.test(input)) return `HASH:${input}`;
-      if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
-        return `validateaddress ${input}`;
-      }
-      if (input.length > 50) {
-        if (input.startsWith('validateaddress')) return input;
-        return `validateaddress ${input}`;
-      }
-      return input;
-    }
+        <footer class="footer-bar">
+            <span>API · <a href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/api/firo.json</a></span>
+            <span style="font-size:10px;color:#2d2820;">Firo mainnet</span>
+        </footer>
 
-    async function loadNetworkStats() {
-      try {
-        const r = await fetch(STATUS_URL);
-        const d = await r.json();
-        document.getElementById('stat-height').textContent = d.blockchain?.blocks?.toLocaleString() || '---';
-        document.getElementById('stat-difficulty').textContent = d.blockchain?.difficulty?.toFixed(2) || '---';
-        document.getElementById('stat-connections').textContent = d.network?.connections || '---';
-        document.getElementById('stat-mempool').textContent = d.mempool?.txcount || '0';
-      } catch(e) {}
-    }
+    </div>
 
-    async function getVinValue(txid, vout) {
-      try {
-        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
-        const data = await r.json();
-        if (data.result && data.result.vout && data.result.vout[vout]) {
-          return data.result.vout[vout].value;
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_URL = "https://carover0.xyz/api/firo/rpc.php";
+        const TOKEN = "firo2026";
+        const STATUS_URL = "https://carover0.xyz/api/firo.json";
+
+        let historyStack = [];
+        let currentIndex = -1;
+
+        function pushHistory(query, label) {
+            historyStack = historyStack.slice(0, currentIndex + 1);
+            historyStack.push({ query: query, label: label || query });
+            currentIndex = historyStack.length - 1;
+            updateBackButton();
+            updateBreadcrumb();
         }
-        return null;
-      } catch(e) { return null; }
-    }
 
-    async function executeSearch(q) {
-      const out = document.getElementById('output');
-      out.innerHTML = '<pre style="color:#888;">ejecutando...</pre>';
-
-      let rawParam = '';
-      
-      if (q.startsWith('getblock ')) rawParam = q.replace('getblock ', '');
-      else if (q.startsWith('getblockhash ')) rawParam = q.replace('getblockhash ', '');
-      else if (q.startsWith('getrawtransaction ')) rawParam = q.replace('getrawtransaction ', '').replace(' 1', '');
-      else if (q.startsWith('validateaddress ') || q.startsWith('getaddressbalance ')) rawParam = q.split(' ')[1];
-      else if (q.startsWith('HASH:')) rawParam = q.substring(5);
-      else {
-        if (/^\d+$/.test(q)) rawParam = q;
-        else if (/^[a-fA-F0-9]{64}$/.test(q)) rawParam = q;
-        else if (q.startsWith('F') || q.startsWith('a') || q.startsWith('A')) rawParam = q;
-      }
-      
-      if (rawParam) updateUrlWithSearch(rawParam);
-
-      if (q.startsWith('HASH:')) {
-        const hash = q.substring(5);
-        try {
-          const blockTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblock%20${hash}`);
-          const blockData = await blockTest.json();
-          if (blockData.result && blockData.result.hash) {
-            return executeSearch(`getblock ${hash}`);
-          }
-        } catch(e) {}
-        try {
-          const txTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${hash}%201`);
-          const txData = await txTest.json();
-          if (txData.result && txData.result.txid) {
-            return executeSearch(`getrawtransaction ${hash} 1`);
-          }
-        } catch(e) {}
-        out.innerHTML = `<pre style="color:var(--red);">No se encontró bloque ni transacción con hash ${escapeHtml(hash)}</pre>`;
-        return;
-      }
-      
-      try {
-        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(q)}`);
-        const data = await r.json();
-        
-        let res = `<pre style="color:#9B1C2E;">firo> ${escapeHtml(q)}</pre><pre style="color:#e6ddce;">\n`;
-        
-        if (data.error) {
-          res += `error: ${JSON.stringify(data.error)}`;
-        }
-        else if (q.includes('getblockhash') && typeof data.result === 'string') {
-          const hash = data.result;
-          return executeSearch(`getblock ${hash}`);
-        }
-        else if (q.includes('getblock') && data.result?.hash) {
-          const b = data.result;
-          res += `BLOQUE #${b.height}\n`;
-          res += `hash: ${b.hash}\n`;
-          res += `fecha: ${new Date(b.time*1000).toLocaleString()}\n`;
-          res += `transacciones: ${b.tx?.length || 0}\n`;
-          res += `dificultad: ${b.difficulty?.toFixed(2)}\n`;
-          if (b.previousblockhash) res += `anterior: ${b.previousblockhash}\n`;
-          if (b.nextblockhash) res += `siguiente: ${b.nextblockhash}\n`;
-          if (b.size) res += `tamaño: ${b.size} bytes\n`;
-          
-          if (b.tx && b.tx.length > 0) {
-            res += `\n▶ TRANSACCIONES (${b.tx.length})\n`;
-            b.tx.forEach((txid, i) => {
-              res += `  ${i+1}. ${txid}\n`;
-            });
-          }
-        }
-        else if (q.includes('getrawtransaction') && data.result?.txid) {
-          const t = data.result;
-          const moneda = 'FIRO';
-          let totalIn = 0;
-          
-          const esCoinbase = t.vin && t.vin[0]?.coinbase;
-          const esSpark = t.type === 9 || t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0 || t.sparkData;
-          const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0;
-          
-          if (esSpark) {
-            res += `🛡 TRANSACCIÓN SPARK (PRIVADA)\n`;
-          } else if (esBlindada) {
-            res += `🛡 TRANSACCIÓN PRIVADA (SHIELDED)\n`;
-          } else if (esCoinbase) {
-            res += `TRANSACCIÓN COINBASE (MINERÍA)\n`;
-          } else {
-            res += `📄 TRANSACCIÓN TRANSPARENTE\n`;
-          }
-          
-          res += `TXID: ${t.txid}\n`;
-          const blockHeight = t.blockheight || t.height || (t.blockhash ? 'consultar bloque' : 'no confirmada');
-          res += `bloque: #${blockHeight}\n`;
-          res += `confirmaciones: ${t.confirmations || 0}\n`;
-          if (t.blocktime || t.time) {
-            res += `fecha: ${new Date((t.blocktime || t.time)*1000).toLocaleString()}\n`;
-          }
-          res += `versión: ${t.version || 'N/A'}`;
-          if (t.type !== undefined) res += ` | tipo: ${t.type}`;
-          res += `\n`;
-          if (t.size) res += `tamaño: ${t.size} bytes\n`;
-          if (t.instantlock) res += `instantlock: sí\n`;
-          if (t.chainlock) res += `chainlock: sí\n`;
-          
-          if (esSpark || esBlindada) {
-            res += `\n🛡 DATOS PRIVADOS (SPARK/SHIELDED)\n`;
-            if (t.vShieldedSpend?.length > 0) {
-              res += `  spends blindados: ${t.vShieldedSpend.length}\n`;
-              t.vShieldedSpend.forEach((spend, i) => {
-                res += `    [#${i}] nullifier: ${spend.nullifier?.substring(0,16)}...\n`;
-                if (spend.nFees) res += `         fee: ${spend.nFees} FIRO\n`;
-              });
-            }
-            if (t.vShieldedOutput?.length > 0) {
-              res += `  outputs blindados: ${t.vShieldedOutput.length}\n`;
-            }
-            if (t.sparkData) {
-              const realBytes = t.sparkData.length / 2;
-              res += `  sparkData: ${realBytes} bytes\n`;
-            }
-            if (t.vin && t.vin[0]?.lTags) {
-              res += `  lTags (nullifiers):\n`;
-              t.vin.forEach((vin, i) => {
-                if (vin.lTags && vin.lTags.length > 0) {
-                  vin.lTags.forEach((tag, j) => {
-                    const shortTag = tag.substring(0, 30) + '...' + tag.substring(tag.length-10);
-                    res += `    [${i}.${j}] ${shortTag}\n`;
-                  });
+        function goBack() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                const entry = historyStack[currentIndex];
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    input.value = entry.query;
+                    const cmd = detectCommand(entry.query);
+                    updateUrlWithSearch(cmd);
+                    executeSearch(cmd);
                 }
-              });
+                updateBackButton();
+                updateBreadcrumb();
             }
-            if (t.vin && t.vin[0]?.nFees) {
-              let totalFees = 0;
-              t.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
-              if (totalFees > 0) {
-                res += `  fees totales (Spark): ${totalFees.toFixed(8)} ${moneda}\n`;
-              }
-            }
-            if (t.bindingSig) {
-              res += `  bindingSig: ${t.bindingSig.substring(0, 128)}${t.bindingSig.length > 128 ? '...' : ''}\n`;
-            }
-            res += `  🔒 no existe vínculo criptográfico entre entradas y salidas\n`;
-          }
-          
-          const entradasTransparentes = t.vin?.filter(vin => vin.txid) || [];
-          if (entradasTransparentes.length > 0) {
-            res += `\n▶ ENTRADAS TRANSPARENTES (${entradasTransparentes.length})\n`;
-            const vinPromises = entradasTransparentes.map(async (vin, idx) => {
-              const shortTxid = vin.txid.substring(0, 6) + '...' + vin.txid.substring(vin.txid.length-6);
-              let value = vin.value;
-              if (!value) value = await getVinValue(vin.txid, vin.vout);
-              if (value) totalIn += value;
-              const valStr = value ? ` ${value.toFixed(8)} ${moneda}` : '';
-              return `  [#${idx}] ${shortTxid}:${vin.vout}${valStr}`;
-            });
-            const vinLines = await Promise.all(vinPromises);
-            res += vinLines.filter(line => line !== '').join('\n') + '\n';
-            if (totalIn > 0) res += `  total entrada: ${totalIn.toFixed(8)} ${moneda}\n`;
-          } else if (t.vin && t.vin.length > 0 && !entradasTransparentes.length) {
-            res += `\n▶ ENTRADAS PRIVADAS (${t.vin.length})\n`;
-            t.vin.forEach((vin, i) => {
-              if (vin.scriptSig?.asm?.includes('OP_SPARKSPEND')) {
-                res += `  [#${i}] SPARK SPEND\n`;
-              } else {
-                res += `  [#${i}] entrada privada\n`;
-              }
-            });
-          }
-          
-          if (t.vout && t.vout.length > 0) {
-            const salidasSpark = t.vout.filter(vout => vout.scriptPubKey?.type === 'sparksmint');
-            const salidasTransparentes = t.vout.filter(vout => vout.value > 0 || vout.scriptPubKey?.type !== 'sparksmint');
-            
-            if (salidasSpark.length > 0) {
-              res += `\n◀ SALIDAS SPARK (PRIVADAS: ${salidasSpark.length})\n`;
-              salidasSpark.forEach((vout, i) => {
-                res += `  [#${i}] SPARK MINT\n`;
-                if (vout.value === 0) res += `    valor oculto\n`;
-                else res += `    ${vout.value.toFixed(8)} ${moneda}\n`;
-              });
-            }
-            
-            if (salidasTransparentes.length > 0) {
-              res += `\n◀ SALIDAS TRANSPARENTES (${salidasTransparentes.length})\n`;
-              let totalOut = 0;
-              salidasTransparentes.forEach((vout, i) => {
-                totalOut += vout.value || 0;
-                let addr = 'OP_RETURN/otro';
-                if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
-                else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
-                const addrShort = addr.length > 40 ? addr.substring(0,12) + '...' + addr.substring(addr.length-6) : addr;
-                res += `  [#${i}] ${vout.value.toFixed(8)} ${moneda} → ${addrShort}\n`;
-              });
-              if (totalOut > 0) res += `  total salida: ${totalOut.toFixed(8)} ${moneda}\n`;
-            }
-            
-            if (!esSpark && !esBlindada && !esCoinbase && totalIn > 0) {
-              const totalOut = t.vout.reduce((sum, vout) => sum + (vout.value || 0), 0);
-              const fee = totalIn - totalOut;
-              if (fee > 0) res += `\n  FEE: ${fee.toFixed(8)} ${moneda}\n`;
-            }
-          }
-          
-          res += `\nRESUMEN:\n`;
-          res += `   tipo: ${esSpark ? 'Spark (privado)' : esBlindada ? 'Shielded' : esCoinbase ? 'Coinbase' : 'Transparente'}\n`;
-          res += `   entradas: ${t.vin?.length || 0}\n`;
-          res += `   salidas: ${t.vout?.length || 0}\n`;
         }
-        else if (q.includes('validateaddress') && data.result) {
-          const v = data.result;
-          const direccion = v.address || q.split(' ')[1] || 'desconocida';
-          res += `DIRECCIÓN\n`;
-          res += `dirección: ${direccion}\n`;
-          if (v.isvalidSpark !== undefined) {
-            res += `válida (Spark): ${v.isvalidSpark ? 'sí' : 'no'}\n`;
-            if (v.isvalidSpark) res += `tipo: shielded (Spark)\n`;
-          } else {
-            res += `válida: ${v.isvalid ? 'sí' : 'no'}\n`;
-            if (v.isvalid) {
-              let tipo = 'transparente';
-              if (v.isscript) tipo = 'script';
-              else if (v.iswatchonly) tipo = 'watchonly';
-              res += `tipo: ${tipo}\n`;
-              if (v.scriptPubKey) res += `scriptPubKey: ${v.scriptPubKey}\n`;
+
+        function updateBackButton() {
+            const btn = document.getElementById('backBtn');
+            if (currentIndex > 0) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
             }
-          }
-          if (v.ismine !== undefined) res += `pertenece a esta wallet: ${v.ismine ? 'sí' : 'no'}\n`;
         }
-        
-        res += `\n\n</pre>`;
-        res += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
-        res += `<div class="result-footer"><br></div>`;
-        out.innerHTML = res;
-        
-      } catch(e) {
-        out.innerHTML = `<pre style="color:var(--red);">error: ${escapeHtml(e.message)}</pre>`;
-      }
-      
-      document.getElementById('searchInput').value = '';
-    }
 
-    window.copyResult = function() {
-      const outputPre = document.querySelector('#output pre:last-of-type');
-      if (outputPre) {
-        navigator.clipboard.writeText(outputPre.innerText).then(() => {
-          document.querySelector('.prompt').textContent = '✓';
-          setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
-        });
-      }
-    };
+        function updateBreadcrumb() {
+            const container = document.getElementById('breadcrumb');
+            if (historyStack.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
 
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'F8') { e.preventDefault(); window.copyResult(); }
-      if (e.key === 'F9') {
-        e.preventDefault();
-        document.getElementById('searchInput').value = '';
-        document.getElementById('output').innerHTML = '';
-        document.querySelector('.prompt').textContent = '♥';
-        setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
-        const baseUrl = window.location.origin + '/pagina/firo-explorer';
-        window.history.replaceState({}, '', baseUrl);
-        loadNetworkStats();
-      }
-    });
+            let html = '';
+            const maxDisplay = 4;
+            const start = Math.max(0, historyStack.length - maxDisplay);
+            const entries = historyStack.slice(start);
 
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const rawInput = searchInput.value.trim();
-        if (rawInput) executeSearch(detectCommand(rawInput));
-      }
-    });
-    searchInput.addEventListener('paste', () => {
-      setTimeout(() => {
-        const input = searchInput.value;
-        const cmd = detectCommand(input);
-        if (cmd !== input) searchInput.value = cmd;
-      }, 10);
-    });
+            if (start > 0) {
+                html += `<span class="crumb" onclick="goToHistory(0)">⏪</span><span class="sep">·</span>`;
+            }
 
-    (function() {
-      const searchParam = detectSearchFromUrl();
-      if (searchParam) {
-        window.addEventListener('load', function() {
-          setTimeout(() => {
+            for (let i = 0; i < entries.length; i++) {
+                const idx = start + i;
+                const entry = entries[i];
+                const isCurrent = idx === currentIndex;
+                const label = entry.label.length > 30 ? entry.label.substring(0, 28) + '…' : entry.label;
+                if (isCurrent) {
+                    html += `<span class="crumb current">${escapeHtml(label)}</span>`;
+                } else {
+                    html += `<span class="crumb" onclick="goToHistory(${idx})">${escapeHtml(label)}</span>`;
+                }
+                if (i < entries.length - 1) {
+                    html += `<span class="sep">›</span>`;
+                }
+            }
+
+            container.innerHTML = html;
+        }
+
+        function goToHistory(index) {
+            if (index >= 0 && index < historyStack.length && index !== currentIndex) {
+                currentIndex = index;
+                const entry = historyStack[index];
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    input.value = entry.query;
+                    const cmd = detectCommand(entry.query);
+                    updateUrlWithSearch(cmd);
+                    executeSearch(cmd);
+                }
+                updateBackButton();
+                updateBreadcrumb();
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function makeLink(text) {
+            if (!text) return '';
+            const encoded = encodeURIComponent(text);
+            return `<span class="link" onclick="navigateTo('${encoded}')">${escapeHtml(text)}</span>`;
+        }
+
+        function navigateTo(query) {
+            const decoded = decodeURIComponent(query);
             const input = document.getElementById('searchInput');
             if (input) {
-              input.value = searchParam;
-              executeSearch(detectCommand(searchParam));
+                input.value = decoded;
+                const cmd = detectCommand(decoded);
+                const label = getLabelForQuery(cmd);
+                pushHistory(cmd, label);
+                updateUrlWithSearch(cmd);
+                executeSearch(cmd);
             }
-          }, 500);
-        });
-      }
-    })();
+        }
 
-    loadNetworkStats();
-    setInterval(loadNetworkStats, 30000);
-  </script>
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+        }
+
+        function detectSearchFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryParam = urlParams.get('q');
+            if (queryParam) return queryParam;
+            const path = window.location.pathname;
+            const match = path.match(/\/firo-explorer\/(.+)$/);
+            if (match && match[1]) return match[1];
+            return null;
+        }
+
+        function updateUrlWithSearch(parametro) {
+            const basePath = window.location.origin + '/pagina';
+            const newUrl = basePath + '/firo-explorer/' + encodeURIComponent(parametro);
+            window.history.replaceState({}, '', newUrl);
+        }
+
+        function detectCommand(input) {
+            input = input.trim();
+            if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
+                input.startsWith('validateaddress') || input.startsWith('getaddressbalance') ||
+                input.startsWith('HASH:')) {
+                return input;
+            }
+            if (/^\d+$/.test(input)) return `getblockhash ${input}`;
+            if (/^[a-fA-F0-9]{64}$/.test(input)) return `HASH:${input}`;
+            if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
+                return `validateaddress ${input}`;
+            }
+            if (input.length > 50) {
+                if (input.startsWith('validateaddress')) return input;
+                return `validateaddress ${input}`;
+            }
+            return input;
+        }
+
+        function getLabelForQuery(q) {
+            const s = q.trim();
+            if (s.startsWith('getblock ')) return 'Bloque ' + s.replace('getblock ', '');
+            if (s.startsWith('getrawtransaction ')) return 'TX ' + s.replace('getrawtransaction ', '').replace(' 1', '')
+                .substring(0, 16) + '…';
+            if (s.startsWith('getaddressbalance ')) return 'Dirección ' + s.replace('getaddressbalance ', '').substring(0, 12) +
+                '…';
+            if (s.startsWith('validateaddress ') || s.startsWith('z_validateaddress ')) return 'Validar ' + s.split(' ')[1]
+                .substring(0, 12) + '…';
+            if (s.startsWith('UA:')) return 'UA ' + s.substring(3, 16) + '…';
+            if (/^\d+$/.test(s)) return 'Bloque ' + s;
+            if (/^[a-fA-F0-9]{64}$/.test(s)) return 'TX ' + s.substring(0, 16) + '…';
+            return s.substring(0, 20) + (s.length > 20 ? '…' : '');
+        }
+
+        async function loadNetworkStats() {
+            try {
+                const r = await fetch(STATUS_URL);
+                const d = await r.json();
+                document.getElementById('stat-height').textContent = d.blockchain?.blocks?.toLocaleString() || '---';
+                document.getElementById('stat-difficulty').textContent = d.blockchain?.difficulty?.toFixed(2) || '---';
+                document.getElementById('stat-connections').textContent = d.network?.connections || '---';
+                document.getElementById('stat-mempool').textContent = d.mempool?.txcount || '0';
+            } catch (e) {}
+        }
+
+        async function getVinValue(txid, vout) {
+            try {
+                const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
+                const data = await r.json();
+                if (data.result && data.result.vout && data.result.vout[vout]) {
+                    return data.result.vout[vout].value;
+                }
+                return null;
+            } catch (e) { return null; }
+        }
+
+        function renderOutput(html) {
+            document.getElementById('output').innerHTML = html;
+        }
+
+        function renderPlaceholder() {
+            renderOutput(`
+            <div class="placeholder">
+              <div class="icon">⧫</div>
+              <div>explorador de bloques Firo</div>
+              <div class="sub">bloque · transacción · dirección</div>
+            </div>
+          `);
+        }
+
+        function renderLoading() {
+            renderOutput(`
+            <div class="loading">
+              <span class="spinner"></span>
+              consultando red…
+            </div>
+          `);
+        }
+
+        async function executeSearch(q) {
+            const raw = q.trim();
+            if (!raw) { renderPlaceholder(); return; }
+
+            renderLoading();
+
+            if (q.startsWith('HASH:')) {
+                const hash = q.substring(5);
+                try {
+                    const blockTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblock%20${hash}`);
+                    const blockData = await blockTest.json();
+                    if (blockData.result && blockData.result.hash) {
+                        return executeSearch(`getblock ${hash}`);
+                    }
+                } catch (e) {}
+                try {
+                    const txTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${hash}%201`);
+                    const txData = await txTest.json();
+                    if (txData.result && txData.result.txid) {
+                        return executeSearch(`getrawtransaction ${hash} 1`);
+                    }
+                } catch (e) {}
+                renderOutput(`<div class="cmd-line"><span class="tag">✕</span> No se encontró bloque ni transacción con hash ${escapeHtml(hash)}</div>`);
+                return;
+            }
+
+            const cmd = detectCommand(raw);
+
+            try {
+                const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
+                const data = await r.json();
+
+                if (data.error) {
+                    renderOutput(`
+                <div class="cmd-line"><span class="tag">✕</span> ${escapeHtml(cmd)}</div>
+                <div style="color:#ff756f;padding:6px 0;">error: ${escapeHtml(JSON.stringify(data.error))}</div>
+                <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+              `);
+                    return;
+                }
+
+                const result = data.result;
+
+                if (cmd.includes('getblockhash') && typeof result === 'string' && result.length === 64) {
+                    const hash = result;
+                    updateUrlWithSearch(hash);
+                    return executeSearch(`getblock ${hash}`);
+                }
+
+                if (!result) {
+                    renderOutput(`
+                <div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>
+                <div style="color:#3d3830;">sin resultado</div>
+                <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+              `);
+                    return;
+                }
+
+                // ── BLOQUE ──
+                if (cmd.includes('getblock') && result.hash) {
+                    const b = result;
+                    let res = `<div class="cmd-line"><span class="tag">⧫ BLOQUE</span> #${b.height}</div>`;
+                    res += `<div class="row"><span class="key">hash</span><span class="val">${makeLink(b.hash)}</span></div>`;
+                    res += `<div class="row"><span class="key">fecha</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">dificultad</span><span class="val">${b.difficulty?.toFixed(2) ?? '—'}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">tamaño</span><span class="val">${b.size ? b.size + ' bytes' : '—'}</span></div>`;
+                    if (b.previousblockhash) res +=
+                        `<div class="row"><span class="key">anterior</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
+                    if (b.nextblockhash) res +=
+                        `<div class="row"><span class="key">siguiente</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
+                    res += `<div class="divider"></div>`;
+                    res +=
+                        `<div class="row"><span class="key">transacciones</span><span class="val gold">${b.tx?.length ?? 0}</span></div>`;
+
+                    if (b.tx && b.tx.length > 0) {
+                        const txs = b.tx.slice(0, 50);
+                        for (const txid of txs) {
+                            res += `<div class="tx-item">
+                        <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
+                      </div>`;
+                        }
+                        if (b.tx.length > 50) res +=
+                            `<div style="color:#3d3830;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
+                    }
+
+                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    renderOutput(res);
+                    return;
+                }
+
+                if (cmd.includes('getrawtransaction') && result.txid) {
+                    const t = result;
+                    const moneda = 'FIRO';
+                    let totalIn = 0;
+
+                    const esCoinbase = t.vin && t.vin[0]?.coinbase;
+                    const esSpark = t.type === 9 || t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0 || t
+                        .sparkData;
+                    const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0;
+
+                    let tipoLabel = '📄 TRANSACCIÓN TRANSPARENTE';
+                    if (esSpark) tipoLabel = '🛡 TRANSACCIÓN SPARK (PRIVADA)';
+                    else if (esBlindada) tipoLabel = '🛡 TRANSACCIÓN PRIVADA (SHIELDED)';
+                    else if (esCoinbase) tipoLabel = '⛏ TRANSACCIÓN COINBASE (MINERÍA)';
+
+                    let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span> ${makeLink(t.txid)}</div>`;
+                    res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(t.txid)}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">bloque</span><span class="val">${t.blockheight || t.height ? makeLink(String(t.blockheight || t.height)) : 'no confirmada'}</span></div>`;
+                    res +=
+                        `<div class="row"><span class="key">confirmaciones</span><span class="val">${t.confirmations || 0}</span></div>`;
+                    if (t.blocktime || t.time) {
+                        res +=
+                            `<div class="row"><span class="key">fecha</span><span class="val">${new Date((t.blocktime || t.time)*1000).toLocaleString()}</span></div>`;
+                    }
+                    res +=
+                        `<div class="row"><span class="key">versión</span><span class="val">${t.version || 'N/A'}${t.type !== undefined ? ' · tipo ' + t.type : ''}</span></div>`;
+                    if (t.size) res += `<div class="row"><span class="key">tamaño</span><span class="val">${t.size} bytes</span></div>`;
+                    if (t.instantlock) res +=
+                        `<div class="row"><span class="key">instantlock</span><span class="val" style="color:#31db72;">✅ sí</span></div>`;
+                    if (t.chainlock) res +=
+                        `<div class="row"><span class="key">chainlock</span><span class="val" style="color:#31db72;"> Sí</span></div>`;
+
+                    res += `<div class="divider"></div>`;
+
+                    if (esSpark || esBlindada) {
+                        res += `<div class="row"><span class="key">🛡 DATOS PRIVADOS</span></div>`;
+                        if (t.vShieldedSpend?.length > 0) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">spends blindados</span><span class="val">${t.vShieldedSpend.length}</span></div>`;
+                            t.vShieldedSpend.forEach((spend, i) => {
+                                res +=
+                                    `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">#${i}</span><span class="val">nullifier: ${spend.nullifier?.substring(0,16)}...</span></div>`;
+                                if (spend.nFees) {
+                                    res +=
+                                        `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;"></span><span class="val">fee: ${spend.nFees} FIRO</span></div>`;
+                                }
+                            });
+                        }
+                        if (t.vShieldedOutput?.length > 0) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">outputs blindados</span><span class="val">${t.vShieldedOutput.length}</span></div>`;
+                        }
+                        if (t.sparkData) {
+                            const realBytes = t.sparkData.length / 2;
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">sparkData</span><span class="val">${realBytes} bytes</span></div>`;
+                        }
+                        if (t.vin && t.vin[0]?.lTags) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">lTags (nullifiers)</span></div>`;
+                            t.vin.forEach((vin, i) => {
+                                if (vin.lTags && vin.lTags.length > 0) {
+                                    vin.lTags.forEach((tag, j) => {
+                                        const shortTag = tag.substring(0, 30) + '...' + tag.substring(tag
+                                            .length - 10);
+                                        res +=
+                                            `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">[${i}.${j}]</span><span class="val">${shortTag}</span></div>`;
+                                    });
+                                }
+                            });
+                        }
+                        if (t.vin && t.vin[0]?.nFees) {
+                            let totalFees = 0;
+                            t.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
+                            if (totalFees > 0) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fees totales (Spark)</span><span class="val gold">${totalFees.toFixed(8)} ${moneda}</span></div>`;
+                            }
+                        }
+                        if (t.bindingSig) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">bindingSig</span><span class="val" style="font-size:11px;color:#5a5348;">${t.bindingSig.substring(0, 64)}…</span></div>`;
+                        }
+                        res +=
+                            `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">🔒 privado</span><span class="val">sin vínculo criptográfico</span></div>`;
+                    }
+
+                    // ── ENTRADAS TRANSPARENTES ──
+                    const entradasTransparentes = t.vin?.filter(vin => vin.txid) || [];
+                    if (entradasTransparentes.length > 0) {
+                        res +=
+                            `<div class="row"><span class="key">▶ ENTRADAS TRANSPARENTES</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
+                        for (let i = 0; i < entradasTransparentes.length; i++) {
+                            const vin = entradasTransparentes[i];
+                            let value = vin.value;
+                            if (!value) value = await getVinValue(vin.txid, vin.vout);
+                            if (value) totalIn += value;
+                            const valStr = value ? ` ${value.toFixed(8)} ${moneda}` : '';
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${makeLink(vin.txid)}:${vin.vout}</span>${valStr ? `<span class="val gold">${valStr}</span>` : ''}</div>`;
+                        }
+                        if (totalIn > 0) {
+                            res +=
+                                `<div class="row" style="margin-top:2px;"><span class="key">total entrada</span><span class="val gold">${totalIn.toFixed(8)} ${moneda}</span></div>`;
+                        }
+                    } else if (t.vin && t.vin.length > 0 && !entradasTransparentes.length) {
+                        res +=
+                            `<div class="row"><span class="key">▶ ENTRADAS PRIVADAS</span><span class="val gold">${t.vin.length}</span></div>`;
+                        t.vin.forEach((vin, i) => {
+                            if (vin.scriptSig?.asm?.includes('OP_SPARKSPEND')) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff7b87;">SPARK SPEND</span></div>`;
+                            } else {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">entrada privada</span></div>`;
+                            }
+                        });
+                    }
+
+                    // ── SALIDAS ──
+                    if (t.vout && t.vout.length > 0) {
+                        res += `<div class="divider"></div>`;
+                        res +=
+                            `<div class="row"><span class="key">◀ SALIDAS</span><span class="val gold">${t.vout.length}</span></div>`;
+
+                        let totalOut = 0;
+                        const salidasSpark = t.vout.filter(vout => vout.scriptPubKey?.type === 'sparksmint');
+                        const salidasTransparentes = t.vout.filter(vout => vout.value > 0 || vout.scriptPubKey?.type !==
+                            'sparksmint');
+
+                        if (salidasSpark.length > 0) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">SPARK MINT</span><span class="val gold">${salidasSpark.length}</span></div>`;
+                            salidasSpark.forEach((vout, i) => {
+                                if (vout.value === 0) {
+                                    res +=
+                                        `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:24px;">#${i}</span><span class="val">valor oculto</span></div>`;
+                                } else {
+                                    res +=
+                                        `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${vout.value.toFixed(8)} ${moneda}</span></div>`;
+                                }
+                            });
+                        }
+
+                        if (salidasTransparentes.length > 0) {
+                            for (let i = 0; i < t.vout.length; i++) {
+                                const vout = t.vout[i];
+                                if (vout.scriptPubKey?.type === 'sparksmint') continue;
+                                totalOut += vout.value || 0;
+                                let addr = 'OP_RETURN/otro';
+                                if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
+                                else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${vout.value.toFixed(8)} ${moneda}</span> → ${makeLink(addr)}</div>`;
+                            }
+                        }
+
+                        if (totalOut > 0) {
+                            res +=
+                                `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val gold">${totalOut.toFixed(8)} ${moneda}</span></div>`;
+                        }
+
+                        // ── FEE ──
+                        if (!esSpark && !esBlindada && !esCoinbase && totalIn > 0) {
+                            const fee = totalIn - totalOut;
+                            if (fee > 0) {
+                                res += `<div class="divider"></div>`;
+                                res +=
+                                    `<div class="row"><span class="key">■ FEE</span><span class="val" style="color:#ff756f;">${fee.toFixed(8)} ${moneda}</span></div>`;
+                            }
+                        }
+                    }
+
+                    // ── RESUMEN ──
+                    res += `<div class="divider"></div>`;
+                    res += `<div class="row"><span class="key">RESUMEN</span></div>`;
+                    res +=
+                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">${esSpark ? 'Spark (privado)' : esBlindada ? 'Shielded' : esCoinbase ? 'Coinbase' : 'Transparente'}</span></div>`;
+                    res +=
+                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">entradas</span><span class="val">${t.vin?.length || 0}</span></div>`;
+                    res +=
+                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas</span><span class="val">${t.vout?.length || 0}</span></div>`;
+
+                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    renderOutput(res);
+                    return;
+                }
+
+                if (cmd.includes('validateaddress') && result) {
+                    const v = result;
+                    const direccion = v.address || cmd.split(' ')[1] || 'desconocida';
+                    let res = `<div class="cmd-line"><span class="tag">◈ DIRECCIÓN</span></div>`;
+                    res += `<div class="row"><span class="key">dirección</span><span class="val">${makeLink(direccion)}</span></div>`;
+
+                    if (v.isvalidSpark !== undefined) {
+                        res +=
+                            `<div class="row"><span class="key">válida (Spark)</span><span class="val">${v.isvalidSpark ? '✅ sí' : '❌ no'}</span></div>`;
+                        if (v.isvalidSpark) {
+                            res += `<div class="row"><span class="key">tipo</span><span class="val">shielded (Spark)</span></div>`;
+                        }
+                    } else {
+                        res +=
+                            `<div class="row"><span class="key">válida</span><span class="val">${v.isvalid ? '✅ sí' : '❌ no'}</span></div>`;
+                        if (v.isvalid) {
+                            let tipo = 'transparente';
+                            if (v.isscript) tipo = 'script';
+                            else if (v.iswatchonly) tipo = 'watchonly';
+                            res += `<div class="row"><span class="key">tipo</span><span class="val">${tipo}</span></div>`;
+                            if (v.scriptPubKey) {
+                                res +=
+                                    `<div class="row"><span class="key">scriptPubKey</span><span class="val mono">${escapeHtml(v.scriptPubKey)}</span></div>`;
+                            }
+                        }
+                    }
+                    if (v.ismine !== undefined) {
+                        res +=
+                            `<div class="row"><span class="key">pertenece a wallet</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
+                    }
+
+                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    renderOutput(res);
+                    return;
+                }
+
+                // ── FALLBACK ──
+                let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
+                res +=
+                    `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
+                res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                renderOutput(res);
+
+            } catch (e) {
+                renderOutput(`
+              <div class="cmd-line"><span class="tag">✕</span> error</div>
+              <div style="color:#ff756f;padding:6px 0;">${escapeHtml(e.message)}</div>
+              <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+            `);
+            }
+
+            document.getElementById('searchInput').value = '';
+        }
+
+        // ─── COPY RESULT ────────────────────────────────────────────────
+        window.copyResult = function() {
+            const outputPre = document.querySelector('#output pre:last-of-type');
+            if (outputPre) {
+                navigator.clipboard.writeText(outputPre.innerText).then(() => {
+                    document.querySelector('.prompt').textContent = '✓';
+                    setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
+                    showToast('✓ copiado');
+                });
+            } else {
+                const out = document.getElementById('output');
+                const text = out.textContent;
+                if (text) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('✓ copiado');
+                    });
+                }
+            }
+        };
+
+        // ─── EXPONER FUNCIONES GLOBALES ────────────────────────────────
+        window.navigateTo = navigateTo;
+        window.executeSearch = executeSearch;
+        window.goBack = goBack;
+        window.goToHistory = goToHistory;
+
+        // ─── EVENTOS ─────────────────────────────────────────────────────
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F8') { e.preventDefault();
+                window.copyResult(); }
+            if (e.key === 'F9') {
+                e.preventDefault();
+                document.getElementById('searchInput').value = '';
+                renderPlaceholder();
+                document.querySelector('.prompt').textContent = '♥';
+                setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
+                const baseUrl = window.location.origin + '/pagina/firo-explorer';
+                window.history.replaceState({}, '', baseUrl);
+                historyStack = [];
+                currentIndex = -1;
+                updateBackButton();
+                updateBreadcrumb();
+                loadNetworkStats();
+            }
+            if (e.key === 'ArrowLeft' && (e.altKey || e.metaKey)) {
+                e.preventDefault();
+                goBack();
+            }
+        });
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const rawInput = searchInput.value.trim();
+                if (rawInput) {
+                    const cmd = detectCommand(rawInput);
+                    const label = getLabelForQuery(cmd);
+                    pushHistory(cmd, label);
+                    updateUrlWithSearch(cmd);
+                    executeSearch(cmd);
+                }
+            }
+        });
+        searchInput.addEventListener('paste', () => {
+            setTimeout(() => {
+                const input = searchInput.value;
+                const cmd = detectCommand(input);
+                if (cmd !== input) searchInput.value = cmd;
+            }, 10);
+        });
+
+        (function() {
+            const searchParam = detectSearchFromUrl();
+            if (searchParam) {
+                window.addEventListener('load', function() {
+                    setTimeout(() => {
+                        const input = document.getElementById('searchInput');
+                        if (input) {
+                            const cmd = detectCommand(searchParam);
+                            input.value = cmd;
+                            const label = getLabelForQuery(cmd);
+                            pushHistory(cmd, label);
+                            executeSearch(cmd);
+                        }
+                    }, 500);
+                });
+            }
+        })();
+
+        // ─── INIT ────────────────────────────────────────────────────────
+        loadNetworkStats();
+        setInterval(loadNetworkStats, 30000);
+    </script>
+
 </body>
 </html>
