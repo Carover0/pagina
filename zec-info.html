@@ -1,393 +1,997 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zcash · Estadísticas</title>
-  <style>
-    :root { --gold:#dd9d34; --gold-soft:#ffd170; --green:#31db72; --red:#ff756f; --line:rgba(221,157,52,.5); --panel:rgba(16,10,2,.91); --ui-scale:1; }
-    * { box-sizing:border-box; }
-    body { min-height:100vh; margin:0; color:#fff; font:14px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f3.png") center top/cover fixed no-repeat; }
-    body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(255,209,112,.025) 0 1px,transparent 1px 4px); }
-    .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
-    main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
-    .panel { position:relative; width:min(700px,98%); padding:25px 30px 20px; background:linear-gradient(135deg,rgba(30,19,3,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(221,157,52,.85),0 0 48px rgba(221,157,52,.2),inset 0 0 30px rgba(221,157,52,.08); }
-    .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
-    .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
-    .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
-    .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(255,193,65,.65)); }
-    .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
-    a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
-    .section { border-top:1px solid var(--line); padding:9px 0 10px; }
-    .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
-    .api { font-size:11px; overflow-wrap:anywhere; } 
-    .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
-    .small { color:#afa391; }
-    .donation { font-size:10px; color:#7a7060; word-break:break-all; }
-    
-    .stats-container { max-height:500px; overflow-y:auto; padding-right:5px; }
-    .stats-container::-webkit-scrollbar { width:3px; }
-    .stats-container::-webkit-scrollbar-track { background:rgba(221,157,52,.1); }
-    .stats-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
-    
-    .stat-line { display:flex; flex-wrap:wrap; gap:4px 12px; font-size:12px; margin:1px 0; align-items:center; }
-    .stat-label { color:#888; min-width:22ch; }
-    .stat-value { color:var(--gold-soft); }
-    .stat-value-green { color:var(--green); }
-    .stat-value-red { color:var(--red); }
-    .stat-value-white { color:#fff; }
-    .progress-bar { 
-      color:var(--gold-soft); 
-      letter-spacing:1px; 
-      font-size:12px;
-      font-family: "Lucida Console", Monaco, monospace;
-      display:inline-block;
-    }
-    .stat-section { margin:6px 0; }
-    .stat-section-title { color:#888; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin:4px 0 2px 0; }
-    hr { border:none; border-top:1px dashed rgba(221,157,52,.2); margin:4px 0; }
-    .status-msg { color:#888; font-size:10px; margin-top:4px; }
-    
-    .progress-wrap { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-    .progress-wrap .stat-value { min-width:50px; }
-    
-    @media (max-width:700px) { 
-      .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
-      main { padding:65px 10px 24px 5px; align-items:flex-start; } 
-      .panel { padding:22px 18px 18px; width:98%; } 
-      .panel-title { font-size:16px; } 
-      .stat-label { min-width:18ch; font-size:11px; }
-      .stat-value { font-size:11px; }
-      .stats-container { max-height:350px; }
-      .progress-bar { font-size:11px; }
-    }
-    @media (min-width:1920px) { 
-      :root { --ui-scale:1.1; } 
-      main { padding:72px 20px 36px 0; } 
-      .panel { width:min(750px,90%); } 
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zcash · Estadísticas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(221, 157, 52, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(221, 157, 52, 0.04) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(221, 157, 52, 0.08);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(221, 157, 52, 0.25));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(221, 157, 52, 0.4));
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(221, 157, 52, 0.1);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #dd9d34;
+            border-bottom-color: #dd9d34;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(221, 157, 52, 0.06);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel:hover {
+            border-color: rgba(221, 157, 52, 0.1);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #dd9d34;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(221, 157, 52, 0.06);
+        }
+
+        .panel-title img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 12px rgba(221, 157, 52, 0.2));
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 18px 20px;
+            border: 1px solid rgba(221, 157, 52, 0.04);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(221, 157, 52, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(221, 157, 52, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card-title {
+            color: #4a443a;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(221, 157, 52, 0.04);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-card-title .icon {
+            font-size: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(221, 157, 52, 0.02);
+            gap: 8px;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-item .label {
+            color: #6a6255;
+            font-size: 11px;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        .stat-item .value {
+            color: #f5ede4;
+            font-size: 12px;
+            text-align: right;
+            word-break: break-all;
+            flex-shrink: 0;
+        }
+
+        .stat-item .value.gold {
+            color: #dd9d34;
+        }
+
+        .stat-item .value.green {
+            color: #31db72;
+        }
+
+        .stat-item .value.red {
+            color: #ff756f;
+        }
+
+        .stat-item .value.mono {
+            color: #8a8275;
+            font-size: 11px;
+        }
+
+        .stat-item .value .pct {
+            color: #5a5348;
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        .stat-item .value .badge {
+            display: inline-block;
+            background: rgba(221, 157, 52, 0.08);
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #8a8275;
+            margin-left: 4px;
+        }
+
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            justify-content: flex-end;
+            min-width: 0;
+        }
+
+        .progress-track {
+            flex: 1;
+            min-width: 80px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+            background: linear-gradient(90deg, #dd9d34, #f5c542);
+            position: relative;
+        }
+
+        .progress-fill.gold {
+            background: linear-gradient(90deg, #dd9d34, #f5c542);
+        }
+
+        .progress-fill.green {
+            background: linear-gradient(90deg, #31db72, #5ae89a);
+        }
+
+        .progress-fill.orange {
+            background: linear-gradient(90deg, #f5a623, #ffd170);
+        }
+
+        .progress-fill.purple {
+            background: linear-gradient(90deg, #9b59b6, #c084d8);
+        }
+
+        .progress-fill.shielded {
+            background: linear-gradient(90deg, #3498db, #5dade2);
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-value {
+            font-size: 12px;
+            color: #dd9d34;
+            min-width: 45px;
+            text-align: right;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .progress-value.gold {
+            color: #dd9d34;
+        }
+
+        .progress-value.green {
+            color: #31db72;
+        }
+
+        .progress-value.orange {
+            color: #f5a623;
+        }
+
+        .progress-value.purple {
+            color: #c084d8;
+        }
+
+        .progress-value.shielded {
+            color: #5dade2;
+        }
+
+        .status-msg {
+            color: #4a443a;
+            font-size: 10px;
+            margin-top: 16px;
+            text-align: center;
+            padding: 8px;
+            border-top: 1px solid rgba(221, 157, 52, 0.04);
+        }
+
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(221, 157, 52, 0.06);
+            font-size: 11px;
+            color: #4a443a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #dd9d34;
+        }
+
+        .footer .api-link {
+            font-size: 11px;
+            color: #5a5348;
+            word-break: break-all;
+        }
+
+        .footer .api-link:hover {
+            color: #dd9d34;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(221, 157, 52, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(221, 157, 52, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px 18px;
+            }
+
+            .brand h1 {
+                font-size: 17px;
+            }
+
+            .brand img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-links {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .panel {
+                padding: 18px 16px;
+            }
+
+            .panel-title {
+                font-size: 16px;
+            }
+
+            .panel-title img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 14px 16px;
+            }
+
+            .stat-item .label {
+                font-size: 10px;
+                white-space: normal;
+            }
+
+            .stat-item .value {
+                font-size: 11px;
+            }
+
+            .progress-track {
+                min-width: 50px;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 8px 10px;
+                gap: 10px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .brand h1 {
+                font-size: 15px;
+            }
+
+            .brand h1 small {
+                font-size: 10px;
+            }
+
+            .brand img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .panel {
+                padding: 14px 12px;
+                border-radius: 10px;
+            }
+
+            .panel-title {
+                font-size: 14px;
+                gap: 10px;
+                margin-bottom: 14px;
+                padding-bottom: 10px;
+            }
+
+            .panel-title img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .stat-card {
+                padding: 12px 14px;
+            }
+
+            .stat-card-title {
+                font-size: 9px;
+            }
+
+            .stat-item {
+                padding: 3px 0;
+                flex-wrap: wrap;
+                gap: 2px;
+            }
+
+            .stat-item .label {
+                font-size: 10px;
+                min-width: 70px;
+                white-space: normal;
+            }
+
+            .stat-item .value {
+                font-size: 10px;
+                text-align: left;
+                flex: 1;
+            }
+
+            .progress-wrap {
+                flex-wrap: nowrap;
+                gap: 8px;
+            }
+
+            .progress-track {
+                min-width: 40px;
+                height: 5px;
+            }
+
+            .progress-value {
+                font-size: 10px;
+                min-width: 35px;
+            }
+
+            .footer {
+                font-size: 10px;
+            }
+
+            .footer .api-link {
+                font-size: 10px;
+            }
+
+            .status-msg {
+                font-size: 9px;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .app {
+                max-width: 1600px;
+                padding: 24px 40px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            }
+
+            .stat-item .value {
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main><section class="panel">
-    <div class="panel-title"><img class="logo" src="assets/zcash.png" alt="Zcash">ESTADÍSTICAS DE RED</div>
-    <nav class="top-links"><a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a> · <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
-    
-    <section class="section">
-      <div class="stats-container" id="statsContainer">
-        <div class="stat-section">
-          <div class="stat-section-title">► RED</div>
-          <div class="stat-line"><span class="stat-label">PRECIO:</span><span class="stat-value" id="price">---</span></div>
-          <div class="stat-line"><span class="stat-label">SUMINISTRO TOTAL:</span><span class="stat-value" id="totalSupply">--- ZEC</span></div>
-          <div class="stat-line">
-            <span class="stat-label">PROGRESO MINADO:</span>
-            <div class="progress-wrap">
-              <span class="stat-value" id="minedPercent">---</span>
-              <span class="progress-bar" id="minedBar">[----------]</span>
+
+    <div class="app">
+
+        <header class="header">
+            <div class="brand">
+                <img src="assets/zcash.png" alt="Zcash">
+                <h1>Zcash <small>estadísticas</small></h1>
             </div>
-          </div>
-          <div class="stat-line"><span class="stat-label">BLOQUES:</span><span class="stat-value" id="blocks">---</span></div>
-          <div class="stat-line"><span class="stat-label">DIFICULTAD:</span><span class="stat-value" id="difficulty">---</span></div>
-          <div class="stat-line"><span class="stat-label">BEST BLOCK:</span><span class="stat-value" id="bestBlock">---</span></div>
-        </div>
-
-        <hr>
-
-        <div class="stat-section">
-          <div class="stat-section-title">► POOLS DE VALOR</div>
-          <div class="stat-line"><span class="stat-label">TRANSPARENTE (t...):</span><span class="stat-value" id="transparentValue">--- ZEC</span> <span class="stat-value" style="color:#666;" id="transparentPct">---%</span></div>
-          <div class="stat-line"><span class="stat-label">ORCHARD (u1...):</span><span class="stat-value" id="orchardValue">--- ZEC</span> <span class="stat-value" style="color:#666;" id="orchardPct">---%</span></div>
-          <div class="stat-line"><span class="stat-label">SAPLING (zs...):</span><span class="stat-value" id="saplingValue">--- ZEC</span> <span class="stat-value" style="color:#666;" id="saplingPct">---%</span></div>
-          <div class="stat-line"><span class="stat-label">SPROUT (zc...):</span><span class="stat-value" id="sproutValue">--- ZEC</span> <span class="stat-value" style="color:#666;" id="sproutPct">---%</span></div>
-          <div class="stat-line"><span class="stat-label">LOCKBOX:</span><span class="stat-value" id="lockboxValue">--- ZEC</span> <span class="stat-value" style="color:#666;" id="lockboxPct">---%</span></div>
-          <div class="stat-line"><span class="stat-label">IRONWOOD:</span><span class="stat-value" id="ironwoodValue">--- ZEC</span> <span class="stat-value" style="color:#666;" id="ironwoodPct">---%</span></div>
-        </div>
-
-        <hr>
-
-        <div class="stat-section">
-          <div class="stat-section-title">► SUMINISTRO BLINDADO</div>
-          <div class="stat-line"><span class="stat-label">TOTAL BLINDADO:</span><span class="stat-value" id="shieldedTotal">--- ZEC</span></div>
-          <div class="stat-line">
-            <span class="stat-label">% CIRCULANTE:</span>
-            <div class="progress-wrap">
-              <span class="stat-value" id="shieldedPercent">---%</span>
-              <span class="progress-bar" id="shieldedBar">[----------]</span>
+            <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
+            <div class="stats-grid" id="statsGrid">
             </div>
-          </div>
+
+            <div id="statusMsg" class="status-msg">Cargando datos...</div>
+
+            <footer class="footer">
+                <a href="https://carover0.xyz/zec/status.json" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/zec/status.json</a>
+                <span>actualizado cada 60s</span>
+            </footer>
         </div>
 
-        <hr>
+    </div>
 
-        <div class="stat-section">
-          <div class="stat-section-title">► HALVING</div>
-          <div class="stat-line"><span class="stat-label">PROXIMO HALVING:</span><span class="stat-value" id="halvingDate">---</span></div>
-          <div class="stat-line"><span class="stat-label">BLOQUE OBJETIVO:</span><span class="stat-value">4,406,400</span></div>
-          <div class="stat-line">
-            <span class="stat-label">BLOQUES RESTANTES:</span>
-            <div class="progress-wrap">
-              <span class="stat-value" id="blocksRemaining">---</span>
-              <span class="progress-bar" id="halvingBar">[----------]</span>
-            </div>
-          </div>
-          <div class="stat-line"><span class="stat-label">TIEMPO ESTIMADO:</span><span class="stat-value" id="timeToHalving">---</span></div>
-          <div class="stat-line"><span class="stat-label">REWARD ACTUAL:</span><span class="stat-value" id="blockReward">--- ZEC</span></div>
-        </div>
+    <div class="toast" id="toast"></div>
 
-        <hr>
+    <script>
+        const RPC_URL = "https://carover0.xyz/api/zec/rpc.php";
+        const TOKEN = "zec2026";
+        const PRICE_URL = "https://carover0.xyz/getprice.php";
 
-        <div class="stat-section">
-          <div class="stat-section-title">► ACTUALIZACIONES ACTIVAS</div>
-          <div class="stat-line"><span class="stat-label">OVERWINTER:</span><span class="stat-value" id="overwinter">---</span></div>
-          <div class="stat-line"><span class="stat-label">SAPLING:</span><span class="stat-value" id="saplingUpgrade">---</span></div>
-          <div class="stat-line"><span class="stat-label">BLOSSOM:</span><span class="stat-value" id="blossom">---</span></div>
-          <div class="stat-line"><span class="stat-label">HEARTWOOD:</span><span class="stat-value" id="heartwood">---</span></div>
-          <div class="stat-line"><span class="stat-label">CANOPY:</span><span class="stat-value" id="canopy">---</span></div>
-          <div class="stat-line"><span class="stat-label">NU5:</span><span class="stat-value" id="nu5">---</span></div>
-          <div class="stat-line"><span class="stat-label">NU6:</span><span class="stat-value" id="nu6">---</span></div>
-          <div class="stat-line"><span class="stat-label">NU6.1:</span><span class="stat-value" id="nu61">---</span></div>
-          <div class="stat-line"><span class="stat-label">NU6.2:</span><span class="stat-value" id="nu62">---</span></div>
-          <div class="stat-line"><span class="stat-label">NU6.3:</span><span class="stat-value" id="nu63">---</span></div>
-          <div class="stat-line"><span class="stat-label">CONSENSUS CHAINTIP:</span><span class="stat-value" id="consensusTip">---</span></div>
-        </div>
+        const HALVING_BLOCK = 4406400;
+        const BLOCKS_PER_DAY = 1152;
+        const MAX_SUPPLY = 21000000;
 
-        <hr>
+        const upgradeNames = {
+            "5ba81b19": "Overwinter",
+            "76b809bb": "Sapling",
+            "2bb40e60": "Blossom",
+            "f5b9230b": "Heartwood",
+            "e9ff75a6": "Canopy",
+            "c2d6d0b4": "NU5",
+            "c8e71055": "NU6",
+            "4dec4df0": "NU6.1",
+            "5437f330": "NU6.2",
+            "37a5165b": "NU6.3"
+        };
 
-        <div class="stat-section">
-          <div class="stat-section-title">► MEMPOOL</div>
-          <div class="stat-line"><span class="stat-label">TRANSACCIONES:</span><span class="stat-value" id="mempoolSize">---</span></div>
-          <div class="stat-line"><span class="stat-label">VALOR TOTAL:</span><span class="stat-value" id="mempoolValue">---</span></div>
-        </div>
+        const poolIcons = {
+            'transparent': '█',
+            'orchard': '◈',
+            'sapling': '◉',
+            'sprout': '○',
+            'lockbox': '▣',
+            'ironwood': '✦'
+        };
 
-        <div id="statusMsg" class="status-msg">Cargando datos...</div>
-      </div>
-    </section>
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
 
-    <section class="section"><h2 class="subheader">► API pública</h2>
-      <a class="api" href="https://carover0.xyz/zec/status.json" target="_blank" rel="noopener">https://carover0.xyz/zec/status.json</a>
-    </section>
+        function formatNumber(num, decimals = 0) {
+            if (num === undefined || num === null || num === '---') return '---';
+            return Number(num).toLocaleString(undefined, { maximumFractionDigits: decimals, useGrouping: true });
+        }
 
-    <footer class="footer">
-      <div class="small">actualizado automáticamente cada 60s</div>
-      <div class="donation"><br></div>
-    </footer>
-  </section></main>
+        function formatLargeNumber(num) {
+            if (num === undefined || num === null) return '---';
+            const n = Number(num);
+            if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+            if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+            if (n >= 1e3) return (n / 1e3).toFixed(2) + 'K';
+            return n.toFixed(2);
+        }
 
-  <script>
-    const RPC_URL = "https://carover0.xyz/api/zec/rpc.php";
-    const TOKEN = "zec2026";
-    const PRICE_URL = "https://carover0.xyz/getprice.php";
+        function formatTimeRemaining(days) {
+            if (days < 0 || days === undefined || isNaN(days)) return '---';
+            const years = Math.floor(days / 365);
+            const remainingDays = Math.floor(days % 365);
+            const months = Math.floor(remainingDays / 30);
+            const daysOnly = remainingDays % 30;
+            let result = [];
+            if (years > 0) result.push(years + ' año' + (years > 1 ? 's' : ''));
+            if (months > 0) result.push(months + ' mes' + (months > 1 ? 'es' : ''));
+            if (daysOnly > 0 && years === 0) result.push(daysOnly + ' día' + (daysOnly > 1 ? 's' : ''));
+            return result.join(', ') || 'menos de 1 día';
+        }
 
-    const HALVING_BLOCK = 4406400;
-    const BLOCKS_PER_DAY = 1152;
-    const MAX_SUPPLY = 21000000;
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+        }
 
-    const upgradeNames = {
-      "5ba81b19": "Overwinter",
-      "76b809bb": "Sapling",
-      "2bb40e60": "Blossom",
-      "f5b9230b": "Heartwood",
-      "e9ff75a6": "Canopy",
-      "c2d6d0b4": "NU5",
-      "c8e71055": "NU6",
-      "4dec4df0": "NU6.1",
-      "5437f330": "NU6.2",
-      "37a5165b": "NU6.3"
-    };
-
-    function formatNumber(num, decimals = 0) {
-      if (num === undefined || num === null || num === '---') return '---';
-      return Number(num).toLocaleString(undefined, { maximumFractionDigits: decimals, useGrouping: true });
-    }
-
-    function formatLargeNumber(num) {
-      if (num === undefined || num === null) return '---';
-      const n = Number(num);
-      if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
-      if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-      if (n >= 1e3) return (n / 1e3).toFixed(2) + 'K';
-      return n.toFixed(2);
-    }
-
-    function createProgressBar(percent, size = 30) {
-      if (percent === undefined || percent === null || isNaN(percent) || percent < 0) return '[' + ' '.repeat(size) + ']';
-      const filled = Math.min(Math.round((percent / 100) * size), size);
-      return '[' + '█'.repeat(filled) + '░'.repeat(size - filled) + ']';
-    }
-
-    function formatTimeRemaining(days) {
-      if (days < 0 || days === undefined || isNaN(days)) return '---';
-      const years = Math.floor(days / 365);
-      const remainingDays = Math.floor(days % 365);
-      const months = Math.floor(remainingDays / 30);
-      const daysOnly = remainingDays % 30;
-      let result = [];
-      if (years > 0) result.push(years + ' año' + (years > 1 ? 's' : ''));
-      if (months > 0) result.push(months + ' mes' + (months > 1 ? 'es' : ''));
-      if (daysOnly > 0 && years === 0) result.push(daysOnly + ' día' + (daysOnly > 1 ? 's' : ''));
-      return result.join(', ') || 'menos de 1 día';
-    }
-
-    async function callRPC(method, params = []) {
-      try {
-        const url = `${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(method + (params.length ? ' ' + params.join(' ') : ''))}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        return data.result;
-      } catch(e) {
-        console.error(`RPC error ${method}:`, e);
-        return null;
-      }
-    }
-
-    async function loadPrice() {
-      try {
-        const res = await fetch(PRICE_URL);
-        const data = await res.json();
-        document.getElementById('price').innerHTML = data.success ? `$${data.price.toFixed(2)}` : '---';
-      } catch(e) {
-        document.getElementById('price').innerHTML = '---';
-      }
-    }
-
-    async function loadData() {
-      document.getElementById('statusMsg').innerHTML = 'Cargando datos...';
-      
-      try {
-        const blockchainInfo = await callRPC('getblockchaininfo');
-        if (!blockchainInfo) throw new Error('No se pudo obtener blockchainInfo');
-        
-        const totalSupply = blockchainInfo.chainSupply?.chainValue || 0;
-        const currentHeight = blockchainInfo.blocks || 0;
-        
-        document.getElementById('totalSupply').innerHTML = formatNumber(totalSupply, 2) + ' ZEC';
-        document.getElementById('blocks').innerHTML = formatNumber(currentHeight);
-        document.getElementById('difficulty').innerHTML = formatLargeNumber(blockchainInfo.difficulty);
-        document.getElementById('bestBlock').innerHTML = blockchainInfo.bestblockhash ? 
-          blockchainInfo.bestblockhash.substring(0, 16) + '...' + blockchainInfo.bestblockhash.substring(blockchainInfo.bestblockhash.length - 4) : '---';
-
-        const minedPercent = totalSupply > 0 ? (totalSupply / MAX_SUPPLY) * 100 : 0;
-        document.getElementById('minedPercent').innerHTML = minedPercent.toFixed(2) + '%';
-        document.getElementById('minedBar').innerHTML = createProgressBar(minedPercent);
-        
-        let transparent = 0, orchard = 0, sapling = 0, sprout = 0, lockbox = 0, ironwood = 0;
-        if (blockchainInfo.valuePools && Array.isArray(blockchainInfo.valuePools)) {
-          blockchainInfo.valuePools.forEach(pool => {
-            const value = pool.chainValue || 0;
-            switch(pool.id) {
-              case 'transparent': transparent = value; break;
-              case 'orchard': orchard = value; break;
-              case 'sapling': sapling = value; break;
-              case 'sprout': sprout = value; break;
-              case 'lockbox': lockbox = value; break;
-              case 'ironwood': ironwood = value; break;
+        async function callRPC(method, params = []) {
+            try {
+                const url = `${RPC_URL}?token=${TOKEN}&cmd=${encodeURIComponent(method + (params.length ? ' ' + params.join(' ') : ''))}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                return data.result;
+            } catch (e) {
+                console.error(`RPC error ${method}:`, e);
+                return null;
             }
-          });
         }
-        
-        const poolsTotal = transparent + orchard + sapling + sprout + lockbox + ironwood;
-        
-        document.getElementById('transparentValue').innerHTML = formatNumber(transparent, 2) + ' ZEC';
-        document.getElementById('transparentPct').innerHTML = poolsTotal > 0 ? ((transparent / poolsTotal) * 100).toFixed(1) + '%' : '0%';
-        document.getElementById('orchardValue').innerHTML = formatNumber(orchard, 2) + ' ZEC';
-        document.getElementById('orchardPct').innerHTML = poolsTotal > 0 ? ((orchard / poolsTotal) * 100).toFixed(1) + '%' : '0%';
-        document.getElementById('saplingValue').innerHTML = formatNumber(sapling, 2) + ' ZEC';
-        document.getElementById('saplingPct').innerHTML = poolsTotal > 0 ? ((sapling / poolsTotal) * 100).toFixed(1) + '%' : '0%';
-        document.getElementById('sproutValue').innerHTML = formatNumber(sprout, 2) + ' ZEC';
-        document.getElementById('sproutPct').innerHTML = poolsTotal > 0 ? ((sprout / poolsTotal) * 100).toFixed(1) + '%' : '0%';
-        document.getElementById('lockboxValue').innerHTML = formatNumber(lockbox, 2) + ' ZEC';
-        document.getElementById('lockboxPct').innerHTML = poolsTotal > 0 ? ((lockbox / poolsTotal) * 100).toFixed(1) + '%' : '0%';
-        document.getElementById('ironwoodValue').innerHTML = formatNumber(ironwood, 2) + ' ZEC';
-        document.getElementById('ironwoodPct').innerHTML = poolsTotal > 0 ? ((ironwood / poolsTotal) * 100).toFixed(1) + '%' : '0%';
-        
-        const shieldedTotal = orchard + sapling + sprout + ironwood;
-        document.getElementById('shieldedTotal').innerHTML = formatNumber(shieldedTotal, 2) + ' ZEC';
-        const shieldedPct = totalSupply > 0 ? (shieldedTotal / totalSupply) * 100 : 0;
-        document.getElementById('shieldedPercent').innerHTML = shieldedPct.toFixed(1) + '%';
-        document.getElementById('shieldedBar').innerHTML = createProgressBar(shieldedPct);
-        
-        const upgrades = blockchainInfo.upgrades || {};
-        document.getElementById('overwinter').innerHTML = upgrades["5ba81b19"] ? 'bloque ' + formatNumber(upgrades["5ba81b19"].activationheight) : '---';
-        document.getElementById('saplingUpgrade').innerHTML = upgrades["76b809bb"] ? 'bloque ' + formatNumber(upgrades["76b809bb"].activationheight) : '---';
-        document.getElementById('blossom').innerHTML = upgrades["2bb40e60"] ? 'bloque ' + formatNumber(upgrades["2bb40e60"].activationheight) : '---';
-        document.getElementById('heartwood').innerHTML = upgrades["f5b9230b"] ? 'bloque ' + formatNumber(upgrades["f5b9230b"].activationheight) : '---';
-        document.getElementById('canopy').innerHTML = upgrades["e9ff75a6"] ? 'bloque ' + formatNumber(upgrades["e9ff75a6"].activationheight) : '---';
-        document.getElementById('nu5').innerHTML = upgrades["c2d6d0b4"] ? 'bloque ' + formatNumber(upgrades["c2d6d0b4"].activationheight) : '---';
-        document.getElementById('nu6').innerHTML = upgrades["c8e71055"] ? 'bloque ' + formatNumber(upgrades["c8e71055"].activationheight) : '---';
-        document.getElementById('nu61').innerHTML = upgrades["4dec4df0"] ? 'bloque ' + formatNumber(upgrades["4dec4df0"].activationheight) : '---';
-        document.getElementById('nu62').innerHTML = upgrades["5437f330"] ? 'bloque ' + formatNumber(upgrades["5437f330"].activationheight) : '---';
-        document.getElementById('nu63').innerHTML = upgrades["37a5165b"] ? 
-          (upgrades["37a5165b"].status === 'active' ? 'activo' : 'pendiente (bloque ' + formatNumber(upgrades["37a5165b"].activationheight) + ')') : '---';
-        
-        const consensusTip = blockchainInfo.consensus?.chaintip || '';
-        document.getElementById('consensusTip').innerHTML = consensusTip ? 
-          (upgradeNames[consensusTip] || consensusTip) + ' (' + consensusTip + ')' : '---';
-        
-        const blocksRemaining = Math.max(0, HALVING_BLOCK - currentHeight);
-        document.getElementById('blocksRemaining').innerHTML = formatNumber(blocksRemaining);
-        
-        const blocksSinceLastHalving = Math.max(0, currentHeight - 2726400);
-        const totalBlocksInCycle = 1680000;
-        const halvingProgress = totalBlocksInCycle > 0 ? (blocksSinceLastHalving / totalBlocksInCycle) * 100 : 0;
-        document.getElementById('halvingBar').innerHTML = createProgressBar(halvingProgress);
-        
-        const daysRemaining = BLOCKS_PER_DAY > 0 ? blocksRemaining / BLOCKS_PER_DAY : 0;
-        document.getElementById('timeToHalving').innerHTML = formatTimeRemaining(daysRemaining);
-        
-        if (daysRemaining > 0) {
-          const now = new Date();
-          const halvingDate = new Date(now.getTime() + (daysRemaining * 24 * 60 * 60 * 1000));
-          document.getElementById('halvingDate').innerHTML = halvingDate.toLocaleDateString() + ' (est.)';
+
+        async function loadPrice() {
+            try {
+                const res = await fetch(PRICE_URL);
+                const data = await res.json();
+                return data.success ? data.price : null;
+            } catch (e) {
+                return null;
+            }
         }
-        
-        let currentReward = '---';
-        if (currentHeight >= 4406400) currentReward = '0.78125';
-        else if (currentHeight >= 2726400) currentReward = '1.5625';
-        else if (currentHeight >= 1046400) currentReward = '3.125';
-        else if (currentHeight > 0) currentReward = '6.25';
-        document.getElementById('blockReward').innerHTML = currentReward + ' ZEC';
-        
-        try {
-          const mempoolTxids = await callRPC('getrawmempool') || [];
-          const mempoolSize = mempoolTxids.length || 0;
-          document.getElementById('mempoolSize').innerHTML = mempoolSize + ' tx';
-          
-          let mempoolTotal = 0;
-          if (mempoolSize > 0) {
-            const sampleTxids = mempoolTxids.slice(0, 10);
-            let processed = 0;
-            for (const txid of sampleTxids) {
-              try {
-                const tx = await callRPC('getrawtransaction', [txid, 1]);
-                if (tx && tx.vout) {
-                  const txValue = tx.vout.reduce((sum, vout) => sum + (vout.value || 0), 0);
-                  mempoolTotal += txValue;
+
+        function renderStats(data) {
+            const container = document.getElementById('statsGrid');
+
+            if (!data) {
+                container.innerHTML = '<div style="color:#4a443a;text-align:center;padding:30px;">No se pudieron cargar los datos</div>';
+                return;
+            }
+
+            const {
+                price,
+                totalSupply,
+                currentHeight,
+                difficulty,
+                bestBlock,
+                transparent,
+                orchard,
+                sapling,
+                sprout,
+                lockbox,
+                ironwood,
+                poolsTotal,
+                shieldedTotal,
+                shieldedPct,
+                upgrades,
+                consensusTip,
+                blocksRemaining,
+                halvingProgress,
+                daysRemaining,
+                currentReward,
+                mempoolSize,
+                mempoolValue
+            } = data;
+
+            const minedPercent = totalSupply > 0 ? (totalSupply / MAX_SUPPLY) * 100 : 0;
+
+            let html = '';
+
+            html += `<div class="stat-card">
+                <div class="stat-card-title"><span class="icon">⧫</span> RED</div>
+                <div class="stat-item"><span class="label">PRECIO</span><span class="value gold">${price !== null ? '$' + price.toFixed(2) : '---'}</span></div>
+                <div class="stat-item"><span class="label">SUMINISTRO TOTAL</span><span class="value gold">${formatNumber(totalSupply, 2)} ZEC</span></div>
+                <div class="stat-item">
+                    <span class="label">PROGRESO MINADO</span>
+                    <div class="progress-wrap">
+                        <div class="progress-track"><div class="progress-fill gold" style="width:${Math.min(minedPercent, 100)}%"></div></div>
+                        <span class="progress-value gold">${minedPercent.toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="stat-item"><span class="label">BLOQUES</span><span class="value">${formatNumber(currentHeight)}</span></div>
+                <div class="stat-item"><span class="label">DIFICULTAD</span><span class="value">${formatLargeNumber(difficulty)}</span></div>
+                <div class="stat-item"><span class="label">BEST BLOCK</span><span class="value mono">${bestBlock || '---'}</span></div>
+            </div>`;
+
+            const pools = [
+                { id: 'transparent', label: 'TRANSPARENTE (t...)', value: transparent, icon: '█' },
+                { id: 'orchard', label: 'ORCHARD (u1...)', value: orchard, icon: '◈', gold: true },
+                { id: 'sapling', label: 'SAPLING (zs...)', value: sapling, icon: '◉', gold: true },
+                { id: 'sprout', label: 'SPROUT (zc...)', value: sprout, icon: '○' },
+                { id: 'lockbox', label: 'LOCKBOX', value: lockbox, icon: '▣' },
+                { id: 'ironwood', label: 'IRONWOOD', value: ironwood, icon: '✦' }
+            ];
+
+            html += `<div class="stat-card">
+                <div class="stat-card-title"><span class="icon">◈</span> POOLS DE VALOR</div>`;
+            for (const pool of pools) {
+                const pct = poolsTotal > 0 ? (pool.value / poolsTotal) * 100 : 0;
+                const goldClass = pool.gold ? ' gold' : '';
+                html += `<div class="stat-item">
+                    <span class="label">${pool.icon} ${pool.label}</span>
+                    <span class="value${goldClass}">${formatNumber(pool.value, 2)} ZEC <span class="pct">${pct.toFixed(1)}%</span></span>
+                </div>`;
+            }
+            html += `</div>`;
+
+            html += `<div class="stat-card">
+                <div class="stat-card-title"><span class="icon">🛡</span> SUMINISTRO BLINDADO</div>
+                <div class="stat-item"><span class="label">TOTAL BLINDADO</span><span class="value gold">${formatNumber(shieldedTotal, 2)} ZEC</span></div>
+                <div class="stat-item">
+                    <span class="label">% CIRCULANTE</span>
+                    <div class="progress-wrap">
+                        <div class="progress-track"><div class="progress-fill shielded" style="width:${Math.min(shieldedPct, 100)}%"></div></div>
+                        <span class="progress-value shielded">${shieldedPct.toFixed(1)}%</span>
+                    </div>
+                </div>
+            </div>`;
+
+            const halvingDate = daysRemaining > 0 ? new Date(Date.now() + (daysRemaining * 24 * 60 * 60 * 1000)) : null;
+            html += `<div class="stat-card">
+                <div class="stat-card-title"><span class="icon">⏱</span> HALVING</div>
+                <div class="stat-item"><span class="label">PROXIMO HALVING</span><span class="value gold">${halvingDate ? halvingDate.toLocaleDateString() + ' (est.)' : '---'}</span></div>
+                <div class="stat-item"><span class="label">BLOQUE OBJETIVO</span><span class="value">4,406,400</span></div>
+                <div class="stat-item">
+                    <span class="label">BLOQUES RESTANTES</span>
+                    <div class="progress-wrap">
+                        <div class="progress-track"><div class="progress-fill orange" style="width:${Math.min(halvingProgress, 100)}%"></div></div>
+                        <span class="progress-value orange">${formatNumber(blocksRemaining)}</span>
+                    </div>
+                </div>
+                <div class="stat-item"><span class="label">TIEMPO ESTIMADO</span><span class="value">${formatTimeRemaining(daysRemaining)}</span></div>
+                <div class="stat-item"><span class="label">REWARD ACTUAL</span><span class="value gold">${currentReward} ZEC</span></div>
+            </div>`;
+
+            html += `<div class="stat-card">
+                <div class="stat-card-title"><span class="icon">⬆</span> ACTUALIZACIONES ACTIVAS</div>`;
+            for (const [key, name] of Object.entries(upgradeNames)) {
+                const upgrade = upgrades && upgrades[key];
+                const status = upgrade ? (upgrade.status === 'active' ? 'activo' : 'bloque ' + formatNumber(upgrade.activationheight)) : '---';
+                const isActive = status === 'activo';
+                html += `<div class="stat-item">
+                    <span class="label">${name}</span>
+                    <span class="value${isActive ? ' green' : ''}">${escapeHtml(status)}</span>
+                </div>`;
+            }
+            html += `<div class="stat-item">
+                <span class="label">CONSENSUS CHAINTIP</span>
+                <span class="value mono">${consensusTip ? (upgradeNames[consensusTip] || consensusTip) : '---'}</span>
+            </div>`;
+            html += `</div>`;
+
+            html += `<div class="stat-card">
+                <div class="stat-card-title"><span class="icon">📋</span> MEMPOOL</div>
+                <div class="stat-item"><span class="label">TRANSACCIONES</span><span class="value">${mempoolSize !== null ? mempoolSize + ' tx' : '---'}</span></div>
+                <div class="stat-item"><span class="label">VALOR TOTAL</span><span class="value gold">${mempoolValue !== null ? formatNumber(mempoolValue, 2) + ' ZEC' : '---'}</span></div>
+            </div>`;
+
+            container.innerHTML = html;
+        }
+
+        async function loadData() {
+            const statusMsg = document.getElementById('statusMsg');
+            statusMsg.innerHTML = 'Cargando datos...';
+
+            try {
+                const [price, blockchainInfo] = await Promise.all([
+                    loadPrice(),
+                    callRPC('getblockchaininfo')
+                ]);
+
+                if (!blockchainInfo) throw new Error('No se pudo obtener blockchainInfo');
+
+                const totalSupply = blockchainInfo.chainSupply?.chainValue || 0;
+                const currentHeight = blockchainInfo.blocks || 0;
+                const difficulty = blockchainInfo.difficulty || 0;
+                const bestBlock = blockchainInfo.bestblockhash ?
+                    blockchainInfo.bestblockhash.substring(0, 16) + '...' + blockchainInfo.bestblockhash.substring(blockchainInfo.bestblockhash.length - 4) :
+                    '---';
+
+                let transparent = 0,
+                    orchard = 0,
+                    sapling = 0,
+                    sprout = 0,
+                    lockbox = 0,
+                    ironwood = 0;
+                if (blockchainInfo.valuePools && Array.isArray(blockchainInfo.valuePools)) {
+                    blockchainInfo.valuePools.forEach(pool => {
+                        const value = pool.chainValue || 0;
+                        switch (pool.id) {
+                            case 'transparent':
+                                transparent = value;
+                                break;
+                            case 'orchard':
+                                orchard = value;
+                                break;
+                            case 'sapling':
+                                sapling = value;
+                                break;
+                            case 'sprout':
+                                sprout = value;
+                                break;
+                            case 'lockbox':
+                                lockbox = value;
+                                break;
+                            case 'ironwood':
+                                ironwood = value;
+                                break;
+                        }
+                    });
                 }
-                processed++;
-              } catch(e) {}
-            }
-            if (mempoolSize > 10 && processed > 0) {
-              const avgValue = mempoolTotal / processed;
-              mempoolTotal = mempoolTotal + (avgValue * (mempoolSize - 10));
-            }
-          }
-          document.getElementById('mempoolValue').innerHTML = mempoolTotal.toFixed(2) + ' ZEC';
-        } catch(e) {
-          document.getElementById('mempoolSize').innerHTML = '---';
-          document.getElementById('mempoolValue').innerHTML = '---';
-        }
-        
-        document.getElementById('statusMsg').innerHTML = 'Datos actualizados ' + new Date().toLocaleTimeString();
-        
-      } catch(e) {
-        document.getElementById('statusMsg').innerHTML = '[!] Error: ' + e.message;
-      }
-    }
 
-    loadPrice();
-    loadData();
-    setInterval(loadPrice, 60000);
-    setInterval(loadData, 60000);
-  </script>
+                const poolsTotal = transparent + orchard + sapling + sprout + lockbox + ironwood;
+                const shieldedTotal = orchard + sapling + sprout + ironwood;
+                const shieldedPct = totalSupply > 0 ? (shieldedTotal / totalSupply) * 100 : 0;
+
+                const upgrades = blockchainInfo.upgrades || {};
+                const consensusTip = blockchainInfo.consensus?.chaintip || '';
+
+                const blocksRemaining = Math.max(0, HALVING_BLOCK - currentHeight);
+                const blocksSinceLastHalving = Math.max(0, currentHeight - 2726400);
+                const totalBlocksInCycle = 1680000;
+                const halvingProgress = totalBlocksInCycle > 0 ? (blocksSinceLastHalving / totalBlocksInCycle) * 100 : 0;
+                const daysRemaining = BLOCKS_PER_DAY > 0 ? blocksRemaining / BLOCKS_PER_DAY : 0;
+
+                let currentReward = '---';
+                if (currentHeight >= 4406400) currentReward = '0.78125';
+                else if (currentHeight >= 2726400) currentReward = '1.5625';
+                else if (currentHeight >= 1046400) currentReward = '3.125';
+                else if (currentHeight > 0) currentReward = '6.25';
+
+                // Mempool
+                let mempoolSize = null,
+                    mempoolValue = null;
+                try {
+                    const mempoolTxids = await callRPC('getrawmempool') || [];
+                    mempoolSize = mempoolTxids.length || 0;
+
+                    let mempoolTotal = 0;
+                    if (mempoolSize > 0) {
+                        const sampleTxids = mempoolTxids.slice(0, 10);
+                        let processed = 0;
+                        for (const txid of sampleTxids) {
+                            try {
+                                const tx = await callRPC('getrawtransaction', [txid, 1]);
+                                if (tx && tx.vout) {
+                                    const txValue = tx.vout.reduce((sum, vout) => sum + (vout.value || 0), 0);
+                                    mempoolTotal += txValue;
+                                }
+                                processed++;
+                            } catch (e) {}
+                        }
+                        if (mempoolSize > 10 && processed > 0) {
+                            const avgValue = mempoolTotal / processed;
+                            mempoolTotal = mempoolTotal + (avgValue * (mempoolSize - 10));
+                        }
+                        mempoolValue = mempoolTotal;
+                    } else {
+                        mempoolValue = 0;
+                    }
+                } catch (e) {
+                    // Mempool no disponible
+                }
+
+                renderStats({
+                    price,
+                    totalSupply,
+                    currentHeight,
+                    difficulty,
+                    bestBlock,
+                    transparent,
+                    orchard,
+                    sapling,
+                    sprout,
+                    lockbox,
+                    ironwood,
+                    poolsTotal,
+                    shieldedTotal,
+                    shieldedPct,
+                    upgrades,
+                    consensusTip,
+                    blocksRemaining,
+                    halvingProgress,
+                    daysRemaining,
+                    currentReward,
+                    mempoolSize,
+                    mempoolValue
+                });
+
+                statusMsg.innerHTML = 'Datos actualizados ' + new Date().toLocaleTimeString();
+
+            } catch (e) {
+                statusMsg.innerHTML = '[!] Error: ' + e.message;
+                console.error(e);
+            }
+        }
+
+        // ─── INIT ────────────────────────────────────────────────────────
+        loadData();
+        setInterval(loadData, 60000);
+    </script>
+
 </body>
 </html>
