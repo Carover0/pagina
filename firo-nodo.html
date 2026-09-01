@@ -605,9 +605,15 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const NODE_JSON_URL = 'https://carover0.xyz/api/firo.json';
         const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
 
+        // ─── DATOS GLOBALES ─────────────────────────────────────────────
+        let cachedNodeData = null;
+        let cachedPrice = null;
+
+        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -646,7 +652,11 @@
             el._timer = setTimeout(() => el.classList.remove('show'), 1800);
         }
 
-        function updateStatsBar(data, price) {
+        // ─── UPDATE STATS BAR ──────────────────────────────────────────
+        function updateStatsBar() {
+            const data = cachedNodeData;
+            const price = cachedPrice;
+
             document.getElementById('stat-height').textContent = data?.blockchain?.blocks ? Number(data.blockchain.blocks)
                 .toLocaleString() : '—';
             document.getElementById('stat-connections').textContent = data?.network?.connections ?? '—';
@@ -654,6 +664,7 @@
             document.getElementById('stat-price').textContent = price ? '$' + price.toFixed(4) : '—';
         }
 
+        // ─── NODE DATA ──────────────────────────────────────────────────
         function displayNodeData(d) {
             if (!d) return;
 
@@ -683,8 +694,9 @@
                 const r = await fetch(NODE_JSON_URL);
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const data = await r.json();
+                cachedNodeData = data;
                 displayNodeData(data);
-                updateStatsBar(data, null);
+                updateStatsBar();
                 return data;
             } catch (e) {
                 console.error('Error de conexión:', e);
@@ -693,11 +705,13 @@
             }
         }
 
+        // ─── MARKET DATA ───────────────────────────────────────────────
         async function fetchMarketData() {
             try {
                 const d = await (await fetch(COINGECKO_API)).json();
                 const m = d.market_data;
                 const p = m.current_price.usd;
+                cachedPrice = p;
 
                 document.getElementById('market-price').textContent = '$' + p.toFixed(4);
 
@@ -714,7 +728,7 @@
                 document.getElementById('market-volume').textContent = '$' + (m.total_volume.usd / 1e6).toFixed(2) + 'M';
                 document.getElementById('market-updated').textContent = new Date().toLocaleTimeString();
 
-                updateStatsBar(null, p);
+                updateStatsBar();
                 return p;
             } catch (e) {
                 document.getElementById('market-price').textContent = '---';
@@ -727,7 +741,7 @@
             }
         }
 
-        // ─── ELECTRUM ────────────────────────────────────────────
+        // ─── ELECTRUM ────────────────────────────────────────────────────
         async function fetchElectrumStatus() {
             try {
                 const r = await fetch('https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=ping-electrum');
@@ -764,11 +778,10 @@
 
         // ─── INIT ────────────────────────────────────────────────────────
         async function init() {
-            const [nodeData, price] = await Promise.all([
+            await Promise.all([
                 fetchNodeData(),
                 fetchMarketData()
             ]);
-            updateStatsBar(nodeData, price);
             fetchElectrumStatus();
         }
 
