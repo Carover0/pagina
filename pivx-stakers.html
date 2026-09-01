@@ -8,114 +8,668 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIVX · Monitor de Cold Staking</title>
     <style>
-        :root { --gold:#A044FF; --gold-soft:#b86bff; --green:#31db72; --red:#ff756f; --line:rgba(160,68,255,.5); --panel:rgba(16,6,26,.91); --ui-scale:1; }
-        * { box-sizing:border-box; }
-        body { min-height:100vh; margin:0; color:#fff; font:14px/1.25 "Lucida Console",Monaco,monospace; background:#020105 url("assets/f6.png") center top/cover fixed no-repeat; }
-        body::after { content:""; position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(160,68,255,.025) 0 1px,transparent 1px 4px); }
-        .brand { position:fixed; z-index:2; top:20px; left:50%; transform:translateX(-50%) scale(var(--ui-scale)); transform-origin:center top; color:var(--gold-soft); font-size:24px; letter-spacing:5px; text-shadow:0 0 16px var(--gold); }
-        main { width:min(1380px,100%); min-height:100vh; margin:0; padding:72px 10px 36px 0; display:flex; align-items:center; justify-content:flex-start; transform:scale(var(--ui-scale)); transform-origin:top left; }
-        .panel { position:relative; width:min(800px,98%); padding:25px 30px 20px; background:linear-gradient(135deg,rgba(30,16,50,.95),var(--panel)); border:3px solid var(--gold); clip-path:polygon(0 31px,31px 0,calc(100% - 31px) 0,100% 31px,100% calc(100% - 31px),calc(100% - 31px) 100%,31px 100%,0 calc(100% - 31px)); box-shadow:0 0 16px rgba(160,68,255,.85),0 0 48px rgba(160,68,255,.2),inset 0 0 30px rgba(160,68,255,.08); }
-        .panel::before,.panel::after { content:""; position:absolute; width:62px; height:8px; background:repeating-linear-gradient(52deg,var(--gold) 0 11px,transparent 11px 18px); }
-        .panel::before { top:17px; right:58px; } .panel::after { bottom:17px; left:80px; transform:scaleX(-1); }
-        .panel-title { display:flex; align-items:center; gap:12px; margin:2px 0 16px; color:var(--gold-soft); font-size:17px; letter-spacing:1px; text-shadow:0 0 10px var(--gold); }
-        .logo { width:36px; height:36px; object-fit:contain; filter:drop-shadow(0 0 7px rgba(160,68,255,.65)); }
-        .top-links { border-top:1px solid var(--line); padding:8px 0; font-size:12px; line-height:1.6; }
-        a { color:var(--gold-soft); text-decoration:none; } a:hover { text-decoration:underline; }
-        .section { border-top:1px solid var(--line); padding:9px 0 10px; }
-        .subheader { margin:0 0 5px; color:var(--gold-soft); font-size:12px; letter-spacing:.5px; text-transform:uppercase; }
-        .note { color:var(--gold-soft); font-size:11px; line-height:1.4; }
-        .api { font-size:11px; overflow-wrap:anywhere; } 
-        .footer { border-top:1px solid var(--line); margin-top:2px; padding-top:9px; color:#e6ddce; font-size:11px; line-height:1.4; } 
-        .small { color:#afa391; }
-        .donation { font-size:10px; color:#7a7060; word-break:break-all; }
-        
-        .stats-row { display:flex; flex-wrap:wrap; gap:5px 18px; font-size:12px; margin-bottom:4px; color:#d2c8b7; }
-        .stats-row span { color:#fff; }
-        .stats-label { color:#d2c8b7; }
-        .stats-value { color:#fff; }
-        
-        .data-block { margin:6px 0 4px 0; }
-        .row { display:grid; grid-template-columns:18ch 1fr; gap:10px; min-height:19px; font-size:13px; }
-        .label { color:#d2c8b7; }
-        .value { color:#fff; text-align:left; overflow-wrap:anywhere; }
-        .positive { color:var(--green); }
-        .negative { color:var(--red); }
-        .warning { color:#DD9D34; }
-        .info-text { color:#888; font-size:12px; }
-        .small-note { color:#555; font-size:11px; }
-        
-        .utxo-list { margin-top:6px; }
-        .utxo-item { font-size:12px; color:#aaa; margin-left:0px; margin-bottom:3px; line-height:1.4; }
-        
-        .timestamp { color:#666; font-size:11px; margin-bottom:6px; }
-        
-        .server-list-container { max-height:450px; overflow-y:auto; padding-right:5px; }
-        .server-list-container::-webkit-scrollbar { width:3px; }
-        .server-list-container::-webkit-scrollbar-track { background:rgba(160,68,255,.1); }
-        .server-list-container::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
-        
-        .cold-staker-addr { color:var(--gold-soft); font-size:13px; word-break:break-all; }
-        
-        @media (max-width:700px) { 
-            .brand { position:absolute; font-size:18px; letter-spacing:3px; } 
-            main { padding:65px 10px 24px 5px; align-items:flex-start; } 
-            .panel { padding:22px 18px 18px; width:98%; } 
-            .panel-title { font-size:16px; } 
-            .row { grid-template-columns:1fr; gap:1px; margin-bottom:5px; }
-            .value { text-align:left; }
-            .utxo-item { font-size:11px; }
-            .server-list-container { max-height:300px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        @media (min-width:1920px) { 
-            :root { --ui-scale:1.1; } 
-            main { padding:72px 20px 36px 0; } 
-            .panel { width:min(750px,90%); } 
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(160, 68, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(160, 68, 255, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(160, 68, 255, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(160, 68, 255, 0.3));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.5));
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #c597ff;
+            border-bottom-color: #c597ff;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(160, 68, 255, 0.06);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel:hover {
+            border-color: rgba(160, 68, 255, 0.12);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #c597ff;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.06);
+        }
+
+        .panel-title img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 12px rgba(160, 68, 255, 0.25));
+        }
+
+        /* ── INFO BAR ── */
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px 20px;
+            padding: 10px 0 14px 0;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.06);
+            margin-bottom: 16px;
+        }
+
+        .info-bar .timestamp {
+            color: #5a5348;
+            font-size: 11px;
+        }
+
+        /* ── CARDS ── */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+            transition: all 0.25s;
+        }
+
+        .card:hover {
+            border-color: rgba(160, 68, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-title {
+            color: #4a443a;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.04);
+        }
+
+        .card-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.02);
+        }
+
+        .card-item:last-child {
+            border-bottom: none;
+        }
+
+        .card-item .label {
+            color: #6a6255;
+            font-size: 11px;
+            letter-spacing: 0.3px;
+        }
+
+        .card-item .value {
+            color: #f5ede4;
+            font-size: 12px;
+            text-align: right;
+            word-break: break-all;
+        }
+
+        .card-item .value.positive {
+            color: #31db72;
+        }
+
+        .card-item .value.negative {
+            color: #ff756f;
+        }
+
+        .card-item .value.violet {
+            color: #c597ff;
+        }
+
+        .card-item .value.warning {
+            color: #dd9d34;
+        }
+
+        .card-item .value.mono {
+            font-size: 11px;
+            color: #8a8275;
+        }
+
+        .card-item .value .small-note {
+            color: #4a443a;
+            font-size: 10px;
+        }
+
+        /* ── UTXO LIST ── */
+        .utxo-section {
+            margin-top: 16px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+        }
+
+        .utxo-section-title {
+            color: #4a443a;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.04);
+        }
+
+        .utxo-item {
+            font-size: 12px;
+            color: #b0a897;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.02);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 12px;
+            align-items: baseline;
+        }
+
+        .utxo-item:last-child {
+            border-bottom: none;
+        }
+
+        .utxo-item .idx {
+            color: #4a443a;
+            min-width: 24px;
+        }
+
+        .utxo-item .amount {
+            color: #c597ff;
+        }
+
+        .utxo-item .conf {
+            color: #6a6255;
+        }
+
+        .utxo-item .whitelist-yes {
+            color: #31db72;
+        }
+
+        .utxo-item .whitelist-no {
+            color: #ff756f;
+        }
+
+        .utxo-item .owner {
+            color: #5a5348;
+            font-size: 11px;
+            word-break: break-all;
+        }
+
+        .utxo-item .cold-staker {
+            color: #5a5348;
+            font-size: 11px;
+            word-break: break-all;
+        }
+
+        .utxo-info-text {
+            color: #4a443a;
+            font-size: 12px;
+            padding: 8px 0;
+        }
+
+        /* ── DIRECCIÓN ── */
+        .address-box {
+            margin-top: 16px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+        }
+
+        .address-box .address-label {
+            color: #4a443a;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .address-box .address-value {
+            color: #c597ff;
+            font-size: 13px;
+            word-break: break-all;
+            font-family: 'Lucida Console', monospace;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(160, 68, 255, 0.06);
+            font-size: 11px;
+            color: #4a443a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: #c597ff;
+        }
+
+        .footer .api-link {
+            font-size: 11px;
+            color: #5a5348;
+            word-break: break-all;
+        }
+
+        .footer .api-link:hover {
+            color: #c597ff;
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(160, 68, 255, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(160, 68, 255, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .app {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 14px 18px;
+            }
+
+            .brand h1 {
+                font-size: 17px;
+            }
+
+            .brand img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .nav-links {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+
+            .panel {
+                padding: 18px 16px;
+            }
+
+            .panel-title {
+                font-size: 16px;
+            }
+
+            .panel-title img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .info-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .card {
+                padding: 14px 16px;
+            }
+
+            .card-item .value {
+                font-size: 11px;
+            }
+
+            .utxo-section {
+                padding: 14px 16px;
+            }
+
+            .utxo-item {
+                font-size: 11px;
+                gap: 2px 8px;
+            }
+
+            .address-box {
+                padding: 12px 14px;
+            }
+
+            .address-box .address-value {
+                font-size: 12px;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 8px 10px;
+                gap: 10px;
+            }
+
+            .header {
+                padding: 10px 14px;
+            }
+
+            .brand h1 {
+                font-size: 15px;
+            }
+
+            .brand h1 small {
+                font-size: 10px;
+            }
+
+            .brand img {
+                width: 26px;
+                height: 26px;
+            }
+
+            .panel {
+                padding: 14px 12px;
+                border-radius: 10px;
+            }
+
+            .panel-title {
+                font-size: 14px;
+                gap: 10px;
+                margin-bottom: 14px;
+                padding-bottom: 10px;
+            }
+
+            .panel-title img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .info-bar .timestamp {
+                font-size: 10px;
+            }
+
+            .card {
+                padding: 12px 14px;
+            }
+
+            .card-title {
+                font-size: 9px;
+            }
+
+            .card-item {
+                padding: 4px 0;
+                flex-wrap: wrap;
+                gap: 2px;
+            }
+
+            .card-item .label {
+                font-size: 10px;
+                min-width: 80px;
+            }
+
+            .card-item .value {
+                font-size: 10px;
+                text-align: left;
+                flex: 1;
+            }
+
+            .utxo-section {
+                padding: 12px 14px;
+            }
+
+            .utxo-section-title {
+                font-size: 9px;
+            }
+
+            .utxo-item {
+                font-size: 10px;
+                flex-wrap: wrap;
+                gap: 1px 6px;
+            }
+
+            .utxo-item .idx {
+                min-width: 18px;
+            }
+
+            .address-box {
+                padding: 10px 12px;
+            }
+
+            .address-box .address-label {
+                font-size: 9px;
+            }
+
+            .address-box .address-value {
+                font-size: 11px;
+            }
+
+            .footer {
+                font-size: 10px;
+            }
+
+            .footer .api-link {
+                font-size: 10px;
+            }
+        }
+
+        @media (min-width: 1920px) {
+            .app {
+                max-width: 1600px;
+                padding: 24px 40px;
+            }
+
+            .card-item .value {
+                font-size: 13px;
+            }
+
+            .utxo-item {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
 <body>
-    <main><section class="panel">
-        <div class="panel-title"><img class="logo" src="assets/pivx.png" alt="PIVX">MONITOR COLD STAKING</div>
-        <nav class="top-links"><a href="https://carover0.github.io/pagina/pivx-explorer.html">[EXPLORADOR]</a> · <a href="https://carover0.github.io/pagina/pivx-consola.html">[CONSOLA]</a> · <a href="https://carover0.github.io/pagina/pivx-nodo.html">[NODO]</a> · <a href="https://carover0.github.io/pagina/">[INICIO]</a></nav>
-        
-        <section class="section">
-            <div id="timestamp" class="timestamp">Cargando datos...</div>
-            
-            <div class="subheader">COLD STAKING · RESUMEN</div>
-            <div id="coldstaking-summary" class="data-block">
-                <div class="row"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
-                <div class="row"><span class="label">TOTAL DELEGADO</span><span class="value" id="cs-total">---</span></div>
-                <div class="row"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
-                <div class="row"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
-                <div class="row"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
-                <div class="row"><span class="label">BALANCE LOCAL</span><span class="value" id="cs-local-balance">---</span></div>
-                <div class="row"><span class="label">ÚLTIMO INTENTO</span><span class="value" id="cs-last-attempt">---</span></div>
-            </div>
-            
-            <div class="subheader" style="margin-top:8px;">UTXOS DELEGADOS (DETALLE)</div>
-            <div id="utxos-list" class="data-block">
-                <div class="info-text">Cargando lista de UTXOs...</div>
-            </div>
-            
-            <div class="subheader" style="margin-top:8px;">DIRECCIÓN DE COLD STAKING</div>
-            <div class="data-block">
-                <div class="row"><span class="label">DELEGA ACA</span><span class="cold-staker-addr">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span></div>
-            </div>
-        </section>
 
-        <section class="section"><h2 class="subheader">► API pública</h2>
-            <a class="api" href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank" rel="noopener">https://carover0.xyz/cacaX/pivx_status_X.json</a>
-        </section>
+    <div class="app">
 
-        <footer class="footer">
-            <div class="small">actualizado automáticamente cada 30s</div>
-            <div class="donation"><br></div>
-        </footer>
-    </section></main>
+        <header class="header">
+            <div class="brand">
+                <img src="assets/pivx.png" alt="PIVX">
+                <h1>PIVX <small>cold staking</small></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/pivx-explorer.html">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/pivx-consola.html">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/pivx-nodo.html">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
+            <div class="info-bar">
+                <div class="timestamp" id="timestamp">Cargando datos...</div>
+            </div>
+
+            <div class="cards">
+
+                <!-- Resumen -->
+                <div class="card">
+                    <div class="card-title">Cold Staking · Resumen</div>
+                    <div class="card-item"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
+                    <div class="card-item"><span class="label">TOTAL DELEGADO</span><span class="value violet" id="cs-total">---</span></div>
+                    <div class="card-item"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
+                    <div class="card-item"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
+                    <div class="card-item"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
+                    <div class="card-item"><span class="label">BALANCE LOCAL</span><span class="value violet" id="cs-local-balance">---</span></div>
+                    <div class="card-item"><span class="label">ÚLTIMO INTENTO</span><span class="value mono" id="cs-last-attempt">---</span></div>
+                </div>
+
+            </div>
+
+            <!-- UTXOs -->
+            <div class="utxo-section">
+                <div class="utxo-section-title">UTXOS DELEGADOS (DETALLE)</div>
+                <div id="utxos-list">
+                    <div class="utxo-info-text">Cargando lista de UTXOs...</div>
+                </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="address-box">
+                <div class="address-label">► Dirección de cold staking</div>
+                <div class="address-value">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</div>
+            </div>
+
+            <footer class="footer">
+                <a href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/cacaX/pivx_status_X.json</a>
+                <span>actualizado cada 30s</span>
+            </footer>
+        </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
 
     <script>
+        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
 
+        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -133,12 +687,21 @@
             return `${(seconds / 3600).toFixed(1)} horas`;
         }
 
-        function mostrarTimestamp() {
-            const ahora = new Date();
-            document.getElementById('timestamp').innerHTML = `última actualización: ${ahora.toLocaleString()}`;
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
         }
 
-        function renderizarDatos(data) {
+        function updateTimestamp() {
+            const ahora = new Date();
+            document.getElementById('timestamp').textContent = `última actualización: ${ahora.toLocaleString()}`;
+        }
+
+        // ─── RENDER ─────────────────────────────────────────────────────
+        function renderData(data) {
             if (!data) return;
 
             const csInfo = data.cold_staking_info;
@@ -147,20 +710,22 @@
             const status = stakingInfo?.status;
             const lastAttempt = stakingInfo?.last_attempt;
 
+            // Resumen
             if (csInfo && csInfo.utxos) {
                 const utxos = csInfo.utxos;
                 const utxosList = utxos.list || [];
-                
+
                 document.getElementById('cs-utxos').textContent = utxos.count || 0;
                 document.getElementById('cs-total').textContent = (utxos.total_amount || 0).toFixed(2) + ' PIV';
-                
+
                 if (utxosList.length > 0) {
                     const confirmaciones = utxosList.map(u => u.confirmations);
                     const minConf = Math.min(...confirmaciones);
-                    document.getElementById('cs-confirms').innerHTML = `${minConf} <span class="small-note">(mín)</span>`;
-                    
+                    document.getElementById('cs-confirms').innerHTML =
+                        `${minConf} <span style="color:#4a443a;font-size:10px;">(mín)</span>`;
+
                     const whitelistedCount = utxosList.filter(u => u.whitelisted === "true").length;
-                    document.getElementById('cs-whitelist').innerHTML = `${whitelistedCount}/${utxosList.length}`;
+                    document.getElementById('cs-whitelist').textContent = `${whitelistedCount}/${utxosList.length}`;
                 } else {
                     document.getElementById('cs-confirms').textContent = '---';
                     document.getElementById('cs-whitelist').textContent = '---';
@@ -172,69 +737,88 @@
                 document.getElementById('cs-whitelist').textContent = '---';
             }
 
+            // Estado stake
             if (status && balances) {
+                const statusEl = document.getElementById('cs-staking-status');
                 if (status.staking_status === true && balances.stakeable_coins > 0) {
-                    document.getElementById('cs-staking-status').innerHTML = '<span class="positive">ACTIVO</span>';
+                    statusEl.textContent = 'ACTIVO';
+                    statusEl.className = 'value positive';
                 } else if (status.staking_status === true && balances.stakeable_coins === 0) {
-                    document.getElementById('cs-staking-status').innerHTML = '<span class="warning">ESPERANDO</span>';
+                    statusEl.textContent = 'ESPERANDO';
+                    statusEl.className = 'value warning';
                 } else {
-                    document.getElementById('cs-staking-status').innerHTML = '<span class="negative">INACTIVO</span>';
+                    statusEl.textContent = 'INACTIVO';
+                    statusEl.className = 'value negative';
                 }
-                
-                document.getElementById('cs-local-balance').textContent = (balances.total_wallet_balance || 0).toFixed(4) + ' PIV';
+
+                document.getElementById('cs-local-balance').textContent = (balances.total_wallet_balance || 0).toFixed(4) +
+                    ' PIV';
             } else {
                 document.getElementById('cs-staking-status').textContent = '---';
                 document.getElementById('cs-local-balance').textContent = '---';
             }
 
+            // Último intento
             if (lastAttempt) {
                 const ageText = formatTimestamp(lastAttempt.age_seconds);
-                document.getElementById('cs-last-attempt').innerHTML = `hace ${ageText} · ${lastAttempt.tries} intentos (depth: ${lastAttempt.depth})`;
+                document.getElementById('cs-last-attempt').textContent =
+                    `hace ${ageText} · ${lastAttempt.tries} intentos (depth: ${lastAttempt.depth})`;
             } else {
                 document.getElementById('cs-last-attempt').textContent = '---';
             }
 
+            // UTXOs
             const utxosContainer = document.getElementById('utxos-list');
             if (csInfo && csInfo.utxos && csInfo.utxos.list && csInfo.utxos.list.length > 0) {
-                let html = `<div class="info-text">Mostrando ${csInfo.utxos.list.length} UTXOs delegados:</div><div class="utxo-list">`;
+                let html = `<div class="utxo-info-text">Mostrando ${csInfo.utxos.list.length} UTXOs delegados:</div>`;
                 csInfo.utxos.list.forEach((utxo, index) => {
                     const isWhitelisted = utxo.whitelisted === "true";
                     html += `
                         <div class="utxo-item">
-                            #${index + 1} · ${utxo.amount.toFixed(2)} PIV · conf: ${utxo.confirmations} · 
-                            whitelisted: ${isWhitelisted ? '<span class="positive">sí</span>' : '<span class="negative">no</span>'}
-                            <span class="small-note">(owner: ${escapeHtml(utxo['coin-owner'])})</span>
+                            <span class="idx">#${index + 1}</span>
+                            <span class="amount">${utxo.amount.toFixed(2)} PIV</span>
+                            <span class="conf">conf: ${utxo.confirmations}</span>
+                            <span>whitelisted: ${isWhitelisted ? '<span class="whitelist-yes">sí</span>' : '<span class="whitelist-no">no</span>'}</span>
+                            <span class="owner">owner: ${escapeHtml(utxo['coin-owner'])}</span>
                         </div>
                     `;
                 });
                 if (csInfo.utxos.list[0]) {
-                    html += `<div class="small-note" style="margin-top: 8px;">cold-staker: ${escapeHtml(csInfo.utxos.list[0]['cold-staker'])}</div>`;
+                    html +=
+                        `<div class="utxo-item" style="color:#4a443a;font-size:11px;border-top:1px solid rgba(160,68,255,0.04);padding-top:8px;margin-top:4px;">
+                            cold-staker: ${escapeHtml(csInfo.utxos.list[0]['cold-staker'])}
+                        </div>`;
                 }
                 utxosContainer.innerHTML = html;
             } else {
-                utxosContainer.innerHTML = '<div class="info-text">No se encontraron UTXOs delegados.</div>';
+                utxosContainer.innerHTML = '<div class="utxo-info-text">No se encontraron UTXOs delegados.</div>';
             }
         }
 
+        // ─── FETCH ──────────────────────────────────────────────────────
         async function cargarDatos() {
             try {
                 const urlConTimestamp = `${STATUS_URL}?t=${new Date().getTime()}`;
                 const response = await fetch(urlConTimestamp);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                
-                mostrarTimestamp();
-                renderizarDatos(data);
-                
+
+                updateTimestamp();
+                renderData(data);
+
             } catch (error) {
                 console.error('Error cargando datos:', error);
-                document.getElementById('timestamp').innerHTML = '<span class="negative">ERROR: No se pudo cargar el estado</span>';
-                document.getElementById('utxos-list').innerHTML = '<div class="info-text negative">Error al conectar con la fuente de datos.</div>';
+                document.getElementById('timestamp').innerHTML =
+                    '<span style="color:#ff756f;">ERROR: No se pudo cargar el estado</span>';
+                document.getElementById('utxos-list').innerHTML =
+                    '<div class="utxo-info-text" style="color:#ff756f;">Error al conectar con la fuente de datos.</div>';
             }
         }
 
+        // ─── INIT ────────────────────────────────────────────────────────
         cargarDatos();
         setInterval(cargarDatos, 30000);
     </script>
+
 </body>
 </html>
