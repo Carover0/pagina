@@ -570,34 +570,35 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const NODE_JSON_URL = 'https://carover0.xyz/cacaX/ycash_status.json';
         const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
 
-        // ─── HELPERS ────────────────────────────────────────────────────
-        function escapeHtml(text) {
-            if (!text) return '';
-            return String(text).replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
+        let cachedNodeData = null;
+        let cachedPrice = null;
+        let cachedUptimeSeconds = 0;
+        let uptimeInterval = null;
 
-        function formatUptime(s) {
-            if (!s) return '---';
-            s = parseInt(s);
-            const d = Math.floor(s / 86400);
-            s %= 86400;
-            const h = Math.floor(s / 3600);
-            s %= 3600;
-            const m = Math.floor(s / 60);
+        // ─── HELPERS ────────────────────────────────────────────────────
+        function formatUptimeDetailed(seconds) {
+            if (!seconds || seconds < 0) return '---';
+
+            const years = Math.floor(seconds / 31536000);
+            seconds %= 31536000;
+            const days = Math.floor(seconds / 86400);
+            seconds %= 86400;
+            const hours = Math.floor(seconds / 3600);
+            seconds %= 3600;
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+
             let parts = [];
-            if (d > 0) parts.push(d + 'd');
-            if (h > 0) parts.push(h + 'h');
-            if (m > 0 || parts.length === 0) parts.push(m + 'min');
-            return parts.join(' ');
+            if (years > 0) parts.push(years + 'a');
+            if (days > 0) parts.push(days + 'd');
+            if (hours > 0) parts.push(hours + 'h');
+            if (minutes > 0) parts.push(minutes + 'm');
+            if (secs > 0 && parts.length === 0) parts.push(secs + 's');
+
+            return parts.join(' ') || 'menos de 1m';
         }
 
         function formatHash(h) {
@@ -613,15 +614,38 @@
             el._timer = setTimeout(() => el.classList.remove('show'), 1800);
         }
 
-        // ─── UPDATE STATS BAR ──────────────────────────────────────────
-        function updateStatsBar(data, price) {
+        function updateStatsBar() {
+            const data = cachedNodeData;
+            const price = cachedPrice;
+
             document.getElementById('stat-height').textContent = data?.height ? Number(data.height).toLocaleString() : '—';
-            document.getElementById('stat-connections').textContent = data?.connections ?? '—';
+            document.getElementById('stat-connections').textContent = data?.peers ?? data?.connections ?? '—';
             document.getElementById('stat-mempool').textContent = data?.mempool ?? '0';
             document.getElementById('stat-price').textContent = price ? '$' + Number(price).toFixed(4) : '—';
         }
 
-        // ─── NODE DATA ──────────────────────────────────────────────────
+        function updateUptimeDisplay() {
+            if (cachedUptimeSeconds > 0) {
+                document.getElementById('node-uptime').textContent = formatUptimeDetailed(cachedUptimeSeconds);
+            }
+        }
+
+        function startUptimeCounter(initialSeconds) {
+            if (uptimeInterval) {
+                clearInterval(uptimeInterval);
+            }
+            cachedUptimeSeconds = initialSeconds || 0;
+            updateUptimeDisplay();
+
+            // Incrementar cada segundo
+            uptimeInterval = setInterval(() => {
+                if (cachedUptimeSeconds > 0) {
+                    cachedUptimeSeconds++;
+                    updateUptimeDisplay();
+                }
+            }, 1000);
+        }
+
         function displayNodeData(d) {
             if (!d) return;
 
@@ -633,14 +657,39 @@
             stateEl.textContent = synced ? 'SINCRONIZADO' : 'SINCRONIZANDO';
             stateEl.className = 'value ' + (synced ? 'positive' : 'negative');
             document.getElementById('node-blocks').textContent = Number(d.height || 0).toLocaleString();
-            document.getElementById('node-connections').textContent = d.connections ?? 0;
+            document.getElementById('node-connections').textContent = d.peers ?? d.connections ?? 0;
             document.getElementById('node-mempool').textContent = (d.mempool ?? 0) + ' TX';
-            document.getElementById('node-uptime').textContent = formatUptime(d.uptime_seconds);
+
+            const now = Math.floor(Date.now() / 1000);
+            let uptimeSeconds = 0;
+
+            if (d.generated_at && d.generated_at > 0) {
+                uptimeSeconds = now - d.generated_at;
+                if (uptimeSeconds < 0 || uptimeSeconds > 31536000) {
+                    if (d.node_uptime_seconds && d.node_uptime_seconds > 0 && d.node_uptime_seconds < 86400 * 30) {
+                        uptimeSeconds = d.node_uptime_seconds;
+                    } else {
+                        uptimeSeconds = 0;
+                    }
+                }
+            } else if (d.node_uptime_seconds && d.node_uptime_seconds > 0) {
+                if (d.node_uptime_seconds < 86400 * 30) {
+                    uptimeSeconds = d.node_uptime_seconds;
+                }
+            }
+
+            // Guardar y iniciar contador
+            if (uptimeSeconds > 0) {
+                startUptimeCounter(uptimeSeconds);
+            } else {
+                document.getElementById('node-uptime').textContent = '---';
+            }
+
             document.getElementById('node-difficulty').textContent = Number(d.difficulty || 0).toFixed(2);
 
             const rewardTotal = d.blockreward_total ?? 1.5625;
-            const rewardMiner = rewardTotal;
-            const rewardFounders = 0;
+            const rewardMiner = d.blockreward_miner ?? rewardTotal;
+            const rewardFounders = d.blockreward_founders ?? 0;
             document.getElementById('node-reward-total').textContent = rewardTotal.toFixed(8) + ' YEC';
             document.getElementById('node-reward-miner').textContent = rewardMiner.toFixed(8) + ' YEC';
             document.getElementById('node-reward-founders').textContent = rewardFounders.toFixed(8) + ' YEC';
@@ -648,14 +697,13 @@
             document.getElementById('node-protocol').textContent = d.protocolversion || '---';
             document.getElementById('node-bestblock').textContent = formatHash(d.bestblock);
 
-            // Actualizar stats bar
-            const price = document.getElementById('market-price').textContent.replace('$', '');
-            updateStatsBar(d, price);
+            cachedNodeData = d;
+            updateStatsBar();
         }
 
         async function fetchNodeData() {
             try {
-                const r = await fetch(NODE_JSON_URL);
+                const r = await fetch(NODE_JSON_URL + '?t=' + Date.now());
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const data = await r.json();
                 displayNodeData(data);
@@ -665,12 +713,12 @@
             }
         }
 
-        // ─── MARKET DATA ───────────────────────────────────────────────
         async function fetchMarketData() {
             try {
-                const d = await (await fetch(COINGECKO_API)).json();
+                const d = await (await fetch(COINGECKO_API + '?t=' + Date.now())).json();
                 const m = d.market_data;
                 const p = m.current_price.usd;
+                cachedPrice = p;
 
                 document.getElementById('market-price').textContent = '$' + p.toFixed(4);
 
@@ -687,10 +735,10 @@
                 document.getElementById('market-volume').textContent = '$' + (m.total_volume.usd / 1e6).toFixed(2) + 'M';
                 document.getElementById('market-updated').textContent = new Date().toLocaleTimeString();
 
-                // Actualizar stats bar con precio
-                updateStatsBar(null, p);
+                updateStatsBar();
 
             } catch (e) {
+                console.error('Market error:', e);
                 document.getElementById('market-price').textContent = '---';
                 document.getElementById('market-24h').textContent = '---';
                 document.getElementById('market-7d').textContent = '---';
@@ -702,7 +750,7 @@
 
         // ─── INIT ────────────────────────────────────────────────────────
         async function init() {
-            const [nodeData] = await Promise.all([
+            await Promise.all([
                 fetchNodeData(),
                 fetchMarketData()
             ]);
