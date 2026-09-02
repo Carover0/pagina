@@ -575,31 +575,6 @@
 
         let cachedNodeData = null;
         let cachedPrice = null;
-        let cachedUptimeSeconds = 0;
-        let uptimeInterval = null;
-
-        // ─── HELPERS ────────────────────────────────────────────────────
-        function formatUptimeDetailed(seconds) {
-            if (!seconds || seconds < 0) return '---';
-
-            const years = Math.floor(seconds / 31536000);
-            seconds %= 31536000;
-            const days = Math.floor(seconds / 86400);
-            seconds %= 86400;
-            const hours = Math.floor(seconds / 3600);
-            seconds %= 3600;
-            const minutes = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-
-            let parts = [];
-            if (years > 0) parts.push(years + 'a');
-            if (days > 0) parts.push(days + 'd');
-            if (hours > 0) parts.push(hours + 'h');
-            if (minutes > 0) parts.push(minutes + 'm');
-            if (secs > 0 && parts.length === 0) parts.push(secs + 's');
-
-            return parts.join(' ') || 'menos de 1m';
-        }
 
         function formatHash(h) {
             if (!h) return '---';
@@ -624,28 +599,6 @@
             document.getElementById('stat-price').textContent = price ? '$' + Number(price).toFixed(4) : '—';
         }
 
-        function updateUptimeDisplay() {
-            if (cachedUptimeSeconds > 0) {
-                document.getElementById('node-uptime').textContent = formatUptimeDetailed(cachedUptimeSeconds);
-            }
-        }
-
-        function startUptimeCounter(initialSeconds) {
-            if (uptimeInterval) {
-                clearInterval(uptimeInterval);
-            }
-            cachedUptimeSeconds = initialSeconds || 0;
-            updateUptimeDisplay();
-
-            // Incrementar cada segundo
-            uptimeInterval = setInterval(() => {
-                if (cachedUptimeSeconds > 0) {
-                    cachedUptimeSeconds++;
-                    updateUptimeDisplay();
-                }
-            }, 1000);
-        }
-
         function displayNodeData(d) {
             if (!d) return;
 
@@ -660,30 +613,7 @@
             document.getElementById('node-connections').textContent = d.peers ?? d.connections ?? 0;
             document.getElementById('node-mempool').textContent = (d.mempool ?? 0) + ' TX';
 
-            const now = Math.floor(Date.now() / 1000);
-            let uptimeSeconds = 0;
-
-            if (d.generated_at && d.generated_at > 0) {
-                uptimeSeconds = now - d.generated_at;
-                if (uptimeSeconds < 0 || uptimeSeconds > 31536000) {
-                    if (d.node_uptime_seconds && d.node_uptime_seconds > 0 && d.node_uptime_seconds < 86400 * 30) {
-                        uptimeSeconds = d.node_uptime_seconds;
-                    } else {
-                        uptimeSeconds = 0;
-                    }
-                }
-            } else if (d.node_uptime_seconds && d.node_uptime_seconds > 0) {
-                if (d.node_uptime_seconds < 86400 * 30) {
-                    uptimeSeconds = d.node_uptime_seconds;
-                }
-            }
-
-            // Guardar y iniciar contador
-            if (uptimeSeconds > 0) {
-                startUptimeCounter(uptimeSeconds);
-            } else {
-                document.getElementById('node-uptime').textContent = '---';
-            }
+            document.getElementById('node-uptime').textContent = d.uptime_pretty || '---';
 
             document.getElementById('node-difficulty').textContent = Number(d.difficulty || 0).toFixed(2);
 
