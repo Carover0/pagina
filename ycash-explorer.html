@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ycash · Explorador</title>
+    <title>Ycash · Explorador Moderno</title>
     <style>
         * {
             margin: 0;
@@ -512,7 +512,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ── BREADCRUMB ── */
         .breadcrumb {
             display: flex;
             flex-wrap: wrap;
@@ -748,7 +747,6 @@
             <div class="badge">● LIVE</div>
         </div>
 
-        <!-- BREADCRUMB -->
         <div class="breadcrumb" id="breadcrumb"></div>
 
         <div class="search-section">
@@ -780,12 +778,10 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const API_URL = "https://carover0.xyz/api/ycash/ycash.php";
         const TOKEN = "ycash2026";
         const STATUS_URL = "https://carover0.xyz/cacaX/ycash_status.json";
 
-        // ─── HISTORIAL ──────────────────────────────────────────────────
         let historyStack = [];
         let currentIndex = -1;
 
@@ -868,7 +864,6 @@
             }
         }
 
-        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -937,22 +932,29 @@
             window.history.replaceState({}, '', newUrl);
         }
 
+        // ─── DETECTAR COMMANDO ────────────────────────────────
         function detectCommand(input) {
             input = input.trim();
             if (!input) return input;
+
             if (/^\d{1,7}$/.test(input)) return `getblock ${input}`;
+
             if (/^0{4,}[a-fA-F0-9]{60}$/.test(input)) return `getblock ${input}`;
+
             if (/^[a-fA-F0-9]{64}$/.test(input) && !/^0{4,}/.test(input)) return `getrawtransaction ${input} 1`;
+
             if (/^(s1|s3|t1)[a-zA-Z0-9]{33}$/.test(input)) return `validateaddress ${input}`;
+
             if (/^(ys1|yu1)[a-zA-Z0-9]{75,}$/.test(input)) return `z_validateaddress ${input}`;
+
             if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
                 input.startsWith('validateaddress') || input.startsWith('z_validateaddress') ||
                 input.startsWith('z_getbalance') || input.startsWith('getblockchaininfo') ||
                 input.startsWith('getaddressbalance')) return input;
+
             return input;
         }
 
-        // ─── STATS ──────────────────────────────────────────────────────
         async function loadNetworkStats() {
             try {
                 const r = await fetch(STATUS_URL);
@@ -963,7 +965,6 @@
             } catch (e) {}
         }
 
-        // ─── VIN HELPER ─────────────────────────────────────────────────
         async function getVinValue(txid, voutIndex) {
             try {
                 const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`)
@@ -973,7 +974,6 @@
             } catch (e) { return null; }
         }
 
-        // ─── RENDER ─────────────────────────────────────────────────────
         function renderOutput(html) {
             document.getElementById('output').innerHTML = html;
         }
@@ -997,7 +997,7 @@
           `);
         }
 
-        // ─── EXECUTE SEARCH ─────────────────────────────────────────────
+        // ─── BUSCAR ─────────────────────────────────────────────
         async function executeSearch(q) {
             const raw = q.trim();
             if (!raw) { renderPlaceholder(); return; }
@@ -1006,7 +1006,6 @@
 
             const cmd = detectCommand(raw);
 
-            // Actualizar URL con el valor limpio
             const cleanValue = cmd.replace('getblock ', '').replace('getrawtransaction ', '').replace(' 1', '')
                 .replace('validateaddress ', '').replace('z_validateaddress ', '')
                 .replace('z_getbalance ', '').replace('getaddressbalance ', '');
@@ -1074,7 +1073,7 @@
                     return;
                 }
 
-                // ── TRANSACCIÓN ──
+                // ── TRANSACCION ──
                 if (cmd.includes('getrawtransaction') && result.txid) {
                     const t = result;
 
@@ -1165,7 +1164,6 @@
                                 `<div class="row"><span class="key">◀ SALIDAS</span><span class="val orange">${t.vout.length}</span></div>`;
 
                             let totalOut = 0;
-                            let pagos = [];
                             for (const [i, vout] of t.vout.entries()) {
                                 const valor = vout.value || 0;
                                 totalOut += valor;
@@ -1181,7 +1179,6 @@
                                     addr = '🛡 OUTPUT BLINDADO (Sapling)';
                                 }
 
-                                pagos.push({ value: valor, addr });
                                 const addrDisplay = addr === '🛡 OUTPUT BLINDADO (Sapling)' ?
                                     `<span style="color:#8a8275;">🔒 blindado</span>` :
                                     makeLink(addr);
@@ -1263,7 +1260,7 @@
                     return;
                 }
 
-                // ── VALIDAR DIRECCIÓN ──
+                // ── VALIDAR DIRECCION ──
                 if ((cmd.includes('validateaddress') || cmd.includes('z_validateaddress')) && result) {
                     const v = result;
                     const direccion = v.address || cmd.split(' ')[1] || 'desconocida';
@@ -1292,7 +1289,6 @@
                     return;
                 }
 
-                // ── FALLBACK ──
                 let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
                 res +=
                     `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
@@ -1310,7 +1306,6 @@
             document.getElementById('searchInput').value = '';
         }
 
-        // ─── COPY RESULT ────────────────────────────────────────────────
         window.copyResult = function() {
             const outputPre = document.querySelector('#output pre:last-of-type');
             if (outputPre) {
@@ -1330,13 +1325,11 @@
             }
         };
 
-        // ─── EXPONER FUNCIONES GLOBALES ────────────────────────────────
         window.navigateTo = navigateTo;
         window.executeSearch = executeSearch;
         window.goBack = goBack;
         window.goToHistory = goToHistory;
 
-        // ─── EVENTOS ─────────────────────────────────────────────────────
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F8') { e.preventDefault();
                 window.copyResult(); }
@@ -1387,7 +1380,6 @@
             }, 10);
         });
 
-        // ─── RESTORE URL ─────────────────────────────────────────────────
         (function() {
             const searchParam = detectSearchFromUrl();
             if (searchParam) {
