@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zcash · Explorador</title>
+    <title>Zcash · Explorador Moderno</title>
     <style>
         * {
             margin: 0;
@@ -545,6 +545,105 @@
             color: #3d3830;
         }
 
+        /* ─── SHIELDED DETAILS ─── */
+        .shielded-detail {
+            padding-left: 20px;
+            font-size: 12px;
+            color: #8a8275;
+            word-break: break-all;
+            border-left: 1px solid rgba(221, 157, 52, 0.06);
+            margin: 4px 0 8px 8px;
+        }
+
+        .shielded-detail .sub-key {
+            color: #6a6255;
+            min-width: 110px;
+            display: inline-block;
+            font-size: 11px;
+            letter-spacing: 0.3px;
+        }
+
+        .shielded-detail .sub-key.gold {
+            color: #dd9d34;
+        }
+
+        .shielded-detail .sub-val {
+            color: #e0d8cc;
+            font-size: 12px;
+        }
+
+        .shielded-detail .sub-val.gold {
+            color: #dd9d34;
+        }
+
+        .shielded-detail .sub-val.small {
+            font-size: 11px;
+            color: #5a5348;
+        }
+
+        .shielded-detail .action-header {
+            color: #dd9d34;
+            font-size: 12px;
+            padding: 6px 0 2px 0;
+            letter-spacing: 0.3px;
+        }
+
+        .shielded-detail .action-header .badge {
+            background: rgba(221, 157, 52, 0.06);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: #dd9d34;
+            border: 1px solid rgba(221, 157, 52, 0.06);
+        }
+
+        .shielded-field {
+            padding: 1px 0 1px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 2px 8px;
+        }
+
+        .shielded-field .field-key {
+            color: #5a5348;
+            min-width: 100px;
+            font-size: 11px;
+            letter-spacing: 0.2px;
+        }
+
+        .shielded-field .field-key.gold {
+            color: #dd9d34;
+        }
+
+        .shielded-field .field-val {
+            color: #e0d8cc;
+            word-break: break-all;
+            font-size: 12px;
+        }
+
+        .shielded-field .field-val.gold {
+            color: #dd9d34;
+        }
+
+        .shielded-field .field-val.small {
+            font-size: 11px;
+            color: #5a5348;
+        }
+
+        .shielded-group {
+            margin: 8px 0 4px 0;
+        }
+
+        .shielded-group .group-title {
+            color: #dd9d34;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            padding: 4px 0 2px 0;
+            border-bottom: 1px solid rgba(221, 157, 52, 0.04);
+            margin-bottom: 4px;
+        }
+
         @media (max-width: 1024px) {
             .app {
                 padding: 16px 20px;
@@ -554,6 +653,15 @@
                 gap: 4px 20px;
                 padding: 10px 18px;
                 font-size: 12px;
+            }
+            .shielded-detail {
+                padding-left: 12px;
+            }
+            .shielded-detail .sub-key {
+                min-width: 80px;
+            }
+            .shielded-field .field-key {
+                min-width: 70px;
             }
         }
 
@@ -627,6 +735,20 @@
             .breadcrumb {
                 font-size: 10px;
             }
+            .shielded-detail {
+                padding-left: 8px;
+            }
+            .shielded-detail .sub-key {
+                min-width: 60px;
+                font-size: 10px;
+            }
+            .shielded-field .field-key {
+                min-width: 60px;
+                font-size: 10px;
+            }
+            .shielded-field .field-val {
+                font-size: 11px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -690,6 +812,20 @@
                 padding: 2px 8px;
                 border-radius: 12px;
                 font-size: 9px;
+            }
+            .shielded-detail {
+                padding-left: 4px;
+            }
+            .shielded-detail .sub-key {
+                min-width: 50px;
+                font-size: 9px;
+            }
+            .shielded-field .field-key {
+                min-width: 50px;
+                font-size: 9px;
+            }
+            .shielded-field .field-val {
+                font-size: 10px;
             }
         }
 
@@ -765,10 +901,12 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const API_URL = "https://carover0.xyz/api/zec/rpc.php";
         const TOKEN = "zec2026";
         const STATUS_URL = "https://carover0.xyz/zec/status.json";
 
+        // ─── HISTORIAL ──────────────────────────────────────────────────
         let historyStack = [];
         let currentIndex = -1;
 
@@ -855,6 +993,7 @@
             }
         }
 
+        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -948,6 +1087,7 @@
             return input;
         }
 
+        // ─── STATS ──────────────────────────────────────────────────────
         async function loadNetworkStats() {
             try {
                 const r = await fetch(STATUS_URL);
@@ -958,6 +1098,7 @@
             } catch (e) {}
         }
 
+        // ─── VIN HELPER ─────────────────────────────────────────────────
         async function getVinValue(txid, voutIndex) {
             try {
                 const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`).then(r => r.json());
@@ -966,6 +1107,7 @@
             } catch (e) { return null; }
         }
 
+        // ─── RENDER ─────────────────────────────────────────────────────
         function renderOutput(html) {
             document.getElementById('output').innerHTML = html;
         }
@@ -992,12 +1134,10 @@
         function getLabelForQuery(q) {
             const s = q.trim();
 
-            // Bloque por número
             if (/^\d+$/.test(s)) {
                 return 'Bloque ' + s;
             }
 
-            // Bloques por hash
             if (s.startsWith('getblock ')) {
                 const value = s.replace('getblock ', '');
                 if (/^\d+$/.test(value)) {
@@ -1006,7 +1146,6 @@
                 return 'Bloque ' + formatHashLabel(value);
             }
 
-            // Transacciones
             if (s.startsWith('getrawtransaction ')) {
                 const txid = s.replace('getrawtransaction ', '').replace(' 1', '');
                 return 'TX ' + formatHashLabel(txid);
@@ -1016,7 +1155,6 @@
                 return 'TX ' + formatHashLabel(s);
             }
 
-            // Direcciones
             if (s.startsWith('getaddressbalance ') || s.startsWith('validateaddress ') ||
                 s.startsWith('z_validateaddress ') || s.startsWith('z_getbalance ')) {
                 const addr = s.split(' ')[1] || '';
@@ -1032,12 +1170,10 @@
                 return 'Dirección ' + formatAddressLabel(addr);
             }
 
-            // UA directa
             if (s.startsWith('UA:')) {
                 return 'UA ' + formatAddressLabel(s.substring(3));
             }
 
-            // Direccin directa
             if (s.startsWith('t1') || s.startsWith('t3') || s.startsWith('zs') || s.startsWith('u1')) {
                 if (s.startsWith('zs')) return 'Z-Address ' + formatAddressLabel(s);
                 if (s.startsWith('u1')) return 'UA ' + formatAddressLabel(s);
@@ -1057,14 +1193,218 @@
             return addr.substring(0, 10) + '…' + addr.substring(addr.length - 10);
         }
 
-        // ─── EXECUTE SEARCH ─────────────────────────────────────────────
+        // ─── DETECTAR TRANSACCIÓN BLINDADA ─────────────────────────────
+        function isShieldedTx(tx) {
+            if (!tx) return false;
+            if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return true;
+            if (tx.orchard?.actions?.length > 0) return true;
+            if (tx.ironwood?.actions?.length > 0) return true;
+            if (tx.vjoinsplit?.length > 0) return true;
+            if (tx.version >= 5 && (!tx.vin || tx.vin.length === 0) && (!tx.vout || tx.vout.length === 0)) return true;
+            if (tx.bindingSig) return true;
+            return false;
+        }
+
+        // ─── RENDER SHIELDED DETAILS ────────────────────────────────────
+        function renderShieldedDetails(t) {
+            let html = '';
+
+            // ── SPROUT ──
+            if (t.vjoinsplit && t.vjoinsplit.length > 0) {
+                html += `<div class="divider"></div>`;
+                html += `<div class="row"><span class="key">🛡 SPROUT</span><span class="val gold">${t.vjoinsplit.length} joinsplits</span></div>`;
+                for (let i = 0; i < t.vjoinsplit.length; i++) {
+                    const js = t.vjoinsplit[i];
+                    html += `<div class="shielded-detail">`;
+                    html += `<div class="action-header"><span class="badge">joinsplit #${i}</span></div>`;
+                    if (js.vpub_old) html +=
+                        `<div class="shielded-field"><span class="field-key gold">vpub_old</span><span class="field-val gold">${(js.vpub_old / 1e8).toFixed(8)} ZEC</span></div>`;
+                    if (js.vpub_new) html +=
+                        `<div class="shielded-field"><span class="field-key gold">vpub_new</span><span class="field-val gold">${(js.vpub_new / 1e8).toFixed(8)} ZEC</span></div>`;
+                    if (js.anchor) html +=
+                        `<div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(js.anchor)}</span></div>`;
+                    if (js.nullifiers && js.nullifiers.length > 0) {
+                        for (let n = 0; n < js.nullifiers.length; n++) {
+                            html +=
+                                `<div class="shielded-field"><span class="field-key">nullifier #${n}</span><span class="field-val">${escapeHtml(js.nullifiers[n])}</span></div>`;
+                        }
+                    }
+                    if (js.commitments && js.commitments.length > 0) {
+                        for (let c = 0; c < js.commitments.length; c++) {
+                            html +=
+                                `<div class="shielded-field"><span class="field-key">commitment #${c}</span><span class="field-val">${escapeHtml(js.commitments[c])}</span></div>`;
+                        }
+                    }
+                    if (js.macs && js.macs.length > 0) {
+                        for (let m = 0; m < js.macs.length; m++) {
+                            html +=
+                                `<div class="shielded-field"><span class="field-key">mac #${m}</span><span class="field-val">${escapeHtml(js.macs[m])}</span></div>`;
+                        }
+                    }
+                    if (js.proof) html +=
+                        `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val small">${escapeHtml(js.proof.substring(0, 60))}…</span></div>`;
+                    html += `</div>`;
+                }
+            }
+
+            // ── SAPLING ──
+            let hasSapling = false;
+            if (t.vShieldedSpend && t.vShieldedSpend.length > 0) {
+                if (!hasSapling) {
+                    html += `<div class="divider"></div>`;
+                    hasSapling = true;
+                }
+                html +=
+                    `<div class="row"><span class="key">🛡 SAPLING</span><span class="val gold">spends ${t.vShieldedSpend.length}</span></div>`;
+                for (let i = 0; i < t.vShieldedSpend.length; i++) {
+                    const spend = t.vShieldedSpend[i];
+                    html += `<div class="shielded-detail">`;
+                    html += `<div class="action-header"><span class="badge">spend #${i}</span></div>`;
+                    if (spend.nullifier) html +=
+                        `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val">${escapeHtml(spend.nullifier)}</span></div>`;
+                    if (spend.anchor) html +=
+                        `<div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(spend.anchor)}</span></div>`;
+                    if (spend.proof) html +=
+                        `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val small">${escapeHtml(spend.proof.substring(0, 60))}…</span></div>`;
+                    html += `</div>`;
+                }
+            }
+
+            if (t.vShieldedOutput && t.vShieldedOutput.length > 0) {
+                if (!hasSapling) {
+                    html += `<div class="divider"></div>`;
+                    hasSapling = true;
+                }
+                if (!t.vShieldedSpend || t.vShieldedSpend.length === 0) {
+                    html += `<div class="row"><span class="key">🛡 SAPLING</span><span class="val gold">outputs ${t.vShieldedOutput.length}</span></div>`;
+                } else {
+                    html +=
+                        `<div class="row"><span class="key" style="padding-left:14px;"></span><span class="val gold">outputs ${t.vShieldedOutput.length}</span></div>`;
+                }
+                for (let i = 0; i < t.vShieldedOutput.length; i++) {
+                    const out = t.vShieldedOutput[i];
+                    html += `<div class="shielded-detail">`;
+                    html += `<div class="action-header"><span class="badge">output #${i}</span></div>`;
+                    if (out.cmu) html +=
+                        `<div class="shielded-field"><span class="field-key">cmu</span><span class="field-val">${escapeHtml(out.cmu)}</span></div>`;
+                    if (out.ephemeralKey) html +=
+                        `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val">${escapeHtml(out.ephemeralKey)}</span></div>`;
+                    if (out.encCiphertext) html +=
+                        `<div class="shielded-field"><span class="field-key">encCiphertext</span><span class="field-val small">${escapeHtml(out.encCiphertext.substring(0, 60))}…</span></div>`;
+                    if (out.outCiphertext) html +=
+                        `<div class="shielded-field"><span class="field-key">outCiphertext</span><span class="field-val small">${escapeHtml(out.outCiphertext.substring(0, 60))}…</span></div>`;
+                    if (out.proof) html +=
+                        `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val small">${escapeHtml(out.proof.substring(0, 60))}…</span></div>`;
+                    html += `</div>`;
+                }
+            }
+
+            // ── ORCHARD ──
+            if (t.orchard && t.orchard.actions && t.orchard.actions.length > 0) {
+                html += `<div class="divider"></div>`;
+                html +=
+                    `<div class="row"><span class="key">🛡 ORCHARD</span><span class="val gold">${t.orchard.actions.length} acciones</span></div>`;
+
+                for (let i = 0; i < t.orchard.actions.length; i++) {
+                    const action = t.orchard.actions[i];
+                    html += `<div class="shielded-detail">`;
+                    html += `<div class="action-header"><span class="badge">acción #${i}</span></div>`;
+                    if (action.nullifier) html +=
+                        `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val">${escapeHtml(action.nullifier)}</span></div>`;
+                    if (action.commitment) html +=
+                        `<div class="shielded-field"><span class="field-key">commitment</span><span class="field-val">${escapeHtml(action.commitment)}</span></div>`;
+                    if (action.ephemeralKey) html +=
+                        `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val">${escapeHtml(action.ephemeralKey)}</span></div>`;
+                    if (action.ciphertext) html +=
+                        `<div class="shielded-field"><span class="field-key">ciphertext</span><span class="field-val small">${escapeHtml(action.ciphertext)}</span></div>`;
+                    html += `</div>`;
+                }
+
+                if (t.orchard.valueBalance !== undefined && t.orchard.valueBalance !== null) {
+                    const vb = t.orchard.valueBalance / 1e8;
+                    const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+                    html +=
+                        `<div class="shielded-detail" style="border-left-color: rgba(221,157,52,0.2);"><div class="shielded-field"><span class="field-key gold">balance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+                }
+                if (t.orchard.anchor) html +=
+                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(t.orchard.anchor)}</span></div></div>`;
+                if (t.orchard.bindingSig) html +=
+                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.orchard.bindingSig)}</span></div></div>`;
+            }
+
+            // ── IRONWOOD ──
+            if (t.ironwood && t.ironwood.actions && t.ironwood.actions.length > 0) {
+                html += `<div class="divider"></div>`;
+                html +=
+                    `<div class="row"><span class="key">🛡 IRONWOOD</span><span class="val gold">${t.ironwood.actions.length} acciones</span></div>`;
+
+                for (let i = 0; i < t.ironwood.actions.length; i++) {
+                    const action = t.ironwood.actions[i];
+                    html += `<div class="shielded-detail">`;
+                    html += `<div class="action-header"><span class="badge">acción #${i}</span></div>`;
+                    if (action.cv) html +=
+                        `<div class="shielded-field"><span class="field-key">cv</span><span class="field-val">${escapeHtml(action.cv)}</span></div>`;
+                    if (action.nullifier) html +=
+                        `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val">${escapeHtml(action.nullifier)}</span></div>`;
+                    if (action.rk) html +=
+                        `<div class="shielded-field"><span class="field-key">rk</span><span class="field-val">${escapeHtml(action.rk)}</span></div>`;
+                    if (action.cmx) html +=
+                        `<div class="shielded-field"><span class="field-key">cmx</span><span class="field-val">${escapeHtml(action.cmx)}</span></div>`;
+                    if (action.ephemeralKey) html +=
+                        `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val">${escapeHtml(action.ephemeralKey)}</span></div>`;
+                    if (action.encCiphertext) html +=
+                        `<div class="shielded-field"><span class="field-key">encCiphertext</span><span class="field-val small">${escapeHtml(action.encCiphertext)}</span></div>`;
+                    if (action.spendAuthSig) html +=
+                        `<div class="shielded-field"><span class="field-key">spendAuthSig</span><span class="field-val small">${escapeHtml(action.spendAuthSig)}</span></div>`;
+                    if (action.outCiphertext) html +=
+                        `<div class="shielded-field"><span class="field-key">outCiphertext</span><span class="field-val small">${escapeHtml(action.outCiphertext)}</span></div>`;
+                    html += `</div>`;
+                }
+
+                if (t.ironwood.valueBalance !== undefined && t.ironwood.valueBalance !== null && t.ironwood.valueBalance !== 0) {
+                    const vb = t.ironwood.valueBalance;
+                    const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+                    html +=
+                        `<div class="shielded-detail" style="border-left-color: rgba(221,157,52,0.2);"><div class="shielded-field"><span class="field-key gold">balance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+                }
+                if (t.ironwood.anchor) html +=
+                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(t.ironwood.anchor)}</span></div></div>`;
+                if (t.ironwood.proof) html +=
+                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">proof</span><span class="field-val small">${escapeHtml(t.ironwood.proof.substring(0, 60))}…</span></div></div>`;
+                if (t.ironwood.bindingSig) html +=
+                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.ironwood.bindingSig)}</span></div></div>`;
+                if (t.ironwood.flags) {
+                    html +=
+                        `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">flags</span><span class="field-val">enableOutputs: ${t.ironwood.flags.enableOutputs}, enableSpends: ${t.ironwood.flags.enableSpends}</span></div></div>`;
+                }
+            }
+
+            // ── v5 SHIELDED ──
+            if (t.version >= 5 && (!t.vin || t.vin.length === 0) && (!t.vout || t.vout.length === 0) &&
+                !t.vShieldedSpend && !t.vShieldedOutput && !t.orchard && !t.ironwood && !t.vjoinsplit) {
+                html += `<div class="divider"></div>`;
+                html += `<div class="row"><span class="key">🛡 v5 SHIELDED</span><span class="val">transacción completamente blindada</span></div>`;
+                if (t.valueBalance !== undefined && t.valueBalance !== null && t.valueBalance !== 0) {
+                    const vb = t.valueBalance / 1e8;
+                    const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+                    html +=
+                        `<div class="shielded-detail"><div class="shielded-field"><span class="field-key gold">valueBalance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+                }
+                if (t.bindingSig) html +=
+                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.bindingSig)}</span></div></div>`;
+                if (t.anchor) html +=
+                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(t.anchor)}</span></div></div>`;
+            }
+
+            return html;
+        }
+
         async function executeSearch(q) {
             const raw = q.trim();
             if (!raw) { renderPlaceholder(); return; }
 
             renderLoading();
 
-            // UA 
             if (raw.startsWith('UA:')) {
                 const ua = raw.substring(3);
                 let res = `<div class="cmd-line"><span class="tag">UA</span> <span style="color:#6a6255;font-size:13px;word-break:break-all;">${escapeHtml(ua)}</span></div>`;
@@ -1146,26 +1486,18 @@
                     res +=
                         `<div class="row"><span class="key">transacciones</span><span class="val gold">${b.tx?.length ?? 0}</span></div>`;
 
-                    if (b.tx && b.tx.length > 0 && typeof b.tx[0] === 'object') {
+                    if (b.tx && b.tx.length > 0) {
                         const txs = b.tx.slice(0, 50);
                         for (const tx of txs) {
-                            const isShielded = tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0 || tx
-                                .orchard?.actions?.length > 0;
-                            res += `<div class="tx-item">
-                        <span class="txid-link" onclick="navigateTo('${encodeURIComponent(tx.txid)}')">${escapeHtml(tx.txid)}</span>
-                        <div class="tx-meta">
-                          <span>${isShielded ? '🛡 shielded' : '▸ transparente'}</span>
-                          ${tx.vout ? `<span>${tx.vout.length} salidas</span>` : ''}
-                          ${tx.vin ? `<span>${tx.vin.length} entradas</span>` : ''}
-                        </div>
-                      </div>`;
-                        }
-                        if (b.tx.length > 50) res +=
-                            `<div style="color:#3d3830;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
-                    } else if (b.tx && b.tx.length > 0) {
-                        for (const txid of b.tx.slice(0, 50)) {
+                            const txid = typeof tx === 'object' ? tx.txid : tx;
+                            const isShielded = typeof tx === 'object' && isShieldedTx(tx);
                             res += `<div class="tx-item">
                         <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
+                        <div class="tx-meta">
+                          <span>${isShielded ? '🛡 shielded' : '▸ transparente'}</span>
+                          ${typeof tx === 'object' && tx.vout ? `<span>${tx.vout.length} salidas</span>` : ''}
+                          ${typeof tx === 'object' && tx.vin ? `<span>${tx.vin.length} entradas</span>` : ''}
+                        </div>
                       </div>`;
                         }
                         if (b.tx.length > 50) res +=
@@ -1177,16 +1509,30 @@
                     return;
                 }
 
-                // TRANSACCION ──
-                if (cmd.includes('getrawtransaction') && result.txid) {
+                // ── TRANSACCIÓN ──
+                if (cmd.includes('getrawtransaction') && result) {
                     const t = result;
-                    const esBlindada = t.orchard?.actions?.length > 0 || t.vShieldedSpend?.length > 0 || t
-                        .vShieldedOutput?.length > 0 || t.vjoinsplit?.length > 0 || t.bindingSig || (t.version >= 5 && t
-                            .vin?.length === 0 && t.vout?.length === 0);
+                    const txid = t.txid || t.hash;
+                    const esBlindada = isShieldedTx(t);
+
+                    let tipoLabel = 'TRANSACCIÓN';
+                    let tipoIcon = '█';
+                    if (esBlindada) {
+                        tipoIcon = '🛡';
+                        if (t.ironwood?.actions?.length > 0) tipoLabel = 'IRONWOOD SHIELDED';
+                        else if (t.orchard?.actions?.length > 0) tipoLabel = 'ORCHARD SHIELDED';
+                        else if (t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0) tipoLabel = 'SAPLING SHIELDED';
+                        else if (t.vjoinsplit?.length > 0) tipoLabel = 'SPROUT SHIELDED';
+                        else if (t.version >= 5) tipoLabel = 'v5 SHIELDED';
+                        else tipoLabel = 'BLINDADA';
+                    }
 
                     let res =
-                        `<div class="cmd-line"><span class="tag">${esBlindada ? '🛡' : '█'} TRANSACCIÓN</span></div>`;
-                    res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(t.txid)}</span></div>`;
+                        `<div class="cmd-line"><span class="tag">${tipoIcon} ${tipoLabel}</span></div>`;
+
+                    if (txid) {
+                        res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(txid)}</span></div>`;
+                    }
                     res +=
                         `<div class="row"><span class="key">bloque</span><span class="val">${t.blockheight || t.height ? makeLink(String(t.blockheight || t.height)) : 'no confirmada'}</span></div>`;
                     res +=
@@ -1196,15 +1542,16 @@
                     res +=
                         `<div class="row"><span class="key">versión</span><span class="val">${t.version || 'N/A'} · locktime: ${t.locktime || 0}</span></div>`;
                     if (t.size) res += `<div class="row"><span class="key">tamaño</span><span class="val">${t.size} bytes</span></div>`;
-                    if (t.expiryheight) res +=
+                    if (t.expiryheight !== undefined && t.expiryheight !== null) res +=
                         `<div class="row"><span class="key">expira</span><span class="val">bloque ${t.expiryheight}</span></div>`;
+                    if (t.authdigest) res +=
+                        `<div class="row"><span class="key">authdigest</span><span class="val" style="font-size:11px;color:#6a6255;">${escapeHtml(t.authdigest)}</span></div>`;
 
-                    res += `<div class="divider"></div>`;
-
+                    // ── PARTE TRANSPARENTE ──
                     let totalIn = 0;
 
-                    // ── ENTRADAS ──
                     if (t.vin && t.vin.length > 0) {
+                        res += `<div class="divider"></div>`;
                         res +=
                             `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val gold">${t.vin.length}</span></div>`;
 
@@ -1228,9 +1575,9 @@
                         }
                     }
 
-                    // ── SALIDAS ──
                     if (t.vout && t.vout.length > 0) {
-                        res += `<div class="divider"></div>`;
+                        if (t.vin && t.vin.length > 0) res += `<div class="divider"></div>`;
+                        else res += `<div class="divider"></div>`;
                         res +=
                             `<div class="row"><span class="key">◀ SALIDAS</span><span class="val gold">${t.vout.length}</span></div>`;
                         let totalOut = 0;
@@ -1270,67 +1617,71 @@
                                 `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val gold">${totalOut.toFixed(8)} ZEC</span></div>`;
                         }
 
-                        // ── FEE ──
-                        if (totalIn > 0) {
-                            let fee = 0;
-                            if (esBlindada) {
-                                if (t.valueBalance !== undefined) fee = Math.abs(t.valueBalance) / 100000000;
-                                else if (t.orchard?.valueBalance) fee = Math.abs(t.orchard.valueBalance) / 100000000;
-                                else fee = (t.size || 0) * 0.00001;
-                            } else {
-                                if (totalOut > 0) fee = totalIn - totalOut;
-                            }
+                        if (totalIn > 0 && totalOut > 0) {
+                            let fee = totalIn - totalOut;
                             if (fee > 0) {
                                 res += `<div class="divider"></div>`;
                                 res +=
                                     `<div class="row"><span class="key">FEE</span><span class="val" style="color:#ff756f;">${fee.toFixed(8)} ZEC</span></div>`;
                             }
                         }
+                    }
 
-                        // ── RESUMEN ──
+                    // ── PARTE BLINDADA ──
+                    if (esBlindada) {
+                        const shieldedHtml = renderShieldedDetails(t);
+                        if (shieldedHtml) {
+                            res += shieldedHtml;
+                        }
+                    }
+
+                    // ── RESUMEN ──
+                    if (t.vin || t.vout || esBlindada) {
                         res += `<div class="divider"></div>`;
                         res += `<div class="row"><span class="key">RESUMEN</span></div>`;
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">UTXOs</span><span class="val">${t.vin?.length || 0} gastados · ${t.vout.length} creados</span></div>`;
-
-                        if (pagos.length >= 2) {
+                        if (t.vin && t.vin.length > 0) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">UTXOs</span><span class="val">${t.vin.length} gastados · ${t.vout?.length || 0} creados</span></div>`;
+                        }
+                        if (t.vout && t.vout.length >= 2) {
+                            const pagos = t.vout.map((v, i) => ({ index: i, value: v.value || 0 }));
                             const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
                             const pagoPrincipal = pagosOrdenados[0];
                             const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
+                            if (pagoPrincipal.value > 0) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Pago</span><span class="val gold">${pagoPrincipal.value.toFixed(8)} ZEC</span></div>`;
+                            }
+                            if (retornoTotal > 0) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Cambio</span><span class="val gold">${retornoTotal.toFixed(8)} ZEC</span></div>`;
+                            }
+                        } else if (t.vout && t.vout.length === 1) {
                             res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Pago</span><span class="val gold">${pagoPrincipal.value.toFixed(8)} ZEC</span></div>`;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Cambio</span><span class="val gold">${retornoTotal.toFixed(8)} ZEC</span></div>`;
-                        } else if (pagos.length === 1) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Salida</span><span class="val gold">${pagos[0].value.toFixed(8)} ZEC</span></div>`;
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Salida</span><span class="val gold">${(t.vout[0].value || 0).toFixed(8)} ZEC</span></div>`;
                         }
 
-                        // ── SHIELDED ──
                         if (esBlindada) {
-                            const totalShielded = t.valueBalance ? Math.abs(t.valueBalance) / 100000000 : 0;
+                            let totalShielded = 0;
+                            if (t.ironwood?.valueBalance) {
+                                totalShielded += Math.abs(t.ironwood.valueBalance);
+                            }
+                            if (t.orchard?.valueBalance) {
+                                totalShielded += Math.abs(t.orchard.valueBalance) / 1e8;
+                            }
+                            if (t.valueBalance && !t.orchard && !t.ironwood) {
+                                totalShielded += Math.abs(t.valueBalance) / 1e8;
+                            }
+                            if (t.vjoinsplit) {
+                                for (const js of t.vjoinsplit) {
+                                    if (js.vpub_old) totalShielded += js.vpub_old / 1e8;
+                                    if (js.vpub_new) totalShielded += js.vpub_new / 1e8;
+                                }
+                            }
                             if (totalShielded > 0.0001) {
                                 res +=
                                     `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Blindado</span><span class="val gold">${totalShielded.toFixed(8)} ZEC (privado)</span></div>`;
                             }
-                        }
-                    }
-
-                    // ── SHIELDED DETALLES ──
-                    if (t.vjoinsplit?.length > 0) {
-                        res += `<div class="divider"></div>`;
-                        res +=
-                            `<div class="row"><span class="key">🛡 SPROUT</span><span class="val">${t.vjoinsplit.length} joinsplits</span></div>`;
-                    }
-                    if (t.vShieldedSpend?.length || t.vShieldedOutput?.length) {
-                        res += `<div class="row"><span class="key">🛡 SAPLING</span><span class="val">spends ${t.vShieldedSpend?.length || 0} · outputs ${t.vShieldedOutput?.length || 0}</span></div>`;
-                    }
-                    if (t.orchard?.actions?.length > 0) {
-                        res +=
-                            `<div class="row"><span class="key">🛡 ORCHARD</span><span class="val">${t.orchard.actions.length} acciones</span></div>`;
-                        if (t.orchard.valueBalance && t.orchard.valueBalance !== 0) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">balance</span><span class="val gold">${(t.orchard.valueBalance/1e8).toFixed(8)} ZEC</span></div>`;
                         }
                     }
 
@@ -1339,7 +1690,7 @@
                     return;
                 }
 
-                // ── DIRECCION / BALANCE ──
+                // ── DIRECCIÓN / BALANCE ──
                 if ((cmd.includes('getaddressbalance') || cmd.includes('validateaddress') || cmd.includes(
                         'z_validateaddress') || cmd.includes('z_getbalance')) && result) {
                     const esBalance = cmd.includes('getaddressbalance') || cmd.includes('z_getbalance');
@@ -1377,7 +1728,6 @@
                     return;
                 }
 
-                // ── FALLBACK ──
                 let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
                 res +=
                     `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
@@ -1395,7 +1745,6 @@
             document.getElementById('searchInput').value = '';
         }
 
-        // ─── COPY RESULT ────────────────────────────────────────────────
         window.copyResult = function() {
             const outputPre = document.querySelector('#output pre:last-of-type');
             if (outputPre) {
