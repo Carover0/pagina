@@ -383,6 +383,24 @@
             margin-top: 2px;
         }
 
+        #output .tx-item .tx-meta .shielded-badge {
+            color: #dd9d34;
+            background: rgba(221, 157, 52, 0.08);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            border: 1px solid rgba(221, 157, 52, 0.08);
+        }
+
+        #output .tx-item .tx-meta .transparent-badge {
+            color: #5a5348;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
         #output .copy-btn {
             margin-top: 18px;
             background: rgba(221, 157, 52, 0.06);
@@ -545,7 +563,6 @@
             color: #3d3830;
         }
 
-        /* ─── SHIELDED DETAILS ─── */
         .shielded-detail {
             padding-left: 20px;
             font-size: 12px;
@@ -629,19 +646,6 @@
         .shielded-field .field-val.small {
             font-size: 11px;
             color: #5a5348;
-        }
-
-        .shielded-group {
-            margin: 8px 0 4px 0;
-        }
-
-        .shielded-group .group-title {
-            color: #dd9d34;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            padding: 4px 0 2px 0;
-            border-bottom: 1px solid rgba(221, 157, 52, 0.04);
-            margin-bottom: 4px;
         }
 
         @media (max-width: 1024px) {
@@ -1205,6 +1209,32 @@
             return false;
         }
 
+        // ─── OBTENER TIPO DE TRANSACCIÓN ──────────────────────────────
+        function getTxType(tx) {
+            if (!tx) return 'desconocida';
+            if (tx.ironwood?.actions?.length > 0) return 'ironwood';
+            if (tx.orchard?.actions?.length > 0) return 'orchard';
+            if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return 'sapling';
+            if (tx.vjoinsplit?.length > 0) return 'sprout';
+            if (tx.version >= 5 && (!tx.vin || tx.vin.length === 0) && (!tx.vout || tx.vout.length === 0)) return 'v5shielded';
+            if (tx.bindingSig) return 'shielded';
+            return 'transparente';
+        }
+
+        function getTxTypeLabel(tx) {
+            const type = getTxType(tx);
+            const labels = {
+                'ironwood': '🛡 IRONWOOD',
+                'orchard': '🛡 ORCHARD',
+                'sapling': '🛡 SAPLING',
+                'sprout': '🛡 SPROUT',
+                'v5shielded': '🛡 v5 SHIELDED',
+                'shielded': '🛡 BLINDADA',
+                'transparente': '▸ transparente'
+            };
+            return labels[type] || '▸ transparente';
+        }
+
         // ─── RENDER SHIELDED DETAILS ────────────────────────────────────
         function renderShieldedDetails(t) {
             let html = '';
@@ -1399,12 +1429,25 @@
             return html;
         }
 
+        // ─── OBTENER DATOS DE TRANSACCIÓN ─────────────────────────────
+        async function fetchTxData(txid) {
+            try {
+                const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`);
+                const data = await r.json();
+                return data.result || null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // ─── EXECUTE SEARCH ─────────────────────────────────────────────
         async function executeSearch(q) {
             const raw = q.trim();
             if (!raw) { renderPlaceholder(); return; }
 
             renderLoading();
 
+            // --- UA ---
             if (raw.startsWith('UA:')) {
                 const ua = raw.substring(3);
                 let res = `<div class="cmd-line"><span class="tag">UA</span> <span style="color:#6a6255;font-size:13px;word-break:break-all;">${escapeHtml(ua)}</span></div>`;
@@ -1488,15 +1531,32 @@
 
                     if (b.tx && b.tx.length > 0) {
                         const txs = b.tx.slice(0, 50);
-                        for (const tx of txs) {
+                        // Cargar datos de cada transacción en paralelo
+                        const txPromises = txs.map(async (tx) => {
                             const txid = typeof tx === 'object' ? tx.txid : tx;
-                            const isShielded = typeof tx === 'object' && isShieldedTx(tx);
+                            // Si ya es un objeto con datos, usarlo
+                            if (typeof tx === 'object' && (tx.vin || tx.vout || tx.ironwood || tx.orchard)) {
+                                return { txid, data: tx };
+                            }
+                            // Si es solo un string, consultar
+                            const txData = await fetchTxData(txid);
+                            return { txid, data: txData };
+                        });
+
+                        const txResults = await Promise.all(txPromises);
+
+                        for (const { txid, data } of txResults) {
+                            const isShielded = data ? isShieldedTx(data) : false;
+                            const typeLabel = data ? getTxTypeLabel(data) : '▸ transparente';
+                            const badgeClass = isShielded ? 'shielded-badge' : 'transparent-badge';
+
                             res += `<div class="tx-item">
                         <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
                         <div class="tx-meta">
-                          <span>${isShielded ? '🛡 shielded' : '▸ transparente'}</span>
-                          ${typeof tx === 'object' && tx.vout ? `<span>${tx.vout.length} salidas</span>` : ''}
-                          ${typeof tx === 'object' && tx.vin ? `<span>${tx.vin.length} entradas</span>` : ''}
+                          <span class="${badgeClass}">${typeLabel}</span>
+                          ${data && data.vout ? `<span>${data.vout.length} salidas</span>` : ''}
+                          ${data && data.vin ? `<span>${data.vin.length} entradas</span>` : ''}
+                          ${data && data.size ? `<span>${data.size} bytes</span>` : ''}
                         </div>
                       </div>`;
                         }
@@ -1728,6 +1788,7 @@
                     return;
                 }
 
+                // ── FALLBACK ──
                 let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
                 res +=
                     `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
@@ -1745,6 +1806,7 @@
             document.getElementById('searchInput').value = '';
         }
 
+        // ─── COPY RESULT ────────────────────────────────────────────────
         window.copyResult = function() {
             const outputPre = document.querySelector('#output pre:last-of-type');
             if (outputPre) {
