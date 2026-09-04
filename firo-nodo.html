@@ -135,15 +135,51 @@
             font-size: 14px;
         }
 
-        .stats-bar .badge {
+        .stats-bar .value.firo {
+            color: #ff7b87;
+        }
+
+        .btn-blocks {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             background: rgba(155, 28, 46, 0.12);
-            padding: 2px 16px;
+            color: #ff7b87;
+            border: 1px solid rgba(155, 28, 46, 0.2);
+            padding: 4px 16px;
             border-radius: 20px;
             font-size: 10px;
-            color: #ff7b87;
-            border: 1px solid rgba(155, 28, 46, 0.12);
+            font-family: 'Lucida Console', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 0.3px;
             margin-left: auto;
-            letter-spacing: 0.5px;
+        }
+
+        .btn-blocks:hover {
+            background: rgba(155, 28, 46, 0.2);
+            border-color: rgba(155, 28, 46, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(155, 28, 46, 0.2);
+        }
+
+        .btn-blocks .icon {
+            font-size: 12px;
+        }
+
+        .btn-blocks .pulse {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #31db72;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.7); }
         }
 
         .panel {
@@ -366,10 +402,10 @@
                 gap: 4px 16px;
             }
 
-            .stats-bar .badge {
-                margin-left: 0;
+            .btn-blocks {
                 font-size: 9px;
-                padding: 1px 12px;
+                padding: 3px 12px;
+                margin-left: 0;
             }
 
             .panel {
@@ -440,6 +476,22 @@
 
             .stats-bar .value {
                 font-size: 12px;
+            }
+
+            .btn-blocks {
+                font-size: 8px;
+                padding: 2px 10px;
+                gap: 4px;
+                margin-left: 0;
+            }
+
+            .btn-blocks .icon {
+                font-size: 10px;
+            }
+
+            .btn-blocks .pulse {
+                width: 5px;
+                height: 5px;
             }
 
             .panel {
@@ -531,8 +583,11 @@
             <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
             <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
-            <div class="stat"><span class="label">PRECIO</span><span class="value" id="stat-price">—</span></div>
-            <div class="badge">● LIVE</div>
+            <div class="stat"><span class="label">PRECIO</span><span class="value firo" id="stat-price">—</span></div>
+            <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
+                Bloques en tiempo real
+                <span class="pulse"></span>
+            </a>
         </div>
 
         <div class="panel">
@@ -605,15 +660,12 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const NODE_JSON_URL = 'https://carover0.xyz/api/firo.json';
         const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
 
-        // ─── DATOS GLOBALES ─────────────────────────────────────────────
         let cachedNodeData = null;
         let cachedPrice = null;
 
-        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -652,7 +704,6 @@
             el._timer = setTimeout(() => el.classList.remove('show'), 1800);
         }
 
-        // ─── UPDATE STATS BAR ──────────────────────────────────────────
         function updateStatsBar() {
             const data = cachedNodeData;
             const price = cachedPrice;
@@ -664,7 +715,6 @@
             document.getElementById('stat-price').textContent = price ? '$' + price.toFixed(4) : '—';
         }
 
-        // ─── NODE DATA ──────────────────────────────────────────────────
         function displayNodeData(d) {
             if (!d) return;
 
@@ -705,7 +755,6 @@
             }
         }
 
-        // ─── MARKET DATA ───────────────────────────────────────────────
         async function fetchMarketData() {
             try {
                 const d = await (await fetch(COINGECKO_API)).json();
@@ -776,7 +825,6 @@
             }
         }
 
-        // ─── INIT ────────────────────────────────────────────────────────
         async function init() {
             await Promise.all([
                 fetchNodeData(),
