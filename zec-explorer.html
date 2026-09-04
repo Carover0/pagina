@@ -1235,200 +1235,199 @@
             return labels[type] || '▸ transparente';
         }
 
-        // ─── RENDER SHIELDED DETAILS ────────────────────────────────────
-        function renderShieldedDetails(t) {
-            let html = '';
+// ─── RENDER SHIELDED DETAILS ────────────────────────────────────
+function renderShieldedDetails(t) {
+    let html = '';
 
-            // ── SPROUT ──
-            if (t.vjoinsplit && t.vjoinsplit.length > 0) {
-                html += `<div class="divider"></div>`;
-                html += `<div class="row"><span class="key">🛡 SPROUT</span><span class="val gold">${t.vjoinsplit.length} joinsplits</span></div>`;
-                for (let i = 0; i < t.vjoinsplit.length; i++) {
-                    const js = t.vjoinsplit[i];
-                    html += `<div class="shielded-detail">`;
-                    html += `<div class="action-header"><span class="badge">joinsplit #${i}</span></div>`;
-                    if (js.vpub_old) html +=
-                        `<div class="shielded-field"><span class="field-key gold">vpub_old</span><span class="field-val gold">${(js.vpub_old / 1e8).toFixed(8)} ZEC</span></div>`;
-                    if (js.vpub_new) html +=
-                        `<div class="shielded-field"><span class="field-key gold">vpub_new</span><span class="field-val gold">${(js.vpub_new / 1e8).toFixed(8)} ZEC</span></div>`;
-                    if (js.anchor) html +=
-                        `<div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(js.anchor)}</span></div>`;
-                    if (js.nullifiers && js.nullifiers.length > 0) {
-                        for (let n = 0; n < js.nullifiers.length; n++) {
-                            html +=
-                                `<div class="shielded-field"><span class="field-key">nullifier #${n}</span><span class="field-val">${escapeHtml(js.nullifiers[n])}</span></div>`;
-                        }
-                    }
-                    if (js.commitments && js.commitments.length > 0) {
-                        for (let c = 0; c < js.commitments.length; c++) {
-                            html +=
-                                `<div class="shielded-field"><span class="field-key">commitment #${c}</span><span class="field-val">${escapeHtml(js.commitments[c])}</span></div>`;
-                        }
-                    }
-                    if (js.macs && js.macs.length > 0) {
-                        for (let m = 0; m < js.macs.length; m++) {
-                            html +=
-                                `<div class="shielded-field"><span class="field-key">mac #${m}</span><span class="field-val">${escapeHtml(js.macs[m])}</span></div>`;
-                        }
-                    }
-                    if (js.proof) html +=
-                        `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val small">${escapeHtml(js.proof.substring(0, 60))}…</span></div>`;
-                    html += `</div>`;
-                }
-            }
-
-            // ── SAPLING ──
-            let hasSapling = false;
-            if (t.vShieldedSpend && t.vShieldedSpend.length > 0) {
-                if (!hasSapling) {
-                    html += `<div class="divider"></div>`;
-                    hasSapling = true;
-                }
-                html +=
-                    `<div class="row"><span class="key">🛡 SAPLING</span><span class="val gold">spends ${t.vShieldedSpend.length}</span></div>`;
-                for (let i = 0; i < t.vShieldedSpend.length; i++) {
-                    const spend = t.vShieldedSpend[i];
-                    html += `<div class="shielded-detail">`;
-                    html += `<div class="action-header"><span class="badge">spend #${i}</span></div>`;
-                    if (spend.nullifier) html +=
-                        `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val">${escapeHtml(spend.nullifier)}</span></div>`;
-                    if (spend.anchor) html +=
-                        `<div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(spend.anchor)}</span></div>`;
-                    if (spend.proof) html +=
-                        `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val small">${escapeHtml(spend.proof.substring(0, 60))}…</span></div>`;
-                    html += `</div>`;
-                }
-            }
-
-            if (t.vShieldedOutput && t.vShieldedOutput.length > 0) {
-                if (!hasSapling) {
-                    html += `<div class="divider"></div>`;
-                    hasSapling = true;
-                }
-                if (!t.vShieldedSpend || t.vShieldedSpend.length === 0) {
-                    html += `<div class="row"><span class="key">🛡 SAPLING</span><span class="val gold">outputs ${t.vShieldedOutput.length}</span></div>`;
-                } else {
+    // ── SPROUT ──
+    if (t.vjoinsplit && t.vjoinsplit.length > 0) {
+        html += `<div class="divider"></div>`;
+        html += `<div class="row"><span class="key">🛡 SPROUT</span><span class="val gold">${t.vjoinsplit.length} joinsplits</span></div>`;
+        for (let i = 0; i < t.vjoinsplit.length; i++) {
+            const js = t.vjoinsplit[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">joinsplit #${i}</span></div>`;
+            if (js.vpub_old) html +=
+                `<div class="shielded-field"><span class="field-key gold">vpub_old</span><span class="field-val gold">${(js.vpub_old / 1e8).toFixed(8)} ZEC</span></div>`;
+            if (js.vpub_new) html +=
+                `<div class="shielded-field"><span class="field-key gold">vpub_new</span><span class="field-val gold">${(js.vpub_new / 1e8).toFixed(8)} ZEC</span></div>`;
+            if (js.anchor) html +=
+                `<div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.anchor)}</span></div>`;
+            if (js.nullifiers && js.nullifiers.length > 0) {
+                for (let n = 0; n < js.nullifiers.length; n++) {
                     html +=
-                        `<div class="row"><span class="key" style="padding-left:14px;"></span><span class="val gold">outputs ${t.vShieldedOutput.length}</span></div>`;
-                }
-                for (let i = 0; i < t.vShieldedOutput.length; i++) {
-                    const out = t.vShieldedOutput[i];
-                    html += `<div class="shielded-detail">`;
-                    html += `<div class="action-header"><span class="badge">output #${i}</span></div>`;
-                    if (out.cmu) html +=
-                        `<div class="shielded-field"><span class="field-key">cmu</span><span class="field-val">${escapeHtml(out.cmu)}</span></div>`;
-                    if (out.ephemeralKey) html +=
-                        `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val">${escapeHtml(out.ephemeralKey)}</span></div>`;
-                    if (out.encCiphertext) html +=
-                        `<div class="shielded-field"><span class="field-key">encCiphertext</span><span class="field-val small">${escapeHtml(out.encCiphertext.substring(0, 60))}…</span></div>`;
-                    if (out.outCiphertext) html +=
-                        `<div class="shielded-field"><span class="field-key">outCiphertext</span><span class="field-val small">${escapeHtml(out.outCiphertext.substring(0, 60))}…</span></div>`;
-                    if (out.proof) html +=
-                        `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val small">${escapeHtml(out.proof.substring(0, 60))}…</span></div>`;
-                    html += `</div>`;
+                        `<div class="shielded-field"><span class="field-key">nullifier #${n}</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.nullifiers[n])}</span></div>`;
                 }
             }
-
-            // ── ORCHARD ──
-            if (t.orchard && t.orchard.actions && t.orchard.actions.length > 0) {
-                html += `<div class="divider"></div>`;
-                html +=
-                    `<div class="row"><span class="key">🛡 ORCHARD</span><span class="val gold">${t.orchard.actions.length} acciones</span></div>`;
-
-                for (let i = 0; i < t.orchard.actions.length; i++) {
-                    const action = t.orchard.actions[i];
-                    html += `<div class="shielded-detail">`;
-                    html += `<div class="action-header"><span class="badge">acción #${i}</span></div>`;
-                    if (action.nullifier) html +=
-                        `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val">${escapeHtml(action.nullifier)}</span></div>`;
-                    if (action.commitment) html +=
-                        `<div class="shielded-field"><span class="field-key">commitment</span><span class="field-val">${escapeHtml(action.commitment)}</span></div>`;
-                    if (action.ephemeralKey) html +=
-                        `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val">${escapeHtml(action.ephemeralKey)}</span></div>`;
-                    if (action.ciphertext) html +=
-                        `<div class="shielded-field"><span class="field-key">ciphertext</span><span class="field-val small">${escapeHtml(action.ciphertext)}</span></div>`;
-                    html += `</div>`;
-                }
-
-                if (t.orchard.valueBalance !== undefined && t.orchard.valueBalance !== null) {
-                    const vb = t.orchard.valueBalance / 1e8;
-                    const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+            if (js.commitments && js.commitments.length > 0) {
+                for (let c = 0; c < js.commitments.length; c++) {
                     html +=
-                        `<div class="shielded-detail" style="border-left-color: rgba(221,157,52,0.2);"><div class="shielded-field"><span class="field-key gold">balance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
-                }
-                if (t.orchard.anchor) html +=
-                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(t.orchard.anchor)}</span></div></div>`;
-                if (t.orchard.bindingSig) html +=
-                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.orchard.bindingSig)}</span></div></div>`;
-            }
-
-            // ── IRONWOOD ──
-            if (t.ironwood && t.ironwood.actions && t.ironwood.actions.length > 0) {
-                html += `<div class="divider"></div>`;
-                html +=
-                    `<div class="row"><span class="key">🛡 IRONWOOD</span><span class="val gold">${t.ironwood.actions.length} acciones</span></div>`;
-
-                for (let i = 0; i < t.ironwood.actions.length; i++) {
-                    const action = t.ironwood.actions[i];
-                    html += `<div class="shielded-detail">`;
-                    html += `<div class="action-header"><span class="badge">acción #${i}</span></div>`;
-                    if (action.cv) html +=
-                        `<div class="shielded-field"><span class="field-key">cv</span><span class="field-val">${escapeHtml(action.cv)}</span></div>`;
-                    if (action.nullifier) html +=
-                        `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val">${escapeHtml(action.nullifier)}</span></div>`;
-                    if (action.rk) html +=
-                        `<div class="shielded-field"><span class="field-key">rk</span><span class="field-val">${escapeHtml(action.rk)}</span></div>`;
-                    if (action.cmx) html +=
-                        `<div class="shielded-field"><span class="field-key">cmx</span><span class="field-val">${escapeHtml(action.cmx)}</span></div>`;
-                    if (action.ephemeralKey) html +=
-                        `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val">${escapeHtml(action.ephemeralKey)}</span></div>`;
-                    if (action.encCiphertext) html +=
-                        `<div class="shielded-field"><span class="field-key">encCiphertext</span><span class="field-val small">${escapeHtml(action.encCiphertext)}</span></div>`;
-                    if (action.spendAuthSig) html +=
-                        `<div class="shielded-field"><span class="field-key">spendAuthSig</span><span class="field-val small">${escapeHtml(action.spendAuthSig)}</span></div>`;
-                    if (action.outCiphertext) html +=
-                        `<div class="shielded-field"><span class="field-key">outCiphertext</span><span class="field-val small">${escapeHtml(action.outCiphertext)}</span></div>`;
-                    html += `</div>`;
-                }
-
-                if (t.ironwood.valueBalance !== undefined && t.ironwood.valueBalance !== null && t.ironwood.valueBalance !== 0) {
-                    const vb = t.ironwood.valueBalance;
-                    const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
-                    html +=
-                        `<div class="shielded-detail" style="border-left-color: rgba(221,157,52,0.2);"><div class="shielded-field"><span class="field-key gold">balance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
-                }
-                if (t.ironwood.anchor) html +=
-                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(t.ironwood.anchor)}</span></div></div>`;
-                if (t.ironwood.proof) html +=
-                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">proof</span><span class="field-val small">${escapeHtml(t.ironwood.proof.substring(0, 60))}…</span></div></div>`;
-                if (t.ironwood.bindingSig) html +=
-                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.ironwood.bindingSig)}</span></div></div>`;
-                if (t.ironwood.flags) {
-                    html +=
-                        `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">flags</span><span class="field-val">enableOutputs: ${t.ironwood.flags.enableOutputs}, enableSpends: ${t.ironwood.flags.enableSpends}</span></div></div>`;
+                        `<div class="shielded-field"><span class="field-key">commitment #${c}</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.commitments[c])}</span></div>`;
                 }
             }
-
-            // ── v5 SHIELDED ──
-            if (t.version >= 5 && (!t.vin || t.vin.length === 0) && (!t.vout || t.vout.length === 0) &&
-                !t.vShieldedSpend && !t.vShieldedOutput && !t.orchard && !t.ironwood && !t.vjoinsplit) {
-                html += `<div class="divider"></div>`;
-                html += `<div class="row"><span class="key">🛡 v5 SHIELDED</span><span class="val">transacción completamente blindada</span></div>`;
-                if (t.valueBalance !== undefined && t.valueBalance !== null && t.valueBalance !== 0) {
-                    const vb = t.valueBalance / 1e8;
-                    const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+            if (js.macs && js.macs.length > 0) {
+                for (let m = 0; m < js.macs.length; m++) {
                     html +=
-                        `<div class="shielded-detail"><div class="shielded-field"><span class="field-key gold">valueBalance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+                        `<div class="shielded-field"><span class="field-key">mac #${m}</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.macs[m])}</span></div>`;
                 }
-                if (t.bindingSig) html +=
-                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.bindingSig)}</span></div></div>`;
-                if (t.anchor) html +=
-                    `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val">${escapeHtml(t.anchor)}</span></div></div>`;
             }
+            if (js.proof) html +=
+                `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.proof)}</span></div>`;
+            html += `</div>`;
+        }
+    }
 
-            return html;
+    // ── SAPLING ──
+    let hasSapling = false;
+    if (t.vShieldedSpend && t.vShieldedSpend.length > 0) {
+        if (!hasSapling) {
+            html += `<div class="divider"></div>`;
+            hasSapling = true;
+        }
+        html +=
+            `<div class="row"><span class="key">🛡 SAPLING</span><span class="val gold">spends ${t.vShieldedSpend.length}</span></div>`;
+        for (let i = 0; i < t.vShieldedSpend.length; i++) {
+            const spend = t.vShieldedSpend[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">spend #${i}</span></div>`;
+            if (spend.nullifier) html +=
+                `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(spend.nullifier)}</span></div>`;
+            if (spend.anchor) html +=
+                `<div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(spend.anchor)}</span></div>`;
+            if (spend.proof) html +=
+                `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(spend.proof)}</span></div>`;
+            html += `</div>`;
+        }
+    }
+
+    if (t.vShieldedOutput && t.vShieldedOutput.length > 0) {
+        if (!hasSapling) {
+            html += `<div class="divider"></div>`;
+            hasSapling = true;
+        }
+        if (!t.vShieldedSpend || t.vShieldedSpend.length === 0) {
+            html += `<div class="row"><span class="key">🛡 SAPLING</span><span class="val gold">outputs ${t.vShieldedOutput.length}</span></div>`;
+        } else {
+            html +=
+                `<div class="row"><span class="key" style="padding-left:14px;"></span><span class="val gold">outputs ${t.vShieldedOutput.length}</span></div>`;
+        }
+        for (let i = 0; i < t.vShieldedOutput.length; i++) {
+            const out = t.vShieldedOutput[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">output #${i}</span></div>`;
+            if (out.cmu) html +=
+                `<div class="shielded-field"><span class="field-key">cmu</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.cmu)}</span></div>`;
+            if (out.ephemeralKey) html +=
+                `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.ephemeralKey)}</span></div>`;
+            if (out.encCiphertext) html +=
+                `<div class="shielded-field"><span class="field-key">encCiphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.encCiphertext)}</span></div>`;
+            if (out.outCiphertext) html +=
+                `<div class="shielded-field"><span class="field-key">outCiphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.outCiphertext)}</span></div>`;
+            if (out.proof) html +=
+                `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.proof)}</span></div>`;
+            html += `</div>`;
+        }
+    }
+
+    // ── ORCHARD ──
+    if (t.orchard && t.orchard.actions && t.orchard.actions.length > 0) {
+        html += `<div class="divider"></div>`;
+        html +=
+            `<div class="row"><span class="key">🛡 ORCHARD</span><span class="val gold">${t.orchard.actions.length} acciones</span></div>`;
+
+        for (let i = 0; i < t.orchard.actions.length; i++) {
+            const action = t.orchard.actions[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">acción #${i}</span></div>`;
+            if (action.nullifier) html +=
+                `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.nullifier)}</span></div>`;
+            if (action.commitment) html +=
+                `<div class="shielded-field"><span class="field-key">commitment</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.commitment)}</span></div>`;
+            if (action.ephemeralKey) html +=
+                `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.ephemeralKey)}</span></div>`;
+            if (action.ciphertext) html +=
+                `<div class="shielded-field"><span class="field-key">ciphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.ciphertext)}</span></div>`;
+            html += `</div>`;
         }
 
+        if (t.orchard.valueBalance !== undefined && t.orchard.valueBalance !== null) {
+            const vb = t.orchard.valueBalance / 1e8;
+            const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+            html +=
+                `<div class="shielded-detail" style="border-left-color: rgba(221,157,52,0.2);"><div class="shielded-field"><span class="field-key gold">balance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+        }
+        if (t.orchard.anchor) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.orchard.anchor)}</span></div></div>`;
+        if (t.orchard.bindingSig) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.orchard.bindingSig)}</span></div></div>`;
+    }
+
+    // ── IRONWOOD ──
+    if (t.ironwood && t.ironwood.actions && t.ironwood.actions.length > 0) {
+        html += `<div class="divider"></div>`;
+        html +=
+            `<div class="row"><span class="key">🛡 IRONWOOD</span><span class="val gold">${t.ironwood.actions.length} acciones</span></div>`;
+
+        for (let i = 0; i < t.ironwood.actions.length; i++) {
+            const action = t.ironwood.actions[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">acción #${i}</span></div>`;
+            if (action.cv) html +=
+                `<div class="shielded-field"><span class="field-key">cv</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.cv)}</span></div>`;
+            if (action.nullifier) html +=
+                `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.nullifier)}</span></div>`;
+            if (action.rk) html +=
+                `<div class="shielded-field"><span class="field-key">rk</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.rk)}</span></div>`;
+            if (action.cmx) html +=
+                `<div class="shielded-field"><span class="field-key">cmx</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.cmx)}</span></div>`;
+            if (action.ephemeralKey) html +=
+                `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.ephemeralKey)}</span></div>`;
+            if (action.encCiphertext) html +=
+                `<div class="shielded-field"><span class="field-key">encCiphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.encCiphertext)}</span></div>`;
+            if (action.spendAuthSig) html +=
+                `<div class="shielded-field"><span class="field-key">spendAuthSig</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.spendAuthSig)}</span></div>`;
+            if (action.outCiphertext) html +=
+                `<div class="shielded-field"><span class="field-key">outCiphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.outCiphertext)}</span></div>`;
+            html += `</div>`;
+        }
+
+        if (t.ironwood.valueBalance !== undefined && t.ironwood.valueBalance !== null && t.ironwood.valueBalance !== 0) {
+            const vb = t.ironwood.valueBalance;
+            const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+            html +=
+                `<div class="shielded-detail" style="border-left-color: rgba(221,157,52,0.2);"><div class="shielded-field"><span class="field-key gold">balance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+        }
+        if (t.ironwood.anchor) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.ironwood.anchor)}</span></div></div>`;
+        if (t.ironwood.proof) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">proof</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.ironwood.proof)}</span></div></div>`;
+        if (t.ironwood.bindingSig) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.ironwood.bindingSig)}</span></div></div>`;
+        if (t.ironwood.flags) {
+            html +=
+                `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">flags</span><span class="field-val">enableOutputs: ${t.ironwood.flags.enableOutputs}, enableSpends: ${t.ironwood.flags.enableSpends}</span></div></div>`;
+        }
+    }
+
+    // ── v5 SHIELDED ──
+    if (t.version >= 5 && (!t.vin || t.vin.length === 0) && (!t.vout || t.vout.length === 0) &&
+        !t.vShieldedSpend && !t.vShieldedOutput && !t.orchard && !t.ironwood && !t.vjoinsplit) {
+        html += `<div class="divider"></div>`;
+        html += `<div class="row"><span class="key">🛡 v5 SHIELDED</span><span class="val">transacción completamente blindada</span></div>`;
+        if (t.valueBalance !== undefined && t.valueBalance !== null && t.valueBalance !== 0) {
+            const vb = t.valueBalance / 1e8;
+            const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+            html +=
+                `<div class="shielded-detail"><div class="shielded-field"><span class="field-key gold">valueBalance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+        }
+        if (t.bindingSig) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.bindingSig)}</span></div></div>`;
+        if (t.anchor) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.anchor)}</span></div></div>`;
+    }
+
+    return html;
+}
         // ─── OBTENER DATOS DE TRANSACCIÓN ─────────────────────────────
         async function fetchTxData(txid) {
             try {
