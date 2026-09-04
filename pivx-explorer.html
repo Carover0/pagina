@@ -159,17 +159,6 @@
             font-size: 14px;
         }
 
-        .stats-bar .badge {
-            background: rgba(160, 68, 255, 0.12);
-            padding: 2px 16px;
-            border-radius: 20px;
-            font-size: 10px;
-            color: #c597ff;
-            border: 1px solid rgba(160, 68, 255, 0.12);
-            margin-left: auto;
-            letter-spacing: 0.5px;
-        }
-
         .search-section {
             display: flex;
             gap: 12px;
@@ -512,7 +501,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ── BREADCRUMB ── */
         .breadcrumb {
             display: flex;
             flex-wrap: wrap;
@@ -546,6 +534,34 @@
             color: #3d3830;
         }
 
+        .tx-type-badge {
+            display: inline-block;
+            font-size: 10px;
+            padding: 1px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            margin-left: 8px;
+        }
+
+        .tx-type-badge.transparent {
+            color: #8a8275;
+            border: 1px solid rgba(138, 130, 117, 0.3);
+            background: rgba(138, 130, 117, 0.08);
+        }
+
+        .tx-type-badge.private {
+            color: #c597ff;
+            border: 1px solid rgba(160, 68, 255, 0.3);
+            background: rgba(160, 68, 255, 0.1);
+        }
+
+        .tx-type-badge.shielding {
+            color: #ffaa44;
+            border: 1px solid rgba(255, 170, 68, 0.3);
+            background: rgba(255, 170, 68, 0.08);
+        }
+
         @media (max-width: 768px) {
             .app {
                 padding: 12px 14px;
@@ -577,12 +593,6 @@
                 font-size: 11px;
                 padding: 8px 14px;
                 gap: 4px 16px;
-            }
-
-            .stats-bar .badge {
-                margin-left: 0;
-                font-size: 9px;
-                padding: 1px 12px;
             }
 
             .search-section {
@@ -745,7 +755,6 @@
             <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
             <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
-            <div class="badge">● LIVE</div>
         </div>
 
         <div class="breadcrumb" id="breadcrumb"></div>
@@ -932,7 +941,66 @@
             window.history.replaceState({}, '', newUrl);
         }
 
-        // ─── DETECT COMMAND ─────────────────────────────────────────────
+        // ─── DETECTAR TIPO ──────────────────────────
+        function getTxType(tx) {
+            if (!tx) return 'unknown';
+
+            const hasShieldedSpend = tx.vShieldSpend && tx.vShieldSpend.length > 0;
+            const hasShieldedOutput = tx.vShieldOutput && tx.vShieldOutput.length > 0;
+            const hasTransparentIn = tx.vin && tx.vin.length > 0;
+            const hasTransparentOut = tx.vout && tx.vout.length > 0;
+            const hasCoinbase = tx.vin && tx.vin.length > 0 && tx.vin[0].coinbase !== undefined;
+            const hasVoutZero = tx.vout && tx.vout.length > 0 && tx.vout[0].value === 0;
+            const isOnlyZeroOutput = tx.vout && tx.vout.length === 1 && tx.vout[0].value === 0;
+            const isCoinStake = !hasCoinbase && hasTransparentIn && hasVoutZero && tx.vout && tx.vout.length >= 2;
+
+            // Transacción privada 
+            if (hasShieldedSpend || hasShieldedOutput) {
+                if (hasTransparentIn && !hasTransparentOut && hasShieldedOutput && !hasShieldedSpend) {
+                    return 'shielding'; // transparente → privada
+                }
+                if (hasShieldedSpend && !hasShieldedOutput && hasTransparentOut && !hasTransparentIn) {
+                    return 'deshielding'; // privada → transparente
+                }
+                return 'private'; // completamente privada
+            }
+
+            // Coinbase / Coinstake
+            if (hasCoinbase) {
+                if (isOnlyZeroOutput) return 'coinstake_dummy';
+                return 'coinbase';
+            }
+            if (isCoinStake) return 'coinstake';
+
+            // Transparente normal
+            if (hasTransparentIn || hasTransparentOut) {
+                return 'transparent';
+            }
+
+            return 'unknown';
+        }
+
+        function getTxTypeLabel(type) {
+            switch (type) {
+                case 'private':
+                    return { label: 'PRIVADA', icon: '🛡', cssClass: 'private' };
+                case 'shielding':
+                    return { label: 'SHIELDING', icon: '🛡', cssClass: 'shielding' };
+                case 'deshielding':
+                    return { label: 'DESHIELDING', icon: '🛡', cssClass: 'shielding' };
+                case 'transparent':
+                    return { label: 'TRANSPARENTE', icon: '📄', cssClass: 'transparent' };
+                case 'coinstake':
+                    return { label: 'COINSTAKE', icon: '⚡', cssClass: 'transparent' };
+                case 'coinstake_dummy':
+                    return { label: 'COINSTAKE (dummy)', icon: '⚡', cssClass: 'transparent' };
+                case 'coinbase':
+                    return { label: 'COINBASE', icon: '⛏️', cssClass: 'transparent' };
+                default:
+                    return { label: 'DESCONOCIDA', icon: '❓', cssClass: 'transparent' };
+            }
+        }
+
         async function detectCommand(input) {
             input = input.trim();
             if (input.startsWith('getblock ') || input.startsWith('getrawtransaction ') ||
@@ -1016,12 +1084,10 @@
 
             renderLoading();
 
-            // Si es un comando detectado automáticamente, procesarlo
             let cmd = raw;
             if (!cmd.startsWith('getblock') && !cmd.startsWith('getrawtransaction') &&
                 !cmd.startsWith('validateaddress') && !cmd.startsWith('getblockhash')) {
                 cmd = await detectCommand(raw);
-                // Actualizar URL con el comando detectado
                 const cleanValue = cmd.replace('getblock ', '').replace('getrawtransaction ', '').replace(' 1', '')
                     .replace('validateaddress ', '').replace('getblockhash ', '');
                 if (cleanValue) updateUrlWithSearch(cleanValue);
@@ -1060,29 +1126,45 @@
                     let res = `<div class="cmd-line"><span class="tag">⧫ BLOQUE</span> #${b.height}</div>`;
                     res += `<div class="row"><span class="key">hash</span><span class="val">${makeLink(b.hash)}</span></div>`;
                     res += `<div class="row"><span class="key">fecha</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
-                    res +=
-                        `<div class="row"><span class="key">transacciones</span><span class="val violet">${b.tx?.length ?? 0}</span></div>`;
-                    res +=
-                        `<div class="row"><span class="key">tamaño</span><span class="val">${b.size || 0} bytes</span></div>`;
-                    if (b.previousblockhash) res +=
-                        `<div class="row"><span class="key">anterior</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
-                    if (b.nextblockhash) res +=
-                        `<div class="row"><span class="key">siguiente</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
+                    res += `<div class="row"><span class="key">dificultad</span><span class="val">${b.difficulty || '---'}</span></div>`;
+                    res += `<div class="row"><span class="key">tamaño</span><span class="val">${b.size || 0} bytes</span></div>`;
+                    if (b.previousblockhash) res += `<div class="row"><span class="key">anterior</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
+                    if (b.nextblockhash) res += `<div class="row"><span class="key">siguiente</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
                     res += `<div class="divider"></div>`;
-                    res +=
-                        `<div class="row"><span class="key">transacciones</span><span class="val violet">${b.tx?.length ?? 0}</span></div>`;
+                    res += `<div class="row"><span class="key">transacciones</span><span class="val violet">${b.tx?.length ?? 0}</span></div>`;
 
                     if (b.tx && b.tx.length > 0) {
                         const txs = b.tx.slice(0, 50);
                         for (const tx of txs) {
                             const txid = typeof tx === 'object' ? tx.txid || tx : tx;
+                            let txObj = typeof tx === 'object' ? tx : null;
+
+                            let txType = 'unknown';
+                            let txInfo = { label: 'DESCONOCIDA', icon: '❓', cssClass: 'transparent' };
+
+                            if (txObj) {
+                                txType = getTxType(txObj);
+                                txInfo = getTxTypeLabel(txType);
+                            } else {
+                                try {
+                                    const txResponse = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`);
+                                    const txData = await txResponse.json();
+                                    if (txData.result) {
+                                        txType = getTxType(txData.result);
+                                        txInfo = getTxTypeLabel(txType);
+                                    }
+                                } catch (e) {}
+                            }
+
                             res += `<div class="tx-item">
-                        <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
-                        ${typeof tx === 'object' && tx.txid ? `<div class="tx-meta"><span>transacción</span></div>` : ''}
-                      </div>`;
+                                <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${txInfo.icon} ${escapeHtml(txid)}</span>
+                                <span class="tx-type-badge ${txInfo.cssClass}">${txInfo.label}</span>
+                                <div class="tx-meta">
+                                    <span>${txType === 'private' ? '🔒 transacción privada (shielded)' : txType === 'shielding' ? '🔄 shielding: transparente → privada' : txType === 'deshielding' ? '🔄 deshielding: privada → transparente' : '📄 transacción transparente'}</span>
+                                </div>
+                            </div>`;
                         }
-                        if (b.tx.length > 50) res +=
-                            `<div style="color:#3d3830;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
+                        if (b.tx.length > 50) res += `<div style="color:#3d3830;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
                     }
 
                     res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
@@ -1093,6 +1175,8 @@
                 // ── TRANSACCIÓN ──
                 if (cmd.includes('getrawtransaction') && result.txid) {
                     const t = result;
+                    const txType = getTxType(t);
+                    const txInfo = getTxTypeLabel(txType);
 
                     const hasCoinbase = t.vin && t.vin.length > 0 && t.vin[0].coinbase !== undefined;
                     const hasTransparentIn = t.vin && t.vin.length > 0;
@@ -1150,43 +1234,36 @@
                         });
                     }
 
-                    let tipoLabel = '📄 TRANSACCIÓN TRANSPARENTE';
-                    if (isShielded) tipoLabel = '🛡 TRANSACCIÓN PRIVADA (SHIELDED)';
-                    else if (isShielding) tipoLabel = '🛡 SHIELDING (TRANSPARENTE → SHIELDED)';
-                    else if (isDeshielding) tipoLabel = '🛡 DESHIELDING (SHIELDED → TRANSPARENTE)';
-                    else if (isCoinStake) tipoLabel = '⚡️ COINSTAKE (GENERACIÓN DE BLOQUE PoS)';
+                    let tipoLabel = `${txInfo.icon} ${txInfo.label}`;
+                    if (txType === 'private') tipoLabel = '🛡 TRANSACCIÓN PRIVADA (SHIELDED)';
+                    else if (txType === 'shielding') tipoLabel = '🛡 SHIELDING (TRANSPARENTE → PRIVADA)';
+                    else if (txType === 'deshielding') tipoLabel = '🛡 DESHIELDING (PRIVADA → TRANSPARENTE)';
+                    else if (txType === 'coinstake') tipoLabel = '⚡️ COINSTAKE (GENERACIÓN DE BLOQUE PoS)';
+                    else if (txType === 'transparent') tipoLabel = '📄 TRANSACCIÓN TRANSPARENTE';
 
                     let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span> ${makeLink(t.txid)}</div>`;
                     res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(t.txid)}</span></div>`;
-                    res +=
-                        `<div class="row"><span class="key">bloque</span><span class="val">${t.blockheight || t.height ? makeLink(String(t.blockheight || t.height)) : 'no confirmada'}</span></div>`;
-                    res +=
-                        `<div class="row"><span class="key">confirmaciones</span><span class="val">${t.confirmations || 0}</span></div>`;
+                    res += `<div class="row"><span class="key">bloque</span><span class="val">${t.blockheight || t.height ? makeLink(String(t.blockheight || t.height)) : 'no confirmada'}</span></div>`;
+                    res += `<div class="row"><span class="key">confirmaciones</span><span class="val">${t.confirmations || 0}</span></div>`;
                     if (t.time || t.blocktime) {
                         const ts = t.time || t.blocktime;
-                        res +=
-                            `<div class="row"><span class="key">fecha</span><span class="val">${new Date(ts*1000).toLocaleString()}</span></div>`;
+                        res += `<div class="row"><span class="key">fecha</span><span class="val">${new Date(ts*1000).toLocaleString()}</span></div>`;
                     }
                     if (t.size) res += `<div class="row"><span class="key">tamaño</span><span class="val">${t.size} bytes</span></div>`;
-                    if (t.version) res +=
-                        `<div class="row"><span class="key">versión</span><span class="val">${t.version}</span></div>`;
-                    if (t.expiryheight) res +=
-                        `<div class="row"><span class="key">expira</span><span class="val">bloque ${t.expiryheight}</span></div>`;
+                    if (t.version) res += `<div class="row"><span class="key">versión</span><span class="val">${t.version}</span></div>`;
+                    if (t.expiryheight) res += `<div class="row"><span class="key">expira</span><span class="val">bloque ${t.expiryheight}</span></div>`;
 
                     res += `<div class="divider"></div>`;
 
                     // ── ENTRADAS ──
                     if (t.vin && t.vin.length > 0) {
-                        res +=
-                            `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val violet">${t.vin.length}</span></div>`;
+                        res += `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val violet">${t.vin.length}</span></div>`;
                         t.vin.forEach((vin, i) => {
                             if (vin.coinbase !== undefined) {
                                 if (isDummyCoinbase) {
-                                    res +=
-                                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">COINBASE (dummy - PoS)</span></div>`;
+                                    res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">COINBASE (dummy - PoS)</span></div>`;
                                 } else {
-                                    res +=
-                                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#c597ff;">COINBASE</span></div>`;
+                                    res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#c597ff;">COINBASE</span></div>`;
                                 }
                             } else if (vin.txid) {
                                 const valorInput = inputValues[i] !== undefined ? inputValues[i] : null;
@@ -1197,21 +1274,18 @@
                                     else if (isColdStaking) valorStr += ` (fondos a delegar)`;
                                     else if (isShielding) valorStr += ` (a blindar)`;
                                 }
-                                res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${makeLink(vin.txid)}:${vin.vout}</span>${valorStr ? `<span class="val violet">${valorStr}</span>` : ''}</div>`;
+                                res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${makeLink(vin.txid)}:${vin.vout}</span>${valorStr ? `<span class="val violet">${valorStr}</span>` : ''}</div>`;
                             }
                         });
                         if (totalIn > 0) {
-                            res +=
-                                `<div class="row" style="margin-top:2px;"><span class="key">total entrada</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="margin-top:2px;"><span class="key">total entrada</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
                         }
                     }
 
                     // ── SALIDAS ──
                     if (t.vout && t.vout.length > 0) {
                         res += `<div class="divider"></div>`;
-                        res +=
-                            `<div class="row"><span class="key">◀ SALIDAS</span><span class="val violet">${t.vout.length}</span></div>`;
+                        res += `<div class="row"><span class="key">◀ SALIDAS</span><span class="val violet">${t.vout.length}</span></div>`;
 
                         t.vout.forEach((vout, i) => {
                             let addr = '';
@@ -1247,30 +1321,24 @@
                                 if (vout.scriptPubKey && vout.scriptPubKey.type === 'coldstake') {
                                     tipo = ' [CONTRATO COLD STAKING]';
                                     if (coldStakeStaker && coldStakeOwner) {
-                                        const relacion = isSelfDelegation ? ' (auto-delegación)' :
-                                        ' (delegado a tercero)';
-                                        extraInfo =
-                                        `\n       dueño: ${coldStakeOwner}\n       staker: ${coldStakeStaker}${relacion}`;
+                                        const relacion = isSelfDelegation ? ' (auto-delegación)' : ' (delegado a tercero)';
+                                        extraInfo = `\n       dueño: ${coldStakeOwner}\n       staker: ${coldStakeStaker}${relacion}`;
                                     }
                                 } else {
                                     if (vout.value === 0) {
                                         tipo = ' [salida nula]';
-                                    } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value ||
-                                        0))) {
+                                    } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value || 0))) {
                                         tipo = ' ← destinatario (pago)';
-                                    } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value ||
-                                        0))) {
+                                    } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value || 0))) {
                                         tipo = ' [cambio]';
                                     }
                                 }
                             } else {
                                 if (vout.value === 0) {
                                     tipo = ' [salida nula]';
-                                } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value ||
-                                    0))) {
+                                } else if (t.vout.length > 1 && vout.value === Math.max(...t.vout.map(v => v.value || 0))) {
                                     tipo = ' ← destinatario (pago)';
-                                } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value ||
-                                    0))) {
+                                } else if (t.vout.length > 1 && vout.value < Math.max(...t.vout.map(v => v.value || 0))) {
                                     tipo = ' [cambio]';
                                 }
                             }
@@ -1279,128 +1347,96 @@
                                 addrDisplay = ` → ${makeLink(addr)}`;
                             }
 
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val violet">${vout.value.toFixed(6)} PIV</span>${addrDisplay}${tipo}${extraInfo}</div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val violet">${vout.value.toFixed(6)} PIV</span>${addrDisplay}${tipo}${extraInfo}</div>`;
                         });
 
                         if (totalOut > 0) {
                             if (isColdStaking && !isCoinStake) {
-                                res +=
-                                    `<div class="row" style="margin-top:2px;"><span class="key">total delegado</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
+                                res += `<div class="row" style="margin-top:2px;"><span class="key">total delegado</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
                             } else if (isCoinStake) {
-                                res +=
-                                    `<div class="row" style="margin-top:2px;"><span class="key">total generado</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
+                                res += `<div class="row" style="margin-top:2px;"><span class="key">total generado</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
                             } else {
-                                res +=
-                                    `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
+                                res += `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
                             }
                         }
                     }
 
-                    // ── SHIELDED ──
+                    // ── SHIELDED (PRIVADA) ──
                     if (hasShieldedSpend || hasShieldedOutput) {
                         res += `<div class="divider"></div>`;
-                        res += `<div class="row"><span class="key">🛡 SHIELDED (SAPLING)</span></div>`;
+                        res += `<div class="row"><span class="key">🛡 TRANSACCIÓN PRIVADA (SHIELDED)</span></div>`;
 
                         if (hasShieldedSpend) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">gastos</span><span class="val violet">${t.vShieldSpend.length}</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">gastos privados</span><span class="val violet">${t.vShieldSpend.length}</span></div>`;
                             t.vShieldSpend.forEach((spend, i) => {
-                                res +=
-                                    `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">#${i}</span><span class="val">nullifier: ${spend.nullifier}</span></div>`;
+                                res += `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">#${i}</span><span class="val">nullifier: ${spend.nullifier}</span></div>`;
                             });
                         }
                         if (hasShieldedOutput) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">outputs</span><span class="val violet">${t.vShieldOutput.length}</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas privadas</span><span class="val violet">${t.vShieldOutput.length}</span></div>`;
                         }
                         if (t.valueBalance !== undefined) {
-                            const balanceZec = parseFloat(t.valueBalance);
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">valueBalance</span><span class="val violet">${balanceZec.toFixed(6)} PIV</span></div>`;
+                            const balancePiv = parseFloat(t.valueBalance);
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">valueBalance</span><span class="val violet">${balancePiv.toFixed(6)} PIV</span></div>`;
                         }
                         if (t.bindingSig) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">bindingSig</span><span class="val mono">${t.bindingSig.substring(0, 64)}…</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">bindingSig</span><span class="val mono">${t.bindingSig.substring(0, 64)}…</span></div>`;
                         }
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">🔒 privacidad</span><span class="val">montos ocultos</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">🔒 privacidad</span><span class="val">montos ocultos</span></div>`;
                     }
 
                     // ── RESUMEN ──
                     res += `<div class="divider"></div>`;
                     res += `<div class="row"><span class="key">RESUMEN</span></div>`;
-                    res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">entradas transparentes</span><span class="val">${t.vin?.length || 0}</span></div>`;
-                    res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas transparentes</span><span class="val">${t.vout?.length || 0}</span></div>`;
-                    if (isShielded) res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">actividad shielded</span><span class="val violet">sí 🛡</span></div>`;
+                    res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">entradas transparentes</span><span class="val">${t.vin?.length || 0}</span></div>`;
+                    res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas transparentes</span><span class="val">${t.vout?.length || 0}</span></div>`;
+                    if (isShielded || hasShieldedSpend || hasShieldedOutput) {
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">actividad privada</span><span class="val violet">sí 🛡</span></div>`;
+                    }
 
                     if (isDummyCoinbase) {
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">coinbase (bloque PoS - sin recompensa)</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">coinbase (bloque PoS - sin recompensa)</span></div>`;
                     } else if (hasCoinbase && !isDummyCoinbase) {
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">coinbase (PoW - no aplica en PIVX)</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">coinbase (PoW - no aplica en PIVX)</span></div>`;
                     } else if (isCoinStake) {
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">coinstake (PoS)</span></div>`;
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">modo</span><span class="val">${isColdStaking ? 'cold staking' : 'hot staking'}</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">coinstake (PoS)</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">modo</span><span class="val">${isColdStaking ? 'cold staking' : 'hot staking'}</span></div>`;
                         if (totalIn > 0 && t.vout && t.vout.length >= 2) {
                             const stakeFinal = t.vout[1]?.value || 0;
                             const recompensaDistribuida = t.vout.slice(2).reduce((sum, v) => sum + (v.value || 0), 0);
                             const recompensaTotal = totalOut - totalIn;
                             const recompensaReinvertida = stakeFinal - totalIn;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">stake activo previo</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">stake final</span><span class="val violet">${stakeFinal.toFixed(6)} PIV</span></div>`;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">recompensa total</span><span class="val violet">+${recompensaTotal.toFixed(6)} PIV</span></div>`;
-                            res +=
-                                `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">reinvertida</span><span class="val violet">+${recompensaReinvertida.toFixed(6)} PIV</span></div>`;
-                            res +=
-                                `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">distribuida</span><span class="val violet">${recompensaDistribuida.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">stake activo previo</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">stake final</span><span class="val violet">${stakeFinal.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">recompensa total</span><span class="val violet">+${recompensaTotal.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">reinvertida</span><span class="val violet">+${recompensaReinvertida.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">distribuida</span><span class="val violet">${recompensaDistribuida.toFixed(6)} PIV</span></div>`;
                         }
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fee</span><span class="val">0 PIV (generación de bloques)</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fee</span><span class="val">0 PIV (generación de bloques)</span></div>`;
                     } else if (isShielded) {
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">transacción privada (sapling)</span></div>`;
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">privacidad</span><span class="val">🔒 total (datos ocultos)</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">transacción privada (shielded)</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">privacidad</span><span class="val">🔒 total (datos ocultos)</span></div>`;
                         if (t.valueBalance) {
                             const fee = Math.abs(parseFloat(t.valueBalance));
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fee</span><span class="val violet">${fee.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fee</span><span class="val violet">${fee.toFixed(6)} PIV</span></div>`;
                         }
                     } else if (isShielding) {
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">shielding (transparente → shielded)</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">shielding (transparente → privada)</span></div>`;
                         if (totalIn > 0) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos blindados</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos blindados</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
                         }
                     } else if (isDeshielding) {
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">deshielding (shielded → transparente)</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">deshielding (privada → transparente)</span></div>`;
                         if (totalOut > 0) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos visibles</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos visibles</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
                         }
                     } else if (isColdStaking && !isCoinStake) {
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">delegación a cold staking</span></div>`;
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">delegación a cold staking</span></div>`;
                         if (coldStakeOwner && coldStakeStaker) {
                             const relacion = isSelfDelegation ? 'auto-delegación' : 'delegado a tercero';
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">dueño</span><span class="val">${coldStakeOwner}</span></div>`;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">staker</span><span class="val">${coldStakeStaker}</span></div>`;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">relación</span><span class="val">${relacion}</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">dueño</span><span class="val">${coldStakeOwner}</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">staker</span><span class="val">${coldStakeStaker}</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">relación</span><span class="val">${relacion}</span></div>`;
                         }
                     }
 
@@ -1409,39 +1445,26 @@
                     return;
                 }
 
-                // ── VALIDAR DIRECCIÓN ──
+                // ── VALIDAR DIRECCION ──
                 if (cmd.includes('validateaddress') && result) {
                     const v = result;
                     const direccion = v.address || cmd.split(' ')[1] || 'desconocida';
                     let emoji = '🔓';
+                    let tipoDir = 'transparente';
                     if (direccion.startsWith('p') || direccion.startsWith('z')) {
                         emoji = '🔒';
+                        tipoDir = 'privada (shielded)';
                     }
                     let res = `<div class="cmd-line"><span class="tag">◈ DIRECCIÓN</span> ${makeLink(direccion)} ${emoji}</div>`;
                     res += `<div class="row"><span class="key">dirección</span><span class="val">${makeLink(direccion)}</span></div>`;
-                    res +=
-                        `<div class="row"><span class="key">válida</span><span class="val">${v.isvalid ? '✅ sí' : '❌ no'}</span></div>`;
+                    res += `<div class="row"><span class="key">válida</span><span class="val">${v.isvalid ? '✅ sí' : '❌ no'}</span></div>`;
                     if (v.isvalid) {
-                        if (direccion.startsWith('D')) {
-                            res += `<div class="row"><span class="key">tipo</span><span class="val">transparente</span></div>`;
-                        } else if (direccion.startsWith('p')) {
-                            res +=
-                                `<div class="row"><span class="key">tipo</span><span class="val violet">shielded (Sapling)</span></div>`;
-                            if (v.diversifier) {
-                                res +=
-                                    `<div class="row"><span class="key">diversifier</span><span class="val mono">${escapeHtml(v.diversifier)}</span></div>`;
-                            }
-                        } else if (direccion.startsWith('z')) {
-                            res +=
-                                `<div class="row"><span class="key">tipo</span><span class="val violet">shielded (Sprout)</span></div>`;
-                        }
+                        res += `<div class="row"><span class="key">tipo</span><span class="val">${tipoDir}</span></div>`;
                         if (v.ismine !== undefined) {
-                            res +=
-                                `<div class="row"><span class="key">pertenece a wallet</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
+                            res += `<div class="row"><span class="key">pertenece a wallet</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
                         }
                         if (v.isstaking !== undefined) {
-                            res +=
-                                `<div class="row"><span class="key">staking</span><span class="val">${v.isstaking ? 'sí' : 'no'}</span></div>`;
+                            res += `<div class="row"><span class="key">staking</span><span class="val">${v.isstaking ? 'sí' : 'no'}</span></div>`;
                         }
                     }
 
@@ -1450,10 +1473,8 @@
                     return;
                 }
 
-                // ── FALLBACK ──
                 let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
-                res +=
-                    `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
+                res += `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
                 res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
                 renderOutput(res);
 
@@ -1468,7 +1489,6 @@
             document.getElementById('searchInput').value = '';
         }
 
-        // ─── COPY RESULT ────────────────────────────────────────────────
         window.copyResult = function() {
             const outputPre = document.querySelector('#output pre:last-of-type');
             if (outputPre) {
@@ -1488,13 +1508,11 @@
             }
         };
 
-        // ─── EXPONER FUNCIONES GLOBALES ────────────────────────────────
         window.navigateTo = navigateTo;
         window.executeSearch = executeSearch;
         window.goBack = goBack;
         window.goToHistory = goToHistory;
 
-        // ─── EVENTOS ─────────────────────────────────────────────────────
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F8') { e.preventDefault();
                 window.copyResult(); }
@@ -1542,7 +1560,6 @@
             }, 10);
         });
 
-        // ─── RESTORE URL ─────────────────────────────────────────────────
         (async function() {
             const searchParam = detectSearchFromUrl();
             if (searchParam) {
@@ -1561,7 +1578,6 @@
             }
         })();
 
-        // ─── INIT ────────────────────────────────────────────────────────
         loadNetworkStats();
         setInterval(loadNetworkStats, 30000);
     </script>
