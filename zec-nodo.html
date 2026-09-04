@@ -137,15 +137,46 @@
             font-size: 14px;
         }
 
-        .stats-bar .badge {
-            background: rgba(221, 157, 52, 0.1);
-            padding: 2px 16px;
-            border-radius: 20px;
-            font-size: 10px;
-            color: #dd9d34;
-            border: 1px solid rgba(221, 157, 52, 0.08);
+        /* ── BOTÓN BLOQUES EN VIVO ── */
+        .btn-live {
             margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 20px;
+            background: rgba(221, 157, 52, 0.08);
+            border: 1px solid rgba(221, 157, 52, 0.15);
+            border-radius: 30px;
+            color: #dd9d34;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 11px;
             letter-spacing: 0.5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .btn-live:hover {
+            background: rgba(221, 157, 52, 0.15);
+            border-color: rgba(221, 157, 52, 0.3);
+            box-shadow: 0 0 30px rgba(221, 157, 52, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .btn-live .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #31db72;
+            border-radius: 50%;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+            box-shadow: 0 0 12px rgba(49, 219, 114, 0.3);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
         }
 
         /* ── PANEL ── */
@@ -367,10 +398,12 @@
                 gap: 4px 16px;
             }
 
-            .stats-bar .badge {
+            .btn-live {
                 margin-left: 0;
-                font-size: 9px;
-                padding: 1px 12px;
+                padding: 4px 14px;
+                font-size: 10px;
+                width: 100%;
+                justify-content: center;
             }
 
             .panel {
@@ -441,6 +474,17 @@
 
             .stats-bar .value {
                 font-size: 12px;
+            }
+
+            .btn-live {
+                font-size: 9px;
+                padding: 3px 12px;
+                gap: 6px;
+            }
+
+            .btn-live .dot {
+                width: 6px;
+                height: 6px;
             }
 
             .panel {
@@ -534,7 +578,11 @@
             <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
             <div class="stat"><span class="label">PRECIO</span><span class="value" id="stat-price">—</span></div>
-            <div class="badge">● LIVE</div>
+
+            <a href="https://carover0.github.io/pagina/zec-bloques.html" class="btn-live">
+                <span class="dot"></span>
+                BLOQUES EN VIVO
+            </a>
         </div>
 
         <div class="panel">
@@ -686,7 +734,7 @@
             document.getElementById('price-time').textContent = new Date().toLocaleTimeString();
         }
 
-        // ─── FETCH ────────────────────────────────────────────
+        // ─── FETCH ────────────────────────────────────────────────────────
         async function fetchNodeData() {
             try {
                 const r = await fetch(NODE_JSON_URL);
