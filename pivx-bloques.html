@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIVX · Bloques en Vivo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(160, 68, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(160, 68, 255, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(160, 68, 255, 0.2);
+            backdrop-filter: blur(8px);
+            margin-bottom: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(160, 68, 255, 0.3));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.5));
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            color: #f5e6c8;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #c597ff;
+            border-bottom-color: #c597ff;
+        }
+
+        /* ===== CONNECTION STATUS ===== */
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #4a443a;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .connection-status .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4a443a;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .connection-status .dot.connecting {
+            background: #ffaa44;
+            animation: pulse-dot 0.8s infinite;
+        }
+
+        .connection-status .dot.online {
+            background: #31db72;
+        }
+
+        .connection-status .dot.error {
+            background: #ff4444;
+        }
+
+        .connection-status .route {
+            color: #6a6255;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .connection-status .route .flag {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .connection-status .route .arrow {
+            color: #3d3830;
+            font-size: 13px;
+        }
+
+        .connection-status .route .node-name {
+            color: #c597ff;
+            font-weight: 600;
+        }
+
+        .connection-status .route .vps-name {
+            color: #8a8275;
+        }
+
+        #statusText {
+            font-size: 13px;
+            color: #8a8275;
+            min-width: 100px;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* ===== STATS PANEL ===== */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 14px;
+            border: 1px solid rgba(160, 68, 255, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .stat-item .label {
+            font-size: 8px;
+            text-transform: uppercase;
+            color: #4a443a;
+            letter-spacing: 0.8px;
+        }
+
+        .stat-item .value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #f5ede4;
+        }
+
+        .stat-item .value.purple {
+            color: #c597ff;
+        }
+
+        .stat-item .value.mono {
+            font-size: 11px;
+            color: #8a8275;
+            word-break: break-all;
+        }
+
+        .stat-item .sub {
+            font-size: 10px;
+            color: #5a5348;
+        }
+
+        /* ===== BLOCKS GRID ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .block-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 14px 16px 12px;
+            border: 1px solid rgba(160, 68, 255, 0.08);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .block-card:hover {
+            border-color: rgba(160, 68, 255, 0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(160, 68, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .block-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.05);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+
+        .block-height {
+            font-size: 17px;
+            font-weight: 600;
+            color: #f5ede4;
+        }
+
+        .block-height small {
+            font-size: 10px;
+            color: #6a6255;
+            font-weight: 300;
+            margin-left: 6px;
+        }
+
+        .block-height a {
+            color: #c597ff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .block-height a:hover {
+            color: #dbb8ff;
+            text-decoration: underline;
+        }
+
+        .block-time {
+            font-size: 10px;
+            color: #6a6255;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+        }
+
+        .block-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 0;
+            font-size: 11px;
+        }
+
+        .block-row .label {
+            color: #4a443a;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .block-row .value {
+            color: #ece8e0;
+            font-weight: 500;
+            font-size: 11px;
+        }
+
+        .block-row .value.purple {
+            color: #c597ff;
+            font-size: 10px;
+        }
+
+        .block-row .value.mono {
+            font-size: 9px;
+            color: #8a8275;
+        }
+
+        .block-footer {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(160, 68, 255, 0.04);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .staker-tag {
+            background: rgba(160, 68, 255, 0.06);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 8px;
+            color: #c597ff;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+            word-break: break-all;
+            max-width: 160px;
+            font-family: 'Lucida Console', monospace;
+        }
+
+        .tx-count {
+            font-size: 9px;
+            color: #5a5348;
+        }
+
+        .tx-count span {
+            color: #b0a898;
+            font-weight: 600;
+        }
+
+        .footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid rgba(160, 68, 255, 0.06);
+            font-size: 10px;
+            color: #4a443a;
+        }
+
+        .footer a {
+            color: #6a6255;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .footer a:hover {
+            color: #c597ff;
+            border-bottom-color: rgba(160, 68, 255, 0.15);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .error-msg {
+            color: #ff756f;
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 0, 0, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 0, 0, 0.1);
+        }
+
+        .error-msg .details {
+            font-size: 11px;
+            color: #8a8275;
+            margin-top: 8px;
+            word-break: break-all;
+        }
+
+        .loading {
+            color: #6a6255;
+            text-align: center;
+            padding: 30px;
+            font-size: 14px;
+        }
+
+        .loading .spinner {
+            display: inline-block;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stats-panel {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .brand h1 {
+                font-size: 17px;
+            }
+            .block-card {
+                padding: 12px 14px 10px;
+            }
+            .block-height {
+                font-size: 15px;
+            }
+            .connection-status {
+                font-size: 12px;
+                padding: 8px 14px;
+            }
+            .connection-status .route {
+                font-size: 12px;
+            }
+            .connection-status .route .flag {
+                font-size: 15px;
+            }
+            .nav-links {
+                font-size: 11px;
+                gap: 2px 14px;
+            }
+            .footer {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 10px;
+            }
+            .stats-panel {
+                grid-template-columns: 1fr 1fr;
+                padding: 12px 14px;
+            }
+            .stat-item .value {
+                font-size: 13px;
+            }
+            .block-height {
+                font-size: 14px;
+            }
+            .block-card {
+                padding: 10px 12px 8px;
+            }
+            .block-row .value.purple {
+                font-size: 9px;
+            }
+            .footer {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+            .nav-links {
+                font-size: 10px;
+                gap: 2px 10px;
+            }
+            .connection-status {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                font-size: 12px;
+            }
+            .connection-status .route {
+                font-size: 12px;
+                gap: 4px;
+            }
+            .connection-status .route .flag {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+
+        <header class="header">
+            <div class="brand">
+                <img src="assets/pivx.png" alt="PIVX Logo" />
+                <h1>PIVX <small>bloques en vivo</small></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/pivx-nodo">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
+
+        <div class="connection-status" id="connectionStatus">
+            <span class="dot" id="statusDot"></span>
+            <span id="statusText">Conectando...</span>
+            <span class="route">
+                <span>GitHub Pages (US)</span>
+                <span class="arrow">→</span>
+                <span>VPS (FR)</span>
+                <span class="arrow">→</span>
+                <span class="node-name">Nodo (AR)</span>
+            </span>
+        </div>
+
+        <div class="stats-panel" id="statsPanel">
+            <div class="stat-item">
+                <div class="label">⛏️ Dificultad</div>
+                <div class="value purple" id="statDiff">—</div>
+                <div class="sub" id="statHeight">Bloque #---</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">📦 Mempool</div>
+                <div class="value" id="statMempool">—</div>
+                <div class="sub">transacciones pendientes</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">🔗 Último bloque</div>
+                <div class="value mono" id="statBestBlock">—</div>
+                <div class="sub" id="statBlockTime">actualizando...</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">💰 Recompensa</div>
+                <div class="value purple">10 PIVX</div>
+                <div class="sub">por bloque</div>
+            </div>
+        </div>
+
+        <!-- ===== BLOCKS ===== -->
+        <div class="cards-grid" id="blockContainer">
+            <div class="loading">
+                <span class="spinner">⧫</span> Cargando bloques...
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="#" onclick="refreshData(); return false;">↻ Actualizar</a>
+                <a href="#" onclick="window.location.reload(); return false;">⟳ Recargar</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const VPS_URL = 'https://carover0.xyz';
+        const API_URL = VPS_URL + '/api/pivx/pivx.php?token=pivx2026&cmd=getrecentblocks&limit=10';
+        const EXPLORER_BASE_URL = 'https://carover0.github.io/pagina/pivx-explorer/';
+
+        function setConnectionStatus(status, message) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+
+            dot.className = 'dot';
+            if (status === 'connecting') {
+                dot.classList.add('connecting');
+                text.textContent = message || 'Conectando...';
+            } else if (status === 'online') {
+                dot.classList.add('online');
+                text.textContent = message || 'Conectado';
+            } else if (status === 'error') {
+                dot.classList.add('error');
+                text.textContent = message || 'Error de conexión';
+            }
+        }
+
+        function truncateHash(hash) {
+            if (!hash || hash.length < 20) return hash || '—';
+            return hash.substring(0, 10) + '…' + hash.substring(hash.length - 10);
+        }
+
+        function renderBlocks(data) {
+            const container = document.getElementById('blockContainer');
+            if (!container) return;
+
+            if (data.error) {
+                container.innerHTML = `<div class="error-msg">⚠️ ${data.error}</div>`;
+                return;
+            }
+
+            if (!data.blocks || data.blocks.length === 0) {
+                container.innerHTML = `<div class="error-msg">⚠️ No se encontraron bloques</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            data.blocks.forEach((block) => {
+                const card = document.createElement('div');
+                card.className = 'block-card';
+
+                const explorerLink = `${EXPLORER_BASE_URL}${block.hash}`;
+                card.addEventListener('click', function() {
+                    window.open(explorerLink, '_blank');
+                });
+
+                const stakerDisplay = block.staker_short || block.staker || 'Desconocido';
+                const stakerFull = block.staker || 'Desconocido';
+                const stakingEmoji = block.staking_emoji || '⚡';
+                const stakerType = block.staker_type || 'desconocido';
+
+                let stakerLabel = 'Hot Staking 🔥';
+                if (stakerType === 'cold_staking') {
+                    stakerLabel = 'Cold Staking ❄️';
+                }
+
+                card.innerHTML = `
+                    <div class="block-top">
+                        <span class="block-height">
+                            <a href="${explorerLink}" target="_blank">#${block.height.toLocaleString()}</a>
+                            <small>PIVX</small>
+                        </span>
+                        <span class="block-time">${block.time}</span>
+                    </div>
+                    <div class="block-row">
+                        <span class="label">${stakingEmoji} Validador</span>
+                        <span class="value purple" style="word-break:break-all;max-width:180px;text-align:right;" title="${stakerFull}">${stakerDisplay}</span>
+                    </div>
+                    <div class="block-row">
+                        <span class="label">Tipo</span>
+                        <span class="value" style="color:#5a5348;">${stakerLabel}</span>
+                    </div>
+                    <div class="block-row">
+                        <span class="label">Transacciones</span>
+                        <span class="value">${block.tx_count} <span style="color:#5a5348;font-size:10px;">TX</span></span>
+                    </div>
+                    <div class="block-row">
+                        <span class="label">Tamaño</span>
+                        <span class="value mono">${block.size}</span>
+                    </div>
+                    <div class="block-row">
+                        <span class="label">Dificultad</span>
+                        <span class="value">${block.difficulty}</span>
+                    </div>
+                    <div class="block-footer">
+                        <span class="staker-tag">${stakingEmoji} ${stakerType === 'cold_staking' ? 'Cold Staking' : 'PoS Staking'}</span>
+                        <span class="tx-count"><span>${block.reward}</span></span>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function updateStats(data) {
+            if (!data || data.error) return;
+
+            document.getElementById('statDiff').textContent = data.stats?.difficulty || '—';
+            document.getElementById('statHeight').textContent = `Bloque #${data.stats?.height || '—'}`;
+
+            const bestBlock = data.stats?.best_block || '—';
+            document.getElementById('statBestBlock').textContent = truncateHash(bestBlock);
+
+            document.getElementById('statMempool').textContent = data.stats?.mempool || '0';
+            document.getElementById('statBlockTime').textContent = `actualizado ${new Date().toLocaleTimeString()}`;
+        }
+
+        async function fetchData() {
+            const container = document.getElementById('blockContainer');
+
+            setConnectionStatus('connecting', 'Conectando a VPS...');
+
+            try {
+                console.log('🔍 Conectando a:', API_URL);
+
+                const response = await fetch(API_URL);
+                console.log('📡 Respuesta:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('📦 Datos:', data);
+
+                setConnectionStatus('online', 'Conectado');
+
+                renderBlocks(data);
+                updateStats(data);
+            } catch (error) {
+                console.error('❌ Error:', error);
+                setConnectionStatus('error', 'Error de conexión');
+
+                container.innerHTML = `
+                    <div class="error-msg">
+                        ⚠️ Error de conexión: ${error.message}
+                        <div class="details">
+                            💡 Verifica la URL del VPS:<br>
+                            <code>${VPS_URL}</code><br>
+                            Y que el archivo <strong>pivx.php</strong> esté accesible.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        window.refreshData = function() {
+            const link = document.querySelector('.footer-links a:first-child');
+            const originalText = link.textContent;
+            link.textContent = '↻ Actualizando...';
+            fetchData().finally(() => {
+                link.textContent = originalText;
+            });
+            return false;
+        };
+
+        console.log('🌐 Usando VPS:', VPS_URL);
+        console.log('📋 API URL:', API_URL);
+
+        setConnectionStatus('connecting', 'Iniciando...');
+
+        fetchData();
+        setInterval(fetchData, 30000);
+    </script>
+
+</body>
+</html>
