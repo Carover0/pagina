@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firo · Explorador Moderno</title>
+    <title>Zcash · Explorador</title>
     <style>
         * {
             margin: 0;
@@ -15,8 +15,8 @@
             min-height: 100vh;
             background: #0a080c;
             background-image:
-                radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 40%, rgba(221, 157, 52, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(221, 157, 52, 0.04) 0%, transparent 50%),
                 linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
             font-family: 'Lucida Console', 'Courier New', monospace;
             color: #ece8e0;
@@ -47,7 +47,7 @@
             padding: 16px 24px;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 14px;
-            border: 1px solid rgba(155, 28, 46, 0.2);
+            border: 1px solid rgba(221, 157, 52, 0.08);
             backdrop-filter: blur(8px);
         }
 
@@ -60,12 +60,12 @@
         .brand img {
             width: 38px;
             height: 38px;
-            filter: drop-shadow(0 0 16px rgba(155, 28, 46, 0.3));
+            filter: drop-shadow(0 0 16px rgba(221, 157, 52, 0.25));
             transition: filter 0.3s;
         }
 
         .brand img:hover {
-            filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5));
+            filter: drop-shadow(0 0 24px rgba(221, 157, 52, 0.4));
         }
 
         .brand h1 {
@@ -73,7 +73,7 @@
             font-weight: 400;
             letter-spacing: 1.5px;
             color: #f5e6c8;
-            text-shadow: 0 0 30px rgba(155, 28, 46, 0.15);
+            text-shadow: 0 0 30px rgba(221, 157, 52, 0.1);
         }
 
         .brand h1 small {
@@ -101,27 +101,27 @@
         }
 
         .nav-links a:hover {
-            color: #ff7b87;
-            border-bottom-color: #ff7b87;
+            color: #dd9d34;
+            border-bottom-color: #dd9d34;
         }
 
         .back-btn {
-            color: #ff7b87;
+            color: #dd9d34;
             cursor: pointer;
             padding: 4px 12px;
-            border: 1px solid rgba(155, 28, 46, 0.15);
+            border: 1px solid rgba(221, 157, 52, 0.15);
             border-radius: 20px;
             font-size: 11px;
             transition: all 0.25s;
-            background: rgba(155, 28, 46, 0.05);
+            background: rgba(221, 157, 52, 0.05);
             display: none;
             align-items: center;
             gap: 6px;
         }
 
         .back-btn:hover {
-            background: rgba(155, 28, 46, 0.1);
-            border-color: rgba(155, 28, 46, 0.3);
+            background: rgba(221, 157, 52, 0.1);
+            border-color: rgba(221, 157, 52, 0.3);
         }
 
         .back-btn.show {
@@ -136,7 +136,7 @@
             padding: 12px 24px;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 12px;
-            border: 1px solid rgba(155, 28, 46, 0.1);
+            border: 1px solid rgba(221, 157, 52, 0.06);
             font-size: 13px;
         }
 
@@ -163,9 +163,9 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(155, 28, 46, 0.12);
-            color: #ff7b87;
-            border: 1px solid rgba(155, 28, 46, 0.2);
+            background: rgba(221, 157, 52, 0.1);
+            color: #dd9d34;
+            border: 1px solid rgba(221, 157, 52, 0.2);
             padding: 4px 16px;
             border-radius: 20px;
             font-size: 10px;
@@ -178,10 +178,10 @@
         }
 
         .btn-blocks:hover {
-            background: rgba(155, 28, 46, 0.2);
-            border-color: rgba(155, 28, 46, 0.4);
+            background: rgba(221, 157, 52, 0.2);
+            border-color: rgba(221, 157, 52, 0.4);
             transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(155, 28, 46, 0.2);
+            box-shadow: 0 4px 20px rgba(221, 157, 52, 0.2);
         }
 
         .btn-blocks .icon {
@@ -209,18 +209,18 @@
             background: rgba(255, 255, 255, 0.03);
             border-radius: 14px;
             padding: 2px 2px 2px 22px;
-            border: 1px solid rgba(155, 28, 46, 0.15);
+            border: 1px solid rgba(221, 157, 52, 0.1);
             transition: all 0.3s ease;
         }
 
         .search-section:focus-within {
-            border-color: rgba(155, 28, 46, 0.4);
-            box-shadow: 0 0 0 4px rgba(155, 28, 46, 0.06);
+            border-color: rgba(221, 157, 52, 0.35);
+            box-shadow: 0 0 0 4px rgba(221, 157, 52, 0.04), 0 0 30px rgba(221, 157, 52, 0.02);
             background: rgba(255, 255, 255, 0.04);
         }
 
         .search-section .prompt {
-            color: #ff7b87;
+            color: #dd9d34;
             font-size: 16px;
             user-select: none;
             transition: transform 0.2s;
@@ -269,8 +269,8 @@
         }
 
         .search-section .shortcuts kbd:hover {
-            background: rgba(155, 28, 46, 0.06);
-            border-color: rgba(155, 28, 46, 0.1);
+            background: rgba(221, 157, 52, 0.06);
+            border-color: rgba(221, 157, 52, 0.1);
             color: #8a8275;
         }
 
@@ -279,7 +279,7 @@
             min-height: 400px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 14px;
-            border: 1px solid rgba(155, 28, 46, 0.06);
+            border: 1px solid rgba(221, 157, 52, 0.06);
             padding: 24px 28px;
             overflow-y: auto;
             box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.2);
@@ -288,7 +288,7 @@
         }
 
         .output-wrapper:hover {
-            border-color: rgba(155, 28, 46, 0.1);
+            border-color: rgba(221, 157, 52, 0.1);
         }
 
         .output-wrapper::-webkit-scrollbar {
@@ -300,7 +300,7 @@
         }
 
         .output-wrapper::-webkit-scrollbar-thumb {
-            background: rgba(155, 28, 46, 0.2);
+            background: rgba(221, 157, 52, 0.2);
             border-radius: 10px;
         }
 
@@ -315,21 +315,21 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #ff7b87;
+            color: #dd9d34;
             font-size: 14px;
             padding-bottom: 14px;
-            border-bottom: 1px solid rgba(155, 28, 46, 0.06);
+            border-bottom: 1px solid rgba(221, 157, 52, 0.06);
             margin-bottom: 18px;
         }
 
         #output .cmd-line .tag {
-            background: rgba(155, 28, 46, 0.1);
+            background: rgba(221, 157, 52, 0.08);
             padding: 2px 16px;
             border-radius: 20px;
             font-size: 11px;
-            color: #ff7b87;
+            color: #dd9d34;
             letter-spacing: 0.5px;
-            border: 1px solid rgba(155, 28, 46, 0.06);
+            border: 1px solid rgba(221, 157, 52, 0.06);
         }
 
         #output .row {
@@ -353,27 +353,27 @@
         }
 
         #output .row .val.gold {
-            color: #ff7b87;
+            color: #dd9d34;
         }
 
         #output .row .val .link {
-            color: #ff7b87;
+            color: #dd9d34;
             text-decoration: none;
             transition: all 0.2s;
-            border-bottom: 1px solid rgba(155, 28, 46, 0.15);
+            border-bottom: 1px solid rgba(221, 157, 52, 0.15);
             padding-bottom: 1px;
             word-break: break-all;
             cursor: pointer;
         }
 
         #output .row .val .link:hover {
-            color: #ff9ba9;
-            border-bottom-color: #ff7b87;
+            color: #ffd170;
+            border-bottom-color: #dd9d34;
         }
 
         #output .divider {
             height: 1px;
-            background: linear-gradient(to right, rgba(155, 28, 46, 0.08), transparent);
+            background: linear-gradient(to right, rgba(221, 157, 52, 0.08), transparent);
             margin: 14px 0;
         }
 
@@ -381,29 +381,29 @@
             background: rgba(255, 255, 255, 0.02);
             border-radius: 10px;
             padding: 10px 16px;
-            border-left: 2px solid rgba(155, 28, 46, 0.12);
+            border-left: 2px solid rgba(221, 157, 52, 0.12);
             margin: 4px 0;
             transition: all 0.15s;
         }
 
         #output .tx-item:hover {
             background: rgba(255, 255, 255, 0.04);
-            border-left-color: rgba(155, 28, 46, 0.25);
+            border-left-color: rgba(221, 157, 52, 0.25);
         }
 
         #output .tx-item .txid-link {
-            color: #ff7b87;
+            color: #dd9d34;
             text-decoration: none;
             font-size: 13px;
             word-break: break-all;
             transition: all 0.2s;
-            border-bottom: 1px solid rgba(155, 28, 46, 0.1);
+            border-bottom: 1px solid rgba(221, 157, 52, 0.1);
             cursor: pointer;
         }
 
         #output .tx-item .txid-link:hover {
-            color: #ff9ba9;
-            border-bottom-color: #ff7b87;
+            color: #ffd170;
+            border-bottom-color: #dd9d34;
         }
 
         #output .tx-item .tx-meta {
@@ -415,11 +415,29 @@
             margin-top: 2px;
         }
 
+        #output .tx-item .tx-meta .shielded-badge {
+            color: #dd9d34;
+            background: rgba(221, 157, 52, 0.08);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            border: 1px solid rgba(221, 157, 52, 0.08);
+        }
+
+        #output .tx-item .tx-meta .transparent-badge {
+            color: #5a5348;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
         #output .copy-btn {
             margin-top: 18px;
-            background: rgba(155, 28, 46, 0.06);
-            border: 1px solid rgba(155, 28, 46, 0.12);
-            color: #ff7b87;
+            background: rgba(221, 157, 52, 0.06);
+            border: 1px solid rgba(221, 157, 52, 0.12);
+            color: #dd9d34;
             font-family: 'Lucida Console', monospace;
             font-size: 12px;
             padding: 7px 24px;
@@ -430,9 +448,9 @@
         }
 
         #output .copy-btn:hover {
-            background: rgba(155, 28, 46, 0.1);
-            border-color: #ff7b87;
-            box-shadow: 0 0 30px rgba(155, 28, 46, 0.04);
+            background: rgba(221, 157, 52, 0.1);
+            border-color: #dd9d34;
+            box-shadow: 0 0 30px rgba(221, 157, 52, 0.04);
         }
 
         #output .placeholder {
@@ -468,8 +486,8 @@
             display: inline-block;
             width: 18px;
             height: 18px;
-            border: 2px solid rgba(155, 28, 46, 0.1);
-            border-top-color: #ff7b87;
+            border: 2px solid rgba(221, 157, 52, 0.1);
+            border-top-color: #dd9d34;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
         }
@@ -489,7 +507,7 @@
             padding: 14px 24px;
             background: rgba(255, 255, 255, 0.01);
             border-radius: 12px;
-            border: 1px solid rgba(155, 28, 46, 0.04);
+            border: 1px solid rgba(221, 157, 52, 0.04);
             font-size: 11px;
             color: #3d3830;
         }
@@ -501,7 +519,7 @@
         }
 
         .footer-bar a:hover {
-            color: #ff7b87;
+            color: #dd9d34;
         }
 
         .footer-bar .api {
@@ -514,8 +532,8 @@
         }
 
         .footer-bar .api:hover {
-            border-color: rgba(155, 28, 46, 0.08);
-            background: rgba(155, 28, 46, 0.02);
+            border-color: rgba(221, 157, 52, 0.08);
+            background: rgba(221, 157, 52, 0.02);
         }
 
         .toast {
@@ -523,12 +541,12 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(80px);
-            background: rgba(155, 28, 46, 0.08);
+            background: rgba(221, 157, 52, 0.08);
             backdrop-filter: blur(12px);
             color: #f5ede4;
             padding: 10px 32px;
             border-radius: 40px;
-            border: 1px solid rgba(155, 28, 46, 0.12);
+            border: 1px solid rgba(221, 157, 52, 0.12);
             font-family: 'Lucida Console', monospace;
             font-size: 12px;
             opacity: 0;
@@ -563,12 +581,12 @@
         }
 
         .breadcrumb .crumb:hover {
-            color: #ff7b87;
-            border-bottom-color: rgba(155, 28, 46, 0.2);
+            color: #dd9d34;
+            border-bottom-color: rgba(221, 157, 52, 0.2);
         }
 
         .breadcrumb .crumb.current {
-            color: #ff7b87;
+            color: #dd9d34;
             cursor: default;
             border-bottom-color: transparent;
         }
@@ -577,50 +595,58 @@
             color: #3d3830;
         }
 
-        /* ─── SPARK DETAILS ─── */
-        .spark-detail {
+        .shielded-detail {
             padding-left: 20px;
             font-size: 12px;
             color: #8a8275;
             word-break: break-all;
-            border-left: 1px solid rgba(155, 28, 46, 0.1);
+            border-left: 1px solid rgba(221, 157, 52, 0.06);
             margin: 4px 0 8px 8px;
         }
 
-        .spark-detail .sub-key {
+        .shielded-detail .sub-key {
             color: #6a6255;
-            min-width: 100px;
+            min-width: 110px;
             display: inline-block;
             font-size: 11px;
             letter-spacing: 0.3px;
         }
 
-        .spark-detail .sub-val {
+        .shielded-detail .sub-key.gold {
+            color: #dd9d34;
+        }
+
+        .shielded-detail .sub-val {
             color: #e0d8cc;
             font-size: 12px;
         }
 
-        .spark-detail .sub-val.gold {
-            color: #ff7b87;
+        .shielded-detail .sub-val.gold {
+            color: #dd9d34;
         }
 
-        .spark-detail .action-header {
-            color: #ff7b87;
+        .shielded-detail .sub-val.small {
+            font-size: 11px;
+            color: #5a5348;
+        }
+
+        .shielded-detail .action-header {
+            color: #dd9d34;
             font-size: 12px;
             padding: 6px 0 2px 0;
             letter-spacing: 0.3px;
         }
 
-        .spark-detail .action-header .badge {
-            background: rgba(155, 28, 46, 0.06);
+        .shielded-detail .action-header .badge {
+            background: rgba(221, 157, 52, 0.06);
             padding: 0 10px;
             border-radius: 12px;
             font-size: 10px;
-            color: #ff7b87;
-            border: 1px solid rgba(155, 28, 46, 0.06);
+            color: #dd9d34;
+            border: 1px solid rgba(221, 157, 52, 0.06);
         }
 
-        .spark-field {
+        .shielded-field {
             padding: 1px 0 1px 16px;
             display: flex;
             flex-wrap: wrap;
@@ -628,30 +654,51 @@
             gap: 2px 8px;
         }
 
-        .spark-field .field-key {
+        .shielded-field .field-key {
             color: #5a5348;
-            min-width: 80px;
+            min-width: 100px;
             font-size: 11px;
             letter-spacing: 0.2px;
         }
 
-        .spark-field .field-key.gold {
-            color: #ff7b87;
+        .shielded-field .field-key.gold {
+            color: #dd9d34;
         }
 
-        .spark-field .field-val {
+        .shielded-field .field-val {
             color: #e0d8cc;
             word-break: break-all;
             font-size: 12px;
         }
 
-        .spark-field .field-val.gold {
-            color: #ff7b87;
+        .shielded-field .field-val.gold {
+            color: #dd9d34;
         }
 
-        .spark-field .field-val.small {
+        .shielded-field .field-val.small {
             font-size: 11px;
             color: #5a5348;
+        }
+
+        @media (max-width: 1024px) {
+            .app {
+                padding: 16px 20px;
+                gap: 16px;
+            }
+            .stats-bar {
+                gap: 4px 20px;
+                padding: 10px 18px;
+                font-size: 12px;
+            }
+            .shielded-detail {
+                padding-left: 12px;
+            }
+            .shielded-detail .sub-key {
+                min-width: 80px;
+            }
+            .shielded-field .field-key {
+                min-width: 70px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -659,87 +706,84 @@
                 padding: 12px 14px;
                 gap: 12px;
             }
-
             .header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 10px;
                 padding: 14px 18px;
             }
-
             .brand h1 {
-                font-size: 17px;
+                font-size: 18px;
             }
-
             .brand img {
-                width: 30px;
-                height: 30px;
+                width: 32px;
+                height: 32px;
             }
-
             .nav-links {
                 font-size: 11px;
                 gap: 2px 14px;
             }
-
+            .back-btn {
+                font-size: 10px;
+                padding: 3px 10px;
+            }
             .stats-bar {
                 font-size: 11px;
                 padding: 8px 14px;
                 gap: 4px 16px;
             }
-
             .btn-blocks {
                 font-size: 9px;
                 padding: 3px 12px;
                 margin-left: 0;
             }
-
             .search-section {
                 padding: 2px 2px 2px 14px;
             }
-
             .search-section input {
                 font-size: 14px;
                 padding: 12px 4px;
             }
-
             .search-section .shortcuts {
                 display: none;
             }
-
             .output-wrapper {
                 padding: 16px 18px;
                 min-height: 200px;
             }
-
             #output {
                 font-size: 12px;
             }
-
             #output .row .key {
                 min-width: 70px;
                 font-size: 11px;
             }
-
             .footer-bar {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 6px;
                 padding: 12px 18px;
             }
-
             .footer-bar .api {
                 font-size: 10px;
                 padding: 2px 14px;
             }
-
-            .spark-detail {
-                padding-left: 12px;
+            .breadcrumb {
+                font-size: 10px;
             }
-            .spark-detail .sub-key {
-                min-width: 70px;
+            .shielded-detail {
+                padding-left: 8px;
             }
-            .spark-field .field-key {
+            .shielded-detail .sub-key {
                 min-width: 60px;
+                font-size: 10px;
+            }
+            .shielded-field .field-key {
+                min-width: 60px;
+                font-size: 10px;
+            }
+            .shielded-field .field-val {
+                font-size: 11px;
             }
         }
 
@@ -748,77 +792,89 @@
                 padding: 8px 10px;
                 gap: 10px;
             }
-
             .header {
                 padding: 10px 14px;
             }
-
             .brand h1 {
                 font-size: 15px;
             }
-
             .brand h1 small {
                 font-size: 10px;
             }
-
             .brand img {
                 width: 26px;
                 height: 26px;
             }
-
             .stats-bar {
                 font-size: 10px;
                 padding: 6px 12px;
                 gap: 3px 12px;
             }
-
             .stats-bar .value {
                 font-size: 12px;
             }
-
             .btn-blocks {
                 font-size: 8px;
                 padding: 2px 10px;
                 gap: 4px;
                 margin-left: 0;
             }
-
             .btn-blocks .icon {
                 font-size: 10px;
             }
-
             .btn-blocks .pulse {
                 width: 5px;
                 height: 5px;
             }
-
             .search-section input {
                 font-size: 13px;
                 padding: 10px 4px;
             }
-
             .output-wrapper {
                 padding: 12px 14px;
                 min-height: 150px;
             }
-
             #output {
                 font-size: 11px;
                 line-height: 1.6;
             }
-
             #output .row .key {
                 min-width: 60px;
                 font-size: 10px;
             }
-
             #output .tx-item {
                 padding: 8px 12px;
             }
-
             #output .copy-btn {
                 font-size: 11px;
                 padding: 5px 16px;
+            }
+            .breadcrumb {
+                font-size: 9px;
+                gap: 4px 8px;
+            }
+            .breadcrumb .sep {
+                display: none;
+            }
+            .breadcrumb .crumb {
+                border: 1px solid rgba(221, 157, 52, 0.06);
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 9px;
+            }
+            .shielded-detail {
+                padding-left: 4px;
+            }
+            .shielded-detail .sub-key {
+                min-width: 50px;
+                font-size: 9px;
+            }
+            .shielded-field .field-key {
+                min-width: 50px;
+                font-size: 9px;
+            }
+            .shielded-field .field-val {
+                font-size: 10px;
             }
         }
 
@@ -827,11 +883,9 @@
                 max-width: 1600px;
                 padding: 24px 40px;
             }
-
             #output {
                 font-size: 14px;
             }
-
             #output .row .key {
                 min-width: 120px;
             }
@@ -844,23 +898,25 @@
 
         <header class="header">
             <div class="brand">
-                <img src="assets/firo.png" alt="Firo">
-                <h1>Firo <small>explorador</small></h1>
+                <img src="assets/zcash.png" alt="Zcash">
+                <h1>Zcash <small>explorador</small></h1>
             </div>
             <nav class="nav-links">
                 <span class="back-btn" id="backBtn" onclick="goBack()">← volver</span>
-                <a href="https://carover0.github.io/pagina/firo-nodo">[NODO]</a>
-                <a href="https://carover0.github.io/pagina/firo-consola">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a>
+                <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a>
                 <a href="https://carover0.github.io/pagina/">[INICIO]</a>
             </nav>
         </header>
 
         <div class="stats-bar">
             <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
-            <div class="stat"><span class="label">DIFICULTAD</span><span class="value" id="stat-difficulty">—</span></div>
             <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
-            <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
+            <div class="stat"><span class="label">LIGHTWALLET</span><span style="color:#5a5348;font-size:12px;">carover0.xyz:9067</span></div>
+            <a href="https://carover0.github.io/pagina/zec-bloques.html" target="_self" class="btn-blocks">
                 Bloques en tiempo real
                 <span class="pulse"></span>
             </a>
@@ -881,15 +937,15 @@
             <div id="output">
                 <div class="placeholder">
                     <div class="icon">⧫</div>
-                    <div>explorador de bloques Firo</div>
+                    <div>explorador de bloques Zcash</div>
                     <div class="sub">bloque · transacción · dirección</div>
                 </div>
             </div>
         </div>
 
         <footer class="footer-bar">
-            <span>API · <a href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/api/firo.json</a></span>
-            <span style="font-size:10px;color:#2d2820;">Firo mainnet</span>
+            <span>API · <a href="https://carover0.xyz/zec/status.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/zec/status.json</a></span>
+            <span style="font-size:10px;color:#2d2820;">Zcash mainnet</span>
         </footer>
 
     </div>
@@ -897,9 +953,9 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const API_URL = "https://carover0.xyz/api/firo/rpc.php";
-        const TOKEN = "firo2026";
-        const STATUS_URL = "https://carover0.xyz/api/firo.json";
+        const API_URL = "https://carover0.xyz/api/zec/rpc.php";
+        const TOKEN = "zec2026";
+        const STATUS_URL = "https://carover0.xyz/zec/status.json";
 
         let historyStack = [];
         let currentIndex = -1;
@@ -957,7 +1013,7 @@
                 const idx = start + i;
                 const entry = entries[i];
                 const isCurrent = idx === currentIndex;
-                const label = entry.label.length > 30 ? entry.label.substring(0, 28) + '…' : entry.label;
+                const label = entry.label;
                 if (isCurrent) {
                     html += `<span class="crumb current">${escapeHtml(label)}</span>`;
                 } else {
@@ -987,6 +1043,7 @@
             }
         }
 
+        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -1011,9 +1068,29 @@
                 const cmd = detectCommand(decoded);
                 const label = getLabelForQuery(cmd);
                 pushHistory(cmd, label);
-                updateUrlWithSearch(cmd);
+                const cleanValue = getCleanValue(cmd);
+                updateUrlWithSearch(cleanValue);
                 executeSearch(cmd);
             }
+        }
+
+        function getCleanValue(cmd) {
+            if (cmd.startsWith('getblock ')) {
+                return cmd.replace('getblock ', '');
+            }
+            if (cmd.startsWith('getrawtransaction ')) {
+                return cmd.replace('getrawtransaction ', '').replace(' 1', '');
+            }
+            if (cmd.startsWith('getaddressbalance ')) {
+                return cmd.replace('getaddressbalance ', '');
+            }
+            if (cmd.startsWith('validateaddress ') || cmd.startsWith('z_validateaddress ') || cmd.startsWith('z_getbalance ')) {
+                return cmd.split(' ')[1] || cmd;
+            }
+            if (cmd.startsWith('UA:')) {
+                return cmd;
+            }
+            return cmd;
         }
 
         function showToast(msg) {
@@ -1029,49 +1106,35 @@
             const queryParam = urlParams.get('q');
             if (queryParam) return queryParam;
             const path = window.location.pathname;
-            const match = path.match(/\/firo-explorer\/(.+)$/);
+            const match = path.match(/\/zec-explorer\/(.+)$/);
             if (match && match[1]) return match[1];
             return null;
         }
 
         function updateUrlWithSearch(parametro) {
             const basePath = window.location.origin + '/pagina';
-            const newUrl = basePath + '/firo-explorer/' + encodeURIComponent(parametro);
+            const newUrl = basePath + '/zec-explorer/' + encodeURIComponent(parametro);
             window.history.replaceState({}, '', newUrl);
         }
 
         function detectCommand(input) {
             input = input.trim();
+            if (input.startsWith('UA:')) return input;
             if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
-                input.startsWith('validateaddress') || input.startsWith('getaddressbalance') ||
-                input.startsWith('HASH:')) {
+                input.startsWith('validateaddress') || input.startsWith('z_validateaddress') ||
+                input.startsWith('z_listunifiedreceivers') || input.startsWith('getaddressbalance') ||
+                input.startsWith('z_getbalance')) {
                 return input;
             }
-            if (/^\d+$/.test(input)) return `getblockhash ${input}`;
-            if (/^[a-fA-F0-9]{64}$/.test(input)) return `HASH:${input}`;
-            if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
-                return `validateaddress ${input}`;
+            if (input.startsWith('u1') && input.length > 100) return `UA:${input}`;
+            if (/^\d+$/.test(input)) return `getblock ${input}`;
+            if (/^[a-fA-F0-9]{64}$/.test(input)) {
+                if (/^0{4,}[a-fA-F0-9]*$/.test(input)) return `getblock ${input}`;
+                else return `getrawtransaction ${input} 1`;
             }
-            if (input.length > 50) {
-                if (input.startsWith('validateaddress')) return input;
-                return `validateaddress ${input}`;
-            }
+            if (input.startsWith('t1') || input.startsWith('t3') || input.startsWith('zs')) return `getaddressbalance ${input}`;
+            if (input.length > 50) return `validateaddress ${input}`;
             return input;
-        }
-
-        function getLabelForQuery(q) {
-            const s = q.trim();
-            if (s.startsWith('getblock ')) return 'Bloque ' + s.replace('getblock ', '');
-            if (s.startsWith('getrawtransaction ')) return 'TX ' + s.replace('getrawtransaction ', '').replace(' 1', '')
-                .substring(0, 16) + '…';
-            if (s.startsWith('getaddressbalance ')) return 'Dirección ' + s.replace('getaddressbalance ', '').substring(0, 12) +
-                '…';
-            if (s.startsWith('validateaddress ') || s.startsWith('z_validateaddress ')) return 'Validar ' + s.split(' ')[1]
-                .substring(0, 12) + '…';
-            if (s.startsWith('UA:')) return 'UA ' + s.substring(3, 16) + '…';
-            if (/^\d+$/.test(s)) return 'Bloque ' + s;
-            if (/^[a-fA-F0-9]{64}$/.test(s)) return 'TX ' + s.substring(0, 16) + '…';
-            return s.substring(0, 20) + (s.length > 20 ? '…' : '');
         }
 
         // ─── STATS ──────────────────────────────────────────────────────
@@ -1079,52 +1142,19 @@
             try {
                 const r = await fetch(STATUS_URL);
                 const d = await r.json();
-                document.getElementById('stat-height').textContent = d.blockchain?.blocks?.toLocaleString() || '---';
-                document.getElementById('stat-difficulty').textContent = d.blockchain?.difficulty?.toFixed(2) || '---';
+                document.getElementById('stat-height').textContent = d.chain?.height?.toLocaleString() || '---';
                 document.getElementById('stat-connections').textContent = d.network?.connections || '---';
-                document.getElementById('stat-mempool').textContent = d.mempool?.txcount || '0';
+                document.getElementById('stat-mempool').textContent = d.mempool?.size || '0';
             } catch (e) {}
         }
 
-        async function getVinValue(txid, vout) {
+        // ─── VIN HELPER ─────────────────────────────────────────────────
+        async function getVinValue(txid, voutIndex) {
             try {
-                const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
-                const data = await r.json();
-                if (data.result && data.result.vout && data.result.vout[vout]) {
-                    return data.result.vout[vout].value;
-                }
-                return null;
+                const prevTx = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`).then(r => r.json());
+                if (!prevTx.result?.vout?.[voutIndex]) return null;
+                return prevTx.result.vout[voutIndex].value;
             } catch (e) { return null; }
-        }
-
-        // ─── DETECTAR TIPO DE TRANSACCION FIRO ─────────────────────────
-        function getTxType(tx) {
-            if (!tx) return 'desconocida';
-
-            // Coinbase
-            if (tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase) return 'coinbase';
-
-            // Spark 
-            if (tx.sparkData) return 'spark';
-            if (tx.vin && tx.vin.some(v => v.lTags && v.lTags.length > 0)) return 'spark';
-            if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return 'spark';
-            if (tx.bindingSig) return 'spark';
-
-            // Transparente
-            if (tx.vin && tx.vin.length > 0 && tx.vout && tx.vout.length > 0) return 'transparente';
-
-            return 'desconocida';
-        }
-
-        function getTxTypeLabel(tx) {
-            const type = getTxType(tx);
-            const labels = {
-                'coinbase': '⛏ COINBASE',
-                'spark': '🛡 SPARK (PRIVADO)',
-                'transparente': '▸ transparente',
-                'desconocida': '▸ desconocida'
-            };
-            return labels[type] || '▸ desconocida';
         }
 
         // ─── RENDER ─────────────────────────────────────────────────────
@@ -1136,7 +1166,7 @@
             renderOutput(`
             <div class="placeholder">
               <div class="icon">⧫</div>
-              <div>explorador de bloques Firo</div>
+              <div>explorador de bloques Zcash</div>
               <div class="sub">bloque · transacción · dirección</div>
             </div>
           `);
@@ -1151,80 +1181,308 @@
           `);
         }
 
-        function renderSparkDetails(t) {
-            let html = '';
+        function getLabelForQuery(q) {
+            const s = q.trim();
 
-            html += `<div class="divider"></div>`;
-            html += `<div class="row"><span class="key">🛡 SPARK</span><span class="val gold">transacción privada</span></div>`;
-
-            // Datos Spark
-            if (t.sparkData) {
-                html += `<div class="spark-detail">`;
-                html += `<div class="action-header"><span class="badge">sparkData</span></div>`;
-                html +=
-                    `<div class="spark-field"><span class="field-key">tamaño</span><span class="field-val">${(t.sparkData.length / 2).toFixed(0)} bytes</span></div>`;
-                html +=
-                    `<div class="spark-field"><span class="field-key">hex</span><span class="field-val small">${escapeHtml(t.sparkData.substring(0, 120))}…</span></div>`;
-                html += `</div>`;
+            if (/^\d+$/.test(s)) {
+                return 'Bloque ' + s;
             }
 
-            // nullifiers
-            if (t.vin) {
-                let hasLTags = false;
-                t.vin.forEach((vin, i) => {
-                    if (vin.lTags && vin.lTags.length > 0) {
-                        if (!hasLTags) {
-                            html += `<div class="spark-detail">`;
-                            html += `<div class="action-header"><span class="badge">nullifiers (lTags)</span></div>`;
-                            hasLTags = true;
-                        }
-                        vin.lTags.forEach((tag, j) => {
-                            html +=
-                                `<div class="spark-field"><span class="field-key">#${i}.${j}</span><span class="field-val">${escapeHtml(tag)}</span></div>`;
-                        });
-                    }
-                });
-                if (hasLTags) html += `</div>`;
+            if (s.startsWith('getblock ')) {
+                const value = s.replace('getblock ', '');
+                if (/^\d+$/.test(value)) {
+                    return 'Bloque ' + value;
+                }
+                return 'Bloque ' + formatHashLabel(value);
             }
 
-            // nFees
-            if (t.vin) {
-                let totalFees = 0;
-                t.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
-                if (totalFees > 0) {
+            if (s.startsWith('getrawtransaction ')) {
+                const txid = s.replace('getrawtransaction ', '').replace(' 1', '');
+                return 'TX ' + formatHashLabel(txid);
+            }
+
+            if (/^[a-fA-F0-9]{64}$/.test(s)) {
+                return 'TX ' + formatHashLabel(s);
+            }
+
+            if (s.startsWith('getaddressbalance ') || s.startsWith('validateaddress ') ||
+                s.startsWith('z_validateaddress ') || s.startsWith('z_getbalance ')) {
+                const addr = s.split(' ')[1] || '';
+                if (addr.startsWith('t1') || addr.startsWith('t3')) {
+                    return 'Dirección ' + formatAddressLabel(addr);
+                }
+                if (addr.startsWith('zs')) {
+                    return 'Z-Address ' + formatAddressLabel(addr);
+                }
+                if (addr.startsWith('u1')) {
+                    return 'UA ' + formatAddressLabel(addr);
+                }
+                return 'Dirección ' + formatAddressLabel(addr);
+            }
+
+            if (s.startsWith('UA:')) {
+                return 'UA ' + formatAddressLabel(s.substring(3));
+            }
+
+            if (s.startsWith('t1') || s.startsWith('t3') || s.startsWith('zs') || s.startsWith('u1')) {
+                if (s.startsWith('zs')) return 'Z-Address ' + formatAddressLabel(s);
+                if (s.startsWith('u1')) return 'UA ' + formatAddressLabel(s);
+                return 'Dirección ' + formatAddressLabel(s);
+            }
+
+            return s.substring(0, 20) + (s.length > 20 ? '…' : '');
+        }
+
+        function formatHashLabel(hash) {
+            if (!hash || hash.length < 20) return hash;
+            return hash.substring(0, 10) + '…' + hash.substring(hash.length - 10);
+        }
+
+        function formatAddressLabel(addr) {
+            if (!addr || addr.length < 20) return addr;
+            return addr.substring(0, 10) + '…' + addr.substring(addr.length - 10);
+        }
+
+        // ─── DETECTAR TRANSACCIÓN BLINDADA ─────────────────────────────
+        function isShieldedTx(tx) {
+            if (!tx) return false;
+            if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return true;
+            if (tx.orchard?.actions?.length > 0) return true;
+            if (tx.ironwood?.actions?.length > 0) return true;
+            if (tx.vjoinsplit?.length > 0) return true;
+            if (tx.version >= 5 && (!tx.vin || tx.vin.length === 0) && (!tx.vout || tx.vout.length === 0)) return true;
+            if (tx.bindingSig) return true;
+            return false;
+        }
+
+        // ─── OBTENER TIPO DE TRANSACCIÓN ──────────────────────────────
+        function getTxType(tx) {
+            if (!tx) return 'desconocida';
+            if (tx.ironwood?.actions?.length > 0) return 'ironwood';
+            if (tx.orchard?.actions?.length > 0) return 'orchard';
+            if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return 'sapling';
+            if (tx.vjoinsplit?.length > 0) return 'sprout';
+            if (tx.version >= 5 && (!tx.vin || tx.vin.length === 0) && (!tx.vout || tx.vout.length === 0)) return 'v5shielded';
+            if (tx.bindingSig) return 'shielded';
+            return 'transparente';
+        }
+
+        function getTxTypeLabel(tx) {
+            const type = getTxType(tx);
+            const labels = {
+                'ironwood': '🛡 IRONWOOD',
+                'orchard': '🛡 ORCHARD',
+                'sapling': '🛡 SAPLING',
+                'sprout': '🛡 SPROUT',
+                'v5shielded': '🛡 v5 SHIELDED',
+                'shielded': '🛡 BLINDADA',
+                'transparente': '▸ transparente'
+            };
+            return labels[type] || '▸ transparente';
+        }
+
+// ─── RENDER SHIELDED DETAILS ────────────────────────────────────
+function renderShieldedDetails(t) {
+    let html = '';
+
+    // ── SPROUT ──
+    if (t.vjoinsplit && t.vjoinsplit.length > 0) {
+        html += `<div class="divider"></div>`;
+        html += `<div class="row"><span class="key">🛡 SPROUT</span><span class="val gold">${t.vjoinsplit.length} joinsplits</span></div>`;
+        for (let i = 0; i < t.vjoinsplit.length; i++) {
+            const js = t.vjoinsplit[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">joinsplit #${i}</span></div>`;
+            if (js.vpub_old) html +=
+                `<div class="shielded-field"><span class="field-key gold">vpub_old</span><span class="field-val gold">${(js.vpub_old / 1e8).toFixed(8)} ZEC</span></div>`;
+            if (js.vpub_new) html +=
+                `<div class="shielded-field"><span class="field-key gold">vpub_new</span><span class="field-val gold">${(js.vpub_new / 1e8).toFixed(8)} ZEC</span></div>`;
+            if (js.anchor) html +=
+                `<div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.anchor)}</span></div>`;
+            if (js.nullifiers && js.nullifiers.length > 0) {
+                for (let n = 0; n < js.nullifiers.length; n++) {
                     html +=
-                        `<div class="spark-detail"><div class="spark-field"><span class="field-key gold">fee</span><span class="field-val gold">${totalFees.toFixed(8)} FIRO</span></div></div>`;
+                        `<div class="shielded-field"><span class="field-key">nullifier #${n}</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.nullifiers[n])}</span></div>`;
                 }
             }
-
-            // bindingSig
-            if (t.bindingSig) {
-                html += `<div class="spark-detail">`;
-                html +=
-                    `<div class="spark-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.bindingSig)}</span></div>`;
-                html += `</div>`;
+            if (js.commitments && js.commitments.length > 0) {
+                for (let c = 0; c < js.commitments.length; c++) {
+                    html +=
+                        `<div class="shielded-field"><span class="field-key">commitment #${c}</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.commitments[c])}</span></div>`;
+                }
             }
-
-            // Resumen Spark
-            let totalShielded = 0;
-            if (t.vin) {
-                t.vin.forEach(vin => {
-                    if (vin.value !== undefined) totalShielded += vin.value;
-                });
+            if (js.macs && js.macs.length > 0) {
+                for (let m = 0; m < js.macs.length; m++) {
+                    html +=
+                        `<div class="shielded-field"><span class="field-key">mac #${m}</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.macs[m])}</span></div>`;
+                }
             }
-            if (t.vout) {
-                t.vout.forEach(vout => {
-                    if (vout.value !== undefined && vout.value > 0) totalShielded += vout.value;
-                });
-            }
-
-            html +=
-                `<div class="spark-detail" style="border-left-color: rgba(155,28,46,0.2);margin-top:8px;">`;
-            html +=
-                `<div class="spark-field"><span class="field-key gold">🔒 privado</span><span class="field-val">sin vínculo criptográfico</span></div>`;
+            if (js.proof) html +=
+                `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(js.proof)}</span></div>`;
             html += `</div>`;
+        }
+    }
 
-            return html;
+    // ── SAPLING ──
+    let hasSapling = false;
+    if (t.vShieldedSpend && t.vShieldedSpend.length > 0) {
+        if (!hasSapling) {
+            html += `<div class="divider"></div>`;
+            hasSapling = true;
+        }
+        html +=
+            `<div class="row"><span class="key">🛡 SAPLING</span><span class="val gold">spends ${t.vShieldedSpend.length}</span></div>`;
+        for (let i = 0; i < t.vShieldedSpend.length; i++) {
+            const spend = t.vShieldedSpend[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">spend #${i}</span></div>`;
+            if (spend.nullifier) html +=
+                `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(spend.nullifier)}</span></div>`;
+            if (spend.anchor) html +=
+                `<div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(spend.anchor)}</span></div>`;
+            if (spend.proof) html +=
+                `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(spend.proof)}</span></div>`;
+            html += `</div>`;
+        }
+    }
+
+    if (t.vShieldedOutput && t.vShieldedOutput.length > 0) {
+        if (!hasSapling) {
+            html += `<div class="divider"></div>`;
+            hasSapling = true;
+        }
+        if (!t.vShieldedSpend || t.vShieldedSpend.length === 0) {
+            html += `<div class="row"><span class="key">🛡 SAPLING</span><span class="val gold">outputs ${t.vShieldedOutput.length}</span></div>`;
+        } else {
+            html +=
+                `<div class="row"><span class="key" style="padding-left:14px;"></span><span class="val gold">outputs ${t.vShieldedOutput.length}</span></div>`;
+        }
+        for (let i = 0; i < t.vShieldedOutput.length; i++) {
+            const out = t.vShieldedOutput[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">output #${i}</span></div>`;
+            if (out.cmu) html +=
+                `<div class="shielded-field"><span class="field-key">cmu</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.cmu)}</span></div>`;
+            if (out.ephemeralKey) html +=
+                `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.ephemeralKey)}</span></div>`;
+            if (out.encCiphertext) html +=
+                `<div class="shielded-field"><span class="field-key">encCiphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.encCiphertext)}</span></div>`;
+            if (out.outCiphertext) html +=
+                `<div class="shielded-field"><span class="field-key">outCiphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.outCiphertext)}</span></div>`;
+            if (out.proof) html +=
+                `<div class="shielded-field"><span class="field-key">proof</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(out.proof)}</span></div>`;
+            html += `</div>`;
+        }
+    }
+
+    // ── ORCHARD ──
+    if (t.orchard && t.orchard.actions && t.orchard.actions.length > 0) {
+        html += `<div class="divider"></div>`;
+        html +=
+            `<div class="row"><span class="key">🛡 ORCHARD</span><span class="val gold">${t.orchard.actions.length} acciones</span></div>`;
+
+        for (let i = 0; i < t.orchard.actions.length; i++) {
+            const action = t.orchard.actions[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">acción #${i}</span></div>`;
+            if (action.nullifier) html +=
+                `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.nullifier)}</span></div>`;
+            if (action.commitment) html +=
+                `<div class="shielded-field"><span class="field-key">commitment</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.commitment)}</span></div>`;
+            if (action.ephemeralKey) html +=
+                `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.ephemeralKey)}</span></div>`;
+            if (action.ciphertext) html +=
+                `<div class="shielded-field"><span class="field-key">ciphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.ciphertext)}</span></div>`;
+            html += `</div>`;
+        }
+
+        if (t.orchard.valueBalance !== undefined && t.orchard.valueBalance !== null) {
+            const vb = t.orchard.valueBalance / 1e8;
+            const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+            html +=
+                `<div class="shielded-detail" style="border-left-color: rgba(221,157,52,0.2);"><div class="shielded-field"><span class="field-key gold">balance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+        }
+        if (t.orchard.anchor) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.orchard.anchor)}</span></div></div>`;
+        if (t.orchard.bindingSig) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.orchard.bindingSig)}</span></div></div>`;
+    }
+
+    // ── IRONWOOD ──
+    if (t.ironwood && t.ironwood.actions && t.ironwood.actions.length > 0) {
+        html += `<div class="divider"></div>`;
+        html +=
+            `<div class="row"><span class="key">🛡 IRONWOOD</span><span class="val gold">${t.ironwood.actions.length} acciones</span></div>`;
+
+        for (let i = 0; i < t.ironwood.actions.length; i++) {
+            const action = t.ironwood.actions[i];
+            html += `<div class="shielded-detail">`;
+            html += `<div class="action-header"><span class="badge">acción #${i}</span></div>`;
+            if (action.cv) html +=
+                `<div class="shielded-field"><span class="field-key">cv</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.cv)}</span></div>`;
+            if (action.nullifier) html +=
+                `<div class="shielded-field"><span class="field-key">nullifier</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.nullifier)}</span></div>`;
+            if (action.rk) html +=
+                `<div class="shielded-field"><span class="field-key">rk</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.rk)}</span></div>`;
+            if (action.cmx) html +=
+                `<div class="shielded-field"><span class="field-key">cmx</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.cmx)}</span></div>`;
+            if (action.ephemeralKey) html +=
+                `<div class="shielded-field"><span class="field-key">ephemeralKey</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.ephemeralKey)}</span></div>`;
+            if (action.encCiphertext) html +=
+                `<div class="shielded-field"><span class="field-key">encCiphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.encCiphertext)}</span></div>`;
+            if (action.spendAuthSig) html +=
+                `<div class="shielded-field"><span class="field-key">spendAuthSig</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.spendAuthSig)}</span></div>`;
+            if (action.outCiphertext) html +=
+                `<div class="shielded-field"><span class="field-key">outCiphertext</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(action.outCiphertext)}</span></div>`;
+            html += `</div>`;
+        }
+
+        if (t.ironwood.valueBalance !== undefined && t.ironwood.valueBalance !== null && t.ironwood.valueBalance !== 0) {
+            const vb = t.ironwood.valueBalance;
+            const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+            html +=
+                `<div class="shielded-detail" style="border-left-color: rgba(221,157,52,0.2);"><div class="shielded-field"><span class="field-key gold">balance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+        }
+        if (t.ironwood.anchor) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.ironwood.anchor)}</span></div></div>`;
+        if (t.ironwood.proof) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">proof</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.ironwood.proof)}</span></div></div>`;
+        if (t.ironwood.bindingSig) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.ironwood.bindingSig)}</span></div></div>`;
+        if (t.ironwood.flags) {
+            html +=
+                `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">flags</span><span class="field-val">enableOutputs: ${t.ironwood.flags.enableOutputs}, enableSpends: ${t.ironwood.flags.enableSpends}</span></div></div>`;
+        }
+    }
+
+    // ── v5 SHIELDED ──
+    if (t.version >= 5 && (!t.vin || t.vin.length === 0) && (!t.vout || t.vout.length === 0) &&
+        !t.vShieldedSpend && !t.vShieldedOutput && !t.orchard && !t.ironwood && !t.vjoinsplit) {
+        html += `<div class="divider"></div>`;
+        html += `<div class="row"><span class="key">🛡 v5 SHIELDED</span><span class="val">transacción completamente blindada</span></div>`;
+        if (t.valueBalance !== undefined && t.valueBalance !== null && t.valueBalance !== 0) {
+            const vb = t.valueBalance / 1e8;
+            const label = vb < 0 ? 'entrada (blindado → transparente)' : 'salida (transparente → blindado)';
+            html +=
+                `<div class="shielded-detail"><div class="shielded-field"><span class="field-key gold">valueBalance</span><span class="field-val gold">${Math.abs(vb).toFixed(8)} ZEC</span> <span style="color:#5a5348;font-size:11px;">${label}</span></div></div>`;
+        }
+        if (t.bindingSig) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">bindingSig</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.bindingSig)}</span></div></div>`;
+        if (t.anchor) html +=
+            `<div class="shielded-detail"><div class="shielded-field"><span class="field-key">anchor</span><span class="field-val" style="word-break:break-all;font-size:11px;">${escapeHtml(t.anchor)}</span></div></div>`;
+    }
+
+    return html;
+}
+        // ─── OBTENER DATOS DE TRANSACCION ─────────────────────────────
+        async function fetchTxData(txid) {
+            try {
+                const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction ${txid} 1`);
+                const data = await r.json();
+                return data.result || null;
+            } catch (e) {
+                return null;
+            }
         }
 
         async function executeSearch(q) {
@@ -1233,26 +1491,45 @@
 
             renderLoading();
 
-            if (q.startsWith('HASH:')) {
-                const hash = q.substring(5);
+            // --- UA ---
+            if (raw.startsWith('UA:')) {
+                const ua = raw.substring(3);
+                let res = `<div class="cmd-line"><span class="tag">UA</span> <span style="color:#6a6255;font-size:13px;word-break:break-all;">${escapeHtml(ua)}</span></div>`;
+                res += `<div class="row"><span class="key">dirección</span><span class="val">${makeLink(ua)}</span></div>`;
+
                 try {
-                    const blockTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblock%20${hash}`);
-                    const blockData = await blockTest.json();
-                    if (blockData.result && blockData.result.hash) {
-                        return executeSearch(`getblock ${hash}`);
+                    const validateCmd = `z_validateaddress ${ua}`;
+                    const validateRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(validateCmd)}`);
+                    const validateData = await validateRes.json();
+                    if (validateData.result) {
+                        const v = validateData.result;
+                        res +=
+                            `<div class="row"><span class="key">válida</span><span class="val">${v.isvalid ? '✅ sí' : '❌ no'}</span></div>`;
+                        if (v.ismine !== undefined) res +=
+                            `<div class="row"><span class="key">es mía</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
                     }
                 } catch (e) {}
+
                 try {
-                    const txTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${hash}%201`);
-                    const txData = await txTest.json();
-                    if (txData.result && txData.result.txid) {
-                        return executeSearch(`getrawtransaction ${hash} 1`);
+                    const receiversCmd = `z_listunifiedreceivers ${ua}`;
+                    const receiversRes = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(receiversCmd)}`);
+                    const receiversData = await receiversRes.json();
+                    if (receiversData.result) {
+                        res += `<div class="divider"></div>`;
+                        for (const [k, v] of Object.entries(receiversData.result)) {
+                            res +=
+                                `<div class="row"><span class="key" style="min-width:60px;">${escapeHtml(k)}</span><span class="val" style="font-size:12px;color:#6a6255;">${escapeHtml(v)}</span></div>`;
+                        }
                     }
                 } catch (e) {}
-                renderOutput(`<div class="cmd-line"><span class="tag">✕</span> No se encontró bloque ni transacción con hash ${escapeHtml(hash)}</div>`);
+
+                res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                renderOutput(res);
+                document.getElementById('searchInput').value = '';
                 return;
             }
 
+            // --- comando detectado ---
             const cmd = detectCommand(raw);
 
             try {
@@ -1269,13 +1546,6 @@
                 }
 
                 const result = data.result;
-
-                if (cmd.includes('getblockhash') && typeof result === 'string' && result.length === 64) {
-                    const hash = result;
-                    updateUrlWithSearch(hash);
-                    return executeSearch(`getblock ${hash}`);
-                }
-
                 if (!result) {
                     renderOutput(`
                 <div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>
@@ -1305,26 +1575,29 @@
 
                     if (b.tx && b.tx.length > 0) {
                         const txs = b.tx.slice(0, 50);
-                        // Cargar datos de cada transaccion para detectar tipo
-                        const txPromises = txs.map(async (txid) => {
-                            try {
-                                const txR = await fetch(
-                                    `${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
-                                const txData = await txR.json();
-                                return { txid, data: txData.result };
-                            } catch (e) { return { txid, data: null }; }
+                        // Cargar datos de cada transacción en paralelo
+                        const txPromises = txs.map(async (tx) => {
+                            const txid = typeof tx === 'object' ? tx.txid : tx;
+                            // Si ya es un objeto con datos, usarlo
+                            if (typeof tx === 'object' && (tx.vin || tx.vout || tx.ironwood || tx.orchard)) {
+                                return { txid, data: tx };
+                            }
+                            // Si es solo un string, consultar
+                            const txData = await fetchTxData(txid);
+                            return { txid, data: txData };
                         });
 
                         const txResults = await Promise.all(txPromises);
 
                         for (const { txid, data } of txResults) {
-                            const typeLabel = data ? getTxTypeLabel(data) : '▸ desconocida';
-                            const isSpark = data && getTxType(data) === 'spark';
+                            const isShielded = data ? isShieldedTx(data) : false;
+                            const typeLabel = data ? getTxTypeLabel(data) : '▸ transparente';
+                            const badgeClass = isShielded ? 'shielded-badge' : 'transparent-badge';
 
                             res += `<div class="tx-item">
                         <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
                         <div class="tx-meta">
-                          <span style="${isSpark ? 'color:#ff7b87;' : 'color:#6a6255;'}">${typeLabel}</span>
+                          <span class="${badgeClass}">${typeLabel}</span>
                           ${data && data.vout ? `<span>${data.vout.length} salidas</span>` : ''}
                           ${data && data.vin ? `<span>${data.vin.length} entradas</span>` : ''}
                           ${data && data.size ? `<span>${data.size} bytes</span>` : ''}
@@ -1344,145 +1617,212 @@
                 if (cmd.includes('getrawtransaction') && result) {
                     const t = result;
                     const txid = t.txid || t.hash;
-                    const tipo = getTxType(t);
-                    const tipoLabel = getTxTypeLabel(t);
-                    const moneda = 'FIRO';
+                    const esBlindada = isShieldedTx(t);
 
-                    let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span></div>`;
+                    let tipoLabel = 'TRANSACCIÓN';
+                    let tipoIcon = '█';
+                    if (esBlindada) {
+                        tipoIcon = '🛡';
+                        if (t.ironwood?.actions?.length > 0) tipoLabel = 'IRONWOOD SHIELDED';
+                        else if (t.orchard?.actions?.length > 0) tipoLabel = 'ORCHARD SHIELDED';
+                        else if (t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0) tipoLabel = 'SAPLING SHIELDED';
+                        else if (t.vjoinsplit?.length > 0) tipoLabel = 'SPROUT SHIELDED';
+                        else if (t.version >= 5) tipoLabel = 'v5 SHIELDED';
+                        else tipoLabel = 'BLINDADA';
+                    }
 
-                    res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(txid)}</span></div>`;
+                    let res =
+                        `<div class="cmd-line"><span class="tag">${tipoIcon} ${tipoLabel}</span></div>`;
+
+                    if (txid) {
+                        res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(txid)}</span></div>`;
+                    }
                     res +=
                         `<div class="row"><span class="key">bloque</span><span class="val">${t.blockheight || t.height ? makeLink(String(t.blockheight || t.height)) : 'no confirmada'}</span></div>`;
                     res +=
                         `<div class="row"><span class="key">confirmaciones</span><span class="val">${t.confirmations || 0}</span></div>`;
-                    if (t.blocktime || t.time) {
-                        res +=
-                            `<div class="row"><span class="key">fecha</span><span class="val">${new Date((t.blocktime || t.time)*1000).toLocaleString()}</span></div>`;
-                    }
+                    if (t.blocktime || t.time) res +=
+                        `<div class="row"><span class="key">fecha</span><span class="val">${new Date((t.blocktime || t.time)*1000).toLocaleString()}</span></div>`;
                     res +=
-                        `<div class="row"><span class="key">versión</span><span class="val">${t.version || 'N/A'}${t.type !== undefined ? ' · tipo ' + t.type : ''}</span></div>`;
+                        `<div class="row"><span class="key">versión</span><span class="val">${t.version || 'N/A'} · locktime: ${t.locktime || 0}</span></div>`;
                     if (t.size) res += `<div class="row"><span class="key">tamaño</span><span class="val">${t.size} bytes</span></div>`;
-                    if (t.instantlock) res +=
-                        `<div class="row"><span class="key">instantlock</span><span class="val" style="color:#31db72;">✅ sí</span></div>`;
-                    if (t.chainlock) res +=
-                        `<div class="row"><span class="key">chainlock</span><span class="val" style="color:#31db72;"> Sí</span></div>`;
+                    if (t.expiryheight !== undefined && t.expiryheight !== null) res +=
+                        `<div class="row"><span class="key">expira</span><span class="val">bloque ${t.expiryheight}</span></div>`;
+                    if (t.authdigest) res +=
+                        `<div class="row"><span class="key">authdigest</span><span class="val" style="font-size:11px;color:#6a6255;">${escapeHtml(t.authdigest)}</span></div>`;
 
-                    // ── SPARK / PRIVADO ──
-                    if (tipo === 'spark') {
-                        res += renderSparkDetails(t);
-                    }
-
-                    // ── ENTRADAS TRANSPARENTES ──
+                    // ── PARTE TRANSPARENTE ──
                     let totalIn = 0;
-                    const entradasTransparentes = t.vin?.filter(vin => vin.txid && !vin.lTags) || [];
-                    if (entradasTransparentes.length > 0) {
-                        res += `<div class="divider"></div>`;
-                        res +=
-                            `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
-                        for (let i = 0; i < entradasTransparentes.length; i++) {
-                            const vin = entradasTransparentes[i];
-                            let value = vin.value;
-                            if (!value) value = await getVinValue(vin.txid, vin.vout);
-                            if (value) totalIn += value;
-                            const valStr = value ? ` ${value.toFixed(8)} ${moneda}` : '';
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${makeLink(vin.txid)}:${vin.vout}</span>${valStr ? `<span class="val gold">${valStr}</span>` : ''}</div>`;
-                        }
-                        if (totalIn > 0) {
-                            res +=
-                                `<div class="row" style="margin-top:2px;"><span class="key">total entrada</span><span class="val gold">${totalIn.toFixed(8)} ${moneda}</span></div>`;
-                        }
-                    } else if (t.vin && t.vin.length > 0 && !entradasTransparentes.length && tipo !== 'spark') {
+
+                    if (t.vin && t.vin.length > 0) {
                         res += `<div class="divider"></div>`;
                         res +=
                             `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val gold">${t.vin.length}</span></div>`;
-                        t.vin.forEach((vin, i) => {
+
+                        for (let i = 0; i < t.vin.length; i++) {
+                            const vin = t.vin[i];
                             if (vin.coinbase) {
                                 res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff7b87;">COINBASE</span></div>`;
-                            } else {
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#dd9d34;">COINBASE</span></div>`;
+                            } else if (vin.txid) {
+                                let value = vin.value;
+                                if (!value) value = await getVinValue(vin.txid, vin.vout);
+                                if (value) totalIn += value;
+                                const valStr = value ? ` ${value.toFixed(8)} ZEC` : '';
                                 res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">entrada</span></div>`;
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${makeLink(vin.txid)}:${vin.vout}</span>${valStr ? `<span class="val gold">${valStr}</span>` : ''}</div>`;
                             }
-                        });
+                        }
+                        if (totalIn > 0) {
+                            res +=
+                                `<div class="row" style="margin-top:2px;"><span class="key">total entradas</span><span class="val gold">${totalIn.toFixed(8)} ZEC</span></div>`;
+                        }
                     }
 
-                    // ── SALIDAS ──
                     if (t.vout && t.vout.length > 0) {
-                        res += `<div class="divider"></div>`;
+                        if (t.vin && t.vin.length > 0) res += `<div class="divider"></div>`;
+                        else res += `<div class="divider"></div>`;
                         res +=
                             `<div class="row"><span class="key">◀ SALIDAS</span><span class="val gold">${t.vout.length}</span></div>`;
-
                         let totalOut = 0;
+                        let pagos = [];
+
                         for (let i = 0; i < t.vout.length; i++) {
                             const vout = t.vout[i];
                             totalOut += vout.value || 0;
-                            let addr = 'OP_RETURN/otro';
+                            let addr = 'OP_RETURN/privada';
                             if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
                             else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${(vout.value || 0).toFixed(8)} ${moneda}</span> → ${makeLink(addr)}</div>`;
+                            pagos.push({ index: i, value: vout.value || 0, address: addr });
                         }
 
+                        if (pagos.length >= 2) {
+                            const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+                            const pagoPrincipal = pagosOrdenados[0];
+                            for (const p of pagos) {
+                                const label = p.index === pagoPrincipal.index ? 'PAGO' : 'RETORNO';
+                                const addrDisplay = p.address && p.address !== 'OP_RETURN/privada' ?
+                                    makeLink(p.address) :
+                                    escapeHtml(p.address);
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:44px;">${label}</span><span class="val gold">${p.value.toFixed(8)} ZEC</span><span class="val" style="font-size:12px;">→ ${addrDisplay}</span></div>`;
+                            }
+                        } else {
+                            for (const p of pagos) {
+                                const addrDisplay = p.address && p.address !== 'OP_RETURN/privada' ?
+                                    makeLink(p.address) :
+                                    escapeHtml(p.address);
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${p.index}</span><span class="val gold">${p.value.toFixed(8)} ZEC</span><span class="val" style="font-size:12px;">→ ${addrDisplay}</span></div>`;
+                            }
+                        }
                         if (totalOut > 0) {
                             res +=
-                                `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val gold">${totalOut.toFixed(8)} ${moneda}</span></div>`;
+                                `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val gold">${totalOut.toFixed(8)} ZEC</span></div>`;
                         }
 
-                        // ── FEE ──
-                        if (tipo !== 'spark' && tipo !== 'coinbase' && totalIn > 0) {
-                            const fee = totalIn - totalOut;
+                        if (totalIn > 0 && totalOut > 0) {
+                            let fee = totalIn - totalOut;
                             if (fee > 0) {
                                 res += `<div class="divider"></div>`;
                                 res +=
-                                    `<div class="row"><span class="key">■ FEE</span><span class="val" style="color:#ff756f;">${fee.toFixed(8)} ${moneda}</span></div>`;
+                                    `<div class="row"><span class="key">FEE</span><span class="val" style="color:#ff756f;">${fee.toFixed(8)} ZEC</span></div>`;
                             }
+                        }
+                    }
+
+                    // ── PARTE BLINDADA ──
+                    if (esBlindada) {
+                        const shieldedHtml = renderShieldedDetails(t);
+                        if (shieldedHtml) {
+                            res += shieldedHtml;
                         }
                     }
 
                     // ── RESUMEN ──
-                    res += `<div class="divider"></div>`;
-                    res += `<div class="row"><span class="key">RESUMEN</span></div>`;
-                    res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">${tipo === 'spark' ? 'Spark (privado)' : tipo === 'coinbase' ? 'Coinbase' : 'Transparente'}</span></div>`;
-                    res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">entradas</span><span class="val">${t.vin?.length || 0}</span></div>`;
-                    res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas</span><span class="val">${t.vout?.length || 0}</span></div>`;
+                    if (t.vin || t.vout || esBlindada) {
+                        res += `<div class="divider"></div>`;
+                        res += `<div class="row"><span class="key">RESUMEN</span></div>`;
+                        if (t.vin && t.vin.length > 0) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">UTXOs</span><span class="val">${t.vin.length} gastados · ${t.vout?.length || 0} creados</span></div>`;
+                        }
+                        if (t.vout && t.vout.length >= 2) {
+                            const pagos = t.vout.map((v, i) => ({ index: i, value: v.value || 0 }));
+                            const pagosOrdenados = [...pagos].sort((a, b) => b.value - a.value);
+                            const pagoPrincipal = pagosOrdenados[0];
+                            const retornoTotal = pagosOrdenados.slice(1).reduce((sum, p) => sum + p.value, 0);
+                            if (pagoPrincipal.value > 0) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Pago</span><span class="val gold">${pagoPrincipal.value.toFixed(8)} ZEC</span></div>`;
+                            }
+                            if (retornoTotal > 0) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Cambio</span><span class="val gold">${retornoTotal.toFixed(8)} ZEC</span></div>`;
+                            }
+                        } else if (t.vout && t.vout.length === 1) {
+                            res +=
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Salida</span><span class="val gold">${(t.vout[0].value || 0).toFixed(8)} ZEC</span></div>`;
+                        }
+
+                        if (esBlindada) {
+                            let totalShielded = 0;
+                            if (t.ironwood?.valueBalance) {
+                                totalShielded += Math.abs(t.ironwood.valueBalance);
+                            }
+                            if (t.orchard?.valueBalance) {
+                                totalShielded += Math.abs(t.orchard.valueBalance) / 1e8;
+                            }
+                            if (t.valueBalance && !t.orchard && !t.ironwood) {
+                                totalShielded += Math.abs(t.valueBalance) / 1e8;
+                            }
+                            if (t.vjoinsplit) {
+                                for (const js of t.vjoinsplit) {
+                                    if (js.vpub_old) totalShielded += js.vpub_old / 1e8;
+                                    if (js.vpub_new) totalShielded += js.vpub_new / 1e8;
+                                }
+                            }
+                            if (totalShielded > 0.0001) {
+                                res +=
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">Blindado</span><span class="val gold">${totalShielded.toFixed(8)} ZEC (privado)</span></div>`;
+                            }
+                        }
+                    }
 
                     res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
                     renderOutput(res);
                     return;
                 }
 
-                if (cmd.includes('validateaddress') && result) {
-                    const v = result;
-                    const direccion = v.address || cmd.split(' ')[1] || 'desconocida';
-                    let res = `<div class="cmd-line"><span class="tag">◈ DIRECCIÓN</span></div>`;
-                    res += `<div class="row"><span class="key">dirección</span><span class="val">${makeLink(direccion)}</span></div>`;
+                if ((cmd.includes('getaddressbalance') || cmd.includes('validateaddress') || cmd.includes(
+                        'z_validateaddress') || cmd.includes('z_getbalance')) && result) {
+                    const esBalance = cmd.includes('getaddressbalance') || cmd.includes('z_getbalance');
+                    const addr = cmd.split(' ')[1] || result.address || 'desconocida';
 
-                    if (v.isvalidSpark !== undefined) {
+                    let res =
+                        `<div class="cmd-line"><span class="tag">${esBalance ? '₿' : '◈'} DIRECCIÓN</span></div>`;
+                    res += `<div class="row"><span class="key">dirección</span><span class="val">${makeLink(addr)}</span></div>`;
+
+                    if (esBalance) {
+                        const b = result;
                         res +=
-                            `<div class="row"><span class="key">válida (Spark)</span><span class="val">${v.isvalidSpark ? '✅ sí' : '❌ no'}</span></div>`;
-                        if (v.isvalidSpark) {
-                            res += `<div class="row"><span class="key">tipo</span><span class="val">shielded (Spark)</span></div>`;
-                        }
+                            `<div class="row"><span class="key">balance</span><span class="val gold">${(b.balance / 1e8).toFixed(6)} ZEC</span></div>`;
+                        if (b.received) res +=
+                            `<div class="row"><span class="key">recibido</span><span class="val">${(b.received / 1e8).toFixed(6)} ZEC</span></div>`;
+                        if (b.immature) res +=
+                            `<div class="row"><span class="key">inmaduro</span><span class="val">${(b.immature / 1e8).toFixed(6)} ZEC</span></div>`;
                     } else {
+                        const v = result;
                         res +=
                             `<div class="row"><span class="key">válida</span><span class="val">${v.isvalid ? '✅ sí' : '❌ no'}</span></div>`;
                         if (v.isvalid) {
                             let tipo = 'transparente';
                             if (v.isscript) tipo = 'script';
                             else if (v.iswatchonly) tipo = 'watchonly';
+                            else if (cmd.includes('z_validate')) tipo = 'shielded';
                             res += `<div class="row"><span class="key">tipo</span><span class="val">${tipo}</span></div>`;
-                            if (v.scriptPubKey) {
-                                res +=
-                                    `<div class="row"><span class="key">scriptPubKey</span><span class="val mono">${escapeHtml(v.scriptPubKey)}</span></div>`;
-                            }
                         }
-                    }
-                    if (v.ismine !== undefined) {
-                        res +=
+                        if (v.ismine !== undefined) res +=
                             `<div class="row"><span class="key">pertenece a wallet</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
                     }
 
@@ -1508,6 +1848,7 @@
             document.getElementById('searchInput').value = '';
         }
 
+        // ─── COPY RESULT ────────────────────────────────────────────────
         window.copyResult = function() {
             const outputPre = document.querySelector('#output pre:last-of-type');
             if (outputPre) {
@@ -1543,7 +1884,7 @@
                 renderPlaceholder();
                 document.querySelector('.prompt').textContent = '♥';
                 setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
-                const baseUrl = window.location.origin + '/pagina/firo-explorer';
+                const baseUrl = window.location.origin + '/pagina/zec-explorer';
                 window.history.replaceState({}, '', baseUrl);
                 historyStack = [];
                 currentIndex = -1;
@@ -1566,7 +1907,8 @@
                     const cmd = detectCommand(rawInput);
                     const label = getLabelForQuery(cmd);
                     pushHistory(cmd, label);
-                    updateUrlWithSearch(cmd);
+                    const cleanValue = getCleanValue(cmd);
+                    updateUrlWithSearch(cleanValue);
                     executeSearch(cmd);
                 }
             }
@@ -1597,6 +1939,7 @@
             }
         })();
 
+        // ─── INIT ────────────────────────────────────────────────────────
         loadNetworkStats();
         setInterval(loadNetworkStats, 30000);
     </script>
