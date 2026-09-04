@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firo · Explorador</title>
+    <title>Firo · Explorador Moderno</title>
     <style>
         * {
             margin: 0;
@@ -159,15 +159,47 @@
             font-size: 14px;
         }
 
-        .stats-bar .badge {
+        .btn-blocks {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             background: rgba(155, 28, 46, 0.12);
-            padding: 2px 16px;
+            color: #ff7b87;
+            border: 1px solid rgba(155, 28, 46, 0.2);
+            padding: 4px 16px;
             border-radius: 20px;
             font-size: 10px;
-            color: #ff7b87;
-            border: 1px solid rgba(155, 28, 46, 0.12);
+            font-family: 'Lucida Console', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 0.3px;
             margin-left: auto;
-            letter-spacing: 0.5px;
+        }
+
+        .btn-blocks:hover {
+            background: rgba(155, 28, 46, 0.2);
+            border-color: rgba(155, 28, 46, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(155, 28, 46, 0.2);
+        }
+
+        .btn-blocks .icon {
+            font-size: 12px;
+        }
+
+        .btn-blocks .pulse {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #31db72;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.7); }
         }
 
         .search-section {
@@ -512,7 +544,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ── BREADCRUMB ── */
         .breadcrumb {
             display: flex;
             flex-wrap: wrap;
@@ -544,6 +575,83 @@
 
         .breadcrumb .sep {
             color: #3d3830;
+        }
+
+        /* ─── SPARK DETAILS ─── */
+        .spark-detail {
+            padding-left: 20px;
+            font-size: 12px;
+            color: #8a8275;
+            word-break: break-all;
+            border-left: 1px solid rgba(155, 28, 46, 0.1);
+            margin: 4px 0 8px 8px;
+        }
+
+        .spark-detail .sub-key {
+            color: #6a6255;
+            min-width: 100px;
+            display: inline-block;
+            font-size: 11px;
+            letter-spacing: 0.3px;
+        }
+
+        .spark-detail .sub-val {
+            color: #e0d8cc;
+            font-size: 12px;
+        }
+
+        .spark-detail .sub-val.gold {
+            color: #ff7b87;
+        }
+
+        .spark-detail .action-header {
+            color: #ff7b87;
+            font-size: 12px;
+            padding: 6px 0 2px 0;
+            letter-spacing: 0.3px;
+        }
+
+        .spark-detail .action-header .badge {
+            background: rgba(155, 28, 46, 0.06);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: #ff7b87;
+            border: 1px solid rgba(155, 28, 46, 0.06);
+        }
+
+        .spark-field {
+            padding: 1px 0 1px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 2px 8px;
+        }
+
+        .spark-field .field-key {
+            color: #5a5348;
+            min-width: 80px;
+            font-size: 11px;
+            letter-spacing: 0.2px;
+        }
+
+        .spark-field .field-key.gold {
+            color: #ff7b87;
+        }
+
+        .spark-field .field-val {
+            color: #e0d8cc;
+            word-break: break-all;
+            font-size: 12px;
+        }
+
+        .spark-field .field-val.gold {
+            color: #ff7b87;
+        }
+
+        .spark-field .field-val.small {
+            font-size: 11px;
+            color: #5a5348;
         }
 
         @media (max-width: 768px) {
@@ -579,10 +687,10 @@
                 gap: 4px 16px;
             }
 
-            .stats-bar .badge {
-                margin-left: 0;
+            .btn-blocks {
                 font-size: 9px;
-                padding: 1px 12px;
+                padding: 3px 12px;
+                margin-left: 0;
             }
 
             .search-section {
@@ -623,6 +731,16 @@
                 font-size: 10px;
                 padding: 2px 14px;
             }
+
+            .spark-detail {
+                padding-left: 12px;
+            }
+            .spark-detail .sub-key {
+                min-width: 70px;
+            }
+            .spark-field .field-key {
+                min-width: 60px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -656,6 +774,22 @@
 
             .stats-bar .value {
                 font-size: 12px;
+            }
+
+            .btn-blocks {
+                font-size: 8px;
+                padding: 2px 10px;
+                gap: 4px;
+                margin-left: 0;
+            }
+
+            .btn-blocks .icon {
+                font-size: 10px;
+            }
+
+            .btn-blocks .pulse {
+                width: 5px;
+                height: 5px;
             }
 
             .search-section input {
@@ -726,7 +860,10 @@
             <div class="stat"><span class="label">DIFICULTAD</span><span class="value" id="stat-difficulty">—</span></div>
             <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
-            <div class="badge">● LIVE</div>
+            <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
+                Bloques en tiempo real
+                <span class="pulse"></span>
+            </a>
         </div>
 
         <div class="breadcrumb" id="breadcrumb"></div>
@@ -850,6 +987,7 @@
             }
         }
 
+        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -937,6 +1075,7 @@
             return s.substring(0, 20) + (s.length > 20 ? '…' : '');
         }
 
+        // ─── STATS ──────────────────────────────────────────────────────
         async function loadNetworkStats() {
             try {
                 const r = await fetch(STATUS_URL);
@@ -948,6 +1087,7 @@
             } catch (e) {}
         }
 
+        // ─── VIN HELPER ─────────────────────────────────────────────────
         async function getVinValue(txid, vout) {
             try {
                 const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
@@ -959,6 +1099,37 @@
             } catch (e) { return null; }
         }
 
+        // ─── DETECTAR TIPO DE TRANSACCIN ─────────────────────────
+        function getTxType(tx) {
+            if (!tx) return 'desconocida';
+
+            // Coinbase
+            if (tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase) return 'coinbase';
+
+            // Spark (privado) - detectar por sparkData o lTags
+            if (tx.sparkData) return 'spark';
+            if (tx.vin && tx.vin.some(v => v.lTags && v.lTags.length > 0)) return 'spark';
+            if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return 'spark';
+            if (tx.bindingSig) return 'spark';
+
+            // Transparente
+            if (tx.vin && tx.vin.length > 0 && tx.vout && tx.vout.length > 0) return 'transparente';
+
+            return 'desconocida';
+        }
+
+        function getTxTypeLabel(tx) {
+            const type = getTxType(tx);
+            const labels = {
+                'coinbase': '⛏ COINBASE',
+                'spark': '🛡 SPARK (PRIVADO)',
+                'transparente': '▸ transparente',
+                'desconocida': '▸ desconocida'
+            };
+            return labels[type] || '▸ desconocida';
+        }
+
+        // ─── RENDER ─────────────────────────────────────────────────────
         function renderOutput(html) {
             document.getElementById('output').innerHTML = html;
         }
@@ -982,6 +1153,84 @@
           `);
         }
 
+        // ─── RENDER SPARK DETAILS ──────────────────────────────────────
+        function renderSparkDetails(t) {
+            let html = '';
+
+            html += `<div class="divider"></div>`;
+            html += `<div class="row"><span class="key">🛡 SPARK</span><span class="val gold">transacción privada</span></div>`;
+
+            // Datos Spark
+            if (t.sparkData) {
+                html += `<div class="spark-detail">`;
+                html += `<div class="action-header"><span class="badge">sparkData</span></div>`;
+                html +=
+                    `<div class="spark-field"><span class="field-key">tamaño</span><span class="field-val">${(t.sparkData.length / 2).toFixed(0)} bytes</span></div>`;
+                html +=
+                    `<div class="spark-field"><span class="field-key">hex</span><span class="field-val small">${escapeHtml(t.sparkData.substring(0, 120))}…</span></div>`;
+                html += `</div>`;
+            }
+
+            // nullifiers
+            if (t.vin) {
+                let hasLTags = false;
+                t.vin.forEach((vin, i) => {
+                    if (vin.lTags && vin.lTags.length > 0) {
+                        if (!hasLTags) {
+                            html += `<div class="spark-detail">`;
+                            html += `<div class="action-header"><span class="badge">nullifiers (lTags)</span></div>`;
+                            hasLTags = true;
+                        }
+                        vin.lTags.forEach((tag, j) => {
+                            html +=
+                                `<div class="spark-field"><span class="field-key">#${i}.${j}</span><span class="field-val">${escapeHtml(tag)}</span></div>`;
+                        });
+                    }
+                });
+                if (hasLTags) html += `</div>`;
+            }
+
+            // nFees
+            if (t.vin) {
+                let totalFees = 0;
+                t.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
+                if (totalFees > 0) {
+                    html +=
+                        `<div class="spark-detail"><div class="spark-field"><span class="field-key gold">fee</span><span class="field-val gold">${totalFees.toFixed(8)} FIRO</span></div></div>`;
+                }
+            }
+
+            // bindingSig
+            if (t.bindingSig) {
+                html += `<div class="spark-detail">`;
+                html +=
+                    `<div class="spark-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.bindingSig)}</span></div>`;
+                html += `</div>`;
+            }
+
+            // Resumen Spark
+            let totalShielded = 0;
+            if (t.vin) {
+                t.vin.forEach(vin => {
+                    if (vin.value !== undefined) totalShielded += vin.value;
+                });
+            }
+            if (t.vout) {
+                t.vout.forEach(vout => {
+                    if (vout.value !== undefined && vout.value > 0) totalShielded += vout.value;
+                });
+            }
+
+            html +=
+                `<div class="spark-detail" style="border-left-color: rgba(155,28,46,0.2);margin-top:8px;">`;
+            html +=
+                `<div class="spark-field"><span class="field-key gold">🔒 privado</span><span class="field-val">sin vínculo criptográfico</span></div>`;
+            html += `</div>`;
+
+            return html;
+        }
+
+        // ─── EXECUTE SEARCH ─────────────────────────────────────────────
         async function executeSearch(q) {
             const raw = q.trim();
             if (!raw) { renderPlaceholder(); return; }
@@ -1060,9 +1309,30 @@
 
                     if (b.tx && b.tx.length > 0) {
                         const txs = b.tx.slice(0, 50);
-                        for (const txid of txs) {
+                        // Cargar datos de cada transacción para detectar tipo
+                        const txPromises = txs.map(async (txid) => {
+                            try {
+                                const txR = await fetch(
+                                    `${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
+                                const txData = await txR.json();
+                                return { txid, data: txData.result };
+                            } catch (e) { return { txid, data: null }; }
+                        });
+
+                        const txResults = await Promise.all(txPromises);
+
+                        for (const { txid, data } of txResults) {
+                            const typeLabel = data ? getTxTypeLabel(data) : '▸ desconocida';
+                            const isSpark = data && getTxType(data) === 'spark';
+
                             res += `<div class="tx-item">
                         <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
+                        <div class="tx-meta">
+                          <span style="${isSpark ? 'color:#ff7b87;' : 'color:#6a6255;'}">${typeLabel}</span>
+                          ${data && data.vout ? `<span>${data.vout.length} salidas</span>` : ''}
+                          ${data && data.vin ? `<span>${data.vin.length} entradas</span>` : ''}
+                          ${data && data.size ? `<span>${data.size} bytes</span>` : ''}
+                        </div>
                       </div>`;
                         }
                         if (b.tx.length > 50) res +=
@@ -1074,23 +1344,17 @@
                     return;
                 }
 
-                if (cmd.includes('getrawtransaction') && result.txid) {
+                // ── TRANSACCIÓN ──
+                if (cmd.includes('getrawtransaction') && result) {
                     const t = result;
+                    const txid = t.txid || t.hash;
+                    const tipo = getTxType(t);
+                    const tipoLabel = getTxTypeLabel(t);
                     const moneda = 'FIRO';
-                    let totalIn = 0;
 
-                    const esCoinbase = t.vin && t.vin[0]?.coinbase;
-                    const esSpark = t.type === 9 || t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0 || t
-                        .sparkData;
-                    const esBlindada = t.vShieldedSpend?.length > 0 || t.vShieldedOutput?.length > 0;
+                    let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span></div>`;
 
-                    let tipoLabel = '📄 TRANSACCIÓN TRANSPARENTE';
-                    if (esSpark) tipoLabel = '🛡 TRANSACCIÓN SPARK (PRIVADA)';
-                    else if (esBlindada) tipoLabel = '🛡 TRANSACCIÓN PRIVADA (SHIELDED)';
-                    else if (esCoinbase) tipoLabel = '⛏ TRANSACCIÓN COINBASE (MINERÍA)';
-
-                    let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span> ${makeLink(t.txid)}</div>`;
-                    res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(t.txid)}</span></div>`;
+                    res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(txid)}</span></div>`;
                     res +=
                         `<div class="row"><span class="key">bloque</span><span class="val">${t.blockheight || t.height ? makeLink(String(t.blockheight || t.height)) : 'no confirmada'}</span></div>`;
                     res +=
@@ -1107,66 +1371,18 @@
                     if (t.chainlock) res +=
                         `<div class="row"><span class="key">chainlock</span><span class="val" style="color:#31db72;"> Sí</span></div>`;
 
-                    res += `<div class="divider"></div>`;
-
-                    if (esSpark || esBlindada) {
-                        res += `<div class="row"><span class="key">🛡 DATOS PRIVADOS</span></div>`;
-                        if (t.vShieldedSpend?.length > 0) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">spends blindados</span><span class="val">${t.vShieldedSpend.length}</span></div>`;
-                            t.vShieldedSpend.forEach((spend, i) => {
-                                res +=
-                                    `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">#${i}</span><span class="val">nullifier: ${spend.nullifier?.substring(0,16)}...</span></div>`;
-                                if (spend.nFees) {
-                                    res +=
-                                        `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;"></span><span class="val">fee: ${spend.nFees} FIRO</span></div>`;
-                                }
-                            });
-                        }
-                        if (t.vShieldedOutput?.length > 0) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">outputs blindados</span><span class="val">${t.vShieldedOutput.length}</span></div>`;
-                        }
-                        if (t.sparkData) {
-                            const realBytes = t.sparkData.length / 2;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">sparkData</span><span class="val">${realBytes} bytes</span></div>`;
-                        }
-                        if (t.vin && t.vin[0]?.lTags) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">lTags (nullifiers)</span></div>`;
-                            t.vin.forEach((vin, i) => {
-                                if (vin.lTags && vin.lTags.length > 0) {
-                                    vin.lTags.forEach((tag, j) => {
-                                        const shortTag = tag.substring(0, 30) + '...' + tag.substring(tag
-                                            .length - 10);
-                                        res +=
-                                            `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">[${i}.${j}]</span><span class="val">${shortTag}</span></div>`;
-                                    });
-                                }
-                            });
-                        }
-                        if (t.vin && t.vin[0]?.nFees) {
-                            let totalFees = 0;
-                            t.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
-                            if (totalFees > 0) {
-                                res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fees totales (Spark)</span><span class="val gold">${totalFees.toFixed(8)} ${moneda}</span></div>`;
-                            }
-                        }
-                        if (t.bindingSig) {
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">bindingSig</span><span class="val" style="font-size:11px;color:#5a5348;">${t.bindingSig.substring(0, 64)}…</span></div>`;
-                        }
-                        res +=
-                            `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">🔒 privado</span><span class="val">sin vínculo criptográfico</span></div>`;
+                    // ── SPARK / PRIVADO ──
+                    if (tipo === 'spark') {
+                        res += renderSparkDetails(t);
                     }
 
                     // ── ENTRADAS TRANSPARENTES ──
-                    const entradasTransparentes = t.vin?.filter(vin => vin.txid) || [];
+                    let totalIn = 0;
+                    const entradasTransparentes = t.vin?.filter(vin => vin.txid && !vin.lTags) || [];
                     if (entradasTransparentes.length > 0) {
+                        res += `<div class="divider"></div>`;
                         res +=
-                            `<div class="row"><span class="key">▶ ENTRADAS TRANSPARENTES</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
+                            `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
                         for (let i = 0; i < entradasTransparentes.length; i++) {
                             const vin = entradasTransparentes[i];
                             let value = vin.value;
@@ -1180,16 +1396,17 @@
                             res +=
                                 `<div class="row" style="margin-top:2px;"><span class="key">total entrada</span><span class="val gold">${totalIn.toFixed(8)} ${moneda}</span></div>`;
                         }
-                    } else if (t.vin && t.vin.length > 0 && !entradasTransparentes.length) {
+                    } else if (t.vin && t.vin.length > 0 && !entradasTransparentes.length && tipo !== 'spark') {
+                        res += `<div class="divider"></div>`;
                         res +=
-                            `<div class="row"><span class="key">▶ ENTRADAS PRIVADAS</span><span class="val gold">${t.vin.length}</span></div>`;
+                            `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val gold">${t.vin.length}</span></div>`;
                         t.vin.forEach((vin, i) => {
-                            if (vin.scriptSig?.asm?.includes('OP_SPARKSPEND')) {
+                            if (vin.coinbase) {
                                 res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff7b87;">SPARK SPEND</span></div>`;
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff7b87;">COINBASE</span></div>`;
                             } else {
                                 res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">entrada privada</span></div>`;
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">entrada</span></div>`;
                             }
                         });
                     }
@@ -1201,35 +1418,14 @@
                             `<div class="row"><span class="key">◀ SALIDAS</span><span class="val gold">${t.vout.length}</span></div>`;
 
                         let totalOut = 0;
-                        const salidasSpark = t.vout.filter(vout => vout.scriptPubKey?.type === 'sparksmint');
-                        const salidasTransparentes = t.vout.filter(vout => vout.value > 0 || vout.scriptPubKey?.type !==
-                            'sparksmint');
-
-                        if (salidasSpark.length > 0) {
+                        for (let i = 0; i < t.vout.length; i++) {
+                            const vout = t.vout[i];
+                            totalOut += vout.value || 0;
+                            let addr = 'OP_RETURN/otro';
+                            if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
+                            else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
                             res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">SPARK MINT</span><span class="val gold">${salidasSpark.length}</span></div>`;
-                            salidasSpark.forEach((vout, i) => {
-                                if (vout.value === 0) {
-                                    res +=
-                                        `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:24px;">#${i}</span><span class="val">valor oculto</span></div>`;
-                                } else {
-                                    res +=
-                                        `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${vout.value.toFixed(8)} ${moneda}</span></div>`;
-                                }
-                            });
-                        }
-
-                        if (salidasTransparentes.length > 0) {
-                            for (let i = 0; i < t.vout.length; i++) {
-                                const vout = t.vout[i];
-                                if (vout.scriptPubKey?.type === 'sparksmint') continue;
-                                totalOut += vout.value || 0;
-                                let addr = 'OP_RETURN/otro';
-                                if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
-                                else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
-                                res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${vout.value.toFixed(8)} ${moneda}</span> → ${makeLink(addr)}</div>`;
-                            }
+                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${(vout.value || 0).toFixed(8)} ${moneda}</span> → ${makeLink(addr)}</div>`;
                         }
 
                         if (totalOut > 0) {
@@ -1238,7 +1434,7 @@
                         }
 
                         // ── FEE ──
-                        if (!esSpark && !esBlindada && !esCoinbase && totalIn > 0) {
+                        if (tipo !== 'spark' && tipo !== 'coinbase' && totalIn > 0) {
                             const fee = totalIn - totalOut;
                             if (fee > 0) {
                                 res += `<div class="divider"></div>`;
@@ -1252,7 +1448,7 @@
                     res += `<div class="divider"></div>`;
                     res += `<div class="row"><span class="key">RESUMEN</span></div>`;
                     res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">${esSpark ? 'Spark (privado)' : esBlindada ? 'Shielded' : esCoinbase ? 'Coinbase' : 'Transparente'}</span></div>`;
+                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">${tipo === 'spark' ? 'Spark (privado)' : tipo === 'coinbase' ? 'Coinbase' : 'Transparente'}</span></div>`;
                     res +=
                         `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">entradas</span><span class="val">${t.vin?.length || 0}</span></div>`;
                     res +=
@@ -1263,6 +1459,7 @@
                     return;
                 }
 
+                // ── VALIDAR DIRECCIÓN ──
                 if (cmd.includes('validateaddress') && result) {
                     const v = result;
                     const direccion = v.address || cmd.split(' ')[1] || 'desconocida';
@@ -1299,7 +1496,6 @@
                     return;
                 }
 
-                // ── FALLBACK ──
                 let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
                 res +=
                     `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
