@@ -135,15 +135,27 @@
             font-size: 14px;
         }
 
-        .stats-bar .badge {
-            background: rgba(160, 68, 255, 0.12);
-            padding: 2px 16px;
-            border-radius: 20px;
-            font-size: 10px;
-            color: #c597ff;
-            border: 1px solid rgba(160, 68, 255, 0.12);
+        .stats-bar .btn-blocks {
             margin-left: auto;
-            letter-spacing: 0.5px;
+            color: #c597ff;
+            background: rgba(160, 68, 255, 0.08);
+            border: 1px solid rgba(160, 68, 255, 0.15);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            transition: all 0.25s;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+        }
+
+        .stats-bar .btn-blocks:hover {
+            background: rgba(160, 68, 255, 0.15);
+            border-color: rgba(160, 68, 255, 0.3);
+            color: #dbb8ff;
         }
 
         .panel {
@@ -361,10 +373,10 @@
                 gap: 4px 16px;
             }
 
-            .stats-bar .badge {
+            .stats-bar .btn-blocks {
+                font-size: 10px;
+                padding: 3px 12px;
                 margin-left: 0;
-                font-size: 9px;
-                padding: 1px 12px;
             }
 
             .panel {
@@ -435,6 +447,11 @@
 
             .stats-bar .value {
                 font-size: 12px;
+            }
+
+            .stats-bar .btn-blocks {
+                font-size: 9px;
+                padding: 2px 10px;
             }
 
             .panel {
@@ -522,7 +539,7 @@
             <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
             <div class="stat"><span class="label">PRECIO</span><span class="value" id="stat-price">—</span></div>
-            <div class="badge">● LIVE</div>
+            <a href="https://carover0.github.io/pagina/pivx-bloques.html" class="btn-blocks" target="_self">⧫ Bloques en tiempo real</a>
         </div>
 
         <div class="panel">
@@ -593,7 +610,6 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const RPC_URL = 'https://carover0.xyz/api/pivx/pivx.php';
         const TOKEN = 'pivx2026';
         const STATUS_URL = 'https://carover0.xyz/cacaX/pivx_status_X.json';
@@ -602,7 +618,6 @@
         let stakeCache = { value: 4, timestamp: 0 };
         let precioCache = { usd: null, volumen: null, timestamp: 0 };
 
-        // ─── HELPERS ────────────────────────────────────────────────────
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/[&<>]/g, function(m) {
@@ -658,7 +673,6 @@
             return value;
         }
 
-        // ─── UPDATE STATS BAR ──────────────────────────────────────────
         function updateStatsBar(status, price, mempool) {
             document.getElementById('stat-height').textContent = status?.height ? formatNumber(status.height) : '—';
             document.getElementById('stat-connections').textContent = status?.connections ?? '—';
@@ -666,7 +680,6 @@
             document.getElementById('stat-price').textContent = price ? '$' + Number(price).toFixed(4) : '—';
         }
 
-        // ─── COLD STAKING ──────────────────────────────────────────────
         async function fetchColdStakingSummary(status) {
             try {
                 const utxos = status.cold_staking_info?.utxos;
@@ -749,7 +762,6 @@
             }
         }
 
-        // ─── PRICE ──────────────────────────────────────────────────────
         async function fetchPrice() {
             const now = Date.now();
             try {
@@ -780,7 +792,6 @@
             document.getElementById('price-time').textContent = new Date().toLocaleTimeString();
         }
 
-        // ─── INIT ────────────────────────────────────────────────────────
         async function init() {
             await fetchPrice();
             await fetchNodeData();
