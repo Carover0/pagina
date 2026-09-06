@@ -357,7 +357,6 @@ function updateStats(data) {
     document.getElementById('statBlockTime').textContent = `actualizado ${new Date().toLocaleTimeString()}`;
 }
 
-// ─── FETCH DATA ───────────────────────────────────────────
 async function fetchData() {
     try {
         const response = await fetch(API_URL);
@@ -382,7 +381,6 @@ window.refreshData = function() {
     return false;
 };
 
-// ─── INIT ─────────────────────────────────────────────────
 fetchData();
 setInterval(fetchData, 50000);
 </script>
