@@ -1,0 +1,775 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificador de Blacklist USDT - Tron y Ethereum</title>
+<style>
+  :root {
+    --violet: #4f46e5;
+    --violet-soft: #818cf8;
+    --violet-neon: #4338ca;
+    --violet-dark: #2d1b69;
+    --green: #27A17C;
+    --red: #ff756f;
+    --bg-start: #0d0b1f;
+    --bg-end: #1a1035;
+    --text: #eae8f5;
+    --text-muted: #9a9ab0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    background: radial-gradient(circle at 20% 10%, #1f1147 0%, var(--bg-start) 40%, #0a0817 100%);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(45, 27, 105, 0.15));
+    border: 1px solid rgba(129, 140, 248, 0.18);
+    border-radius: 16px;
+    padding: 40px 32px;
+    max-width: 720px;
+    width: 100%;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 20px 60px rgba(45, 27, 105, 0.5), 0 0 0 1px rgba(129, 140, 248, 0.05) inset;
+  }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 8px;
+    text-align: center;
+    background: linear-gradient(90deg, var(--violet-soft), #c4b5fd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.5px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .notice {
+    background: rgba(255, 117, 111, 0.08);
+    border: 1px solid rgba(255, 117, 111, 0.25);
+    border-left: 3px solid var(--red);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .notice strong {
+    display: block;
+    color: var(--red);
+    font-size: 13px;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  .notice p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #d8d5e8;
+  }
+  .form { display: flex; gap: 10px; flex-wrap: wrap; }
+  #address {
+    flex: 1;
+    min-width: 200px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(129, 140, 248, 0.25);
+    background: rgba(13, 11, 31, 0.6);
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+  #address:focus {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  }
+  button {
+    padding: 14px 24px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--violet), var(--violet-neon));
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+  }
+  button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(79, 70, 229, 0.5);
+  }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .result {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    animation: fadeIn 0.3s ease;
+  }
+  .result.hidden { display: none; }
+  .result.safe {
+    background: rgba(39, 161, 124, 0.1);
+    border: 1px solid rgba(39, 161, 124, 0.35);
+    color: #5dd4a8;
+  }
+  .result.danger {
+    background: rgba(255, 117, 111, 0.1);
+    border: 1px solid rgba(255, 117, 111, 0.35);
+    color: var(--red);
+  }
+  .result.error {
+    background: rgba(255, 200, 100, 0.08);
+    border: 1px solid rgba(255, 200, 100, 0.3);
+    color: #facc15;
+  }
+  .result strong { display: block; font-size: 15px; margin-bottom: 8px; }
+  .result code {
+    background: rgba(13, 11, 31, 0.6);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    word-break: break-all;
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    color: #c4b5fd;
+  }
+  .chain-card {
+    background: rgba(13, 11, 31, 0.55);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+    border-left: 3px solid rgba(129, 140, 248, 0.4);
+  }
+  .chain-card.blocked { border-left-color: var(--red); }
+  .chain-card.clear { border-left-color: var(--green); }
+  .chain-card.error { border-left-color: #facc15; }
+  .chain-name {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+  .chain-status { font-size: 12px; }
+  .chain-detail {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 4px;
+    word-break: break-word;
+  }
+  .balance-line {
+    font-size: 13px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(129, 140, 248, 0.15);
+  }
+  .balance-line strong { color: var(--violet-soft); }
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .footer a {
+    color: var(--violet-soft);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer a:hover { color: #c4b5fd; text-decoration: underline; }
+
+  .info-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--violet), var(--violet-neon));
+    border: 1px solid rgba(129, 140, 248, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 100;
+    padding: 0;
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+  }
+  .info-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 32px rgba(79, 70, 229, 0.65);
+  }
+  .info-btn img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.95;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(13, 11, 31, 0.85);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 200;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: linear-gradient(135deg, #1a1035 0%, #2d1b69 100%);
+    border: 1px solid rgba(129, 140, 248, 0.25);
+    border-radius: 16px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 32px 28px;
+    box-shadow: 0 30px 80px rgba(45, 27, 105, 0.7), 0 0 0 1px rgba(129, 140, 248, 0.1) inset;
+    animation: slideUp 0.3s ease;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(129, 140, 248, 0.2);
+    background: rgba(13, 11, 31, 0.5);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Lucida Console', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .modal-close:hover {
+    background: rgba(79, 70, 229, 0.3);
+    color: #fff;
+    border-color: var(--violet-soft);
+  }
+  .modal h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: var(--red);
+    padding-right: 30px;
+    line-height: 1.4;
+  }
+  .modal h3 {
+    font-size: 13px;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    color: var(--violet-soft);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .modal p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #d8d5e8;
+    margin-bottom: 12px;
+  }
+  .modal ul {
+    list-style: none;
+    margin: 12px 0;
+  }
+  .modal ul li {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #d8d5e8;
+    padding-left: 22px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .modal ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--violet-soft);
+    font-weight: bold;
+  }
+  .modal .highlight {
+    color: var(--green);
+    font-weight: 600;
+  }
+  .modal .warning {
+    color: var(--red);
+    font-weight: 600;
+  }
+  .modal .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.3), transparent);
+    margin: 20px 0;
+  }
+  .modal .final-quote {
+    text-align: center;
+    font-size: 13px;
+    color: #c4b5fd;
+    font-style: italic;
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(79, 70, 229, 0.15);
+    border-radius: 10px;
+    border-left: 3px solid var(--violet-soft);
+  }
+
+  .json-block {
+    margin-top: 18px;
+    background: rgba(13, 11, 31, 0.7);
+    border: 1px solid rgba(129, 140, 248, 0.15);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .json-block-header {
+    padding: 10px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    background: rgba(45, 27, 105, 0.4);
+    border-bottom: 1px solid rgba(129, 140, 248, 0.1);
+  }
+  .json-block pre {
+    padding: 14px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #c4b5fd;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    margin: 0;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    .modal { padding: 24px 20px; }
+    .modal h2 { font-size: 16px; }
+    .info-btn { bottom: 16px; right: 16px; width: 46px; height: 46px; }
+    .info-btn img { width: 24px; height: 24px; }
+  }
+</style>
+</head>
+<body>
+  <main class="container">
+    <h1>Verificador de Blacklist USDT</h1>
+    <p class="subtitle">Consulta si una dirección está bloqueada por Tether en Tron y Ethereum</p>
+
+    <div class="notice">
+      <strong>⚠️ Antes de enviar USDT</strong>
+      <p>Enviar fondos a una dirección que ya está en la blacklist de Tether te expone a un riesgo real de que tu propia dirección termine marcada. No es automático ni instantáneo, pero el riesgo existe. Verifica siempre el destinatario antes de enviar.</p>
+    </div>
+
+    <form id="form" class="form">
+      <input
+        type="text"
+        id="address"
+        placeholder="Dirección Tron (T...) o Ethereum (0x...)"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="submit">Verificar</button>
+    </form>
+
+    <div id="result" class="result hidden"></div>
+
+    <footer class="footer">
+      Consulta directa a los contratos USDT · Datos on-chain<br><br>
+      <a href="https://carover0.github.io/pagina/" target="_blank" rel="noopener">Inicio</a>
+    </footer>
+  </main>
+
+  <button class="info-btn" id="infoBtn" aria-label="Información sobre stablecoins">
+    <img src="assets/info.png" alt="Info" onerror="this.style.display='none'; this.parentElement.textContent='?'">
+  </button>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
+
+      <h2>⚠️ Las stablecoins vienen con interruptor de apagado</h2>
+
+      <p>A diferencia de las monedas soberanas, <strong>USDT y USDC son emitidos por empresas privadas</strong> que controlan sus contratos. Con una sola transacción pueden congelar cualquier wallet para siempre.</p>
+
+      <h3>¿Qué es un freeze de stablecoin?</h3>
+      <p>Circle y Tether tienen las <span class="warning">llaves maestras</span>. Pueden blacklistar direcciones por sanciones, pedidos policiales, "actividad sospechosa" o incluso por error. No hay apelación pública clara.</p>
+
+      <div class="divider"></div>
+
+      <h3>El problema</h3>
+      <p><strong>Miles de millones ya están congelados.</strong> Tu dinero en stablecoins no es realmente tuyo: está sujeto al permiso de una empresa.</p>
+
+      <h3>¿Qué podés hacer?</h3>
+      <p>Usá monedas soberanas sin emisor central ni función de freeze:</p>
+      <ul>
+        <li><span class="highlight">Firo</span> → privacidad real</li>
+        <li><span class="highlight">Bitcoin Cash (BCH)</span> → dinero peer-to-peer barato y rápido</li>
+        <li><span class="highlight">DigiByte (DGB)</span> → seguridad multicapa y descentralización</li>
+        <li><span class="highlight">Litecoin (LTC)</span> → plata digital confiable y líquida</li>
+      </ul>
+
+      <div class="final-quote">
+        Tus llaves, tus monedas. Sin blacklist, sin permiso de nadie.<br>
+        Las stablecoins son permissioned. <strong>Tu dinero no debería serlo.</strong>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CHAINS = {
+      tron: {
+        name: 'Tron',
+        usdt: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+        rpc: 'https://api.trongrid.io',
+        type: 'tron',
+        selector: '0x59bf1abe',
+        balanceSelector: '0x70a08231'
+      },
+      ethereum: {
+        name: 'Ethereum',
+        usdt: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+        rpc: 'https://ethereum.publicnode.com',
+        type: 'evm',
+        selector: '0x59bf1abe',
+        balanceSelector: '0x70a08231'
+      }
+    };
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('address');
+    const result = document.getElementById('result');
+    const button = form.querySelector('button');
+
+    // ====== MODAL ======
+    const infoBtn = document.getElementById('infoBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalClose = document.getElementById('modalClose');
+
+    function openModal() {
+      modalOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    infoBtn.addEventListener('click', openModal);
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
+    });
+
+    const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    function base58ToBytes(str) {
+      const bytes = [0];
+      for (let i = 0; i < str.length; i++) {
+        const value = BASE58_ALPHABET.indexOf(str[i]);
+        if (value === -1) throw new Error('Carácter base58 inválido');
+        let carry = value;
+        for (let j = 0; j < bytes.length; j++) {
+          carry += bytes[j] * 58;
+          bytes[j] = carry & 0xff;
+          carry >>= 8;
+        }
+        while (carry > 0) { bytes.push(carry & 0xff); carry >>= 8; }
+      }
+      for (let i = 0; i < str.length && str[i] === '1'; i++) bytes.push(0);
+      return bytes.reverse();
+    }
+    function tronAddressToHex20(address) {
+      const bytes = base58ToBytes(address);
+      if (bytes.length !== 25) throw new Error('Longitud inválida');
+      return bytes.slice(1, 21).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function isValidTronAddress(address) { return /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address); }
+    function isValidEvmAddress(address) { return /^0x[a-fA-F0-9]{40}$/.test(address); }
+    function detectAddressType(address) {
+      if (isValidTronAddress(address)) return 'tron';
+      if (isValidEvmAddress(address)) return 'evm';
+      return 'unknown';
+    }
+
+    function decodeBalance(hexResult) {
+      try {
+        if (!hexResult) return '—';
+        const clean = hexResult.startsWith('0x') ? hexResult.slice(2) : hexResult;
+        if (!clean || clean === '0'.repeat(64)) return '0.00';
+        const raw = BigInt('0x' + clean);
+        const divisor = BigInt(1000000);
+        const integerPart = raw / divisor;
+        const decimalPart = raw % divisor;
+        const decimalStr = decimalPart.toString().padStart(6, '0');
+        const integerStr = integerPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return `${integerStr}.${decimalStr}`;
+      } catch (e) {
+        console.warn('Error decodificando saldo:', e);
+        return '—';
+      }
+    }
+
+    async function checkTron(address) {
+      const hex20 = tronAddressToHex20(address);
+      const paddedParam = '000000000000000000000000' + hex20;
+
+      const requestBody = {
+        owner_address: CHAINS.tron.usdt,
+        contract_address: CHAINS.tron.usdt,
+        function_selector: 'getBlackListStatus(address)',
+        parameter: paddedParam,
+        visible: true
+      };
+      const res = await fetch(`${CHAINS.tron.rpc}/wallet/triggerconstantcontract`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.constant_result || !data.constant_result[0]) throw new Error('Respuesta inválida');
+      const blocked = data.constant_result[0] !== '0'.repeat(64);
+
+      let balance = '—';
+      let balanceRaw = null;
+      let balanceRequest = null;
+      try {
+        balanceRequest = {
+          owner_address: CHAINS.tron.usdt,
+          contract_address: CHAINS.tron.usdt,
+          function_selector: 'balanceOf(address)',
+          parameter: paddedParam,
+          visible: true
+        };
+        const balanceRes = await fetch(`${CHAINS.tron.rpc}/wallet/triggerconstantcontract`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(balanceRequest)
+        });
+        if (balanceRes.ok) {
+          balanceRaw = await balanceRes.json();
+          if (balanceRaw.constant_result && balanceRaw.constant_result[0]) {
+            balance = decodeBalance(balanceRaw.constant_result[0]);
+          }
+        }
+      } catch (e) {
+        console.warn('No se pudo obtener saldo:', e);
+      }
+
+      return { blocked, raw: data, request: requestBody, balance, balanceRaw, balanceRequest };
+    }
+
+    async function checkEvm(address, chainKey) {
+      const chain = CHAINS[chainKey];
+      const cleanAddr = address.toLowerCase().replace('0x', '');
+      const paddedParam = '000000000000000000000000' + cleanAddr;
+
+      const data = chain.selector + paddedParam;
+      const requestBody = {
+        jsonrpc: '2.0',
+        method: 'eth_call',
+        params: [{ to: chain.usdt, data }, 'latest'],
+        id: 1
+      };
+      const res = await fetch(chain.rpc, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (json.error) throw new Error(json.error.message);
+      const blocked = json.result !== '0x' + '0'.repeat(64);
+
+      let balance = '—';
+      let balanceRaw = null;
+      let balanceRequest = null;
+      try {
+        const balanceData = chain.balanceSelector + paddedParam;
+        balanceRequest = {
+          jsonrpc: '2.0',
+          method: 'eth_call',
+          params: [{ to: chain.usdt, data: balanceData }, 'latest'],
+          id: 2
+        };
+        const balanceRes = await fetch(chain.rpc, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(balanceRequest)
+        });
+        if (balanceRes.ok) {
+          balanceRaw = await balanceRes.json();
+          if (balanceRaw.result) {
+            balance = decodeBalance(balanceRaw.result);
+          }
+        }
+      } catch (e) {
+        console.warn('No se pudo obtener saldo:', e);
+      }
+
+      return { blocked, raw: json, request: { to: chain.usdt, data, selector: chain.selector }, balance, balanceRaw, balanceRequest };
+    }
+
+    function showResult(type, html) {
+      result.className = `result ${type}`;
+      result.innerHTML = html;
+      result.classList.remove('hidden');
+    }
+
+    function renderChainCard(chainName, status, detail, balance) {
+      const cls = status === 'blocked' ? 'blocked' : status === 'clear' ? 'clear' : 'error';
+      const icon = status === 'blocked' ? '🚨' : status === 'clear' ? '✅' : '⚠️';
+      const label = status === 'blocked' ? 'BLOQUEADA' : status === 'clear' ? 'LIMPIA' : 'NO VERIFICABLE';
+      const balanceLine = (balance !== undefined && balance !== null)
+        ? `<div class="balance-line"><strong>Saldo:</strong> ${balance} USDT</div>`
+        : '';
+      return `
+        <div class="chain-card ${cls}">
+          <div class="chain-name">
+            <span>${chainName}</span>
+            <span class="chain-status">${icon} ${label}</span>
+          </div>
+          ${balanceLine}
+          ${detail ? `<div class="chain-detail">${detail}</div>` : ''}
+        </div>
+      `;
+    }
+
+    function renderJsonBlock(title, obj) {
+      const json = JSON.stringify(obj, null, 2);
+      const escaped = json
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      return `
+        <div class="json-block">
+          <div class="json-block-header">${title}</div>
+          <pre>${escaped}</pre>
+        </div>
+      `;
+    }
+
+    async function checkAddress(address) {
+      const type = detectAddressType(address);
+
+      if (type === 'tron') {
+        let response = null;
+        let error = null;
+        try { response = await checkTron(address); }
+        catch (e) { error = e; }
+
+        if (error) {
+          showResult('error', `
+            <strong>⚠️ Error al consultar Tron</strong>
+            <p><small>${error.message}</small></p>
+          `);
+          return;
+        }
+
+        const { blocked: isBlacklisted, raw, request, balance, balanceRaw, balanceRequest } = response;
+        showResult(isBlacklisted ? 'danger' : 'safe', `
+          <strong>${isBlacklisted ? '🚨 Dirección en BLACKLIST' : '✅ Dirección NO bloqueada'}</strong>
+          <p>La dirección <code>${address}</code> ${isBlacklisted ? 'está bloqueada por Tether en Tron.' : 'no está en la blacklist de Tether en Tron.'}</p>
+          ${renderChainCard('Tron', isBlacklisted ? 'blocked' : 'clear', '', balance)}
+          ${renderJsonBlock('Request → TronGrid (blacklist)', request)}
+          ${renderJsonBlock('Response ← TronGrid (blacklist)', raw)}
+          ${balanceRequest ? renderJsonBlock('Request → TronGrid (balanceOf)', balanceRequest) : ''}
+          ${balanceRaw ? renderJsonBlock('Response ← TronGrid (balanceOf)', balanceRaw) : ''}
+        `);
+        return;
+      }
+
+      if (type === 'evm') {
+        let response = null;
+        let error = null;
+        try { response = await checkEvm(address, 'ethereum'); }
+        catch (e) { error = e; }
+
+        if (error) {
+          showResult('error', `
+            <strong>⚠️ Error al consultar Ethereum</strong>
+            <p><small>${error.message}</small></p>
+          `);
+          return;
+        }
+
+        const { blocked: isBlacklisted, raw, request, balance, balanceRaw, balanceRequest } = response;
+        showResult(isBlacklisted ? 'danger' : 'safe', `
+          <strong>${isBlacklisted ? '🚨 Dirección en BLACKLIST' : '✅ Dirección NO bloqueada'}</strong>
+          <p>La dirección <code>${address}</code> ${isBlacklisted ? 'está bloqueada por Tether en Ethereum.' : 'no está en la blacklist de Tether en Ethereum.'}</p>
+          ${renderChainCard('Ethereum', isBlacklisted ? 'blocked' : 'clear', '', balance)}
+          ${renderJsonBlock('Request → Nodo Ethereum (blacklist)', request)}
+          ${renderJsonBlock('Response ← Nodo Ethereum (blacklist)', raw)}
+          ${balanceRequest ? renderJsonBlock('Request → Nodo Ethereum (balanceOf)', balanceRequest) : ''}
+          ${balanceRaw ? renderJsonBlock('Response ← Nodo Ethereum (balanceOf)', balanceRaw) : ''}
+        `);
+        return;
+      }
+
+      showResult('error', '<strong>⚠️ Dirección inválida</strong><p>No es una dirección Tron ni Ethereum válida.</p>');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const address = input.value.trim();
+      if (!address) {
+        showResult('error', '<strong>⚠️ Ingresa una dirección</strong>');
+        return;
+      }
+
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner"></span>Consultando...';
+      result.classList.add('hidden');
+
+      await checkAddress(address);
+
+      button.disabled = false;
+      button.textContent = 'Verificar';
+    });
+  </script>
+</body>
+</html>
