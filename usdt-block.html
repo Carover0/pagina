@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -18,16 +19,21 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Lucida Console', 'Monaco', monospace;
-    background: radial-gradient(circle at 20% 10%, #1f1147 0%, var(--bg-start) 40%, #0a0817 100%);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
+
+body {
+  font-family: 'Lucida Console', 'Monaco', monospace;
+  background: #0a080c;
+  background-image:
+    radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
+    linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
   .container {
     background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(45, 27, 105, 0.15));
     border: 1px solid rgba(129, 140, 248, 0.18);
@@ -37,7 +43,48 @@
     width: 100%;
     backdrop-filter: blur(14px);
     box-shadow: 0 20px 60px rgba(45, 27, 105, 0.5), 0 0 0 1px rgba(129, 140, 248, 0.05) inset;
+    position: relative; /* NUEVO: para posicionar botones arriba */
   }
+
+  /* NUEVO: contenedor de botones arriba a la derecha */
+  .top-actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+  .top-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--violet), var(--violet-neon));
+    border: 1px solid rgba(129, 140, 248, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 0;
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4);
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'Lucida Console', 'Monaco', monospace;
+  }
+  .top-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 26px rgba(79, 70, 229, 0.7);
+  }
+  .top-btn img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.95;
+  }
+
   h1 {
     font-size: 22px;
     margin-bottom: 8px;
@@ -47,6 +94,7 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 0.5px;
+    padding: 0 100px; /* NUEVO: evita choque con botones */
   }
   .subtitle {
     text-align: center;
@@ -93,7 +141,7 @@
     border-color: var(--violet);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
   }
-  button {
+  button[type="submit"] {
     padding: 14px 24px;
     border-radius: 10px;
     border: none;
@@ -106,11 +154,11 @@
     transition: transform 0.1s, opacity 0.2s, box-shadow 0.2s;
     box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
   }
-  button:hover:not(:disabled) {
+  button[type="submit"]:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 6px 22px rgba(79, 70, 229, 0.5);
   }
-  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; }
   .result {
     margin-top: 24px;
     padding: 20px;
@@ -201,36 +249,6 @@
   }
   .footer a:hover { color: #c4b5fd; text-decoration: underline; }
 
-  .info-btn {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--violet), var(--violet-neon));
-    border: 1px solid rgba(129, 140, 248, 0.4);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-    z-index: 100;
-    padding: 0;
-    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
-  }
-  .info-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 10px 32px rgba(79, 70, 229, 0.65);
-  }
-  .info-btn img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-    opacity: 0.95;
-  }
-
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -248,7 +266,7 @@
     background: linear-gradient(135deg, #1a1035 0%, #2d1b69 100%);
     border: 1px solid rgba(129, 140, 248, 0.25);
     border-radius: 16px;
-    max-width: 640px;
+    max-width: 940px;
     width: 100%;
     max-height: 85vh;
     overflow-y: auto;
@@ -287,6 +305,7 @@
     padding-right: 30px;
     line-height: 1.4;
   }
+  .modal h2.proc { color: var(--violet-soft); } /* NUEVO: título del modal procedimiento */
   .modal h3 {
     font-size: 13px;
     margin-top: 20px;
@@ -319,6 +338,40 @@
     left: 0;
     color: var(--violet-soft);
     font-weight: bold;
+  }
+  /* NUEVO: lista numerada para el procedimiento */
+  .modal ol {
+    list-style: none;
+    counter-reset: proc;
+    margin: 12px 0;
+    padding: 0;
+  }
+  .modal ol li {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #d8d5e8;
+    padding-left: 34px;
+    position: relative;
+    margin-bottom: 12px;
+    counter-increment: proc;
+  }
+  .modal ol li::before {
+    content: counter(proc);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(79, 70, 229, 0.35);
+    border: 1px solid rgba(129, 140, 248, 0.4);
+    color: #c4b5fd;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
   .modal .highlight {
     color: var(--green);
@@ -386,13 +439,22 @@
   @media (max-width: 600px) {
     .modal { padding: 24px 20px; }
     .modal h2 { font-size: 16px; }
-    .info-btn { bottom: 16px; right: 16px; width: 46px; height: 46px; }
-    .info-btn img { width: 24px; height: 24px; }
+    .top-actions { top: 10px; right: 10px; gap: 6px; }
+    .top-btn { width: 38px; height: 38px; font-size: 15px; }
+    .top-btn img { width: 18px; height: 18px; }
+    h1 { padding: 0 90px; font-size: 18px; }
   }
 </style>
 </head>
 <body>
+    <div class="top-actions">
+      <button class="top-btn" id="infoBtn" aria-label="Información sobre stablecoins" title="Stablecoins y freeze">📜</button>
+      <button class="top-btn" id="procBtn" aria-label="Ver procedimiento de blacklist" title="Procedimiento de blacklist">💡</button>
+    </div>
+
   <main class="container">
+
+
     <h1>Verificador de Blacklist USDT</h1>
     <p class="subtitle">Consulta si una dirección está bloqueada por Tether en Tron y Ethereum</p>
 
@@ -420,10 +482,7 @@
     </footer>
   </main>
 
-  <button class="info-btn" id="infoBtn" aria-label="Información sobre stablecoins">
-    <img src="assets/info.png" alt="Info" onerror="this.style.display='none'; this.parentElement.textContent='?'">
-  </button>
-
+  <!-- Modal stablecoins (existente) -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal" role="dialog" aria-modal="true">
       <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
@@ -456,6 +515,28 @@
     </div>
   </div>
 
+<!-- NUEVO: Modal procedimiento de blacklist -->
+  <div class="modal-overlay" id="procOverlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="procClose" aria-label="Cerrar">✕</button>
+
+      <h2 class="proc">📋 ¿Cuándo te bloquean el USDT?</h2>
+
+      <p>Tether puede congelar cualquier dirección que tenga USDT en Ethereum o Tron. El bloqueo ocurre por cuatro motivos:</p>
+
+      <ol>
+        <li><strong>Sospechas de fraude o estafa.</strong> Este es el motivo más frecuente. Tether tiene su propio sistema de monitoreo que marca direcciones asociadas a phishing, estafas o fondos robados, incluso sin que exista una denuncia formal. En 2025, la mayoría de las 4.163 direcciones bloqueadas fueron por este motivo.</li>
+        <li><strong>Denuncias o pedidos de autoridades.</strong> Cualquier agencia policial o judicial puede pedirle a Tether que congele una dirección. Tether trabaja con más de 340 agencias en 65 países. No hace falta una orden judicial previa: pueden congelar mientras investigan.</li>
+        <li><strong>Sanciones internacionales.</strong> Si tu dirección aparece en la lista OFAC (EE.UU.) o en sanciones de la UE o la ONU, Tether la bloquea automáticamente. Esto ocurre en horas, a veces antes del anuncio público.</li>
+        <li><strong>Enviar USDT a una dirección marcada.</strong> Tu dirección no se bloquea automáticamente, pero tu USDT queda atrapado en una billetera que ya no puede moverlo. Además, tu dirección puede quedar "manchada" por haber interactuado con una contraparte en lista negra, lo que puede marcarte en revisiones de cumplimiento posteriores.</li>
+      </ol>
+
+      <div class="final-quote">
+        El bloqueo no es instantáneo: Tether necesita varias firmas (3 de 6 en Ethereum, 2 de 3 en Tron).<br>
+        <strong>La ventana entre la propuesta y la congelación efectiva es de 1h30m a 1h46m.</strong>
+      </div>
+    </div>
+  </div>
   <script>
     const CHAINS = {
       tron: {
@@ -481,7 +562,7 @@
     const result = document.getElementById('result');
     const button = form.querySelector('button');
 
-    // ====== MODAL ======
+    // ====== MODAL STABLECOINS ======
     const infoBtn = document.getElementById('infoBtn');
     const modalOverlay = document.getElementById('modalOverlay');
     const modalClose = document.getElementById('modalClose');
@@ -500,8 +581,32 @@
     modalOverlay.addEventListener('click', (e) => {
       if (e.target === modalOverlay) closeModal();
     });
+
+    // ====== NUEVO: MODAL PROCEDIMIENTO ======
+    const procBtn = document.getElementById('procBtn');
+    const procOverlay = document.getElementById('procOverlay');
+    const procClose = document.getElementById('procClose');
+
+    function openProc() {
+      procOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeProc() {
+      procOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    procBtn.addEventListener('click', openProc);
+    procClose.addEventListener('click', closeProc);
+    procOverlay.addEventListener('click', (e) => {
+      if (e.target === procOverlay) closeProc();
+    });
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
+      if (e.key === 'Escape') {
+        if (modalOverlay.classList.contains('open')) closeModal();
+        if (procOverlay.classList.contains('open')) closeProc();
+      }
     });
 
     const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
