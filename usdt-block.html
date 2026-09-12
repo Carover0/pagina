@@ -42,10 +42,9 @@ body {
     width: 100%;
     backdrop-filter: blur(14px);
     box-shadow: 0 20px 60px rgba(45, 27, 105, 0.5), 0 0 0 1px rgba(129, 140, 248, 0.05) inset;
-    position: relative; /* NUEVO: para posicionar botones arriba */
+    position: relative; 
   }
 
-  /* NUEVO: contenedor de botones arriba a la derecha */
   .top-actions {
     position: absolute;
     top: 16px;
@@ -93,7 +92,7 @@ body {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 0.5px;
-    padding: 0 100px; /* NUEVO: evita choque con botones */
+    padding: 0 100px; 
   }
   .subtitle {
     text-align: center;
@@ -304,7 +303,7 @@ body {
     padding-right: 30px;
     line-height: 1.4;
   }
-  .modal h2.proc { color: var(--violet-soft); } /* NUEVO: título del modal procedimiento */
+  .modal h2.proc { color: var(--violet-soft); } 
   .modal h3 {
     font-size: 13px;
     margin-top: 20px;
@@ -338,7 +337,6 @@ body {
     color: var(--violet-soft);
     font-weight: bold;
   }
-  /* NUEVO: lista numerada para el procedimiento */
   .modal ol {
     list-style: none;
     counter-reset: proc;
@@ -452,8 +450,6 @@ body {
     </div>
 
   <main class="container">
-
-
     <h1>Verificador de Blacklist USDT</h1>
     <p class="subtitle">Consulta si una dirección está bloqueada por Tether en Tron y Ethereum</p>
 
@@ -481,7 +477,6 @@ body {
     </footer>
   </main>
 
-  <!-- Modal stablecoins (existente) -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal" role="dialog" aria-modal="true">
       <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
@@ -514,7 +509,6 @@ body {
     </div>
   </div>
 
-<!-- NUEVO: Modal procedimiento de blacklist -->
   <div class="modal-overlay" id="procOverlay">
     <div class="modal" role="dialog" aria-modal="true">
       <button class="modal-close" id="procClose" aria-label="Cerrar">✕</button>
