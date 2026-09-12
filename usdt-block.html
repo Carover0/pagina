@@ -19,20 +19,21 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: 'Lucida Console', 'Monaco', monospace;
-  background: #0a080c;
-  background-image:
-    radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 80%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
-    linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
+  body {
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    background: #0a080c;
+    background-image:
+      radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
+      linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
   .container {
     background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(45, 27, 105, 0.15));
     border: 1px solid rgba(129, 140, 248, 0.18);
@@ -42,7 +43,7 @@ body {
     width: 100%;
     backdrop-filter: blur(14px);
     box-shadow: 0 20px 60px rgba(45, 27, 105, 0.5), 0 0 0 1px rgba(129, 140, 248, 0.05) inset;
-    position: relative; 
+    position: relative;
   }
 
   .top-actions {
@@ -92,7 +93,7 @@ body {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 0.5px;
-    padding: 0 100px; 
+    padding: 0 100px;
   }
   .subtitle {
     text-align: center;
@@ -303,7 +304,7 @@ body {
     padding-right: 30px;
     line-height: 1.4;
   }
-  .modal h2.proc { color: var(--violet-soft); } 
+  .modal h2.proc { color: var(--violet-soft); }
   .modal h3 {
     font-size: 13px;
     margin-top: 20px;
@@ -444,12 +445,16 @@ body {
 </style>
 </head>
 <body>
+
     <div class="top-actions">
       <button class="top-btn" id="infoBtn" aria-label="Información sobre stablecoins" title="Stablecoins y freeze">📜</button>
-      <button class="top-btn" id="procBtn" aria-label="Ver procedimiento de blacklist" title="Procedimiento de blacklist">💡</button>
+      <button class="top-btn" id="procBtn" aria-label="Ver procedimiento de blacklist" title="Procedimiento de blacklist">⚠️</button>
+      <button class="top-btn" id="consejoBtn" aria-label="Consejos antes de pagar" title="Consejos antes de pagar">💡</button>
     </div>
 
   <main class="container">
+
+
     <h1>Verificador de Blacklist USDT</h1>
     <p class="subtitle">Consulta si una dirección está bloqueada por Tether en Tron y Ethereum</p>
 
@@ -530,6 +535,29 @@ body {
       </div>
     </div>
   </div>
+
+  <div class="modal-overlay" id="consejoOverlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="consejoClose" aria-label="Cerrar">✕</button>
+
+      <h2 class="proc">⚠️ Consejos antes de pagar en USDT</h2>
+
+      <p>Pagar en USDT a terceros tiene un riesgo que no existe con efectivo ni con monedas soberanas: la dirección del receptor es un pasivo oculto que vos no controlás. Estos cuatro consejos te pueden ahorrar un dolor de cabeza:</p>
+
+      <ol>
+        <li><strong>No pagues en USDT a terceros que no controlas.</strong> No sabes si su dirección está o estará en la blacklist, y si se congela, tu pago se congela con él.</li>
+        <li><strong>Si tu contraparte usa exchange, usa el mismo exchange que el receptor.</strong> La transferencia interna no toca la cadena, no hay dirección que congelar. Aunque ojo: el exchange también puede congelar tu saldo por su propio compliance, sin que Tether toque nada.</li>
+        <li><strong>Para pagos finales de verdad, usa monedas sin freeze.</strong> DGB, FIRO, BCH o LTC: una vez confirmado, nadie lo revierte.</li>
+        <li><strong>Verifica la dirección antes de enviar.</strong> Es la única defensa real que tenes. Después de enviar, no hay vuelta atrás.</li>
+      </ol>
+
+      <div class="final-quote">
+        Congelar no es destruir, pero para vos da igual: si tu USDT queda atrapado, no lo podes usar.<br>
+        <strong>Verificar antes de enviar es gratis. Recuperar después no tiene vuelta atrás.</strong>
+      </div>
+    </div>
+  </div>
+
   <script>
     const CHAINS = {
       tron: {
@@ -575,7 +603,7 @@ body {
       if (e.target === modalOverlay) closeModal();
     });
 
-    // ====== NUEVO: MODAL PROCEDIMIENTO ======
+    // ====== MODAL PROCEDIMIENTO ======
     const procBtn = document.getElementById('procBtn');
     const procOverlay = document.getElementById('procOverlay');
     const procClose = document.getElementById('procClose');
@@ -595,10 +623,31 @@ body {
       if (e.target === procOverlay) closeProc();
     });
 
+    // ====== MODAL CONSEJOS ======
+    const consejoBtn = document.getElementById('consejoBtn');
+    const consejoOverlay = document.getElementById('consejoOverlay');
+    const consejoClose = document.getElementById('consejoClose');
+
+    function openConsejo() {
+      consejoOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeConsejo() {
+      consejoOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    consejoBtn.addEventListener('click', openConsejo);
+    consejoClose.addEventListener('click', closeConsejo);
+    consejoOverlay.addEventListener('click', (e) => {
+      if (e.target === consejoOverlay) closeConsejo();
+    });
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         if (modalOverlay.classList.contains('open')) closeModal();
         if (procOverlay.classList.contains('open')) closeProc();
+        if (consejoOverlay.classList.contains('open')) closeConsejo();
       }
     });
 
