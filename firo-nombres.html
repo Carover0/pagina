@@ -581,7 +581,6 @@
     function openModal() {
         modalOverlay.classList.add('open');
         modalOverlay.setAttribute('aria-hidden', 'false');
-        try { localStorage.setItem(MODAL_KEY, '1'); } catch (e) {}
     }
     function closeModal() {
         modalOverlay.classList.remove('open');
@@ -597,13 +596,6 @@
         if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
     });
 
-    try {
-        if (!localStorage.getItem(MODAL_KEY)) {
-            setTimeout(openModal, 600);
-        }
-    } catch (e) {
-        setTimeout(openModal, 600);
-    }
 
     async function consultar(name) {
         const nameToQuery = (name || document.getElementById('searchInput').value || '').trim();
