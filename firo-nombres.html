@@ -1,0 +1,560 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firo · Nombres Spark</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(155, 28, 46, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand img {
+            width: 38px; height: 38px;
+            filter: drop-shadow(0 0 16px rgba(155, 28, 46, 0.3));
+            transition: filter 0.3s;
+        }
+        .brand img:hover { filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5)); }
+        .brand h1 {
+            font-size: 21px; font-weight: 400;
+            letter-spacing: 1.5px; color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(155, 28, 46, 0.15);
+        }
+        .brand h1 small {
+            font-size: 12px; color: #6a6255;
+            letter-spacing: 2px; font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex; flex-wrap: wrap; align-items: center;
+            gap: 4px 18px; font-size: 12px; letter-spacing: 0.3px;
+        }
+        .nav-links a {
+            color: #6a6255; text-decoration: none;
+            transition: all 0.25s; padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-links a:hover { color: #ff7b87; border-bottom-color: #ff7b87; }
+
+        .search-section {
+            display: flex; gap: 12px; align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px; padding: 2px 2px 2px 22px;
+            border: 1px solid rgba(155, 28, 46, 0.15);
+            transition: all 0.3s ease;
+        }
+        .search-section:focus-within {
+            border-color: rgba(155, 28, 46, 0.4);
+            box-shadow: 0 0 0 4px rgba(155, 28, 46, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .search-section .prompt {
+            color: #ff7b87; font-size: 16px;
+            user-select: none; transition: transform 0.2s;
+        }
+        .search-section:focus-within .prompt { transform: scale(1.1); }
+        .search-section input {
+            flex: 1; background: transparent; border: none;
+            padding: 15px 8px 15px 4px;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 15px; color: #f5ede4; outline: none;
+            min-width: 0; letter-spacing: 0.2px;
+        }
+        .search-section input::placeholder { color: #3d3830; letter-spacing: 0.5px; }
+
+        .btn-blocks {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(155, 28, 46, 0.12);
+            color: #ff7b87;
+            border: 1px solid rgba(155, 28, 46, 0.2);
+            padding: 8px 18px; border-radius: 20px;
+            font-size: 10px; font-family: 'Lucida Console', monospace;
+            cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; letter-spacing: 0.3px;
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+        .btn-blocks:hover {
+            background: rgba(155, 28, 46, 0.2);
+            border-color: rgba(155, 28, 46, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(155, 28, 46, 0.2);
+        }
+        .btn-blocks .pulse {
+            display: inline-block; width: 6px; height: 6px;
+            background: #31db72; border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.7); }
+        }
+
+        .output-wrapper {
+            flex: 1; min-height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 14px;
+            border: 1px solid rgba(155, 28, 46, 0.06);
+            padding: 24px 28px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+        }
+        .output-wrapper::-webkit-scrollbar { width: 6px; }
+        .output-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .output-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(155, 28, 46, 0.2); border-radius: 10px;
+        }
+
+        #output {
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 13px; line-height: 1.8; color: #e0d8cc;
+        }
+
+        .spark-hero {
+            text-align: center;
+            padding: 20px 0 10px;
+            animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeUp {
+            0% { transform: translateY(16px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .spark-name {
+            font-size: 13px; color: #ff7b87;
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .spark-info {
+            font-size: 11px; color: #6a6255;
+            margin-bottom: 30px; word-break: break-all;
+        }
+        .spark-blocks {
+            font-size: 84px; font-weight: 700; color: #f5ede4;
+            line-height: 1; letter-spacing: -2px;
+            text-shadow: 0 0 40px rgba(255, 123, 135, 0.25);
+            margin-bottom: 6px;
+        }
+        .spark-blocks small {
+            font-size: 20px; color: #6a6255;
+            font-weight: 300; letter-spacing: 0; margin-left: 10px;
+        }
+        .spark-blocks-label {
+            font-size: 11px; text-transform: uppercase;
+            color: #6a6255; letter-spacing: 2px;
+            margin-bottom: 34px;
+        }
+
+        .countdown {
+            display: flex; justify-content: center;
+            flex-wrap: wrap; gap: 14px; margin-bottom: 30px;
+        }
+        .cd-item {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(155, 28, 46, 0.15);
+            border-radius: 12px; padding: 16px 22px;
+            min-width: 92px;
+        }
+        .cd-item .num {
+            font-size: 30px; font-weight: 600;
+            color: #ff7b87; line-height: 1;
+        }
+        .cd-item .lbl {
+            font-size: 9px; text-transform: uppercase;
+            color: #6a6255; letter-spacing: 1px; margin-top: 8px;
+        }
+        .cd-item.secs .num { color: #f5ede4; }
+
+        .progress-wrap { margin: 30px 0 10px; }
+        .progress-label {
+            display: flex; justify-content: space-between;
+            font-size: 10px; text-transform: uppercase;
+            color: #6a6255; letter-spacing: 0.5px; margin-bottom: 8px;
+        }
+        .progress-bar {
+            height: 8px; background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px; overflow: hidden;
+            border: 1px solid rgba(155, 28, 46, 0.1);
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9b1c2e, #ff7b87);
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 12px rgba(255, 123, 135, 0.4);
+        }
+
+        .spark-sub {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px; padding-top: 26px;
+            border-top: 1px solid rgba(155, 28, 46, 0.1);
+            text-align: left;
+        }
+        .spark-sub .item .label {
+            font-size: 9px; text-transform: uppercase;
+            color: #4a443a; letter-spacing: 0.5px; margin-bottom: 4px;
+        }
+        .spark-sub .item .value {
+            font-size: 14px; color: #ece8e0; font-weight: 500;
+        }
+        .spark-sub .item .value.firo { color: #ff7b87; }
+        .spark-sub .item .value.mono {
+            font-size: 10px; color: #8a8275; word-break: break-all;
+        }
+
+        .placeholder {
+            color: #3d3830;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            min-height: 200px; gap: 12px;
+        }
+        .placeholder .icon { font-size: 48px; opacity: 0.12; }
+        .placeholder .sub { font-size: 13px; color: #2d2820; letter-spacing: 0.5px; }
+
+        .loading {
+            display: flex; align-items: center; gap: 14px;
+            color: #4a443a; padding: 20px 0;
+        }
+        .loading .spinner {
+            display: inline-block; width: 18px; height: 18px;
+            border: 2px solid rgba(155, 28, 46, 0.1);
+            border-top-color: #ff7b87; border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg {
+            color: #ff756f; padding: 20px; text-align: center;
+            background: rgba(255, 0, 0, 0.05); border-radius: 12px;
+            border: 1px solid rgba(255, 0, 0, 0.1); font-size: 12px;
+        }
+
+        .footer-bar {
+            display: flex; flex-wrap: wrap;
+            justify-content: space-between; align-items: center;
+            gap: 10px; padding: 14px 24px;
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 12px;
+            border: 1px solid rgba(155, 28, 46, 0.04);
+            font-size: 11px; color: #3d3830;
+        }
+        .footer-bar a { color: #5a5348; text-decoration: none; transition: color 0.25s; }
+        .footer-bar a:hover { color: #ff7b87; }
+        .footer-bar .api {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 3px 18px; border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .footer-bar .api:hover {
+            border-color: rgba(155, 28, 46, 0.08);
+            background: rgba(155, 28, 46, 0.02);
+        }
+
+        .toast {
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(155, 28, 46, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4; padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(155, 28, 46, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px; opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none; z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 768px) {
+            .app { padding: 12px 14px; gap: 12px; }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+            .brand h1 { font-size: 17px; }
+            .brand img { width: 30px; height: 30px; }
+            .nav-links { font-size: 11px; gap: 2px 14px; }
+            .search-section { padding: 2px 2px 2px 14px; }
+            .search-section input { font-size: 14px; padding: 12px 4px; }
+            .output-wrapper { padding: 16px 18px; min-height: 200px; }
+            #output { font-size: 12px; }
+            .spark-blocks { font-size: 56px; }
+            .cd-item { padding: 12px 16px; min-width: 72px; }
+            .cd-item .num { font-size: 24px; }
+            .footer-bar { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 18px; }
+            .btn-blocks { font-size: 9px; padding: 6px 12px; }
+        }
+        @media (max-width: 480px) {
+            .app { padding: 8px 10px; gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
+            .search-section input { font-size: 13px; padding: 10px 4px; }
+            .output-wrapper { padding: 12px 14px; min-height: 150px; }
+            .spark-blocks { font-size: 40px; }
+            .spark-blocks small { font-size: 14px; }
+            .cd-item { padding: 8px 12px; min-width: 58px; }
+            .cd-item .num { font-size: 18px; }
+            .btn-blocks { font-size: 8px; padding: 5px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+
+        <header class="header">
+            <div class="brand">
+                <img src="assets/firo.png" alt="Firo" onerror="this.style.display='none'">
+                <h1>Firo <small>spark name</small></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/firo-nodo">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/firo-explorer">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/firo-bloques.html">[BLOQUES]</a>
+                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            </nav>
+        </header>
+
+        <div class="search-section">
+            <span class="prompt">►</span>
+            <input type="text" id="searchInput" placeholder="spark name · ej: carover0.firo" autofocus spellcheck="false">
+            <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
+                Bloques en tiempo real
+                <span class="pulse"></span>
+            </a>
+        </div>
+
+        <div class="output-wrapper">
+            <div id="output">
+                <div class="placeholder">
+                    <div class="icon">⧫</div>
+                    <div>vencimiento de spark name</div>
+                    <div class="sub">escribe un nombre para consultar</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer-bar">
+            <span>API · <a href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/api/firo.json</a></span>
+            <span style="font-size:10px;color:#2d2820;">Firo mainnet</span>
+        </footer>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+<script>
+    const API_BASE = 'https://carover0.xyz/api/firo/rpc.php';
+    const TOKEN = 'firo2026';
+    const BLOCK_TIME_MIN = 2.5; 
+
+    let validUntilBlock = null;
+    let currentBlockAtFetch = null;
+    let fetchedAt = null;
+    let tickInterval = null;
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    function fmt(n) {
+        return new Intl.NumberFormat('es-ES').format(n);
+    }
+    function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(el._timer);
+        el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    async function consultar(name) {
+        const nameToQuery = (name || document.getElementById('searchInput').value || '').trim();
+        if (!nameToQuery) {
+            showToast('✕ escribe un spark name');
+            return;
+        }
+
+        renderLoading();
+
+        try {
+            const url = `${API_BASE}?token=${encodeURIComponent(TOKEN)}&cmd=sparknameinfo&name=${encodeURIComponent(nameToQuery)}`;
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (data.error) {
+                renderError(data.error);
+                return;
+            }
+
+            validUntilBlock = data.validUntilBlock;
+            currentBlockAtFetch = data.currentBlock;
+            fetchedAt = Date.now();
+
+            renderHero(data);
+            startTicking();
+
+        } catch (e) {
+            renderError('Error de conexión: ' + e.message);
+        }
+    }
+
+    function renderHero(data) {
+        let html = '<div class="spark-hero">';
+        html += `<div class="spark-name">${escapeHtml(data.name)}</div>`;
+        if (data.additionalInfo) {
+            html += `<div class="spark-info">“${escapeHtml(data.additionalInfo)}”</div>`;
+        } else {
+            html += `<div class="spark-info">&nbsp;</div>`;
+        }
+
+        html += `<div class="spark-blocks" id="heroBlocks">—<small>bloques</small></div>`;
+        html += `<div class="spark-blocks-label">restantes para el vencimiento</div>`;
+
+        html += `<div class="countdown" id="countdown">`;
+        html += `<div class="cd-item"><div class="num" id="cdDias">—</div><div class="lbl">días</div></div>`;
+        html += `<div class="cd-item"><div class="num" id="cdHoras">—</div><div class="lbl">horas</div></div>`;
+        html += `<div class="cd-item"><div class="num" id="cdMin">—</div><div class="lbl">min</div></div>`;
+        html += `<div class="cd-item secs"><div class="num" id="cdSeg">—</div><div class="lbl">seg</div></div>`;
+        html += `</div>`;
+
+        html += `<div class="progress-wrap">`;
+        html += `<div class="progress-label"><span>Bloque actual <span id="progCurrent">—</span></span><span>Vence en bloque <span id="progUntil">—</span></span></div>`;
+        html += `<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>`;
+        html += `</div>`;
+
+        html += `<div class="spark-sub">`;
+        html += `<div class="item"><div class="label">Vence (bloque)</div><div class="value firo">${fmt(data.validUntilBlock)}</div></div>`;
+        html += `<div class="item"><div class="label">Dirección</div><div class="value mono">${escapeHtml(data.address || '—')}</div></div>`;
+        html += `</div>`;
+
+        html += '</div>';
+        document.getElementById('output').innerHTML = html;
+
+        document.getElementById('progUntil').textContent = fmt(data.validUntilBlock);
+        document.getElementById('progCurrent').textContent = fmt(data.currentBlock);
+    }
+
+    function startTicking() {
+        if (tickInterval) clearInterval(tickInterval);
+        tickInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+    }
+
+    function updateCountdown() {
+        if (!validUntilBlock || !fetchedAt) return;
+
+        const now = Date.now();
+        const elapsedMs = now - fetchedAt;
+        const elapsedBlocks = elapsedMs / (BLOCK_TIME_MIN * 60 * 1000);
+        const currentEstimated = currentBlockAtFetch + elapsedBlocks;
+
+        const blocksLeftExact = Math.max(0, validUntilBlock - currentEstimated);
+        const currentFloor = Math.floor(currentEstimated);
+        const blocksLeftFloor = Math.max(0, validUntilBlock - currentFloor);
+
+        const heroBlocks = document.getElementById('heroBlocks');
+        if (heroBlocks) {
+            heroBlocks.innerHTML = fmt(blocksLeftFloor) + '<small>bloques</small>';
+        }
+
+        const totalMsLeft = blocksLeftExact * BLOCK_TIME_MIN * 60 * 1000;
+        const totalSec = Math.floor(totalMsLeft / 1000);
+        const dias = Math.floor(totalSec / 86400);
+        const horas = Math.floor((totalSec % 86400) / 3600);
+        const min = Math.floor((totalSec % 3600) / 60);
+        const seg = totalSec % 60;
+
+        const elDias = document.getElementById('cdDias');
+        const elHoras = document.getElementById('cdHoras');
+        const elMin = document.getElementById('cdMin');
+        const elSeg = document.getElementById('cdSeg');
+        if (elDias) elDias.textContent = String(dias).padStart(2, '0');
+        if (elHoras) elHoras.textContent = String(horas).padStart(2, '0');
+        if (elMin) elMin.textContent = String(min).padStart(2, '0');
+        if (elSeg) elSeg.textContent = String(seg).padStart(2, '0');
+
+        if (validUntilBlock > 0) {
+            const pct = Math.min(100, (currentEstimated / validUntilBlock) * 100);
+            const fill = document.getElementById('progressFill');
+            if (fill) fill.style.width = pct.toFixed(2) + '%';
+        }
+
+        const progCurrent = document.getElementById('progCurrent');
+        if (progCurrent) progCurrent.textContent = fmt(currentFloor);
+
+        if (blocksLeftFloor <= 0 && tickInterval) {
+            clearInterval(tickInterval);
+        }
+    }
+
+    function renderLoading() {
+        document.getElementById('output').innerHTML = `
+            <div class="loading">
+                <span class="spinner"></span>
+                consultando spark name…
+            </div>
+        `;
+    }
+
+    function renderError(msg) {
+        document.getElementById('output').innerHTML = `
+            <div class="cmd-line"><span class="tag">✕</span> error</div>
+            <div class="error-msg">⚠ ${escapeHtml(msg)}</div>
+        `;
+    }
+
+    document.getElementById('searchInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            consultar();
+        }
+    });
+
+</script>
+
+</body>
+</html>
