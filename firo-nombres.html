@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firo · Nombres Spark</title>
+    <title>Firo · Spark Name</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -70,6 +70,20 @@
             border-bottom: 2px solid transparent;
         }
         .nav-links a:hover { color: #ff7b87; border-bottom-color: #ff7b87; }
+
+        .btn-help {
+            background: rgba(155, 28, 46, 0.12);
+            color: #ff7b87;
+            border: 1px solid rgba(155, 28, 46, 0.2);
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 11px; font-family: inherit;
+            cursor: pointer; transition: all 0.25s;
+        }
+        .btn-help:hover {
+            background: rgba(155, 28, 46, 0.25);
+            border-color: rgba(155, 28, 46, 0.5);
+            transform: translateY(-1px);
+        }
 
         .search-section {
             display: flex; gap: 12px; align-items: center;
@@ -304,6 +318,106 @@
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(5, 4, 6, 0.78);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; z-index: 1000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .modal {
+            width: 100%; max-width: 560px;
+            max-height: 88vh; overflow-y: auto;
+            background: linear-gradient(165deg, #14100f 0%, #0d0b10 100%);
+            border: 1px solid rgba(155, 28, 46, 0.25);
+            border-radius: 16px;
+            padding: 28px 30px 26px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6),
+                        0 0 0 1px rgba(255, 123, 135, 0.04) inset;
+            transform: translateY(14px) scale(0.98);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+        .modal::-webkit-scrollbar { width: 6px; }
+        .modal::-webkit-scrollbar-track { background: transparent; }
+        .modal::-webkit-scrollbar-thumb {
+            background: rgba(155, 28, 46, 0.25); border-radius: 10px;
+        }
+
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; margin-bottom: 6px;
+        }
+        .modal-title {
+            font-size: 15px; color: #ff7b87;
+            letter-spacing: 2px; text-transform: uppercase;
+            font-weight: 400;
+        }
+        .modal-close {
+            background: transparent; border: 1px solid rgba(155, 28, 46, 0.2);
+            color: #6a6255; width: 30px; height: 30px;
+            border-radius: 50%; cursor: pointer;
+            font-family: inherit; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.25s; flex-shrink: 0;
+        }
+        .modal-close:hover {
+            color: #ff7b87; border-color: rgba(155, 28, 46, 0.5);
+            transform: rotate(90deg);
+        }
+
+        .modal-sub {
+            font-size: 11px; color: #6a6255;
+            letter-spacing: 1px; margin-bottom: 20px;
+        }
+
+        .modal-body { font-size: 12.5px; line-height: 1.85; color: #cfc7bb; }
+        .modal-body p { margin-bottom: 14px; }
+        .modal-body strong { color: #f5ede4; font-weight: 600; }
+        .modal-body em { color: #ff7b87; font-style: normal; }
+
+        .modal-list {
+            list-style: none;
+            display: flex; flex-direction: column; gap: 12px;
+            margin: 4px 0 18px;
+        }
+        .modal-list li {
+            display: flex; gap: 12px; align-items: flex-start;
+            padding-left: 2px;
+        }
+        .modal-list li::before {
+            content: '⧫';
+            color: #ff7b87; font-size: 13px;
+            line-height: 1.7; flex-shrink: 0;
+        }
+        .modal-list li span { flex: 1; }
+        .modal-list li b { color: #f5ede4; font-weight: 600; }
+
+        .fee-table {
+            width: 100%; border-collapse: collapse;
+            margin: 4px 0 18px; font-size: 11.5px;
+        }
+        .fee-table td {
+            padding: 7px 10px;
+            border-bottom: 1px solid rgba(155, 28, 46, 0.08);
+        }
+        .fee-table td:last-child {
+            text-align: right; color: #ff7b87; font-weight: 600;
+        }
+        .fee-table tr:last-child td { border-bottom: none; }
+
+        .modal-note {
+            font-size: 11px; color: #6a6255;
+            border-left: 2px solid rgba(155, 28, 46, 0.3);
+            padding: 8px 0 8px 14px;
+            margin-top: 4px; line-height: 1.7;
+        }
+
         @media (max-width: 768px) {
             .app { padding: 12px 14px; gap: 12px; }
             .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
@@ -319,6 +433,7 @@
             .cd-item .num { font-size: 24px; }
             .footer-bar { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 18px; }
             .btn-blocks { font-size: 9px; padding: 6px 12px; }
+            .modal { padding: 22px 20px; }
         }
         @media (max-width: 480px) {
             .app { padding: 8px 10px; gap: 10px; }
@@ -333,6 +448,7 @@
             .cd-item { padding: 8px 12px; min-width: 58px; }
             .cd-item .num { font-size: 18px; }
             .btn-blocks { font-size: 8px; padding: 5px 10px; }
+            .modal { padding: 20px 16px; }
         }
     </style>
 </head>
@@ -350,6 +466,7 @@
                 <a href="https://carover0.github.io/pagina/firo-explorer">[EXPLORADOR]</a>
                 <a href="https://carover0.github.io/pagina/firo-bloques.html">[BLOQUES]</a>
                 <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+                <button class="btn-help" id="openModalBtn">[?] ¿Qué es?</button>
             </nav>
         </header>
 
@@ -381,6 +498,53 @@
 
     <div class="toast" id="toast"></div>
 
+    <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">¿Qué son los Spark Names?</div>
+                <button class="modal-close" id="closeModalBtn" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-sub">Alias legibles · privacidad Spark · identidad digital</div>
+
+            <div class="modal-body">
+                <p>
+                    Los <strong>Spark Names</strong> son alias fáciles de recordar
+                    (ej. <em>@sparky</em>) que se vinculan a una <strong>dirección
+                    Spark</strong> privada en la blockchain de Firo. Reemplazan las
+                    largas direcciones criptográficas y simplifican las transacciones.
+                </p>
+
+                <ul class="modal-list">
+                    <li><span><b>Privacidad:</b> se ligan a direcciones Spark sigilosas,
+                        no rastreables en la blockchain. Compartir tu nombre no expone
+                        tu historial.</span></li>
+                    <li><span><b>Identidad digital:</b> permiten adjuntar metadatos
+                        (redes sociales, avatar, texto) funcionando como identidad
+                        descentralizada.</span></li>
+                    <li><span><b>Renovación:</b> requieren renovación periódica
+                        (prepagable por varios años) para evitar el acaparamiento
+                        de nombres.</span></li>
+                    <li><span><b>Tarifas:</b> van al Fondo Comunitario de Firo,
+                        gestionado por un comité elegido por la comunidad
+                        (auditorías, proyectos, desarrollo).</span></li>
+                </ul>
+
+                <p style="margin-bottom:8px;"><strong>Tarifa anual según longitud:</strong></p>
+                <table class="fee-table">
+                    <tr><td>1 carácter</td><td>1000 FIRO / año</td></tr>
+                    <tr><td>2 caracteres</td><td>100 FIRO / año</td></tr>
+                    <tr><td>3–5 caracteres</td><td>10 FIRO / año</td></tr>
+                    <tr><td>6+ caracteres</td><td>1 FIRO / año</td></tr>
+                </table>
+
+                <div class="modal-note">
+                    El precio escalonado refleja la escasez de nombres cortos y
+                    ayuda a prevenir el <em>name squatting</em>.
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
     const API_BASE = 'https://carover0.xyz/api/firo/rpc.php';
     const TOKEN = 'firo2026';
@@ -409,6 +573,36 @@
         el.classList.add('show');
         clearTimeout(el._timer);
         el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    const modalOverlay = document.getElementById('modalOverlay');
+    const MODAL_KEY = 'firo_sparkname_modal_seen';
+
+    function openModal() {
+        modalOverlay.classList.add('open');
+        modalOverlay.setAttribute('aria-hidden', 'false');
+        try { localStorage.setItem(MODAL_KEY, '1'); } catch (e) {}
+    }
+    function closeModal() {
+        modalOverlay.classList.remove('open');
+        modalOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('openModalBtn').addEventListener('click', openModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
+    });
+
+    try {
+        if (!localStorage.getItem(MODAL_KEY)) {
+            setTimeout(openModal, 600);
+        }
+    } catch (e) {
+        setTimeout(openModal, 600);
     }
 
     async function consultar(name) {
