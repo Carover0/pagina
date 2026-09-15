@@ -565,6 +565,56 @@
                 font-size: 13px;
             }
         }
+
+		/* ─── LENGUAJES ─── */
+.lang-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-inline-start: 8px;
+}
+
+.lang-switcher button {
+    background: transparent;
+    border: 1px solid rgba(155, 28, 46, 0.15);
+    color: #6a6255;
+    font-family: 'Lucida Console', monospace;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s;
+}
+
+.lang-switcher button:hover {
+    color: #ff7b87;
+    border-color: rgba(155, 28, 46, 0.35);
+}
+
+.lang-switcher button.active {
+    color: #ff7b87;
+    background: rgba(155, 28, 46, 0.12);
+    border-color: rgba(155, 28, 46, 0.4);
+}
+
+[dir="rtl"] .card-item .value,
+[dir="rtl"] .stats-bar .value,
+[dir="rtl"] .stat-item .value,
+[dir="rtl"] .block-row .value,
+[dir="rtl"] #market-price,
+[dir="rtl"] #stat-price,
+[dir="rtl"] #output .row .val,
+[dir="rtl"] #output .result,
+[dir="rtl"] pre {
+    direction: ltr;
+    unicode-bidi: embed;
+}
+
+[dir="rtl"] .footer-links,
+[dir="rtl"] .nav-links {
+    flex-direction: row-reverse;
+}
     </style>
 </head>
 <body>
