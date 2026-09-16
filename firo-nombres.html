@@ -505,6 +505,13 @@
             .btn-blocks { font-size: 8px; padding: 5px 10px; }
             .modal { padding: 20px 16px; }
         }
+.btn-blocks .icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 0 6px rgba(255, 123, 135, 0.35));
+}
     </style>
 </head>
 <body>
@@ -533,6 +540,12 @@
         <div class="search-section">
             <span class="prompt">►</span>
             <input type="text" id="searchInput" data-i18n-placeholder="nombres.search_placeholder" placeholder="spark name · ej: carover0.firo" autofocus spellcheck="false">
+            <a href="https://buyfiro.app/" target="_blank" rel="noopener noreferrer" class="btn-blocks">
+                <img src="assets/firo.png" alt="Firo" class="icon">
+                <span data-i18n="common.btn.buy">Compra FIRO</span>
+                <span class="pulse"></span>
+            </a>
+
             <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
                 <span data-i18n="common.btn.blocks">Bloques en tiempo real</span>
                 <span class="pulse"></span>
