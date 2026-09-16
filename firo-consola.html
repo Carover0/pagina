@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +11,8 @@
         }
 
         body {
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             background: #0a080c;
             background-image:
                 radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
@@ -20,9 +20,8 @@
                 linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
             font-family: 'Lucida Console', 'Courier New', monospace;
             color: #ece8e0;
-            padding: 0;
             margin: 0;
-            min-height: 100vh;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -31,11 +30,12 @@
         .app {
             width: 100%;
             max-width: 1400px;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             gap: 18px;
             padding: 20px 28px;
+            overflow: hidden;
         }
 
         .header {
@@ -49,6 +49,7 @@
             border-radius: 14px;
             border: 1px solid rgba(155, 28, 46, 0.2);
             backdrop-filter: blur(8px);
+            flex-shrink: 0;
         }
 
         .brand {
@@ -104,46 +105,49 @@
             border-bottom-color: #ff7b87;
         }
 
-        .panel {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 14px;
-            border: 1px solid rgba(155, 28, 46, 0.06);
-            padding: 24px 28px;
-            backdrop-filter: blur(8px);
-            transition: border-color 0.3s;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel:hover {
-            border-color: rgba(155, 28, 46, 0.12);
-        }
-
-        .panel-title {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            color: #ff7b87;
-            font-size: 18px;
-            letter-spacing: 1px;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(155, 28, 46, 0.06);
-        }
-
-        .panel-title img {
-            width: 32px;
-            height: 32px;
-            filter: drop-shadow(0 0 12px rgba(155, 28, 46, 0.25));
-        }
+        /* ========== HELP BOX (colapsable en móvil) ========== */
 
         .help-box {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 10px;
             padding: 14px 18px;
-            margin-bottom: 16px;
             border: 1px solid rgba(155, 28, 46, 0.06);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Header interno del help-box (visible siempre) */
+        .help-box .help-header {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            color: #8a8275;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 2px 0;
+            transition: color 0.2s;
+        }
+
+        .help-box .help-header:hover {
+            color: #ff7b87;
+        }
+
+        .help-box .help-header .chev {
+            transition: transform 0.3s ease;
+            color: #ff7b87;
+            font-size: 12px;
+        }
+
+        .help-box.collapsed .help-header .chev {
+            transform: rotate(-90deg);
+        }
+
+        .help-box .help-content {
+            transition: max-height 0.35s ease, opacity 0.25s ease;
+            overflow: hidden;
         }
 
         .help-box .title {
@@ -190,7 +194,7 @@
             padding: 2px 2px 2px 18px;
             border: 1px solid rgba(155, 28, 46, 0.12);
             transition: all 0.3s ease;
-            margin-bottom: 16px;
+            flex-shrink: 0;
         }
 
         .input-line:focus-within {
@@ -228,8 +232,8 @@
             border-radius: 10px;
             padding: 16px 20px;
             border: 1px solid rgba(155, 28, 46, 0.04);
-            flex: 1;
-            min-height: 100px;
+            flex: 1 1 auto;
+            min-height: 0;
             overflow-y: auto;
         }
 
@@ -313,6 +317,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .footer a {
@@ -378,251 +383,152 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        @media (max-width: 768px) {
-            .app {
-                padding: 12px 14px;
-                gap: 12px;
-            }
+        .lang-switcher {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-inline-start: 8px;
+        }
 
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                padding: 14px 18px;
-            }
+        .lang-switcher button {
+            background: transparent;
+            border: 1px solid rgba(155, 28, 46, 0.15);
+            color: #6a6255;
+            font-family: 'Lucida Console', monospace;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
 
-            .brand h1 {
-                font-size: 17px;
-            }
+        .lang-switcher button:hover {
+            color: #ff7b87;
+            border-color: rgba(155, 28, 46, 0.35);
+        }
 
-            .brand img {
-                width: 30px;
-                height: 30px;
-            }
+        .lang-switcher button.active {
+            color: #ff7b87;
+            background: rgba(155, 28, 46, 0.12);
+            border-color: rgba(155, 28, 46, 0.4);
+        }
 
-            .nav-links {
-                font-size: 11px;
-                gap: 2px 14px;
-            }
+        [dir="rtl"] #output .result,
+        [dir="rtl"] #output .cmd-line,
+        [dir="rtl"] pre {
+            direction: ltr;
+            unicode-bidi: embed;
+        }
 
-            .panel {
-                padding: 18px 16px;
-            }
+        [dir="rtl"] .nav-links,
+        [dir="rtl"] .footer .shortcuts {
+            flex-direction: row-reverse;
+        }
 
-            .panel-title {
-                font-size: 16px;
-            }
+        /* ============ RESPONSIVE ============ */
 
-            .panel-title img {
-                width: 28px;
-                height: 28px;
-            }
-
-            .help-box {
-                padding: 12px 14px;
-            }
-
+        @media (max-width: 1100px) {
+            .header { gap: 10px 16px; padding: 14px 20px; }
+            .nav-links { gap: 4px 14px; }
             .help-box .simple,
-            .help-box .params {
-                font-size: 11px;
-            }
+            .help-box .params { font-size: 11.5px; }
+            .input-line input { font-size: 13.5px; }
+        }
 
-            .input-line {
-                padding: 2px 2px 2px 14px;
-            }
+        @media (max-width: 768px) {
+            .app { padding: 12px 14px; gap: 12px; }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+            .brand h1 { font-size: 17px; }
+            .brand img { width: 30px; height: 30px; }
+            .nav-links { font-size: 11px; gap: 2px 14px; justify-content: center; flex: 1 1 100%; }
+            .lang-switcher { margin-inline-start: 0; justify-content: center; }
 
-            .input-line input {
-                font-size: 13px;
-                padding: 11px 4px;
+            .help-box { padding: 0; }
+            .help-box .help-header {
+                display: flex;
+                padding: 12px 14px;
             }
+            .help-box .help-content {
+                padding: 0 14px 12px 14px;
+            }
+            .help-box.collapsed .help-content {
+                max-height: 0 !important;
+                opacity: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+            .help-box .simple,
+            .help-box .params { font-size: 11px; }
 
-            .output-wrapper {
-                padding: 14px 16px;
-                min-height: 120px;
-            }
+            .input-line { padding: 2px 2px 2px 14px; }
+            .input-line input { font-size: 13px; padding: 11px 4px; }
+            .output-wrapper { padding: 14px 16px; min-height: 0; }
+            #output { font-size: 11px; }
 
-            #output {
-                font-size: 11px;
-            }
-
-            .footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-            }
-
-            .footer .shortcuts {
-                gap: 8px;
-            }
+            .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .footer .shortcuts { gap: 8px; flex-wrap: wrap; }
         }
 
         @media (max-width: 480px) {
-            .app {
-                padding: 8px 10px;
-                gap: 10px;
-            }
+            .app { padding: 8px 10px; gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
 
-            .header {
-                padding: 10px 14px;
-            }
-
-            .brand h1 {
-                font-size: 15px;
-            }
-
-            .brand h1 small {
-                font-size: 10px;
-            }
-
-            .brand img {
-                width: 26px;
-                height: 26px;
-            }
-
-            .panel {
-                padding: 14px 12px;
-                border-radius: 10px;
-            }
-
-            .panel-title {
-                font-size: 14px;
-                gap: 10px;
-                margin-bottom: 14px;
-                padding-bottom: 10px;
-            }
-
-            .panel-title img {
-                width: 24px;
-                height: 24px;
-            }
-
-            .help-box {
-                padding: 10px 12px;
-            }
-
-            .help-box .title {
-                font-size: 9px;
-            }
-
+            .help-box .help-header { padding: 10px 12px; font-size: 10px; }
+            .help-box .help-content { padding: 0 12px 10px 12px; }
+            .help-box .title { font-size: 9px; }
             .help-box .simple,
-            .help-box .params {
-                font-size: 10px;
-            }
+            .help-box .params { font-size: 10px; line-height: 1.55; }
 
-            .input-line {
-                padding: 2px 2px 2px 12px;
-            }
+            .input-line { padding: 2px 2px 2px 12px; }
+            .input-line .prompt { font-size: 12px; }
+            .input-line input { font-size: 12px; padding: 9px 4px; }
 
-            .input-line .prompt {
-                font-size: 12px;
-            }
-
-            .input-line input {
-                font-size: 12px;
-                padding: 9px 4px;
-            }
-
-            .output-wrapper {
-                padding: 12px 14px;
-                min-height: 100px;
-            }
-
-            #output {
-                font-size: 10px;
-                line-height: 1.5;
-            }
-
+            .output-wrapper { padding: 12px 14px; min-height: 0; }
+            #output { font-size: 10px; line-height: 1.5; }
             #output .copy-btn {
-                font-size: 10px;
-                padding: 4px 16px;
+                font-size: 11px;
+                padding: 7px 18px;
+                min-height: 34px;
             }
 
             .footer {
                 font-size: 10px;
-            }
-
-            .footer .shortcuts {
-                font-size: 9px;
+                padding-top: 10px;
                 gap: 6px;
-                flex-wrap: wrap;
             }
+            .footer .shortcuts { font-size: 9px; gap: 4px 8px; flex-wrap: wrap; }
+            .footer .shortcuts kbd { font-size: 8px; padding: 1px 8px; }
+            .footer .api-link { font-size: 9px; word-break: break-all; }
+        }
 
-            .footer .shortcuts kbd {
-                font-size: 8px;
-                padding: 1px 8px;
-            }
+        @media (max-width: 360px) {
+            .app { padding: 6px 8px; gap: 8px; }
+            .header { padding: 8px 10px; }
+            .brand h1 { font-size: 14px; }
+            .brand h1 small { font-size: 9px; }
+            .brand img { width: 22px; height: 22px; }
 
-            .footer .api-link {
-                font-size: 10px;
-            }
+            .help-box .help-header { padding: 8px 10px; font-size: 9.5px; }
+            .help-box .help-content { padding: 0 10px 8px 10px; }
+            .help-box .simple,
+            .help-box .params { font-size: 9.5px; }
+
+            .input-line { padding: 2px 2px 2px 10px; }
+            .input-line input { font-size: 11px; padding: 8px 4px; }
+            .output-wrapper { padding: 10px 12px; }
+            #output { font-size: 9.5px; }
         }
 
         @media (min-width: 1920px) {
-            .app {
-                max-width: 1600px;
-                padding: 24px 40px;
-            }
-
-            #output {
-                font-size: 13px;
-            }
-
+            .app { max-width: 1600px; padding: 24px 40px; }
+            #output { font-size: 13px; }
             .help-box .simple,
-            .help-box .params {
-                font-size: 13px;
-            }
+            .help-box .params { font-size: 13px; }
         }
-
-    /* ─── LENGUAJES ─── */
-.lang-switcher {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-inline-start: 8px;
-}
-
-.lang-switcher button {
-    background: transparent;
-    border: 1px solid rgba(155, 28, 46, 0.15);
-    color: #6a6255;
-    font-family: 'Lucida Console', monospace;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.25s;
-}
-
-.lang-switcher button:hover {
-    color: #ff7b87;
-    border-color: rgba(155, 28, 46, 0.35);
-}
-
-.lang-switcher button.active {
-    color: #ff7b87;
-    background: rgba(155, 28, 46, 0.12);
-    border-color: rgba(155, 28, 46, 0.4);
-}
-
-[dir="rtl"] .card-item .value,
-[dir="rtl"] .stats-bar .value,
-[dir="rtl"] .stat-item .value,
-[dir="rtl"] .block-row .value,
-[dir="rtl"] #market-price,
-[dir="rtl"] #stat-price,
-[dir="rtl"] #output .row .val,
-[dir="rtl"] #output .result,
-[dir="rtl"] pre {
-    direction: ltr;
-    unicode-bidi: embed;
-}
-
-[dir="rtl"] .footer-links,
-[dir="rtl"] .nav-links {
-    flex-direction: row-reverse;
-}
-        
     </style>
 </head>
 <body>
@@ -632,17 +538,27 @@
         <header class="header">
             <div class="brand">
                 <img src="assets/firo.png" alt="Firo">
-                <h1>Firo <small>consola RPC</small></h1>
+                <h1>Firo <small data-i18n="consola.title_short">consola RPC</small></h1>
             </div>
             <nav class="nav-links">
-                <a href="https://carover0.github.io/pagina/firo-nodo.html">[NODO]</a>
-                <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a>
-                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+                <a href="https://carover0.github.io/pagina/firo-nodo.html" data-i18n="common.nav.node">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/firo-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
             </nav>
+            <div class="lang-switcher" role="group" aria-label="Language">
+                <button type="button" data-lang="es" class="active">ES</button>
+                <button type="button" data-lang="en">EN</button>
+                <button type="button" data-lang="ar">AR</button>
+            </div>
         </header>
-            <!-- Help Box -->
-            <div class="help-box">
-                <div class="title">COMANDOS BÁSICOS (sin parámetros)</div>
+
+        <div class="help-box" id="helpBox">
+            <div class="help-header" id="helpToggle">
+                <span data-i18n="consola.help.toggle">COMANDOS DISPONIBLES</span>
+                <span class="chev">▾</span>
+            </div>
+            <div class="help-content" id="helpContent">
+                <div class="title" data-i18n="consola.help.simple_title">COMANDOS BÁSICOS (sin parámetros)</div>
                 <div class="simple">
                     <span class="cmd" onclick="fillCommand('getblockchaininfo')">getblockchaininfo</span> ·
                     <span class="cmd" onclick="fillCommand('getblockcount')">getblockcount</span> ·
@@ -659,47 +575,45 @@
                     <span class="cmd" onclick="fillCommand('getnetworkhashps')">getnetworkhashps</span> ·
                     <span class="cmd" onclick="fillCommand('getmininginfo')">getmininginfo</span>
                 </div>
-                <div class="title">COMANDOS CON PARÁMETROS</div>
+                <div class="title" data-i18n="consola.help.params_title">COMANDOS CON PARÁMETROS</div>
                 <div class="params">
-                    <span class="cmd" onclick="fillCommand('getblockhash ')" style="color:#ff7b87;">getblockhash</span> &lt;altura&gt; ·
-                    <span class="cmd" onclick="fillCommand('getblock ')" style="color:#ff7b87;">getblock</span> &lt;hash&gt; ·
-                    <span class="cmd" onclick="fillCommand('getrawtransaction ')" style="color:#ff7b87;">getrawtransaction</span> &lt;txid&gt; 1 ·
-                    <span class="cmd" onclick="fillCommand('validateaddress ')" style="color:#ff7b87;">validateaddress</span> &lt;dirección&gt; ·
-                    <span class="cmd" onclick="fillCommand('gettxout ')" style="color:#ff7b87;">gettxout</span> &lt;txid&gt; &lt;vout&gt;
+                    <span class="cmd" onclick="fillCommand('getblockhash ')" style="color:#ff7b87;">getblockhash</span> <span data-i18n="consola.help.param_height">&lt;altura&gt;</span> ·
+                    <span class="cmd" onclick="fillCommand('getblock ')" style="color:#ff7b87;">getblock</span> <span data-i18n="consola.help.param_hash">&lt;hash&gt;</span> ·
+                    <span class="cmd" onclick="fillCommand('getrawtransaction ')" style="color:#ff7b87;">getrawtransaction</span> <span data-i18n="consola.help.param_txid">&lt;txid&gt;</span> 1 ·
+                    <span class="cmd" onclick="fillCommand('validateaddress ')" style="color:#ff7b87;">validateaddress</span> <span data-i18n="consola.help.param_address">&lt;dirección&gt;</span> ·
+                    <span class="cmd" onclick="fillCommand('gettxout ')" style="color:#ff7b87;">gettxout</span> <span data-i18n="consola.help.param_txid">&lt;txid&gt;</span> <span data-i18n="consola.help.param_vout">&lt;vout&gt;</span>
                 </div>
             </div>
-
-            <!-- Input -->
-            <div class="input-line">
-                <span class="prompt">firo></span>
-                <input type="text" id="cmdInput" placeholder="getblockchaininfo" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-            </div>
-
-            <!-- Output -->
-            <div class="output-wrapper">
-                <div id="output">
-                    <div class="placeholder">Listo para ejecutar comandos...</div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <footer class="footer">
-                <a href="https://carover0.xyz/api/firo/rpc.php?token=firo2026" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/api/firo/rpc.php?token=firo2026</a>
-                <div class="shortcuts">
-                    <kbd>Enter</kbd> ejecutar
-                    <kbd>F8</kbd> copiar
-                    <kbd>F9</kbd> limpiar
-                </div>
-            </footer>
         </div>
 
+        <div class="input-line">
+            <span class="prompt">firo></span>
+            <input type="text" id="cmdInput" placeholder="getblockchaininfo" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        </div>
+
+        <div class="output-wrapper">
+            <div id="output">
+                <div class="placeholder" data-i18n="consola.placeholder">Listo para ejecutar comandos...</div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="shortcuts">
+                <kbd>Enter</kbd> <span data-i18n="consola.shortcut_run_label">ejecutar</span>
+                <kbd>F8</kbd> <span data-i18n="consola.shortcut_copy_label">copiar</span>
+                <kbd>F9</kbd> <span data-i18n="consola.shortcut_clear_label">limpiar</span>
+            </div>
+        </footer>
     </div>
 
     <div class="toast" id="toast"></div>
 
+    <script src="js/i18n.js"></script>
     <script>
         const API_URL = "https://carover0.xyz/api/firo/rpc.php";
         const TOKEN = "firo2026";
+
+        const t = (key) => FiroI18n.t(key);
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -735,7 +649,7 @@
 
             if (!cmd) return;
 
-            outputDiv.innerHTML = `<div class="result" style="color:#5a5348;">ejecutando: ${escapeHtml(cmd)}...</div>`;
+            outputDiv.innerHTML = `<div class="result" style="color:#5a5348;">${t('consola.executing')} ${escapeHtml(cmd)}...</div>`;
 
             try {
                 const response = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
@@ -745,14 +659,14 @@
                 output += `<div class="result">`;
 
                 if (data.error) {
-                    output += `<span class="error">Error:</span> ${escapeHtml(JSON.stringify(data.error, null, 2))}`;
+                    output += `<span class="error">${t('common.state.error')}:</span> ${escapeHtml(JSON.stringify(data.error, null, 2))}`;
                 } else {
                     const jsonStr = JSON.stringify(data.result || data, null, 2);
                     output += escapeHtml(jsonStr);
                 }
 
                 output += `</div>`;
-                output += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
+                output += `<button class="copy-btn" onclick="copyResult()">${t('consola.copy_btn')}</button>`;
                 outputDiv.innerHTML = output;
 
                 const wrapper = outputDiv.parentElement;
@@ -760,7 +674,7 @@
 
             } catch (error) {
                 outputDiv.innerHTML =
-                    `<div class="result"><span class="error">Error:</span> ${escapeHtml(error.message)}</div>`;
+                    `<div class="result"><span class="error">${t('common.state.error')}:</span> ${escapeHtml(error.message)}</div>`;
             }
 
             input.value = '';
@@ -773,14 +687,14 @@
             if (resultEl) {
                 const text = resultEl.textContent;
                 navigator.clipboard.writeText(text).then(() => {
-                    showToast('✓ copiado');
+                    showToast(t('common.copy.ok'));
                 }).catch(() => {
                     const ta = document.createElement('textarea');
                     ta.value = text;
                     document.body.appendChild(ta);
                     ta.select();
                     try { document.execCommand('copy');
-                        showToast('✓ copiado'); } catch (_) {}
+                        showToast(t('common.copy.ok')); } catch (_) {}
                     document.body.removeChild(ta);
                 });
             }
@@ -792,7 +706,7 @@
             if (e.key === 'F9') {
                 e.preventDefault();
                 document.getElementById('cmdInput').value = '';
-                document.getElementById('output').innerHTML = '<div class="placeholder">Listo para ejecutar comandos...</div>';
+                document.getElementById('output').innerHTML = `<div class="placeholder">${t('consola.placeholder')}</div>`;
                 const prompt = document.querySelector('.prompt');
                 if (prompt) {
                     prompt.textContent = '♥';
@@ -809,11 +723,55 @@
             }
         });
 
+        /* ====== Toggle help-box en móvil ====== */
+        (function initHelpToggle() {
+            const helpBox = document.getElementById('helpBox');
+            const helpToggle = document.getElementById('helpToggle');
+            const helpContent = document.getElementById('helpContent');
+            if (!helpBox || !helpToggle || !helpContent) return;
+
+            const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+            function applyMode() {
+                if (isMobile()) {
+                    helpBox.classList.add('collapsed');
+                    helpContent.style.maxHeight = '0px';
+                } else {
+                    helpBox.classList.remove('collapsed');
+                    helpContent.style.maxHeight = 'none';
+                }
+            }
+
+            helpToggle.addEventListener('click', () => {
+                if (!isMobile()) return;
+                const collapsed = helpBox.classList.toggle('collapsed');
+                if (collapsed) {
+                    helpContent.style.maxHeight = '0px';
+                } else {
+                    helpContent.style.maxHeight = helpContent.scrollHeight + 'px';
+                }
+            });
+
+            window.addEventListener('resize', applyMode);
+            applyMode();
+        })();
+
         window.addEventListener('load', () => {
             document.getElementById('cmdInput').focus();
         });
 
         window.fillCommand = fillCommand;
+
+        window.onLangChange = function () {
+            const output = document.getElementById('output');
+            if (output && output.querySelector('.placeholder')) {
+                output.innerHTML = `<div class="placeholder">${t('consola.placeholder')}</div>`;
+            }
+        };
+
+        (async () => {
+            await FiroI18n.init();
+        })();
     </script>
 
 </body>
