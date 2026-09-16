@@ -93,7 +93,7 @@
         }
 
         .search-section {
-            display: flex; gap: 12px; align-items: center;
+            display: flex; gap: 10px; align-items: center;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 14px; padding: 2px 2px 2px 22px;
             border: 1px solid rgba(155, 28, 46, 0.15);
@@ -130,6 +130,7 @@
             text-decoration: none; letter-spacing: 0.3px;
             margin-inline-end: 6px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
         .btn-blocks:hover {
             background: rgba(155, 28, 46, 0.2);
@@ -141,6 +142,15 @@
             display: inline-block; width: 6px; height: 6px;
             background: #31db72; border-radius: 50%;
             animation: pulse 1.5s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        .btn-blocks .icon {
+            width: 16px;
+            height: 16px;
+            display: block;
+            object-fit: contain;
+            filter: drop-shadow(0 0 6px rgba(255, 123, 135, 0.35));
+            flex-shrink: 0;
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -471,6 +481,11 @@
             flex-direction: row-reverse;
         }
 
+        @media (max-width: 1100px) {
+            .btn-blocks { font-size: 9px; padding: 7px 14px; }
+            .search-section { gap: 8px; }
+        }
+
         @media (max-width: 768px) {
             .app { padding: 12px 14px; gap: 12px; }
             .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
@@ -478,8 +493,8 @@
             .brand img { width: 30px; height: 30px; }
             .nav-links { font-size: 11px; gap: 2px 14px; }
             .lang-switcher { margin-inline-start: 0; justify-content: center; }
-            .search-section { padding: 2px 2px 2px 14px; }
-            .search-section input { font-size: 14px; padding: 12px 4px; }
+            .search-section { padding: 2px 2px 2px 14px; gap: 8px; flex-wrap: wrap; }
+            .search-section input { font-size: 14px; padding: 12px 4px; flex: 1 1 180px; }
             .output-wrapper { padding: 16px 18px; min-height: 0; }
             #output { font-size: 12px; }
             .spark-blocks { font-size: 56px; }
@@ -490,31 +505,39 @@
             .modal { padding: 22px 20px; }
         }
 
-@media (max-width: 480px) {
-    .app { padding: 8px 10px; gap: 10px; }
-    .header { padding: 10px 14px; }
-    .brand h1 { font-size: 15px; }
-    .brand h1 small { font-size: 10px; }
-    .brand img { width: 26px; height: 26px; }
-    .search-section { padding: 2px 2px 2px 10px; flex-wrap: wrap; }
-    .search-section input { font-size: 13px; padding: 10px 4px; }
-    .output-wrapper { padding: 12px 14px; min-height: 0; }
-    .spark-blocks { font-size: 40px; }
-    .spark-blocks small { font-size: 14px; }
-    .cd-item { padding: 8px 12px; min-width: 58px; }
-    .cd-item .num { font-size: 18px; }
-    .btn-blocks { font-size: 8px; padding: 5px 10px; gap: 5px; }
-    .btn-blocks .icon { width: 12px; height: 12px; }
-    .btn-blocks .pulse { width: 5px; height: 5px; }
-    .modal { padding: 20px 16px; }
-}
-.btn-blocks .icon {
-    width: 16px;
-    height: 16px;
-    display: block;
-    object-fit: contain;
-    filter: drop-shadow(0 0 6px rgba(255, 123, 135, 0.35));
-}
+        @media (max-width: 480px) {
+            .app { padding: 8px 10px; gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
+            .search-section { padding: 2px 2px 2px 10px; gap: 6px; flex-wrap: wrap; }
+            .search-section input { font-size: 13px; padding: 10px 4px; flex: 1 1 100%; order: 0; }
+            .search-section .prompt { order: 0; }
+            .btn-blocks {
+                font-size: 9px;
+                padding: 6px 10px;
+                gap: 5px;
+                flex: 1 1 calc(50% - 3px);
+                justify-content: center;
+                margin-inline-end: 0;
+                order: 1;
+            }
+            .btn-blocks .icon { width: 12px; height: 12px; }
+            .btn-blocks .pulse { width: 5px; height: 5px; }
+            .output-wrapper { padding: 12px 14px; min-height: 0; }
+            .spark-blocks { font-size: 40px; }
+            .spark-blocks small { font-size: 14px; }
+            .cd-item { padding: 8px 12px; min-width: 58px; }
+            .cd-item .num { font-size: 18px; }
+            .modal { padding: 20px 16px; }
+        }
+
+        @media (max-width: 360px) {
+            .search-section input { font-size: 12px; padding: 8px 2px; }
+            .btn-blocks { flex: 1 1 100%; font-size: 9px; }
+            .btn-blocks .icon { width: 11px; height: 11px; }
+        }
     </style>
 </head>
 <body>
@@ -548,7 +571,6 @@
                 <span data-i18n="common.btn.buy">Compra FIRO</span>
                 <span class="pulse"></span>
             </a>
-
             <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
                 <span data-i18n="common.btn.blocks">Bloques en tiempo real</span>
                 <span class="pulse"></span>
