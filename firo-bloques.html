@@ -18,11 +18,12 @@
         }
         .app { width: 100%; max-width: 1200px; }
 
-        .header {
-            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-            padding: 16px 24px; background: rgba(255,255,255,0.02); border-radius: 14px;
-            border: 1px solid rgba(155, 28, 46, 0.2); backdrop-filter: blur(8px); margin-bottom: 24px;
-        }
+.header {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 12px 20px;
+    padding: 16px 24px; background: rgba(255,255,255,0.02); border-radius: 14px;
+    border: 1px solid rgba(155, 28, 46, 0.2); backdrop-filter: blur(8px); margin-bottom: 24px;
+}
         .brand { display: flex; align-items: center; gap: 14px; }
         .brand img {
             width: 38px; height: 38px;
@@ -35,14 +36,15 @@
         .brand h1 { font-size: 21px; font-weight: 400; color: #f5e6c8; }
         .brand h1 small { font-size: 12px; color: #6a6255; }
 
-        .nav-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 18px;
-            font-size: 12px;
-            letter-spacing: 0.3px;
-            margin-left: auto;
-        }
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    justify-content: center;
+    flex: 1;
+}
         .nav-links a {
             color: #6a6255;
             text-decoration: none;
@@ -146,66 +148,62 @@
         .footer a:hover { color: #ff7b87; border-bottom-color: rgba(155, 28, 46, 0.15); }
         .footer-links { display: flex; gap: 16px; }
 
-        @media (max-width: 700px) {
-            .header { flex-direction: column; align-items: stretch; gap: 10px; }
-            .cards-grid { grid-template-columns: 1fr; }
-            .stats-panel { grid-template-columns: 1fr 1fr; }
-            .nav-links { font-size: 11px; gap: 2px 14px; justify-content: center; margin-left: 0; }
-        }
+@media (max-width: 700px) {
+    .header { flex-direction: column; align-items: stretch; gap: 10px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .stats-panel { grid-template-columns: 1fr 1fr; }
+    .nav-links { font-size: 11px; gap: 2px 14px; justify-content: center; margin-left: 0; }
+    .lang-switcher { margin-inline-start: 0; justify-content: center; }
+}
         @media (max-width: 450px) {
             .stats-panel { grid-template-columns: 1fr; }
             .block-top { flex-direction: column; align-items: flex-start; gap: 6px; }
             .block-time { align-self: flex-start; }
         }
-        /* ───LENGUAJES ─── */
+
 .lang-switcher {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    margin-inline-start: 8px;
+    margin-inline-start: auto;
 }
 
-.lang-switcher button {
-    background: transparent;
-    border: 1px solid rgba(155, 28, 46, 0.15);
-    color: #6a6255;
-    font-family: 'Lucida Console', monospace;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.25s;
-}
+        .lang-switcher button {
+            background: transparent;
+            border: 1px solid rgba(155, 28, 46, 0.15);
+            color: #6a6255;
+            font-family: 'Lucida Console', monospace;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
 
-.lang-switcher button:hover {
-    color: #ff7b87;
-    border-color: rgba(155, 28, 46, 0.35);
-}
+        .lang-switcher button:hover {
+            color: #ff7b87;
+            border-color: rgba(155, 28, 46, 0.35);
+        }
 
-.lang-switcher button.active {
-    color: #ff7b87;
-    background: rgba(155, 28, 46, 0.12);
-    border-color: rgba(155, 28, 46, 0.4);
-}
+        .lang-switcher button.active {
+            color: #ff7b87;
+            background: rgba(155, 28, 46, 0.12);
+            border-color: rgba(155, 28, 46, 0.4);
+        }
 
-[dir="rtl"] .card-item .value,
-[dir="rtl"] .stats-bar .value,
-[dir="rtl"] .stat-item .value,
-[dir="rtl"] .block-row .value,
-[dir="rtl"] #market-price,
-[dir="rtl"] #stat-price,
-[dir="rtl"] #output .row .val,
-[dir="rtl"] #output .result,
-[dir="rtl"] pre {
-    direction: ltr;
-    unicode-bidi: embed;
-}
+        [dir="rtl"] .stat-item .value,
+        [dir="rtl"] .block-row .value,
+        [dir="rtl"] .stat-item .sub,
+        [dir="rtl"] .block-time {
+            direction: ltr;
+            unicode-bidi: embed;
+        }
 
-[dir="rtl"] .footer-links,
-[dir="rtl"] .nav-links {
-    flex-direction: row-reverse;
-}
+        [dir="rtl"] .footer-links,
+        [dir="rtl"] .nav-links {
+            flex-direction: row-reverse;
+        }
     </style>
 </head>
 <body>
@@ -213,37 +211,51 @@
     <header class="header">
         <div class="brand">
             <img src="assets/firo.png" alt="FIRO" onerror="this.style.display='none'">
-            <h1>FIRO <small>bloques en vivo</small></h1>
+            <h1>FIRO <small data-i18n="bloques.title_short">bloques en vivo</small></h1>
         </div>
         <nav class="nav-links">
-            <a href="https://carover0.github.io/pagina/firo-nodo.html">[NODO]</a>
-            <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a>
-            <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a>
-            <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+            <a href="https://carover0.github.io/pagina/firo-nodo.html" data-i18n="common.nav.node">[NODO]</a>
+            <a href="https://carover0.github.io/pagina/firo-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+            <a href="https://carover0.github.io/pagina/firo-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
+            <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
         </nav>
+        <div class="lang-switcher" role="group" aria-label="Language">
+            <button type="button" data-lang="es" class="active">ES</button>
+            <button type="button" data-lang="en">EN</button>
+            <button type="button" data-lang="ar">AR</button>
+        </div>
     </header>
 
     <div class="stats-panel" id="statsPanel">
-        <div class="stat-item"><div class="label">⛏️ Dificultad</div><div class="value firo" id="statDiff">—</div><div class="sub" id="statHeight">Bloque #---</div></div>
         <div class="stat-item">
-            <div class="label">📦 Mempool</div>
-            <div class="value" id="statMempool"><span id="mempoolCount">—</span> <span class="mempool-status" id="mempoolStatus">cargando</span></div>
+            <div class="label" data-i18n="bloques.stats.difficulty">⛏️ Dificultad</div>
+            <div class="value firo" id="statDiff">—</div>
+            <div class="sub" id="statHeight" data-i18n="bloques.block_prefix">Bloque #</div>
+        </div>
+        <div class="stat-item">
+            <div class="label" data-i18n="bloques.stats.mempool">📦 Mempool</div>
+            <div class="value" id="statMempool"><span id="mempoolCount">—</span> <span class="mempool-status" id="mempoolStatus" data-i18n="common.footer.loading">cargando</span></div>
             <div class="sub" id="statMempoolDetail">—</div>
         </div>
-        <div class="stat-item"><div class="label">🔗 Último bloque</div><div class="value mono" id="statBestBlock">—</div><div class="sub" id="statBlockTime">actualizando...</div></div>
+        <div class="stat-item">
+            <div class="label" data-i18n="bloques.stats.last_block">🔗 Último bloque</div>
+            <div class="value mono" id="statBestBlock">—</div>
+            <div class="sub" id="statBlockTime" data-i18n="common.footer.loading">cargando</div>
+        </div>
     </div>
 
     <div class="cards-grid" id="blockContainer">
-        <div class="error-msg">⏳ Cargando bloques desde el nodo FIRO...</div>
+        <div class="error-msg" data-i18n="bloques.loading">⏳ Cargando bloques desde el nodo FIRO...</div>
     </div>
 
     <footer class="footer">
         <div class="footer-links">
-            <a href="#" onclick="refreshData(); return false;">↻ Actualizar</a>
+            <a href="#" onclick="refreshData(); return false;" id="refreshLink" data-i18n="common.btn.update">↻ Actualizar</a>
         </div>
     </footer>
 </div>
 
+<script src="js/i18n.js"></script>
 <script>
 const API_URL = "https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=getrecentblocks&limit=8";
 const MEMPOOL_INFO_URL = "https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=getmempoolinfo";
@@ -251,12 +263,14 @@ const MEMPOOL_INFO_URL = "https://carover0.xyz/api/firo/rpc.php?token=firo2026&c
 let previousBlocks = [];
 let currentHeight = 0;
 
+const t = (key) => FiroI18n.t(key);
+
 function getExplorerLink(hash) {
     return `https://carover0.github.io/pagina/firo-explorer/${hash}`;
 }
 
 function formatMiner(miner) {
-    if (!miner || miner === 'Desconocido') return 'Desconocido';
+    if (!miner || miner === 'Desconocido') return t('bloques.miner_unknown');
     if (miner.length > 20) {
         return miner.substring(0, 10) + '...' + miner.substring(miner.length - 6);
     }
@@ -276,11 +290,11 @@ function formatBytes(bytes) {
 }
 
 function getMempoolStatus(size) {
-    if (size === 0) return { text: 'vacío', class: 'bajo' };
-    if (size < 10) return { text: 'bajo', class: 'bajo' };
-    if (size < 50) return { text: 'normal', class: 'normal' };
-    if (size < 200) return { text: 'alto', class: 'alto' };
-    return { text: 'congestionado', class: 'alto' };
+    if (size === 0) return { text: t('bloques.mempool.empty'), class: 'bajo' };
+    if (size < 10) return { text: t('bloques.mempool.low'), class: 'bajo' };
+    if (size < 50) return { text: t('bloques.mempool.normal'), class: 'normal' };
+    if (size < 200) return { text: t('bloques.mempool.high'), class: 'alto' };
+    return { text: t('bloques.mempool.congested'), class: 'alto' };
 }
 
 function createBlockCard(block, isNew = false) {
@@ -299,24 +313,24 @@ function createBlockCard(block, isNew = false) {
             <span class="block-time">${timeDisplay}</span>
         </div>
         <div class="block-row">
-            <span class="label">Minero</span>
+            <span class="label">${t('bloques.miner')}</span>
             <span class="value firo" style="font-size:10px;word-break:break-all;max-width:180px;text-align:right;">${minerDisplay}</span>
         </div>
         <div class="block-row">
-            <span class="label">Transacciones</span>
-            <span class="value">${block.tx_count || 0} <span style="color:#5a5348;font-size:10px;">TX</span></span>
+            <span class="label">${t('bloques.tx_count')}</span>
+            <span class="value">${block.tx_count || 0} <span style="color:#5a5348;font-size:10px;">${t('common.unit.tx').toUpperCase()}</span></span>
         </div>
         <div class="block-row">
-            <span class="label">Tamaño</span>
+            <span class="label">${t('bloques.size')}</span>
             <span class="value mono">${block.size || '—'}</span>
         </div>
         <div class="block-row">
-            <span class="label">Dificultad</span>
+            <span class="label">${t('bloques.difficulty')}</span>
             <span class="value">${block.difficulty || '—'}</span>
         </div>
         <div class="block-footer">
             <span class="miner-tag">⛏️ ${minerDisplay}</span>
-            <span class="block-hint firo">🔗 ver en explorador</span>
+            <span class="block-hint firo">${t('bloques.view_explorer')}</span>
         </div>
     `;
 
@@ -340,7 +354,7 @@ function renderBlocks(data) {
     }
 
     if (!data.blocks || data.blocks.length === 0) {
-        container.innerHTML = `<div class="error-msg">⚠️ No se encontraron bloques</div>`;
+        container.innerHTML = `<div class="error-msg">${t('bloques.no_blocks')}</div>`;
         return;
     }
 
@@ -377,12 +391,12 @@ async function fetchMempoolInfo() {
 
             let detail = '';
             if (bytes > 0) {
-                detail = formatBytes(bytes) + ' en datos';
+                detail = formatBytes(bytes) + ' ' + t('bloques.mempool.data');
                 if (usage > 0) {
-                    detail += ' · ' + formatBytes(usage) + ' RAM';
+                    detail += ' · ' + formatBytes(usage) + ' ' + t('bloques.mempool.ram');
                 }
             } else {
-                detail = 'vacío';
+                detail = t('bloques.mempool.vacio');
             }
             document.getElementById('statMempoolDetail').textContent = detail;
         }
@@ -390,20 +404,20 @@ async function fetchMempoolInfo() {
         console.error('Error fetching mempool:', error);
         document.getElementById('mempoolCount').textContent = '—';
         const statusEl = document.getElementById('mempoolStatus');
-        statusEl.textContent = 'error';
+        statusEl.textContent = t('bloques.mempool.error');
         statusEl.className = 'mempool-status alto';
-        document.getElementById('statMempoolDetail').textContent = 'error de conexión';
+        document.getElementById('statMempoolDetail').textContent = t('bloques.mempool.error_conn');
     }
 }
 
 function updateStats(data) {
     if (!data || data.error) return;
     document.getElementById('statDiff').textContent = data.stats?.difficulty || '—';
-    document.getElementById('statHeight').textContent = `Bloque #${data.stats?.height || '—'}`;
+    document.getElementById('statHeight').textContent = `${t('bloques.block_prefix')}${data.stats?.height || '—'}`;
 
     const bestBlock = data.stats?.best_block || '';
     document.getElementById('statBestBlock').textContent = formatHash(bestBlock);
-    document.getElementById('statBlockTime').textContent = `actualizado ${new Date().toLocaleTimeString()}`;
+    document.getElementById('statBlockTime').textContent = `${t('bloques.updated_at')} ${new Date().toLocaleTimeString()}`;
 }
 
 async function fetchData() {
@@ -417,21 +431,38 @@ async function fetchData() {
     } catch (error) {
         console.error('Error:', error);
         document.getElementById('blockContainer').innerHTML = `
-            <div class="error-msg">⚠️ Error de conexión: ${error.message}</div>
+            <div class="error-msg">${t('common.error.connection_prefix')} ${error.message}</div>
         `;
     }
 }
 
 window.refreshData = function() {
-    const link = document.querySelector('.footer-links a:first-child');
-    const originalText = link.textContent;
-    link.textContent = '↻ Actualizando...';
-    fetchData().finally(() => { link.textContent = originalText; });
+    const link = document.getElementById('refreshLink');
+    link.textContent = t('common.btn.updating');
+    fetchData().finally(() => { link.textContent = t('common.btn.update'); });
     return false;
 };
 
-fetchData();
-setInterval(fetchData, 50000);
+window.onLangChange = function () {
+    if (previousBlocks.length > 0) {
+        const fakeData = { blocks: previousBlocks, stats: { height: currentHeight } };
+        renderBlocks(fakeData);
+    }
+    const refresh = document.getElementById('refreshLink');
+    if (refresh) refresh.textContent = t('common.btn.update');
+    const statusEl = document.getElementById('mempoolStatus');
+    if (statusEl) {
+        const status = getMempoolStatus(parseInt(document.getElementById('mempoolCount').textContent) || 0);
+        statusEl.textContent = status.text;
+        statusEl.className = 'mempool-status ' + status.class;
+    }
+};
+
+(async () => {
+    await FiroI18n.init();
+    fetchData();
+    setInterval(fetchData, 50000);
+})();
 </script>
 </body>
 </html>
