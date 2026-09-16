@@ -7,7 +7,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             background: #0a080c;
             background-image:
                 radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
@@ -15,6 +16,8 @@
                 linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
             font-family: 'Lucida Console', 'Courier New', monospace;
             color: #ece8e0;
+            margin: 0;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -23,11 +26,12 @@
         .app {
             width: 100%;
             max-width: 1400px;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             gap: 18px;
             padding: 20px 28px;
+            overflow: hidden;
         }
 
         .header {
@@ -41,6 +45,7 @@
             border-radius: 14px;
             border: 1px solid rgba(155, 28, 46, 0.2);
             backdrop-filter: blur(8px);
+            flex-shrink: 0;
         }
 
         .brand { display: flex; align-items: center; gap: 14px; }
@@ -63,6 +68,8 @@
         .nav-links {
             display: flex; flex-wrap: wrap; align-items: center;
             gap: 4px 18px; font-size: 12px; letter-spacing: 0.3px;
+            justify-content: center;
+            flex: 1;
         }
         .nav-links a {
             color: #6a6255; text-decoration: none;
@@ -91,6 +98,7 @@
             border-radius: 14px; padding: 2px 2px 2px 22px;
             border: 1px solid rgba(155, 28, 46, 0.15);
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
         .search-section:focus-within {
             border-color: rgba(155, 28, 46, 0.4);
@@ -120,7 +128,7 @@
             font-size: 10px; font-family: 'Lucida Console', monospace;
             cursor: pointer; transition: all 0.3s ease;
             text-decoration: none; letter-spacing: 0.3px;
-            margin-right: 6px;
+            margin-inline-end: 6px;
             white-space: nowrap;
         }
         .btn-blocks:hover {
@@ -140,7 +148,8 @@
         }
 
         .output-wrapper {
-            flex: 1; min-height: 400px;
+            flex: 1 1 auto;
+            min-height: 0;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 14px;
             border: 1px solid rgba(155, 28, 46, 0.06);
@@ -186,7 +195,7 @@
         }
         .spark-blocks small {
             font-size: 20px; color: #6a6255;
-            font-weight: 300; letter-spacing: 0; margin-left: 10px;
+            font-weight: 300; letter-spacing: 0; margin-inline-start: 10px;
         }
         .spark-blocks-label {
             font-size: 11px; text-transform: uppercase;
@@ -238,7 +247,7 @@
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 16px; padding-top: 26px;
             border-top: 1px solid rgba(155, 28, 46, 0.1);
-            text-align: left;
+            text-align: start;
         }
         .spark-sub .item .label {
             font-size: 9px; text-transform: uppercase;
@@ -287,6 +296,7 @@
             border-radius: 12px;
             border: 1px solid rgba(155, 28, 46, 0.04);
             font-size: 11px; color: #3d3830;
+            flex-shrink: 0;
         }
         .footer-bar a { color: #5a5348; text-decoration: none; transition: color 0.25s; }
         .footer-bar a:hover { color: #ff7b87; }
@@ -388,7 +398,7 @@
         }
         .modal-list li {
             display: flex; gap: 12px; align-items: flex-start;
-            padding-left: 2px;
+            padding-inline-start: 2px;
         }
         .modal-list li::before {
             content: '⧫';
@@ -407,15 +417,58 @@
             border-bottom: 1px solid rgba(155, 28, 46, 0.08);
         }
         .fee-table td:last-child {
-            text-align: right; color: #ff7b87; font-weight: 600;
+            text-align: end; color: #ff7b87; font-weight: 600;
         }
         .fee-table tr:last-child td { border-bottom: none; }
 
         .modal-note {
             font-size: 11px; color: #6a6255;
-            border-left: 2px solid rgba(155, 28, 46, 0.3);
+            border-inline-start: 2px solid rgba(155, 28, 46, 0.3);
             padding: 8px 0 8px 14px;
             margin-top: 4px; line-height: 1.7;
+        }
+
+        .lang-switcher {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-inline-start: auto;
+        }
+
+        .lang-switcher button {
+            background: transparent;
+            border: 1px solid rgba(155, 28, 46, 0.15);
+            color: #6a6255;
+            font-family: 'Lucida Console', monospace;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .lang-switcher button:hover {
+            color: #ff7b87;
+            border-color: rgba(155, 28, 46, 0.35);
+        }
+
+        .lang-switcher button.active {
+            color: #ff7b87;
+            background: rgba(155, 28, 46, 0.12);
+            border-color: rgba(155, 28, 46, 0.4);
+        }
+
+        [dir="rtl"] .spark-blocks,
+        [dir="rtl"] .cd-item .num,
+        [dir="rtl"] .spark-sub .item .value.mono {
+            direction: ltr;
+            unicode-bidi: embed;
+        }
+
+        [dir="rtl"] .nav-links,
+        [dir="rtl"] .footer-bar {
+            flex-direction: row-reverse;
         }
 
         @media (max-width: 768px) {
@@ -424,9 +477,10 @@
             .brand h1 { font-size: 17px; }
             .brand img { width: 30px; height: 30px; }
             .nav-links { font-size: 11px; gap: 2px 14px; }
+            .lang-switcher { margin-inline-start: 0; justify-content: center; }
             .search-section { padding: 2px 2px 2px 14px; }
             .search-section input { font-size: 14px; padding: 12px 4px; }
-            .output-wrapper { padding: 16px 18px; min-height: 200px; }
+            .output-wrapper { padding: 16px 18px; min-height: 0; }
             #output { font-size: 12px; }
             .spark-blocks { font-size: 56px; }
             .cd-item { padding: 12px 16px; min-width: 72px; }
@@ -435,6 +489,7 @@
             .btn-blocks { font-size: 9px; padding: 6px 12px; }
             .modal { padding: 22px 20px; }
         }
+
         @media (max-width: 480px) {
             .app { padding: 8px 10px; gap: 10px; }
             .header { padding: 10px 14px; }
@@ -442,7 +497,7 @@
             .brand h1 small { font-size: 10px; }
             .brand img { width: 26px; height: 26px; }
             .search-section input { font-size: 13px; padding: 10px 4px; }
-            .output-wrapper { padding: 12px 14px; min-height: 150px; }
+            .output-wrapper { padding: 12px 14px; min-height: 0; }
             .spark-blocks { font-size: 40px; }
             .spark-blocks small { font-size: 14px; }
             .cd-item { padding: 8px 12px; min-width: 58px; }
@@ -459,22 +514,27 @@
         <header class="header">
             <div class="brand">
                 <img src="assets/firo.png" alt="Firo" onerror="this.style.display='none'">
-                <h1>Firo <small>spark name</small></h1>
+                <h1>Firo <small data-i18n="nombres.title_short">spark name</small></h1>
             </div>
             <nav class="nav-links">
-                <a href="https://carover0.github.io/pagina/firo-nodo">[NODO]</a>
-                <a href="https://carover0.github.io/pagina/firo-explorer">[EXPLORADOR]</a>
-                <a href="https://carover0.github.io/pagina/firo-bloques.html">[BLOQUES]</a>
-                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
-                <button class="btn-help" id="openModalBtn">[?] ¿Qué es?</button>
+                <a href="https://carover0.github.io/pagina/firo-nodo" data-i18n="common.nav.node">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/firo-explorer" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/firo-bloques.html" data-i18n="common.nav.blocks">[BLOQUES]</a>
+                <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
+                <button class="btn-help" id="openModalBtn" data-i18n="nombres.what_is">[?] ¿Qué es?</button>
             </nav>
+            <div class="lang-switcher" role="group" aria-label="Language">
+                <button type="button" data-lang="es" class="active">ES</button>
+                <button type="button" data-lang="en">EN</button>
+                <button type="button" data-lang="ar">AR</button>
+            </div>
         </header>
 
         <div class="search-section">
             <span class="prompt">►</span>
-            <input type="text" id="searchInput" placeholder="spark name · ej: carover0.firo" autofocus spellcheck="false">
+            <input type="text" id="searchInput" data-i18n-placeholder="nombres.search_placeholder" placeholder="spark name · ej: carover0.firo" autofocus spellcheck="false">
             <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
-                Bloques en tiempo real
+                <span data-i18n="common.btn.blocks">Bloques en tiempo real</span>
                 <span class="pulse"></span>
             </a>
         </div>
@@ -483,15 +543,15 @@
             <div id="output">
                 <div class="placeholder">
                     <div class="icon"><img src="assets\firo.png" width="48px"></div>
-                    <div>vencimiento de spark name</div>
-                    <div class="sub">escribi un nombre para consultar</div>
+                    <div data-i18n="nombres.placeholder_title">vencimiento de spark name</div>
+                    <div class="sub" data-i18n="nombres.placeholder_sub">escribi un nombre para consultar</div>
                 </div>
             </div>
         </div>
 
         <footer class="footer-bar">
-            <span>API · <a href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/api/firo.json</a></span>
-            <span style="font-size:10px;color:#2d2820;">Firo mainnet</span>
+            <span><span data-i18n="common.footer.api">API ·</span> <a href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/api/firo.json</a></span>
+            <span style="font-size:10px;color:#2d2820;" data-i18n="common.footer.mainnet">Firo mainnet</span>
         </footer>
 
     </div>
@@ -501,13 +561,13 @@
     <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
             <div class="modal-header">
-                <div class="modal-title" id="modalTitle">¿Qué son los Spark Names?</div>
-                <button class="modal-close" id="closeModalBtn" aria-label="Cerrar">✕</button>
+                <div class="modal-title" id="modalTitle" data-i18n="nombres.modal_title">¿Qué son los Spark Names?</div>
+                <button class="modal-close" id="closeModalBtn" aria-label="Cerrar" data-i18n-title="nombres.modal_close">✕</button>
             </div>
-            <div class="modal-sub">Alias legibles · privacidad Spark · identidad digital</div>
+            <div class="modal-sub" data-i18n="nombres.modal_sub">Alias legibles · privacidad Spark · identidad digital</div>
 
             <div class="modal-body">
-                <p>
+                <p data-i18n="nombres.modal_p1">
                     Los <strong>Spark Names</strong> son alias fáciles de recordar
                     (ej. <em>@sparky</em>) que se vinculan a una <strong>dirección
                     Spark</strong> privada en la blockchain de Firo. Reemplazan las
@@ -515,45 +575,40 @@
                 </p>
 
                 <ul class="modal-list">
-                    <li><span><b>Privacidad:</b> se ligan a direcciones Spark sigilosas,
-                        no rastreables en la blockchain. Compartir tu nombre no expone
-                        tu historial.</span></li>
-                    <li><span><b>Identidad digital:</b> permiten adjuntar metadatos
-                        (redes sociales, avatar, texto) funcionando como identidad
-                        descentralizada.</span></li>
-                    <li><span><b>Renovación:</b> requieren renovación periódica
-                        (prepagable por varios años) para evitar el acaparamiento
-                        de nombres.</span></li>
-                    <li><span><b>Tarifas:</b> van al Fondo Comunitario de Firo,
-                        gestionado por un comité elegido por la comunidad
-                        (auditorías, proyectos, desarrollo).</span></li>
+                    <li><span><b data-i18n="nombres.modal_li1_bold">Privacidad:</b> <span data-i18n="nombres.modal_li1">se ligan a direcciones Spark sigilosas, no rastreables en la blockchain. Compartir tu nombre no expone tu historial.</span></span></li>
+                    <li><span><b data-i18n="nombres.modal_li2_bold">Identidad digital:</b> <span data-i18n="nombres.modal_li2">permiten adjuntar metadatos (redes sociales, avatar, texto) funcionando como identidad descentralizada.</span></span></li>
+                    <li><span><b data-i18n="nombres.modal_li3_bold">Renovación:</b> <span data-i18n="nombres.modal_li3">requieren renovación periódica (prepagable por varios años) para evitar el acaparamiento de nombres.</span></span></li>
+                    <li><span><b data-i18n="nombres.modal_li4_bold">Tarifas:</b> <span data-i18n="nombres.modal_li4">van al Fondo Comunitario de Firo, gestionado por un comité elegido por la comunidad (auditorías, proyectos, desarrollo).</span></span></li>
                 </ul>
 
-                <p style="margin-bottom:8px;"><strong>Tarifa anual según longitud:</strong></p>
+                <p style="margin-bottom:8px;"><strong data-i18n="nombres.modal_fee_title">Tarifa anual según longitud:</strong></p>
                 <table class="fee-table">
-                    <tr><td>1 carácter</td><td>1000 FIRO / año</td></tr>
-                    <tr><td>2 caracteres</td><td>100 FIRO / año</td></tr>
-                    <tr><td>3–5 caracteres</td><td>10 FIRO / año</td></tr>
-                    <tr><td>6+ caracteres</td><td>1 FIRO / año</td></tr>
+                    <tr><td data-i18n="nombres.modal_fee_1char">1 carácter</td><td data-i18n="nombres.modal_fee_per_year_1000">1000 FIRO / año</td></tr>
+                    <tr><td data-i18n="nombres.modal_fee_2char">2 caracteres</td><td data-i18n="nombres.modal_fee_per_year_100">100 FIRO / año</td></tr>
+                    <tr><td data-i18n="nombres.modal_fee_3_5char">3–5 caracteres</td><td data-i18n="nombres.modal_fee_per_year_10">10 FIRO / año</td></tr>
+                    <tr><td data-i18n="nombres.modal_fee_6char">6+ caracteres</td><td data-i18n="nombres.modal_fee_per_year_1">1 FIRO / año</td></tr>
                 </table>
 
                 <div class="modal-note">
-                    El precio escalonado refleja la escasez de nombres cortos y
-                    ayuda a prevenir el <em>name squatting</em>.
+                    <span data-i18n="nombres.modal_note">El precio escalonado refleja la escasez de nombres cortos y ayuda a prevenir el </span><em data-i18n="nombres.modal_note_em">name squatting</em><span>.</span>
                 </div>
             </div>
         </div>
     </div>
 
+<script src="js/i18n.js"></script>
 <script>
     const API_BASE = 'https://carover0.xyz/api/firo/rpc.php';
     const TOKEN = 'firo2026';
-    const BLOCK_TIME_MIN = 2.5; 
+    const BLOCK_TIME_MIN = 2.5;
+
+    const t = (key) => FiroI18n.t(key);
 
     let validUntilBlock = null;
     let currentBlockAtFetch = null;
     let fetchedAt = null;
     let tickInterval = null;
+    let lastQuery = null;
 
     function escapeHtml(text) {
         if (!text) return '';
@@ -565,7 +620,7 @@
         });
     }
     function fmt(n) {
-        return new Intl.NumberFormat('es-ES').format(n);
+        return new Intl.NumberFormat(document.documentElement.lang || 'es-ES').format(n);
     }
     function showToast(msg) {
         const el = document.getElementById('toast');
@@ -600,10 +655,11 @@
     async function consultar(name) {
         const nameToQuery = (name || document.getElementById('searchInput').value || '').trim();
         if (!nameToQuery) {
-            showToast('✕ escribe un spark name');
+            showToast(t('nombres.write_name'));
             return;
         }
 
+        lastQuery = nameToQuery;
         renderLoading();
 
         try {
@@ -624,7 +680,7 @@
             startTicking();
 
         } catch (e) {
-            renderError('Error de conexión: ' + e.message);
+            renderError(t('common.error.connection') + ': ' + e.message);
         }
     }
 
@@ -632,29 +688,29 @@
         let html = '<div class="spark-hero">';
         html += `<div class="spark-name">${escapeHtml(data.name)}</div>`;
         if (data.additionalInfo) {
-            html += `<div class="spark-info">“${escapeHtml(data.additionalInfo)}”</div>`;
+            html += `<div class="spark-info">"${escapeHtml(data.additionalInfo)}"</div>`;
         } else {
             html += `<div class="spark-info">&nbsp;</div>`;
         }
 
-        html += `<div class="spark-blocks" id="heroBlocks">—<small>bloques</small></div>`;
-        html += `<div class="spark-blocks-label">restantes para el vencimiento</div>`;
+        html += `<div class="spark-blocks" id="heroBlocks">—<small>${t('nombres.blocks_remaining')}</small></div>`;
+        html += `<div class="spark-blocks-label">${t('nombres.blocks_label')}</div>`;
 
         html += `<div class="countdown" id="countdown">`;
-        html += `<div class="cd-item"><div class="num" id="cdDias">—</div><div class="lbl">días</div></div>`;
-        html += `<div class="cd-item"><div class="num" id="cdHoras">—</div><div class="lbl">horas</div></div>`;
-        html += `<div class="cd-item"><div class="num" id="cdMin">—</div><div class="lbl">min</div></div>`;
-        html += `<div class="cd-item secs"><div class="num" id="cdSeg">—</div><div class="lbl">seg</div></div>`;
+        html += `<div class="cd-item"><div class="num" id="cdDias">—</div><div class="lbl">${t('nombres.days')}</div></div>`;
+        html += `<div class="cd-item"><div class="num" id="cdHoras">—</div><div class="lbl">${t('nombres.hours')}</div></div>`;
+        html += `<div class="cd-item"><div class="num" id="cdMin">—</div><div class="lbl">${t('nombres.min')}</div></div>`;
+        html += `<div class="cd-item secs"><div class="num" id="cdSeg">—</div><div class="lbl">${t('nombres.secs')}</div></div>`;
         html += `</div>`;
 
         html += `<div class="progress-wrap">`;
-        html += `<div class="progress-label"><span>Bloque actual <span id="progCurrent">—</span></span><span>Vence en bloque <span id="progUntil">—</span></span></div>`;
+        html += `<div class="progress-label"><span>${t('nombres.current_block')} <span id="progCurrent">—</span></span><span>${t('nombres.expires_at_block')} <span id="progUntil">—</span></span></div>`;
         html += `<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>`;
         html += `</div>`;
 
         html += `<div class="spark-sub">`;
-        html += `<div class="item"><div class="label">Vence (bloque)</div><div class="value firo">${fmt(data.validUntilBlock)}</div></div>`;
-        html += `<div class="item"><div class="label">Dirección</div><div class="value mono">${escapeHtml(data.address || '—')}</div></div>`;
+        html += `<div class="item"><div class="label">${t('nombres.expires_block')}</div><div class="value firo">${fmt(data.validUntilBlock)}</div></div>`;
+        html += `<div class="item"><div class="label">${t('nombres.address')}</div><div class="value mono">${escapeHtml(data.address || '—')}</div></div>`;
         html += `</div>`;
 
         html += '</div>';
@@ -684,7 +740,7 @@
 
         const heroBlocks = document.getElementById('heroBlocks');
         if (heroBlocks) {
-            heroBlocks.innerHTML = fmt(blocksLeftFloor) + '<small>bloques</small>';
+            heroBlocks.innerHTML = fmt(blocksLeftFloor) + `<small>${t('nombres.blocks_remaining')}</small>`;
         }
 
         const totalMsLeft = blocksLeftExact * BLOCK_TIME_MIN * 60 * 1000;
@@ -721,15 +777,25 @@
         document.getElementById('output').innerHTML = `
             <div class="loading">
                 <span class="spinner"></span>
-                consultando spark name…
+                ${t('nombres.loading')}
             </div>
         `;
     }
 
     function renderError(msg) {
         document.getElementById('output').innerHTML = `
-            <div class="cmd-line"><span class="tag">✕</span> error</div>
+            <div class="cmd-line"><span class="tag">✕</span> ${t('nombres.error_title')}</div>
             <div class="error-msg">⚠ ${escapeHtml(msg)}</div>
+        `;
+    }
+
+    function renderPlaceholder() {
+        document.getElementById('output').innerHTML = `
+            <div class="placeholder">
+                <div class="icon"><img src="assets\\firo.png" width="48px"></div>
+                <div>${t('nombres.placeholder_title')}</div>
+                <div class="sub">${t('nombres.placeholder_sub')}</div>
+            </div>
         `;
     }
 
@@ -739,6 +805,18 @@
             consultar();
         }
     });
+
+    window.onLangChange = function () {
+        if (lastQuery) {
+            consultar(lastQuery);
+        } else {
+            renderPlaceholder();
+        }
+    };
+
+    (async () => {
+        await FiroI18n.init();
+    })();
 
 </script>
 
