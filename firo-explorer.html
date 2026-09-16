@@ -3,888 +3,826 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firo · Explorador</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            min-height: 100vh;
-            background: #0a080c;
-            background-image:
-                radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
-                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
-            font-family: 'Lucida Console', 'Courier New', monospace;
-            color: #ece8e0;
-            padding: 0;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
+    body {
+        height: 100vh;
+        overflow: hidden;
+        background: #0a080c;
+        background-image:
+            radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
+            linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+        font-family: 'Lucida Console', 'Courier New', monospace;
+        color: #ece8e0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .app {
+        width: 100%;
+        max-width: 1400px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 20px 28px;
+        overflow: hidden;
+    }
+
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px 20px;
+        padding: 16px 24px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 14px;
+        border: 1px solid rgba(155, 28, 46, 0.2);
+        backdrop-filter: blur(8px);
+        flex-shrink: 0;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .brand img {
+        width: 38px;
+        height: 38px;
+        filter: drop-shadow(0 0 16px rgba(155, 28, 46, 0.3));
+        transition: filter 0.3s;
+    }
+
+    .brand img:hover {
+        filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5));
+    }
+
+    .brand h1 {
+        font-size: 21px;
+        font-weight: 400;
+        letter-spacing: 1.5px;
+        color: #f5e6c8;
+        text-shadow: 0 0 30px rgba(155, 28, 46, 0.15);
+    }
+
+    .brand h1 small {
+        font-size: 12px;
+        color: #6a6255;
+        letter-spacing: 2px;
+        font-weight: 300;
+    }
+
+    .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 18px;
+        font-size: 12px;
+        letter-spacing: 0.3px;
+        justify-content: center;
+        flex: 1;
+    }
+
+    .nav-links a {
+        color: #6a6255;
+        text-decoration: none;
+        transition: all 0.25s;
+        padding: 4px 0;
+        border-bottom: 2px solid transparent;
+    }
+
+    .nav-links a:hover {
+        color: #ff7b87;
+        border-bottom-color: #ff7b87;
+    }
+
+    .back-btn {
+        color: #ff7b87;
+        cursor: pointer;
+        padding: 4px 12px;
+        border: 1px solid rgba(155, 28, 46, 0.15);
+        border-radius: 20px;
+        font-size: 11px;
+        transition: all 0.25s;
+        background: rgba(155, 28, 46, 0.05);
+        display: none;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .back-btn:hover {
+        background: rgba(155, 28, 46, 0.1);
+        border-color: rgba(155, 28, 46, 0.3);
+    }
+
+    .back-btn.show {
+        display: inline-flex;
+    }
+
+    .stats-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 32px;
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        border: 1px solid rgba(155, 28, 46, 0.1);
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+
+    .stats-bar .stat {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+
+    .stats-bar .label {
+        color: #4a443a;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    .stats-bar .value {
+        color: #f5ede4;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .btn-blocks {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(155, 28, 46, 0.12);
+        color: #ff7b87;
+        border: 1px solid rgba(155, 28, 46, 0.2);
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-family: 'Lucida Console', monospace;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        letter-spacing: 0.3px;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .btn-blocks:first-of-type {
+        margin-inline-start: auto;
+    }
+
+    .btn-blocks:hover {
+        background: rgba(155, 28, 46, 0.2);
+        border-color: rgba(155, 28, 46, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(155, 28, 46, 0.2);
+    }
+
+    .btn-blocks .icon {
+        font-size: 12px;
+    }
+
+    .btn-blocks img.icon {
+        width: 14px;
+        height: 14px;
+        display: block;
+        object-fit: contain;
+        filter: drop-shadow(0 0 6px rgba(155, 28, 46, 0.4));
+        flex-shrink: 0;
+    }
+
+    .btn-blocks .pulse {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: #31db72;
+        border-radius: 50%;
+        animation: pulse 1.5s ease-in-out infinite;
+        flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.3; transform: scale(0.7); }
+    }
+
+    .search-section {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 14px;
+        padding: 2px 2px 2px 22px;
+        border: 1px solid rgba(155, 28, 46, 0.15);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .search-section:focus-within {
+        border-color: rgba(155, 28, 46, 0.4);
+        box-shadow: 0 0 0 4px rgba(155, 28, 46, 0.06);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .search-section .prompt {
+        color: #ff7b87;
+        font-size: 16px;
+        user-select: none;
+        transition: transform 0.2s;
+    }
+
+    .search-section:focus-within .prompt {
+        transform: scale(1.1);
+    }
+
+    .search-section input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        padding: 15px 8px 15px 4px;
+        font-family: 'Lucida Console', 'Courier New', monospace;
+        font-size: 15px;
+        color: #f5ede4;
+        outline: none;
+        min-width: 0;
+        letter-spacing: 0.2px;
+    }
+
+    .search-section input::placeholder {
+        color: #3d3830;
+        letter-spacing: 0.5px;
+    }
+
+    .search-section .shortcuts {
+        display: flex;
+        gap: 4px;
+        padding-right: 16px;
+        font-size: 10px;
+        color: #3d3830;
+    }
+
+    .search-section .shortcuts kbd {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 4px 12px;
+        border-radius: 6px;
+        color: #5a5348;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        font-family: 'Lucida Console', monospace;
+        font-size: 9px;
+        letter-spacing: 0.3px;
+        transition: all 0.2s;
+    }
+
+    .search-section .shortcuts kbd:hover {
+        background: rgba(155, 28, 46, 0.06);
+        border-color: rgba(155, 28, 46, 0.1);
+        color: #8a8275;
+    }
+
+    .output-wrapper {
+        flex: 1 1 auto;
+        min-height: 0;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 14px;
+        border: 1px solid rgba(155, 28, 46, 0.06);
+        padding: 24px 28px;
+        overflow-y: auto;
+        box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(4px);
+        transition: border-color 0.3s;
+    }
+
+    .output-wrapper:hover {
+        border-color: rgba(155, 28, 46, 0.1);
+    }
+
+    .output-wrapper::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .output-wrapper::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .output-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(155, 28, 46, 0.2);
+        border-radius: 10px;
+    }
+
+    #output {
+        font-family: 'Lucida Console', 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.8;
+        color: #e0d8cc;
+    }
+
+    #output .cmd-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #ff7b87;
+        font-size: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(155, 28, 46, 0.06);
+        margin-bottom: 18px;
+    }
+
+    #output .cmd-line .tag {
+        background: rgba(155, 28, 46, 0.1);
+        padding: 2px 16px;
+        border-radius: 20px;
+        font-size: 11px;
+        color: #ff7b87;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(155, 28, 46, 0.06);
+    }
+
+    #output .row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 2px 12px;
+        padding: 3px 0;
+    }
+
+    #output .row .key {
+        color: #5a5348;
+        font-size: 12px;
+        min-width: 100px;
+        letter-spacing: 0.2px;
+    }
+
+    #output .row .val {
+        color: #f5ede4;
+        word-break: break-all;
+    }
+
+    #output .row .val.gold {
+        color: #ff7b87;
+    }
+
+    #output .row .val .link {
+        color: #ff7b87;
+        text-decoration: none;
+        transition: all 0.2s;
+        border-bottom: 1px solid rgba(155, 28, 46, 0.15);
+        padding-bottom: 1px;
+        word-break: break-all;
+        cursor: pointer;
+    }
+
+    #output .row .val .link:hover {
+        color: #ff9ba9;
+        border-bottom-color: #ff7b87;
+    }
+
+    #output .divider {
+        height: 1px;
+        background: linear-gradient(to right, rgba(155, 28, 46, 0.08), transparent);
+        margin: 14px 0;
+    }
+
+    #output .tx-item {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 10px;
+        padding: 10px 16px;
+        border-left: 2px solid rgba(155, 28, 46, 0.12);
+        margin: 4px 0;
+        transition: all 0.15s;
+    }
+
+    #output .tx-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-left-color: rgba(155, 28, 46, 0.25);
+    }
+
+    #output .tx-item .txid-link {
+        color: #ff7b87;
+        text-decoration: none;
+        font-size: 13px;
+        word-break: break-all;
+        transition: all 0.2s;
+        border-bottom: 1px solid rgba(155, 28, 46, 0.1);
+        cursor: pointer;
+    }
+
+    #output .tx-item .txid-link:hover {
+        color: #ff9ba9;
+        border-bottom-color: #ff7b87;
+    }
+
+    #output .tx-item .tx-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 20px;
+        font-size: 12px;
+        color: #6a6255;
+        margin-top: 2px;
+    }
+
+    #output .copy-btn {
+        margin-top: 18px;
+        background: rgba(155, 28, 46, 0.06);
+        border: 1px solid rgba(155, 28, 46, 0.12);
+        color: #ff7b87;
+        font-family: 'Lucida Console', monospace;
+        font-size: 12px;
+        padding: 7px 24px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.25s;
+        letter-spacing: 0.3px;
+    }
+
+    #output .copy-btn:hover {
+        background: rgba(155, 28, 46, 0.1);
+        border-color: #ff7b87;
+        box-shadow: 0 0 30px rgba(155, 28, 46, 0.04);
+    }
+
+    #output .placeholder {
+        color: #3d3830;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+        gap: 12px;
+    }
+
+    #output .placeholder .icon {
+        font-size: 48px;
+        opacity: 0.12;
+    }
+
+    #output .placeholder .sub {
+        font-size: 13px;
+        color: #2d2820;
+        letter-spacing: 0.5px;
+    }
+
+    #output .loading {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: #4a443a;
+        padding: 20px 0;
+    }
+
+    #output .loading .spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(155, 28, 46, 0.1);
+        border-top-color: #ff7b87;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .footer-bar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 24px;
+        background: rgba(255, 255, 255, 0.01);
+        border-radius: 12px;
+        border: 1px solid rgba(155, 28, 46, 0.04);
+        font-size: 11px;
+        color: #3d3830;
+        flex-shrink: 0;
+    }
+
+    .footer-bar a {
+        color: #5a5348;
+        text-decoration: none;
+        transition: color 0.25s;
+    }
+
+    .footer-bar a:hover {
+        color: #ff7b87;
+    }
+
+    .footer-bar .api {
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 3px 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: all 0.2s;
+    }
+
+    .footer-bar .api:hover {
+        border-color: rgba(155, 28, 46, 0.08);
+        background: rgba(155, 28, 46, 0.02);
+    }
+
+    .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: rgba(155, 28, 46, 0.08);
+        backdrop-filter: blur(12px);
+        color: #f5ede4;
+        padding: 10px 32px;
+        border-radius: 40px;
+        border: 1px solid rgba(155, 28, 46, 0.12);
+        font-family: 'Lucida Console', monospace;
+        font-size: 12px;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+        z-index: 999;
+        letter-spacing: 0.3px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 12px;
+        padding: 6px 0;
+        font-size: 11px;
+        color: #4a443a;
+        min-height: 28px;
+        flex-shrink: 0;
+    }
+
+    .breadcrumb .crumb {
+        color: #6a6255;
+        cursor: pointer;
+        transition: color 0.2s;
+        border-bottom: 1px solid transparent;
+    }
+
+    .breadcrumb .crumb:hover {
+        color: #ff7b87;
+        border-bottom-color: rgba(155, 28, 46, 0.2);
+    }
+
+    .breadcrumb .crumb.current {
+        color: #ff7b87;
+        cursor: default;
+        border-bottom-color: transparent;
+    }
+
+    .breadcrumb .sep {
+        color: #3d3830;
+    }
+
+    .spark-detail {
+        padding-left: 20px;
+        font-size: 12px;
+        color: #8a8275;
+        word-break: break-all;
+        border-left: 1px solid rgba(155, 28, 46, 0.1);
+        margin: 4px 0 8px 8px;
+    }
+
+    .spark-detail .sub-key {
+        color: #6a6255;
+        min-width: 100px;
+        display: inline-block;
+        font-size: 11px;
+        letter-spacing: 0.3px;
+    }
+
+    .spark-detail .sub-val {
+        color: #e0d8cc;
+        font-size: 12px;
+    }
+
+    .spark-detail .sub-val.gold {
+        color: #ff7b87;
+    }
+
+    .spark-detail .action-header {
+        color: #ff7b87;
+        font-size: 12px;
+        padding: 6px 0 2px 0;
+        letter-spacing: 0.3px;
+    }
+
+    .spark-detail .action-header .badge {
+        background: rgba(155, 28, 46, 0.06);
+        padding: 0 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        color: #ff7b87;
+        border: 1px solid rgba(155, 28, 46, 0.06);
+    }
+
+    .spark-field {
+        padding: 1px 0 1px 16px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 2px 8px;
+    }
+
+    .spark-field .field-key {
+        color: #5a5348;
+        min-width: 80px;
+        font-size: 11px;
+        letter-spacing: 0.2px;
+    }
+
+    .spark-field .field-key.gold {
+        color: #ff7b87;
+    }
+
+    .spark-field .field-val {
+        color: #e0d8cc;
+        word-break: break-all;
+        font-size: 12px;
+    }
+
+    .spark-field .field-val.gold {
+        color: #ff7b87;
+    }
+
+    .spark-field .field-val.small {
+        font-size: 11px;
+        color: #5a5348;
+    }
+
+    .lang-switcher {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-inline-start: auto;
+    }
+
+    .lang-switcher button {
+        background: transparent;
+        border: 1px solid rgba(155, 28, 46, 0.15);
+        color: #6a6255;
+        font-family: 'Lucida Console', monospace;
+        font-size: 10px;
+        letter-spacing: 0.5px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+
+    .lang-switcher button:hover {
+        color: #ff7b87;
+        border-color: rgba(155, 28, 46, 0.35);
+    }
+
+    .lang-switcher button.active {
+        color: #ff7b87;
+        background: rgba(155, 28, 46, 0.12);
+        border-color: rgba(155, 28, 46, 0.4);
+    }
+
+    [dir="rtl"] .stats-bar .value,
+    [dir="rtl"] #output .row .val,
+    [dir="rtl"] #output .tx-item .txid-link,
+    [dir="rtl"] #output pre,
+    [dir="rtl"] .spark-field .field-val {
+        direction: ltr;
+        unicode-bidi: embed;
+    }
+
+    [dir="rtl"] .nav-links,
+    [dir="rtl"] .footer-bar,
+    [dir="rtl"] .breadcrumb {
+        flex-direction: row-reverse;
+    }
+
+    @media (max-width: 1100px) {
+        .stats-bar { gap: 6px 22px; }
+        .btn-blocks { font-size: 9px; padding: 3px 12px; }
+        .stats-bar .value { font-size: 13px; }
+    }
+
+    @media (max-width: 900px) {
+        .stats-bar {
+            flex-wrap: wrap;
+            gap: 8px 20px;
+        }
+        .stats-bar .stat { flex: 0 1 auto; }
+        .btn-blocks {
+            flex: 1 1 calc(50% - 10px);
             justify-content: center;
+            margin-inline-start: 0;
         }
-
-        .app {
-            width: 100%;
-            max-width: 1400px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            padding: 20px 28px;
+        .btn-blocks:first-of-type {
+            margin-inline-start: 0;
         }
+    }
 
-        .header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px 20px;
-            padding: 16px 24px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 14px;
-            border: 1px solid rgba(155, 28, 46, 0.2);
-            backdrop-filter: blur(8px);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .brand img {
-            width: 38px;
-            height: 38px;
-            filter: drop-shadow(0 0 16px rgba(155, 28, 46, 0.3));
-            transition: filter 0.3s;
-        }
-
-        .brand img:hover {
-            filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5));
-        }
-
-        .brand h1 {
-            font-size: 21px;
-            font-weight: 400;
-            letter-spacing: 1.5px;
-            color: #f5e6c8;
-            text-shadow: 0 0 30px rgba(155, 28, 46, 0.15);
-        }
-
-        .brand h1 small {
-            font-size: 12px;
-            color: #6a6255;
-            letter-spacing: 2px;
-            font-weight: 300;
-        }
-
-        .nav-links {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 4px 18px;
-            font-size: 12px;
-            letter-spacing: 0.3px;
-        }
-
-        .nav-links a {
-            color: #6a6255;
-            text-decoration: none;
-            transition: all 0.25s;
-            padding: 4px 0;
-            border-bottom: 2px solid transparent;
-        }
-
-        .nav-links a:hover {
-            color: #ff7b87;
-            border-bottom-color: #ff7b87;
-        }
-
-        .back-btn {
-            color: #ff7b87;
-            cursor: pointer;
+    @media (max-width: 768px) {
+        .app { padding: 12px 14px; gap: 12px; }
+        .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+        .brand h1 { font-size: 17px; }
+        .brand img { width: 30px; height: 30px; }
+        .nav-links { font-size: 11px; gap: 2px 14px; }
+        .lang-switcher { margin-inline-start: 0; justify-content: center; }
+        .stats-bar { font-size: 11px; padding: 10px 14px; gap: 8px 18px; }
+        .stats-bar .value { font-size: 13px; }
+        .btn-blocks {
+            font-size: 9px;
             padding: 4px 12px;
-            border: 1px solid rgba(155, 28, 46, 0.15);
-            border-radius: 20px;
-            font-size: 11px;
-            transition: all 0.25s;
-            background: rgba(155, 28, 46, 0.05);
-            display: none;
-            align-items: center;
-            gap: 6px;
+            flex: 1 1 calc(50% - 9px);
+            justify-content: center;
+            margin-inline-start: 0;
         }
+        .btn-blocks:first-of-type { margin-inline-start: 0; }
+        .search-section { padding: 2px 2px 2px 14px; }
+        .search-section input { font-size: 14px; padding: 12px 4px; }
+        .search-section .shortcuts { display: none; }
+        .output-wrapper { padding: 16px 18px; min-height: 0; }
+        #output { font-size: 12px; }
+        #output .row .key { min-width: 70px; font-size: 11px; }
+        .footer-bar { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 18px; }
+        .footer-bar .api { font-size: 10px; padding: 2px 14px; }
+        .spark-detail { padding-left: 12px; }
+        .spark-detail .sub-key { min-width: 70px; }
+        .spark-field .field-key { min-width: 60px; }
+    }
 
-        .back-btn:hover {
-            background: rgba(155, 28, 46, 0.1);
-            border-color: rgba(155, 28, 46, 0.3);
-        }
-
-        .back-btn.show {
-            display: inline-flex;
-        }
+    @media (max-width: 480px) {
+        .app { padding: 8px 10px; gap: 10px; }
+        .header { padding: 10px 14px; }
+        .brand h1 { font-size: 15px; }
+        .brand h1 small { font-size: 10px; }
+        .brand img { width: 26px; height: 26px; }
 
         .stats-bar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 6px 32px;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            border: 1px solid rgba(155, 28, 46, 0.1);
-            font-size: 13px;
+            font-size: 10px;
+            padding: 8px 12px;
+            gap: 6px 12px;
         }
-
         .stats-bar .stat {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
+            flex: 1 1 calc(50% - 6px);
+            justify-content: space-between;
         }
-
-        .stats-bar .label {
-            color: #4a443a;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .stats-bar .value {
-            color: #f5ede4;
-            font-weight: 600;
-            font-size: 14px;
-        }
+        .stats-bar .value { font-size: 12px; }
 
         .btn-blocks {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(155, 28, 46, 0.12);
-            color: #ff7b87;
-            border: 1px solid rgba(155, 28, 46, 0.2);
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-family: 'Lucida Console', monospace;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            letter-spacing: 0.3px;
-            margin-left: auto;
-        }
-
-        .btn-blocks:hover {
-            background: rgba(155, 28, 46, 0.2);
-            border-color: rgba(155, 28, 46, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(155, 28, 46, 0.2);
-        }
-
-        .btn-blocks .icon {
-            font-size: 12px;
-        }
-
-        .btn-blocks .pulse {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: #31db72;
-            border-radius: 50%;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.7); }
-        }
-
-        .search-section {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 14px;
-            padding: 2px 2px 2px 22px;
-            border: 1px solid rgba(155, 28, 46, 0.15);
-            transition: all 0.3s ease;
-        }
-
-        .search-section:focus-within {
-            border-color: rgba(155, 28, 46, 0.4);
-            box-shadow: 0 0 0 4px rgba(155, 28, 46, 0.06);
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .search-section .prompt {
-            color: #ff7b87;
-            font-size: 16px;
-            user-select: none;
-            transition: transform 0.2s;
-        }
-
-        .search-section:focus-within .prompt {
-            transform: scale(1.1);
-        }
-
-        .search-section input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 15px 8px 15px 4px;
-            font-family: 'Lucida Console', 'Courier New', monospace;
-            font-size: 15px;
-            color: #f5ede4;
-            outline: none;
-            min-width: 0;
-            letter-spacing: 0.2px;
-        }
-
-        .search-section input::placeholder {
-            color: #3d3830;
-            letter-spacing: 0.5px;
-        }
-
-        .search-section .shortcuts {
-            display: flex;
+            font-size: 8px;
+            padding: 4px 10px;
             gap: 4px;
-            padding-right: 16px;
-            font-size: 10px;
-            color: #3d3830;
-        }
-
-        .search-section .shortcuts kbd {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 4px 12px;
-            border-radius: 6px;
-            color: #5a5348;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            font-family: 'Lucida Console', monospace;
-            font-size: 9px;
-            letter-spacing: 0.3px;
-            transition: all 0.2s;
-        }
-
-        .search-section .shortcuts kbd:hover {
-            background: rgba(155, 28, 46, 0.06);
-            border-color: rgba(155, 28, 46, 0.1);
-            color: #8a8275;
-        }
-
-        .output-wrapper {
-            flex: 1;
-            min-height: 400px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 14px;
-            border: 1px solid rgba(155, 28, 46, 0.06);
-            padding: 24px 28px;
-            overflow-y: auto;
-            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(4px);
-            transition: border-color 0.3s;
-        }
-
-        .output-wrapper:hover {
-            border-color: rgba(155, 28, 46, 0.1);
-        }
-
-        .output-wrapper::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .output-wrapper::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .output-wrapper::-webkit-scrollbar-thumb {
-            background: rgba(155, 28, 46, 0.2);
-            border-radius: 10px;
-        }
-
-        #output {
-            font-family: 'Lucida Console', 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.8;
-            color: #e0d8cc;
-        }
-
-        #output .cmd-line {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #ff7b87;
-            font-size: 14px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid rgba(155, 28, 46, 0.06);
-            margin-bottom: 18px;
-        }
-
-        #output .cmd-line .tag {
-            background: rgba(155, 28, 46, 0.1);
-            padding: 2px 16px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: #ff7b87;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(155, 28, 46, 0.06);
-        }
-
-        #output .row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 2px 12px;
-            padding: 3px 0;
-        }
-
-        #output .row .key {
-            color: #5a5348;
-            font-size: 12px;
-            min-width: 100px;
-            letter-spacing: 0.2px;
-        }
-
-        #output .row .val {
-            color: #f5ede4;
-            word-break: break-all;
-        }
-
-        #output .row .val.gold {
-            color: #ff7b87;
-        }
-
-        #output .row .val .link {
-            color: #ff7b87;
-            text-decoration: none;
-            transition: all 0.2s;
-            border-bottom: 1px solid rgba(155, 28, 46, 0.15);
-            padding-bottom: 1px;
-            word-break: break-all;
-            cursor: pointer;
-        }
-
-        #output .row .val .link:hover {
-            color: #ff9ba9;
-            border-bottom-color: #ff7b87;
-        }
-
-        #output .divider {
-            height: 1px;
-            background: linear-gradient(to right, rgba(155, 28, 46, 0.08), transparent);
-            margin: 14px 0;
-        }
-
-        #output .tx-item {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 10px;
-            padding: 10px 16px;
-            border-left: 2px solid rgba(155, 28, 46, 0.12);
-            margin: 4px 0;
-            transition: all 0.15s;
-        }
-
-        #output .tx-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-left-color: rgba(155, 28, 46, 0.25);
-        }
-
-        #output .tx-item .txid-link {
-            color: #ff7b87;
-            text-decoration: none;
-            font-size: 13px;
-            word-break: break-all;
-            transition: all 0.2s;
-            border-bottom: 1px solid rgba(155, 28, 46, 0.1);
-            cursor: pointer;
-        }
-
-        #output .tx-item .txid-link:hover {
-            color: #ff9ba9;
-            border-bottom-color: #ff7b87;
-        }
-
-        #output .tx-item .tx-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px 20px;
-            font-size: 12px;
-            color: #6a6255;
-            margin-top: 2px;
-        }
-
-        #output .copy-btn {
-            margin-top: 18px;
-            background: rgba(155, 28, 46, 0.06);
-            border: 1px solid rgba(155, 28, 46, 0.12);
-            color: #ff7b87;
-            font-family: 'Lucida Console', monospace;
-            font-size: 12px;
-            padding: 7px 24px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.25s;
-            letter-spacing: 0.3px;
-        }
-
-        #output .copy-btn:hover {
-            background: rgba(155, 28, 46, 0.1);
-            border-color: #ff7b87;
-            box-shadow: 0 0 30px rgba(155, 28, 46, 0.04);
-        }
-
-        #output .placeholder {
-            color: #3d3830;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex: 1 1 100%;
             justify-content: center;
-            min-height: 200px;
-            gap: 12px;
+            margin-inline-start: 0;
         }
-
-        #output .placeholder .icon {
-            font-size: 48px;
-            opacity: 0.12;
-        }
-
-        #output .placeholder .sub {
-            font-size: 13px;
-            color: #2d2820;
-            letter-spacing: 0.5px;
-        }
-
-        #output .loading {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            color: #4a443a;
-            padding: 20px 0;
-        }
-
-        #output .loading .spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(155, 28, 46, 0.1);
-            border-top-color: #ff7b87;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .footer-bar {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 24px;
-            background: rgba(255, 255, 255, 0.01);
-            border-radius: 12px;
-            border: 1px solid rgba(155, 28, 46, 0.04);
-            font-size: 11px;
-            color: #3d3830;
-        }
-
-        .footer-bar a {
-            color: #5a5348;
-            text-decoration: none;
-            transition: color 0.25s;
-        }
-
-        .footer-bar a:hover {
-            color: #ff7b87;
-        }
-
-        .footer-bar .api {
-            font-size: 11px;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 3px 18px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            transition: all 0.2s;
-        }
-
-        .footer-bar .api:hover {
-            border-color: rgba(155, 28, 46, 0.08);
-            background: rgba(155, 28, 46, 0.02);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: rgba(155, 28, 46, 0.08);
-            backdrop-filter: blur(12px);
-            color: #f5ede4;
-            padding: 10px 32px;
-            border-radius: 40px;
-            border: 1px solid rgba(155, 28, 46, 0.12);
-            font-family: 'Lucida Console', monospace;
-            font-size: 12px;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
-            z-index: 999;
-            letter-spacing: 0.3px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .breadcrumb {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 6px 12px;
-            padding: 6px 0;
-            font-size: 11px;
-            color: #4a443a;
-            min-height: 28px;
-        }
-
-        .breadcrumb .crumb {
-            color: #6a6255;
-            cursor: pointer;
-            transition: color 0.2s;
-            border-bottom: 1px solid transparent;
-        }
-
-        .breadcrumb .crumb:hover {
-            color: #ff7b87;
-            border-bottom-color: rgba(155, 28, 46, 0.2);
-        }
-
-        .breadcrumb .crumb.current {
-            color: #ff7b87;
-            cursor: default;
-            border-bottom-color: transparent;
-        }
-
-        .breadcrumb .sep {
-            color: #3d3830;
-        }
-
-        .spark-detail {
-            padding-left: 20px;
-            font-size: 12px;
-            color: #8a8275;
-            word-break: break-all;
-            border-left: 1px solid rgba(155, 28, 46, 0.1);
-            margin: 4px 0 8px 8px;
-        }
-
-        .spark-detail .sub-key {
-            color: #6a6255;
-            min-width: 100px;
-            display: inline-block;
-            font-size: 11px;
-            letter-spacing: 0.3px;
-        }
-
-        .spark-detail .sub-val {
-            color: #e0d8cc;
-            font-size: 12px;
-        }
-
-        .spark-detail .sub-val.gold {
-            color: #ff7b87;
-        }
-
-        .spark-detail .action-header {
-            color: #ff7b87;
-            font-size: 12px;
-            padding: 6px 0 2px 0;
-            letter-spacing: 0.3px;
-        }
-
-        .spark-detail .action-header .badge {
-            background: rgba(155, 28, 46, 0.06);
-            padding: 0 10px;
-            border-radius: 12px;
-            font-size: 10px;
-            color: #ff7b87;
-            border: 1px solid rgba(155, 28, 46, 0.06);
-        }
-
-        .spark-field {
-            padding: 1px 0 1px 16px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 2px 8px;
-        }
-
-        .spark-field .field-key {
-            color: #5a5348;
-            min-width: 80px;
-            font-size: 11px;
-            letter-spacing: 0.2px;
-        }
-
-        .spark-field .field-key.gold {
-            color: #ff7b87;
-        }
-
-        .spark-field .field-val {
-            color: #e0d8cc;
-            word-break: break-all;
-            font-size: 12px;
-        }
-
-        .spark-field .field-val.gold {
-            color: #ff7b87;
-        }
-
-        .spark-field .field-val.small {
-            font-size: 11px;
-            color: #5a5348;
-        }
-
-        @media (max-width: 768px) {
-            .app {
-                padding: 12px 14px;
-                gap: 12px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                padding: 14px 18px;
-            }
-
-            .brand h1 {
-                font-size: 17px;
-            }
-
-            .brand img {
-                width: 30px;
-                height: 30px;
-            }
-
-            .nav-links {
-                font-size: 11px;
-                gap: 2px 14px;
-            }
-
-            .stats-bar {
-                font-size: 11px;
-                padding: 8px 14px;
-                gap: 4px 16px;
-            }
-
-            .btn-blocks {
-                font-size: 9px;
-                padding: 3px 12px;
-                margin-left: 0;
-            }
-
-            .search-section {
-                padding: 2px 2px 2px 14px;
-            }
-
-            .search-section input {
-                font-size: 14px;
-                padding: 12px 4px;
-            }
-
-            .search-section .shortcuts {
-                display: none;
-            }
-
-            .output-wrapper {
-                padding: 16px 18px;
-                min-height: 200px;
-            }
-
-            #output {
-                font-size: 12px;
-            }
-
-            #output .row .key {
-                min-width: 70px;
-                font-size: 11px;
-            }
-
-            .footer-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-                padding: 12px 18px;
-            }
-
-            .footer-bar .api {
-                font-size: 10px;
-                padding: 2px 14px;
-            }
-
-            .spark-detail {
-                padding-left: 12px;
-            }
-            .spark-detail .sub-key {
-                min-width: 70px;
-            }
-            .spark-field .field-key {
-                min-width: 60px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .app {
-                padding: 8px 10px;
-                gap: 10px;
-            }
-
-            .header {
-                padding: 10px 14px;
-            }
-
-            .brand h1 {
-                font-size: 15px;
-            }
-
-            .brand h1 small {
-                font-size: 10px;
-            }
-
-            .brand img {
-                width: 26px;
-                height: 26px;
-            }
-
-            .stats-bar {
-                font-size: 10px;
-                padding: 6px 12px;
-                gap: 3px 12px;
-            }
-
-            .stats-bar .value {
-                font-size: 12px;
-            }
-
-            .btn-blocks {
-                font-size: 8px;
-                padding: 2px 10px;
-                gap: 4px;
-                margin-left: 0;
-            }
-
-            .btn-blocks .icon {
-                font-size: 10px;
-            }
-
-            .btn-blocks .pulse {
-                width: 5px;
-                height: 5px;
-            }
-
-            .search-section input {
-                font-size: 13px;
-                padding: 10px 4px;
-            }
-
-            .output-wrapper {
-                padding: 12px 14px;
-                min-height: 150px;
-            }
-
-            #output {
-                font-size: 11px;
-                line-height: 1.6;
-            }
-
-            #output .row .key {
-                min-width: 60px;
-                font-size: 10px;
-            }
-
-            #output .tx-item {
-                padding: 8px 12px;
-            }
-
-            #output .copy-btn {
-                font-size: 11px;
-                padding: 5px 16px;
-            }
-        }
-
-        @media (min-width: 1920px) {
-            .app {
-                max-width: 1600px;
-                padding: 24px 40px;
-            }
-
-            #output {
-                font-size: 14px;
-            }
-
-            #output .row .key {
-                min-width: 120px;
-            }
-        }
-/* ─── LENGUAJES ─── */
-.lang-switcher {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-inline-start: 8px;
-}
-
-.lang-switcher button {
-    background: transparent;
-    border: 1px solid rgba(155, 28, 46, 0.15);
-    color: #6a6255;
-    font-family: 'Lucida Console', monospace;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.25s;
-}
-
-.lang-switcher button:hover {
-    color: #ff7b87;
-    border-color: rgba(155, 28, 46, 0.35);
-}
-
-.lang-switcher button.active {
-    color: #ff7b87;
-    background: rgba(155, 28, 46, 0.12);
-    border-color: rgba(155, 28, 46, 0.4);
-}
-
-[dir="rtl"] .card-item .value,
-[dir="rtl"] .stats-bar .value,
-[dir="rtl"] .stat-item .value,
-[dir="rtl"] .block-row .value,
-[dir="rtl"] #market-price,
-[dir="rtl"] #stat-price,
-[dir="rtl"] #output .row .val,
-[dir="rtl"] #output .result,
-[dir="rtl"] pre {
-    direction: ltr;
-    unicode-bidi: embed;
-}
-
-[dir="rtl"] .footer-links,
-[dir="rtl"] .nav-links {
-    flex-direction: row-reverse;
-}
-        
-    </style>
+        .btn-blocks:first-of-type { margin-inline-start: 0; }
+        .btn-blocks .icon { font-size: 10px; }
+        .btn-blocks img.icon { width: 12px; height: 12px; }
+        .btn-blocks .pulse { width: 5px; height: 5px; }
+
+        .search-section input { font-size: 13px; padding: 10px 4px; }
+        .output-wrapper { padding: 12px 14px; min-height: 0; }
+        #output { font-size: 11px; line-height: 1.6; }
+        #output .row .key { min-width: 60px; font-size: 10px; }
+        #output .tx-item { padding: 8px 12px; }
+        #output .copy-btn { font-size: 11px; padding: 5px 16px; }
+    }
+
+    @media (max-width: 360px) {
+        .stats-bar .stat { flex: 1 1 100%; }
+        .btn-blocks { font-size: 8px; padding: 3px 8px; }
+        .btn-blocks img.icon { width: 11px; height: 11px; }
+        #output .row .key { min-width: 50px; font-size: 10px; }
+    }
+
+    @media (min-width: 1920px) {
+        .app { max-width: 1600px; padding: 24px 40px; }
+        #output { font-size: 14px; }
+        #output .row .key { min-width: 120px; }
+    }
+</style>
 </head>
 <body>
 
@@ -893,24 +831,36 @@
         <header class="header">
             <div class="brand">
                 <img src="assets/firo.png" alt="Firo">
-                <h1>Firo <small>explorador</small></h1>
+                <h1>Firo <small data-i18n="explorer.title_short">explorador</small></h1>
             </div>
             <nav class="nav-links">
-                <span class="back-btn" id="backBtn" onclick="goBack()">← volver</span>
-                <a href="https://carover0.github.io/pagina/firo-nombres.html">[NAMES]</a>
-                <a href="https://carover0.github.io/pagina/firo-nodo">[NODO]</a>
-                <a href="https://carover0.github.io/pagina/firo-consola">[CONSOLA]</a>
-                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+                <span class="back-btn" id="backBtn" onclick="goBack()" data-i18n="explorer.back">← volver</span>
+                <a href="https://carover0.github.io/pagina/firo-nombres.html" data-i18n="common.nav.names">[NAMES]</a>
+                <a href="https://carover0.github.io/pagina/firo-nodo" data-i18n="common.nav.node">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/firo-consola" data-i18n="common.nav.console">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
             </nav>
+            <div class="lang-switcher" role="group" aria-label="Language">
+                <button type="button" data-lang="es" class="active">ES</button>
+                <button type="button" data-lang="en">EN</button>
+                <button type="button" data-lang="ar">AR</button>
+            </div>
         </header>
 
         <div class="stats-bar">
-            <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
-            <div class="stat"><span class="label">DIFICULTAD</span><span class="value" id="stat-difficulty">—</span></div>
-            <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
-            <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.height">ALTURA</span><span class="value" id="stat-height">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.difficulty">DIFICULTAD</span><span class="value" id="stat-difficulty">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
+
+            <a href="https://buyfiro.app/" target="_blank" rel="noopener noreferrer" class="btn-blocks">
+                <img src="assets/firo.png" alt="Firo" class="icon">
+                <span data-i18n="common.btn.buy">Compra FIRO</span>
+                <span class="pulse"></span>
+            </a>
+
             <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
-                Bloques en tiempo real
+                <span data-i18n="common.btn.blocks">Bloques en tiempo real</span>
                 <span class="pulse"></span>
             </a>
         </div>
@@ -919,10 +869,10 @@
 
         <div class="search-section">
             <span class="prompt">►</span>
-            <input type="text" id="searchInput" placeholder="bloque · hash · txid · dirección" autofocus spellcheck="false">
+            <input type="text" id="searchInput" data-i18n-placeholder="explorer.search_placeholder" placeholder="bloque · hash · txid · dirección" autofocus spellcheck="false">
             <div class="shortcuts">
-                <kbd>F8</kbd> copiar
-                <kbd>F9</kbd> limpiar
+                <kbd>F8</kbd> <span data-i18n="explorer.shortcut_copy_label">copiar</span>
+                <kbd>F9</kbd> <span data-i18n="explorer.shortcut_clear_label">limpiar</span>
             </div>
         </div>
 
@@ -930,25 +880,28 @@
             <div id="output">
                 <div class="placeholder">
                     <div class="icon"><img src="assets\firo.png" width="48px"></div>
-                    <div>explorador de bloques Firo</div>
-                    <div class="sub">bloque · transacción · dirección</div>
+                    <div data-i18n="explorer.placeholder_title">explorador de bloques Firo</div>
+                    <div class="sub" data-i18n="explorer.placeholder_sub">bloque · transacción · dirección</div>
                 </div>
             </div>
         </div>
 
         <footer class="footer-bar">
-            <span>API · <a href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/api/firo.json</a></span>
-            <span style="font-size:10px;color:#2d2820;">Firo mainnet</span>
+            <span><span data-i18n="common.footer.api">API ·</span> <a href="https://carover0.xyz/api/firo.json" target="_blank" rel="noopener" class="api">https://carover0.xyz/api/firo.json</a></span>
+            <span style="font-size:10px;color:#2d2820;" data-i18n="common.footer.mainnet">Firo mainnet</span>
         </footer>
 
     </div>
 
     <div class="toast" id="toast"></div>
 
+    <script src="js/i18n.js"></script>
     <script>
         const API_URL = "https://carover0.xyz/api/firo/rpc.php";
         const TOKEN = "firo2026";
         const STATUS_URL = "https://carover0.xyz/api/firo.json";
+
+        const t = (key) => FiroI18n.t(key);
 
         let historyStack = [];
         let currentIndex = -1;
@@ -1110,15 +1063,15 @@
 
         function getLabelForQuery(q) {
             const s = q.trim();
-            if (s.startsWith('getblock ')) return 'Bloque ' + s.replace('getblock ', '');
+            if (s.startsWith('getblock ')) return t('explorer.label_block_prefix') + ' ' + s.replace('getblock ', '');
             if (s.startsWith('getrawtransaction ')) return 'TX ' + s.replace('getrawtransaction ', '').replace(' 1', '')
                 .substring(0, 16) + '…';
-            if (s.startsWith('getaddressbalance ')) return 'Dirección ' + s.replace('getaddressbalance ', '').substring(0, 12) +
+            if (s.startsWith('getaddressbalance ')) return t('explorer.label_address') + ' ' + s.replace('getaddressbalance ', '').substring(0, 12) +
                 '…';
-            if (s.startsWith('validateaddress ') || s.startsWith('z_validateaddress ')) return 'Validar ' + s.split(' ')[1]
+            if (s.startsWith('validateaddress ') || s.startsWith('z_validateaddress ')) return t('explorer.label_validate') + ' ' + s.split(' ')[1]
                 .substring(0, 12) + '…';
             if (s.startsWith('UA:')) return 'UA ' + s.substring(3, 16) + '…';
-            if (/^\d+$/.test(s)) return 'Bloque ' + s;
+            if (/^\d+$/.test(s)) return t('explorer.label_block_prefix') + ' ' + s;
             if (/^[a-fA-F0-9]{64}$/.test(s)) return 'TX ' + s.substring(0, 16) + '…';
             return s.substring(0, 20) + (s.length > 20 ? '…' : '');
         }
@@ -1146,7 +1099,7 @@
         }
 
         function getTxType(tx) {
-            if (!tx) return 'desconocida';
+            if (!tx) return 'unknown';
 
             if (tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase) return 'coinbase';
 
@@ -1155,20 +1108,20 @@
             if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return 'spark';
             if (tx.bindingSig) return 'spark';
 
-            if (tx.vin && tx.vin.length > 0 && tx.vout && tx.vout.length > 0) return 'transparente';
+            if (tx.vin && tx.vin.length > 0 && tx.vout && tx.vout.length > 0) return 'transparent';
 
-            return 'desconocida';
+            return 'unknown';
         }
 
         function getTxTypeLabel(tx) {
             const type = getTxType(tx);
             const labels = {
-                'coinbase': '⛏ COINBASE',
-                'spark': '🛡 SPARK (PRIVADO)',
-                'transparente': '▸ transparente',
-                'desconocida': '▸ desconocida'
+                'coinbase': t('explorer.tx_type_coinbase'),
+                'spark': t('explorer.tx_type_spark'),
+                'transparent': t('explorer.tx_type_transparent'),
+                'unknown': t('explorer.tx_type_unknown')
             };
-            return labels[type] || '▸ desconocida';
+            return labels[type] || t('explorer.tx_type_unknown');
         }
 
         function renderOutput(html) {
@@ -1178,9 +1131,9 @@
         function renderPlaceholder() {
             renderOutput(`
             <div class="placeholder">
-              <div class="icon">⧫</div>
-              <div>explorador de bloques Firo</div>
-              <div class="sub">bloque · transacción · dirección</div>
+              <div class="icon"><img src="assets/firo.png" width="48"></div>
+              <div>${t('explorer.placeholder_title')}</div>
+              <div class="sub">${t('explorer.placeholder_sub')}</div>
             </div>
           `);
         }
@@ -1189,34 +1142,34 @@
             renderOutput(`
             <div class="loading">
               <span class="spinner"></span>
-              consultando red…
+              ${t('explorer.loading')}
             </div>
           `);
         }
 
-        function renderSparkDetails(t) {
+        function renderSparkDetails(tx) {
             let html = '';
 
             html += `<div class="divider"></div>`;
-            html += `<div class="row"><span class="key">🛡 SPARK</span><span class="val gold">transacción privada</span></div>`;
+            html += `<div class="row"><span class="key">${t('explorer.tag_spark')}</span><span class="val gold">${t('explorer.tag_spark_private')}</span></div>`;
 
-            if (t.sparkData) {
+            if (tx.sparkData) {
                 html += `<div class="spark-detail">`;
                 html += `<div class="action-header"><span class="badge">sparkData</span></div>`;
                 html +=
-                    `<div class="spark-field"><span class="field-key">tamaño</span><span class="field-val">${(t.sparkData.length / 2).toFixed(0)} bytes</span></div>`;
+                    `<div class="spark-field"><span class="field-key">${t('explorer.label_spark_size')}</span><span class="field-val">${(tx.sparkData.length / 2).toFixed(0)} bytes</span></div>`;
                 html +=
-                    `<div class="spark-field"><span class="field-key">hex</span><span class="field-val small">${escapeHtml(t.sparkData.substring(0, 120))}…</span></div>`;
+                    `<div class="spark-field"><span class="field-key">${t('explorer.label_spark_hex')}</span><span class="field-val small">${escapeHtml(tx.sparkData.substring(0, 120))}…</span></div>`;
                 html += `</div>`;
             }
 
-            if (t.vin) {
+            if (tx.vin) {
                 let hasLTags = false;
-                t.vin.forEach((vin, i) => {
+                tx.vin.forEach((vin, i) => {
                     if (vin.lTags && vin.lTags.length > 0) {
                         if (!hasLTags) {
                             html += `<div class="spark-detail">`;
-                            html += `<div class="action-header"><span class="badge">nullifiers (lTags)</span></div>`;
+                            html += `<div class="action-header"><span class="badge">${t('explorer.label_spark_nullifiers')}</span></div>`;
                             hasLTags = true;
                         }
                         vin.lTags.forEach((tag, j) => {
@@ -1228,38 +1181,26 @@
                 if (hasLTags) html += `</div>`;
             }
 
-            if (t.vin) {
+            if (tx.vin) {
                 let totalFees = 0;
-                t.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
+                tx.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
                 if (totalFees > 0) {
                     html +=
-                        `<div class="spark-detail"><div class="spark-field"><span class="field-key gold">fee</span><span class="field-val gold">${totalFees.toFixed(8)} FIRO</span></div></div>`;
+                        `<div class="spark-detail"><div class="spark-field"><span class="field-key gold">${t('explorer.label_spark_fee')}</span><span class="field-val gold">${totalFees.toFixed(8)} FIRO</span></div></div>`;
                 }
             }
 
-            if (t.bindingSig) {
+            if (tx.bindingSig) {
                 html += `<div class="spark-detail">`;
                 html +=
-                    `<div class="spark-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(t.bindingSig)}</span></div>`;
+                    `<div class="spark-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(tx.bindingSig)}</span></div>`;
                 html += `</div>`;
-            }
-
-            let totalShielded = 0;
-            if (t.vin) {
-                t.vin.forEach(vin => {
-                    if (vin.value !== undefined) totalShielded += vin.value;
-                });
-            }
-            if (t.vout) {
-                t.vout.forEach(vout => {
-                    if (vout.value !== undefined && vout.value > 0) totalShielded += vout.value;
-                });
             }
 
             html +=
                 `<div class="spark-detail" style="border-left-color: rgba(155,28,46,0.2);margin-top:8px;">`;
             html +=
-                `<div class="spark-field"><span class="field-key gold">🔒 privado</span><span class="field-val">sin vínculo criptográfico</span></div>`;
+                `<div class="spark-field"><span class="field-key gold">🔒 ${t('explorer.label_private')}</span><span class="field-val">${t('explorer.label_no_crypto_link')}</span></div>`;
             html += `</div>`;
 
             return html;
@@ -1287,7 +1228,7 @@
                         return executeSearch(`getrawtransaction ${hash} 1`);
                     }
                 } catch (e) {}
-                renderOutput(`<div class="cmd-line"><span class="tag">✕</span> No se encontró bloque ni transacción con hash ${escapeHtml(hash)}</div>`);
+                renderOutput(`<div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${t('explorer.no_hash_found')} ${escapeHtml(hash)}</div>`);
                 return;
             }
 
@@ -1299,9 +1240,9 @@
 
                 if (data.error) {
                     renderOutput(`
-                <div class="cmd-line"><span class="tag">✕</span> ${escapeHtml(cmd)}</div>
-                <div style="color:#ff756f;padding:6px 0;">error: ${escapeHtml(JSON.stringify(data.error))}</div>
-                <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+                <div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${escapeHtml(cmd)}</div>
+                <div style="color:#ff756f;padding:6px 0;">${t('common.state.error')}: ${escapeHtml(JSON.stringify(data.error))}</div>
+                <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
               `);
                     return;
                 }
@@ -1317,28 +1258,28 @@
                 if (!result) {
                     renderOutput(`
                 <div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>
-                <div style="color:#3d3830;">sin resultado</div>
-                <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+                <div style="color:#3d3830;">${t('explorer.no_result')}</div>
+                <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
               `);
                     return;
                 }
 
                 if (cmd.includes('getblock') && result.hash) {
                     const b = result;
-                    let res = `<div class="cmd-line"><span class="tag">⧫ BLOQUE</span> #${b.height}</div>`;
-                    res += `<div class="row"><span class="key">hash</span><span class="val">${makeLink(b.hash)}</span></div>`;
-                    res += `<div class="row"><span class="key">fecha</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
+                    let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_block')}</span> #${b.height}</div>`;
+                    res += `<div class="row"><span class="key">${t('explorer.label_hash')}</span><span class="val">${makeLink(b.hash)}</span></div>`;
+                    res += `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
                     res +=
-                        `<div class="row"><span class="key">dificultad</span><span class="val">${b.difficulty?.toFixed(2) ?? '—'}</span></div>`;
+                        `<div class="row"><span class="key">${t('explorer.label_difficulty')}</span><span class="val">${b.difficulty?.toFixed(2) ?? '—'}</span></div>`;
                     res +=
-                        `<div class="row"><span class="key">tamaño</span><span class="val">${b.size ? b.size + ' bytes' : '—'}</span></div>`;
+                        `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${b.size ? b.size + ' bytes' : '—'}</span></div>`;
                     if (b.previousblockhash) res +=
-                        `<div class="row"><span class="key">anterior</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
+                        `<div class="row"><span class="key">${t('explorer.label_previous')}</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
                     if (b.nextblockhash) res +=
-                        `<div class="row"><span class="key">siguiente</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
+                        `<div class="row"><span class="key">${t('explorer.label_next')}</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
                     res += `<div class="divider"></div>`;
                     res +=
-                        `<div class="row"><span class="key">transacciones</span><span class="val gold">${b.tx?.length ?? 0}</span></div>`;
+                        `<div class="row"><span class="key">${t('explorer.label_transactions')}</span><span class="val gold">${b.tx?.length ?? 0}</span></div>`;
 
                     if (b.tx && b.tx.length > 0) {
                         const txs = b.tx.slice(0, 50);
@@ -1354,15 +1295,15 @@
                         const txResults = await Promise.all(txPromises);
 
                         for (const { txid, data } of txResults) {
-                            const typeLabel = data ? getTxTypeLabel(data) : '▸ desconocida';
+                            const typeLabel = data ? getTxTypeLabel(data) : t('explorer.tx_type_unknown');
                             const isSpark = data && getTxType(data) === 'spark';
 
                             res += `<div class="tx-item">
                         <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
                         <div class="tx-meta">
                           <span style="${isSpark ? 'color:#ff7b87;' : 'color:#6a6255;'}">${typeLabel}</span>
-                          ${data && data.vout ? `<span>${data.vout.length} salidas</span>` : ''}
-                          ${data && data.vin ? `<span>${data.vin.length} entradas</span>` : ''}
+                          ${data && data.vout ? `<span>${data.vout.length} ${t('explorer.label_outputs')}</span>` : ''}
+                          ${data && data.vin ? `<span>${data.vin.length} ${t('explorer.label_inputs')}</span>` : ''}
                           ${data && data.size ? `<span>${data.size} bytes</span>` : ''}
                         </div>
                       </div>`;
@@ -1371,50 +1312,47 @@
                             `<div style="color:#3d3830;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
                     }
 
-                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
                     renderOutput(res);
                     return;
                 }
 
-                // ── TRANSACCION ──
                 if (cmd.includes('getrawtransaction') && result) {
-                    const t = result;
-                    const txid = t.txid || t.hash;
-                    const tipo = getTxType(t);
-                    const tipoLabel = getTxTypeLabel(t);
+                    const tx = result;
+                    const txid = tx.txid || tx.hash;
+                    const tipo = getTxType(tx);
+                    const tipoLabel = getTxTypeLabel(tx);
                     const moneda = 'FIRO';
 
                     let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span></div>`;
 
-                    res += `<div class="row"><span class="key">TXID</span><span class="val">${makeLink(txid)}</span></div>`;
+                    res += `<div class="row"><span class="key">${t('explorer.label_txid')}</span><span class="val">${makeLink(txid)}</span></div>`;
                     res +=
-                        `<div class="row"><span class="key">bloque</span><span class="val">${t.blockheight || t.height ? makeLink(String(t.blockheight || t.height)) : 'no confirmada'}</span></div>`;
+                        `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${tx.blockheight || tx.height ? makeLink(String(tx.blockheight || tx.height)) : t('explorer.label_unconfirmed')}</span></div>`;
                     res +=
-                        `<div class="row"><span class="key">confirmaciones</span><span class="val">${t.confirmations || 0}</span></div>`;
-                    if (t.blocktime || t.time) {
+                        `<div class="row"><span class="key">${t('explorer.label_confirmations')}</span><span class="val">${tx.confirmations || 0}</span></div>`;
+                    if (tx.blocktime || tx.time) {
                         res +=
-                            `<div class="row"><span class="key">fecha</span><span class="val">${new Date((t.blocktime || t.time)*1000).toLocaleString()}</span></div>`;
+                            `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date((tx.blocktime || tx.time)*1000).toLocaleString()}</span></div>`;
                     }
                     res +=
-                        `<div class="row"><span class="key">versión</span><span class="val">${t.version || 'N/A'}${t.type !== undefined ? ' · tipo ' + t.type : ''}</span></div>`;
-                    if (t.size) res += `<div class="row"><span class="key">tamaño</span><span class="val">${t.size} bytes</span></div>`;
-                    if (t.instantlock) res +=
-                        `<div class="row"><span class="key">instantlock</span><span class="val" style="color:#31db72;">✅ sí</span></div>`;
-                    if (t.chainlock) res +=
-                        `<div class="row"><span class="key">chainlock</span><span class="val" style="color:#31db72;"> Sí</span></div>`;
+                        `<div class="row"><span class="key">${t('explorer.label_version')}</span><span class="val">${tx.version || 'N/A'}${tx.type !== undefined ? ' · ' + t('explorer.label_type') + ' ' + tx.type : ''}</span></div>`;
+                    if (tx.size) res += `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${tx.size} bytes</span></div>`;
+                    if (tx.instantlock) res +=
+                        `<div class="row"><span class="key">${t('explorer.label_instantlock')}</span><span class="val" style="color:#31db72;">${t('explorer.ok_validate')}</span></div>`;
+                    if (tx.chainlock) res +=
+                        `<div class="row"><span class="key">${t('explorer.label_chainlock')}</span><span class="val" style="color:#31db72;">${t('explorer.ok_validate')}</span></div>`;
 
-                    // ── SPARK ──
                     if (tipo === 'spark') {
-                        res += renderSparkDetails(t);
+                        res += renderSparkDetails(tx);
                     }
 
-                    // ── ENTRADAS TRANSPARENTES ──
                     let totalIn = 0;
-                    const entradasTransparentes = t.vin?.filter(vin => vin.txid && !vin.lTags) || [];
+                    const entradasTransparentes = tx.vin?.filter(vin => vin.txid && !vin.lTags) || [];
                     if (entradasTransparentes.length > 0) {
                         res += `<div class="divider"></div>`;
                         res +=
-                            `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
+                            `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
                         for (let i = 0; i < entradasTransparentes.length; i++) {
                             const vin = entradasTransparentes[i];
                             let value = vin.value;
@@ -1426,34 +1364,33 @@
                         }
                         if (totalIn > 0) {
                             res +=
-                                `<div class="row" style="margin-top:2px;"><span class="key">total entrada</span><span class="val gold">${totalIn.toFixed(8)} ${moneda}</span></div>`;
+                                `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_in')}</span><span class="val gold">${totalIn.toFixed(8)} ${moneda}</span></div>`;
                         }
-                    } else if (t.vin && t.vin.length > 0 && !entradasTransparentes.length && tipo !== 'spark') {
+                    } else if (tx.vin && tx.vin.length > 0 && !entradasTransparentes.length && tipo !== 'spark') {
                         res += `<div class="divider"></div>`;
                         res +=
-                            `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val gold">${t.vin.length}</span></div>`;
-                        t.vin.forEach((vin, i) => {
+                            `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${tx.vin.length}</span></div>`;
+                        tx.vin.forEach((vin, i) => {
                             if (vin.coinbase) {
                                 res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff7b87;">COINBASE</span></div>`;
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff7b87;">${t('explorer.tag_coinbase')}</span></div>`;
                             } else {
                                 res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">entrada</span></div>`;
+                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">${t('explorer.tag_input')}</span></div>`;
                             }
                         });
                     }
 
-                    // ── SALIDAS ──
-                    if (t.vout && t.vout.length > 0) {
+                    if (tx.vout && tx.vout.length > 0) {
                         res += `<div class="divider"></div>`;
                         res +=
-                            `<div class="row"><span class="key">◀ SALIDAS</span><span class="val gold">${t.vout.length}</span></div>`;
+                            `<div class="row"><span class="key">${t('explorer.section_outputs')}</span><span class="val gold">${tx.vout.length}</span></div>`;
 
                         let totalOut = 0;
-                        for (let i = 0; i < t.vout.length; i++) {
-                            const vout = t.vout[i];
+                        for (let i = 0; i < tx.vout.length; i++) {
+                            const vout = tx.vout[i];
                             totalOut += vout.value || 0;
-                            let addr = 'OP_RETURN/otro';
+                            let addr = t('explorer.tag_op_return');
                             if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
                             else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
                             res +=
@@ -1462,55 +1399,53 @@
 
                         if (totalOut > 0) {
                             res +=
-                                `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val gold">${totalOut.toFixed(8)} ${moneda}</span></div>`;
+                                `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_out')}</span><span class="val gold">${totalOut.toFixed(8)} ${moneda}</span></div>`;
                         }
 
-                        // ── FEE ──
                         if (tipo !== 'spark' && tipo !== 'coinbase' && totalIn > 0) {
                             const fee = totalIn - totalOut;
                             if (fee > 0) {
                                 res += `<div class="divider"></div>`;
                                 res +=
-                                    `<div class="row"><span class="key">■ FEE</span><span class="val" style="color:#ff756f;">${fee.toFixed(8)} ${moneda}</span></div>`;
+                                    `<div class="row"><span class="key">${t('explorer.label_fee')}</span><span class="val" style="color:#ff756f;">${fee.toFixed(8)} ${moneda}</span></div>`;
                             }
                         }
                     }
 
-                    // ── RESUMEN ──
                     res += `<div class="divider"></div>`;
-                    res += `<div class="row"><span class="key">RESUMEN</span></div>`;
+                    res += `<div class="row"><span class="key">${t('explorer.label_summary')}</span></div>`;
                     res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val">${tipo === 'spark' ? 'Spark (privado)' : tipo === 'coinbase' ? 'Coinbase' : 'Transparente'}</span></div>`;
+                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_type')}</span><span class="val">${tipo === 'spark' ? t('explorer.tx_type_spark_short') : tipo === 'coinbase' ? t('explorer.tx_type_coinbase_short') : t('explorer.tx_type_transparent_short')}</span></div>`;
                     res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">entradas</span><span class="val">${t.vin?.length || 0}</span></div>`;
+                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_inputs_short')}</span><span class="val">${tx.vin?.length || 0}</span></div>`;
                     res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">salidas</span><span class="val">${t.vout?.length || 0}</span></div>`;
+                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_outputs_short')}</span><span class="val">${tx.vout?.length || 0}</span></div>`;
 
-                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
                     renderOutput(res);
                     return;
                 }
 
                 if (cmd.includes('validateaddress') && result) {
                     const v = result;
-                    const direccion = v.address || cmd.split(' ')[1] || 'desconocida';
-                    let res = `<div class="cmd-line"><span class="tag">◈ DIRECCIÓN</span></div>`;
-                    res += `<div class="row"><span class="key">dirección</span><span class="val">${makeLink(direccion)}</span></div>`;
+                    const direccion = v.address || cmd.split(' ')[1] || t('explorer.label_unknown');
+                    let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_address')}</span></div>`;
+                    res += `<div class="row"><span class="key">${t('explorer.label_address')}</span><span class="val">${makeLink(direccion)}</span></div>`;
 
                     if (v.isvalidSpark !== undefined) {
                         res +=
-                            `<div class="row"><span class="key">válida (Spark)</span><span class="val">${v.isvalidSpark ? '✅ sí' : '❌ no'}</span></div>`;
+                            `<div class="row"><span class="key">${t('explorer.is_valid_spark')}</span><span class="val">${v.isvalidSpark ? t('explorer.ok_validate') : t('explorer.error_validate')}</span></div>`;
                         if (v.isvalidSpark) {
-                            res += `<div class="row"><span class="key">tipo</span><span class="val">shielded (Spark)</span></div>`;
+                            res += `<div class="row"><span class="key">${t('explorer.label_type')}</span><span class="val">shielded (Spark)</span></div>`;
                         }
                     } else {
                         res +=
-                            `<div class="row"><span class="key">válida</span><span class="val">${v.isvalid ? '✅ sí' : '❌ no'}</span></div>`;
+                            `<div class="row"><span class="key">${t('explorer.is_valid')}</span><span class="val">${v.isvalid ? t('explorer.ok_validate') : t('explorer.error_validate')}</span></div>`;
                         if (v.isvalid) {
-                            let tipo = 'transparente';
+                            let tipo = t('explorer.label_transparent');
                             if (v.isscript) tipo = 'script';
                             else if (v.iswatchonly) tipo = 'watchonly';
-                            res += `<div class="row"><span class="key">tipo</span><span class="val">${tipo}</span></div>`;
+                            res += `<div class="row"><span class="key">${t('explorer.label_type')}</span><span class="val">${tipo}</span></div>`;
                             if (v.scriptPubKey) {
                                 res +=
                                     `<div class="row"><span class="key">scriptPubKey</span><span class="val mono">${escapeHtml(v.scriptPubKey)}</span></div>`;
@@ -1519,10 +1454,10 @@
                     }
                     if (v.ismine !== undefined) {
                         res +=
-                            `<div class="row"><span class="key">pertenece a wallet</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
+                            `<div class="row"><span class="key">${t('explorer.is_mine')}</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
                     }
 
-                    res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                    res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
                     renderOutput(res);
                     return;
                 }
@@ -1530,14 +1465,14 @@
                 let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
                 res +=
                     `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
-                res += `<button class="copy-btn" onclick="copyResult()">[ copiar ]</button>`;
+                res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
                 renderOutput(res);
 
             } catch (e) {
                 renderOutput(`
-              <div class="cmd-line"><span class="tag">✕</span> error</div>
+              <div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${t('common.state.error')}</div>
               <div style="color:#ff756f;padding:6px 0;">${escapeHtml(e.message)}</div>
-              <button class="copy-btn" onclick="copyResult()">[ copiar ]</button>
+              <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
             `);
             }
 
@@ -1550,14 +1485,14 @@
                 navigator.clipboard.writeText(outputPre.innerText).then(() => {
                     document.querySelector('.prompt').textContent = '✓';
                     setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
-                    showToast('✓ copiado');
+                    showToast(t('common.copy.ok'));
                 });
             } else {
                 const out = document.getElementById('output');
                 const text = out.textContent;
                 if (text) {
                     navigator.clipboard.writeText(text).then(() => {
-                        showToast('✓ copiado');
+                        showToast(t('common.copy.ok'));
                     });
                 }
             }
@@ -1568,7 +1503,6 @@
         window.goBack = goBack;
         window.goToHistory = goToHistory;
 
-        // ─── EVENTOS ─────────────────────────────────────────────────────
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F8') { e.preventDefault();
                 window.copyResult(); }
@@ -1632,8 +1566,23 @@
             }
         })();
 
-        loadNetworkStats();
-        setInterval(loadNetworkStats, 30000);
+        window.onLangChange = function () {
+            if (currentIndex >= 0 && historyStack[currentIndex]) {
+                const entry = historyStack[currentIndex];
+                const label = getLabelForQuery(entry.query);
+                entry.label = label;
+                updateBreadcrumb();
+                executeSearch(entry.query);
+            } else {
+                renderPlaceholder();
+            }
+        };
+
+        (async () => {
+            await FiroI18n.init();
+            loadNetworkStats();
+            setInterval(loadNetworkStats, 30000);
+        })();
     </script>
 
 </body>
