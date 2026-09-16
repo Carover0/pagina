@@ -10,32 +10,32 @@
             box-sizing: border-box;
         }
 
-        body {
-            min-height: 100vh;
-            background: #0a080c;
-            background-image:
-                radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
-                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
-            font-family: 'Lucida Console', 'Courier New', monospace;
-            color: #ece8e0;
-            padding: 0;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+body {
+    min-height: 100vh;
+    background: #0a080c;
+    background-image:
+        radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
+        linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+    font-family: 'Lucida Console', 'Courier New', monospace;
+    color: #ece8e0;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: flex-start;      
+    justify-content: center;
+    overflow-x: hidden;
+}
 
-        .app {
-            width: 100%;
-            max-width: 1400px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            padding: 20px 28px;
-        }
+.app {
+    width: 100%;
+    max-width: 1400px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 20px 28px;
+}
 
         .header {
             display: flex;
@@ -88,6 +88,8 @@
             gap: 4px 18px;
             font-size: 12px;
             letter-spacing: 0.3px;
+            justify-content: center;
+            flex: 1;
         }
 
         .nav-links a {
@@ -153,7 +155,7 @@
             transition: all 0.3s ease;
             text-decoration: none;
             letter-spacing: 0.3px;
-            margin-left: auto;
+            margin-inline-start: auto;
         }
 
         .btn-blocks:hover {
@@ -167,11 +169,11 @@
             font-size: 14px;
         }
 
-	.btn-blocks img.icon {
-	    width: 14px;
-	    height: 14px;
-	    filter: drop-shadow(0 0 6px rgba(155, 28, 46, 0.4));
-	}
+        .btn-blocks img.icon {
+            width: 14px;
+            height: 14px;
+            filter: drop-shadow(0 0 6px rgba(155, 28, 46, 0.4));
+        }
 
         .btn-blocks .pulse {
             display: inline-block;
@@ -271,7 +273,7 @@
         .card-item .value {
             color: #f5ede4;
             font-size: 12px;
-            text-align: right;
+            text-align: end;
             word-break: break-all;
         }
 
@@ -374,246 +376,159 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        @media (max-width: 768px) {
-            .app {
-                padding: 12px 14px;
-                gap: 12px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                padding: 14px 18px;
-            }
-
-            .brand h1 {
-                font-size: 17px;
-            }
-
-            .brand img {
-                width: 30px;
-                height: 30px;
-            }
-
-            .nav-links {
-                font-size: 11px;
-                gap: 2px 14px;
-            }
-
-            .stats-bar {
-                font-size: 11px;
-                padding: 8px 14px;
-                gap: 4px 16px;
-            }
-
-            .btn-blocks {
-                font-size: 9px;
-                padding: 3px 12px;
-                margin-left: 0;
-            }
-
-            .panel {
-                padding: 18px 16px;
-            }
-
-            .panel-title {
-                font-size: 15px;
-            }
-
-            .panel-title img {
-                width: 28px;
-                height: 28px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .card {
-                padding: 14px 16px;
-            }
-
-            .card-item .value {
-                font-size: 11px;
-            }
-
-            .footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-            }
-
-            .footer-links {
-                gap: 4px 12px;
-            }
+        .lang-switcher {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-inline-start: auto;
         }
 
-        @media (max-width: 480px) {
-            .app {
-                padding: 8px 10px;
-                gap: 10px;
-            }
-
-            .header {
-                padding: 10px 14px;
-            }
-
-            .brand h1 {
-                font-size: 15px;
-            }
-
-            .brand h1 small {
-                font-size: 10px;
-            }
-
-            .brand img {
-                width: 26px;
-                height: 26px;
-            }
-
-            .stats-bar {
-                font-size: 10px;
-                padding: 6px 12px;
-                gap: 3px 12px;
-            }
-
-            .stats-bar .value {
-                font-size: 12px;
-            }
-
-            .btn-blocks {
-                font-size: 8px;
-                padding: 2px 10px;
-                gap: 4px;
-                margin-left: 0;
-            }
-
-            .btn-blocks .icon {
-                font-size: 10px;
-            }
-
-            .btn-blocks .pulse {
-                width: 5px;
-                height: 5px;
-            }
-
-            .panel {
-                padding: 14px 12px;
-                border-radius: 10px;
-            }
-
-            .panel-title {
-                font-size: 13px;
-                gap: 10px;
-                margin-bottom: 16px;
-                padding-bottom: 10px;
-            }
-
-            .panel-title img {
-                width: 24px;
-                height: 24px;
-            }
-
-            .card {
-                padding: 12px 14px;
-            }
-
-            .card-title {
-                font-size: 9px;
-            }
-
-            .card-item {
-                padding: 4px 0;
-                flex-wrap: wrap;
-                gap: 2px;
-            }
-
-            .card-item .label {
-                font-size: 10px;
-                min-width: 80px;
-            }
-
-            .card-item .value {
-                font-size: 10px;
-                text-align: left;
-                flex: 1;
-            }
-
-            .note {
-                font-size: 10px;
-                padding: 10px 12px;
-            }
-
-            .footer {
-                font-size: 10px;
-            }
-
-            .footer-links a {
-                font-size: 10px;
-            }
+        .lang-switcher button {
+            background: transparent;
+            border: 1px solid rgba(155, 28, 46, 0.15);
+            color: #6a6255;
+            font-family: 'Lucida Console', monospace;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
         }
 
-        @media (min-width: 1920px) {
-            .app {
-                max-width: 1600px;
-                padding: 24px 40px;
-            }
-
-            .card-item .value {
-                font-size: 13px;
-            }
+        .lang-switcher button:hover {
+            color: #ff7b87;
+            border-color: rgba(155, 28, 46, 0.35);
         }
 
-		/* ─── LENGUAJES ─── */
-.lang-switcher {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-inline-start: 8px;
+        .lang-switcher button.active {
+            color: #ff7b87;
+            background: rgba(155, 28, 46, 0.12);
+            border-color: rgba(155, 28, 46, 0.4);
+        }
+
+        [dir="rtl"] .card-item .value,
+        [dir="rtl"] .stats-bar .value,
+        [dir="rtl"] #node-bestblock,
+        [dir="rtl"] #node-timestamp,
+        [dir="rtl"] #market-updated,
+        [dir="rtl"] #electrum-version,
+        [dir="rtl"] #electrum-ping {
+            direction: ltr;
+            unicode-bidi: embed;
+        }
+
+        [dir="rtl"] .footer-links,
+        [dir="rtl"] .nav-links {
+            flex-direction: row-reverse;
+        }
+
+@media (max-width: 1100px) {
+    .stats-bar { gap: 6px 22px; }
+    .btn-blocks { font-size: 9px; padding: 3px 12px; }
+    .stats-bar .value { font-size: 13px; }
 }
 
-.lang-switcher button {
-    background: transparent;
-    border: 1px solid rgba(155, 28, 46, 0.15);
-    color: #6a6255;
-    font-family: 'Lucida Console', monospace;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-    padding: 4px 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.25s;
+@media (max-width: 900px) {
+    .stats-bar {
+        flex-wrap: wrap;
+        gap: 8px 20px;
+    }
+    .stats-bar .stat { flex: 0 1 auto; }
+    .btn-blocks {
+        flex: 1 1 calc(50% - 10px);
+        justify-content: center;
+        margin-inline-start: 0;
+    }
 }
 
-.lang-switcher button:hover {
-    color: #ff7b87;
-    border-color: rgba(155, 28, 46, 0.35);
+@media (max-width: 768px) {
+    .app { padding: 12px 14px; gap: 12px; }
+    .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+    .brand h1 { font-size: 17px; }
+    .brand img { width: 30px; height: 30px; }
+    .nav-links { font-size: 11px; gap: 2px 14px; }
+    .lang-switcher { margin-inline-start: 0; justify-content: center; }
+
+    .stats-bar {
+        font-size: 11px;
+        padding: 10px 14px;
+        gap: 8px 18px;
+    }
+    .stats-bar .stat { flex: 0 1 auto; }
+    .stats-bar .value { font-size: 13px; }
+    .btn-blocks {
+        font-size: 9px;
+        padding: 4px 12px;
+        margin-inline-start: 0;
+        flex: 1 1 calc(50% - 9px);
+        justify-content: center;
+    }
+
+    .panel { padding: 18px 16px; }
+    .panel-title { font-size: 15px; }
+    .panel-title img { width: 28px; height: 28px; }
+    .cards { grid-template-columns: 1fr; gap: 12px; }
+    .card { padding: 14px 16px; }
+    .card-item .value { font-size: 11px; }
+
+    .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .footer-links { gap: 4px 12px; }
 }
 
-.lang-switcher button.active {
-    color: #ff7b87;
-    background: rgba(155, 28, 46, 0.12);
-    border-color: rgba(155, 28, 46, 0.4);
+@media (max-width: 480px) {
+    .app { padding: 8px 10px; gap: 10px; }
+    .header { padding: 10px 14px; }
+    .brand h1 { font-size: 15px; }
+    .brand h1 small { font-size: 10px; }
+    .brand img { width: 26px; height: 26px; }
+
+    .stats-bar {
+        font-size: 10px;
+        padding: 8px 12px;
+        gap: 6px 12px;
+    }
+    .stats-bar .stat {
+        flex: 1 1 calc(50% - 6px);
+        justify-content: space-between;
+    }
+    .stats-bar .value { font-size: 12px; }
+
+    .btn-blocks {
+        font-size: 8px;
+        padding: 4px 10px;
+        gap: 4px;
+        flex: 1 1 100%;
+        justify-content: center;
+        margin-inline-start: 0;
+    }
+    .btn-blocks .icon,
+    .btn-blocks img.icon { width: 12px; height: 12px; }
+    .btn-blocks .pulse { width: 5px; height: 5px; }
+
+    .panel { padding: 14px 12px; border-radius: 10px; }
+    .panel-title { font-size: 13px; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; }
+    .panel-title img { width: 24px; height: 24px; }
+    .card { padding: 12px 14px; }
+    .card-title { font-size: 9px; }
+    .card-item { padding: 4px 0; flex-wrap: wrap; gap: 2px; }
+    .card-item .label { font-size: 10px; min-width: 90px; }
+    .card-item .value { font-size: 10px; text-align: start; flex: 1; }
+    .note { font-size: 10px; padding: 10px 12px; }
+    .footer { font-size: 10px; }
+    .footer-links a { font-size: 10px; }
 }
 
-[dir="rtl"] .card-item .value,
-[dir="rtl"] .stats-bar .value,
-[dir="rtl"] .stat-item .value,
-[dir="rtl"] .block-row .value,
-[dir="rtl"] #market-price,
-[dir="rtl"] #stat-price,
-[dir="rtl"] #output .row .val,
-[dir="rtl"] #output .result,
-[dir="rtl"] pre {
-    direction: ltr;
-    unicode-bidi: embed;
+@media (max-width: 360px) {
+    .stats-bar .stat { flex: 1 1 100%; }
+    .btn-blocks { font-size: 8px; padding: 3px 8px; }
+    .card-item .label { min-width: 70px; font-size: 9px; }
+    .card-item .value { font-size: 9px; }
 }
 
-[dir="rtl"] .footer-links,
-[dir="rtl"] .nav-links {
-    flex-direction: row-reverse;
+@media (min-width: 1920px) {
+    .app { max-width: 1600px; padding: 24px 40px; }
+    .card-item .value { font-size: 13px; }
 }
     </style>
 </head>
@@ -624,29 +539,34 @@
         <header class="header">
             <div class="brand">
                 <img src="assets/firo.png" alt="Firo">
-                <h1>Firo <small>monitor</small></h1>
+                <h1>Firo <small data-i18n="nodo.title_short">monitor</small></h1>
             </div>
             <nav class="nav-links">
-                <a href="https://carover0.github.io/pagina/firo-nombres.html">[NAMES]</a>
-                <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a>
-                <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a>
-                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
-                <a href="https://carover0.xyz/api/firo-log.php?token=carover0" target="_blank">[LOGS]</a>
+                <a href="https://carover0.github.io/pagina/firo-nombres.html" data-i18n="common.nav.names">[NAMES]</a>
+                <a href="https://carover0.github.io/pagina/firo-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/firo-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
+                <a href="https://carover0.xyz/api/firo-log.php?token=carover0" target="_blank" data-i18n="nodo.footer.logs">[LOGS]</a>
             </nav>
+            <div class="lang-switcher" role="group" aria-label="Language">
+                <button type="button" data-lang="es" class="active">ES</button>
+                <button type="button" data-lang="en">EN</button>
+                <button type="button" data-lang="ar">AR</button>
+            </div>
         </header>
 
         <div class="stats-bar">
-            <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
-            <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
-            <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
-            <div class="stat"><span class="label">PRECIO</span><span class="value firo" id="stat-price">—</span></div>
-	    <a href="https://buyfiro.app/" target="_blank" rel="noopener noreferrer" class="btn-blocks">
-            <img src="assets/firo.png" alt="Firo" class="icon" style="width:12px;height:12px;filter:drop-shadow(0 0        6px rgba(155,28,46,0.4));">
-             Compra FIRO
-             <span class="pulse"></span>
-             </a>
+            <div class="stat"><span class="label" data-i18n="common.label.height">ALTURA</span><span class="value" id="stat-height">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.price">PRECIO</span><span class="value firo" id="stat-price">—</span></div>
+            <a href="https://buyfiro.app/" target="_blank" rel="noopener noreferrer" class="btn-blocks">
+                <img src="assets/firo.png" alt="Firo" class="icon">
+                <span data-i18n="common.btn.buy">Compra FIRO</span>
+                <span class="pulse"></span>
+            </a>
             <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
-                Bloques en tiempo real
+                <span data-i18n="common.btn.blocks">Bloques en tiempo real</span>
                 <span class="pulse"></span>
             </a>
         </div>
@@ -654,64 +574,60 @@
         <div class="panel">
             <div class="panel-title">
                 <img src="assets/firo.png" alt="Firo">
-                MONITOR DE NODO FIRO
+                <span data-i18n="nodo.panel_title">MONITOR DE NODO FIRO</span>
             </div>
 
             <div class="cards">
 
-                <!-- Nodo Estado -->
                 <div class="card">
-                    <div class="card-title">Nodo · Estado</div>
-                    <div class="card-item"><span class="label">VERSIÓN</span><span class="value" id="node-version">---</span></div>
-                    <div class="card-item"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
-                    <div class="card-item"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
-                    <div class="card-item"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
-                    <div class="card-item"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
-                    <div class="card-item"><span class="label">TIEMPO EN LÍNEA</span><span class="value" id="node-uptime">---</span></div>
+                    <div class="card-title" data-i18n="nodo.card.node_state">Nodo · Estado</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="node-version">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="node-state">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.blocks">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.uptime">TIEMPO EN LÍNEA</span><span class="value" id="node-uptime">---</span></div>
                 </div>
 
-                <!-- Red -->
                 <div class="card">
-                    <div class="card-title">Nodo · Red</div>
-                    <div class="card-item"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
-                    <div class="card-item"><span class="label">HASHRATE</span><span class="value" id="node-hashrate">---</span></div>
-                    <div class="card-item"><span class="label">CADENA</span><span class="value" id="node-chain">---</span></div>
-                    <div class="card-item"><span class="label">ÚLTIMO BLOQUE</span><span class="value mono" id="node-bestblock">---</span></div>
-                    <div class="card-item"><span class="label">HORA</span><span class="value mono" id="node-timestamp">---</span></div>
+                    <div class="card-title" data-i18n="nodo.card.network">Nodo · Red</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.difficulty">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.hashrate">HASHRATE</span><span class="value" id="node-hashrate">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.chain">CADENA</span><span class="value" id="node-chain">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.bestblock">ÚLTIMO BLOQUE</span><span class="value mono" id="node-bestblock">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.time">HORA</span><span class="value mono" id="node-timestamp">---</span></div>
                 </div>
 
-                <!-- Mercado -->
                 <div class="card">
-                    <div class="card-title">Firo · Mercado</div>
-                    <div class="card-item"><span class="label">PRECIO USD</span><span class="value gold" id="market-price">---</span></div>
-                    <div class="card-item"><span class="label">24h %</span><span class="value" id="market-24h">---</span></div>
-                    <div class="card-item"><span class="label">7d %</span><span class="value" id="market-7d">---</span></div>
-                    <div class="card-item"><span class="label">MARKET CAP</span><span class="value" id="market-cap">---</span></div>
-                    <div class="card-item"><span class="label">VOLUMEN 24h</span><span class="value" id="market-volume">---</span></div>
-                    <div class="card-item"><span class="label">ACTUALIZADO</span><span class="value mono" id="market-updated">---</span></div>
+                    <div class="card-title" data-i18n="nodo.card.market">Firo · Mercado</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.price_usd">PRECIO USD</span><span class="value gold" id="market-price">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.24h">24h %</span><span class="value" id="market-24h">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.7d">7d %</span><span class="value" id="market-7d">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.marketcap">MARKET CAP</span><span class="value" id="market-cap">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.vol_24h">VOLUMEN 24h</span><span class="value" id="market-volume">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.updated">ACTUALIZADO</span><span class="value mono" id="market-updated">---</span></div>
                 </div>
 
-                <!-- ElectrumX -->
                 <div class="card">
-                    <div class="card-title">ElectrumX · Conectar Wallet</div>
-                    <div class="card-item"><span class="label">SERVIDOR</span><span class="value mono">carover0.xyz</span></div>
-                    <div class="card-item"><span class="label">PUERTO</span><span class="value mono">50002</span></div>
-                    <div class="card-item"><span class="label">ESTADO</span><span class="value" id="electrum-status">Comprobando...</span></div>
-                    <div class="card-item"><span class="label">TLS</span><span class="value positive">HABILITADO</span></div>
-                    <div class="card-item"><span class="label">VERSIÓN</span><span class="value" id="electrum-version">---</span></div>
-                    <div class="card-item"><span class="label">RESPUESTA</span><span class="value mono" id="electrum-ping">---</span></div>
+                    <div class="card-title" data-i18n="nodo.card.electrum">ElectrumX · Conectar Wallet</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.server">SERVIDOR</span><span class="value mono">carover0.xyz</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.port">PUERTO</span><span class="value mono">50002</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="electrum-status" data-i18n="common.state.checking">Comprobando...</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.tls">TLS</span><span class="value positive" data-i18n="common.state.enabled">HABILITADO</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="electrum-version">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.response">RESPUESTA</span><span class="value mono" id="electrum-ping">---</span></div>
                 </div>
 
             </div>
 
-            <p class="note" id="electrum-note">Conectá tu wallet FIRO a este servidor para contribuir a la descentralización de la red.</p>
+            <p class="note" id="electrum-note" data-i18n="nodo.electrum.note_default">Conectá tu wallet FIRO a este servidor para contribuir a la descentralización de la red.</p>
 
             <footer class="footer">
-                <span>actualizado en tiempo real</span>
+                <span data-i18n="common.footer.realtime">actualizado en tiempo real</span>
                 <div class="footer-links">
                     <a href="https://carover0.xyz/api/firo.json" target="_blank">API</a>
                     <a href="https://t.me/firoexplorer_bot" target="_blank">Telegram</a>
-                    <a href="https://carover0.xyz/api/firo-log.php?token=carover0" target="_blank">Logs</a>
+                    <a href="https://carover0.xyz/api/firo-log.php?token=carover0" target="_blank" data-i18n="nodo.footer.logs">Logs</a>
                 </div>
             </footer>
         </div>
@@ -720,9 +636,12 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="js/i18n.js"></script>
     <script>
         const NODE_JSON_URL = 'https://carover0.xyz/api/firo.json';
         const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
+
+        const t = (key) => FiroI18n.t(key);
 
         let cachedNodeData = null;
         let cachedPrice = null;
@@ -746,9 +665,9 @@
             s %= 3600;
             const m = Math.floor(s / 60);
             let parts = [];
-            if (d > 0) parts.push(d + 'd');
-            if (h > 0) parts.push(h + 'h');
-            if (m > 0 || parts.length === 0) parts.push(m + 'min');
+            if (d > 0) parts.push(d + t('common.unit.day'));
+            if (h > 0) parts.push(h + t('common.unit.hour'));
+            if (m > 0 || parts.length === 0) parts.push(m + t('common.unit.min'));
             return parts.join(' ');
         }
 
@@ -784,12 +703,12 @@
 
             document.getElementById('node-version').textContent = d.network?.subversion || 'N/A';
             const stateEl = document.getElementById('node-state');
-            stateEl.textContent = synced ? 'SINCRONIZADO' : 'SINCRONIZANDO';
+            stateEl.textContent = synced ? t('common.state.synced') : t('common.state.syncing');
             stateEl.className = 'value ' + (synced ? 'positive' : 'negative');
             document.getElementById('node-blocks').textContent = Number(d.blockchain?.blocks || 0).toLocaleString();
             document.getElementById('node-connections').textContent =
-                `${d.network?.connections ?? 0} (${d.peers?.inbound ?? 0} IN · ${d.peers?.outbound ?? 0} OUT)`;
-            document.getElementById('node-mempool').textContent = `${d.mempool?.txcount ?? 0} TX`;
+                `${d.network?.connections ?? 0} (${d.peers?.inbound ?? 0} ${t('common.unit.in')} · ${d.peers?.outbound ?? 0} ${t('common.unit.out')})`;
+            document.getElementById('node-mempool').textContent = `${d.mempool?.txcount ?? 0} ${t('common.unit.tx').toUpperCase()}`;
             document.getElementById('node-uptime').textContent = formatUptime(d.node?.uptime_seconds);
             document.getElementById('node-difficulty').textContent = Number(d.blockchain?.difficulty || 0).toFixed(2);
             document.getElementById('node-hashrate').textContent = (Number(d.mining?.networkhashps || 0) / 1e9).toFixed(2) +
@@ -811,7 +730,7 @@
                 return data;
             } catch (e) {
                 console.error('Error de conexión:', e);
-                document.getElementById('node-version').textContent = 'ERROR DE CONEXIÓN';
+                document.getElementById('node-version').textContent = t('common.state.connection_error');
                 return null;
             }
         }
@@ -846,7 +765,7 @@
                 document.getElementById('market-7d').textContent = '---';
                 document.getElementById('market-cap').textContent = '---';
                 document.getElementById('market-volume').textContent = '---';
-                document.getElementById('market-updated').textContent = 'Error';
+                document.getElementById('market-updated').textContent = t('common.state.error');
                 return null;
             }
         }
@@ -863,29 +782,36 @@
                 const noteEl = document.getElementById('electrum-note');
 
                 if (d.status === 'online') {
-                    statusEl.textContent = '🟢 ONLINE';
+                    statusEl.textContent = t('common.state.online');
                     statusEl.className = 'value positive';
                     versionEl.textContent = Array.isArray(d.version) ? d.version[0] : d.version;
-                    pingEl.textContent = '✅ ' + new Date(d.timestamp * 1000).toLocaleTimeString();
-                    noteEl.textContent = '✅ Servidor lightwallet operativo y respondiendo correctamente.';
+                    pingEl.textContent = new Date(d.timestamp * 1000).toLocaleTimeString();
+                    noteEl.textContent = t('nodo.electrum.note_online');
                 } else {
-                    statusEl.textContent = '🔴 OFFLINE';
+                    statusEl.textContent = t('common.state.offline');
                     statusEl.className = 'value negative';
                     versionEl.textContent = '---';
-                    pingEl.textContent = '❌ ' + (d.error || 'desconocido');
-                    noteEl.textContent = '⚠️ El servidor lightwallet no responde. Verifica que ElectrumX esté corriendo.';
+                    pingEl.textContent = '❌ ' + (d.error || t('common.state.unknown'));
+                    noteEl.textContent = '⚠️ ' + t('nodo.electrum.note_offline');
                 }
             } catch (e) {
                 const statusEl = document.getElementById('electrum-status');
-                statusEl.textContent = '🔴 OFFLINE';
+                statusEl.textContent = t('common.state.offline');
                 statusEl.className = 'value negative';
                 document.getElementById('electrum-version').textContent = '---';
-                document.getElementById('electrum-ping').textContent = '❌ Error de conexión';
-                document.getElementById('electrum-note').textContent = '⚠️ No se pudo conectar al servidor lightwallet.';
+                document.getElementById('electrum-ping').textContent = '❌ ' + t('nodo.electrum.error_conn');
+                document.getElementById('electrum-note').textContent = '⚠️ ' + t('nodo.electrum.note_error');
             }
         }
 
+        window.onLangChange = function () {
+            if (cachedNodeData) displayNodeData(cachedNodeData);
+            updateStatsBar();
+            fetchElectrumStatus();
+        };
+
         async function init() {
+            await FiroI18n.init();
             await Promise.all([
                 fetchNodeData(),
                 fetchMarketData()
