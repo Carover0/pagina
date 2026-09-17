@@ -300,8 +300,8 @@
   "explorer.tag_input": "مدخل",
   "explorer.tag_op_return": "OP_RETURN/آخر",
   "explorer.copy_result": "[ نسخ ]",
-  "explorer.ok_validate": "✅ نعم",
-  "explorer.error_validate": "❌ لا",
+  "explorer.ok_validate": "نعم",
+  "explorer.error_validate": "لا",
   "explorer.is_valid": "صالح",
   "explorer.is_valid_spark": "صالح (Spark)",
   "explorer.is_mine": "ينتمي إلى المحفظة",
@@ -365,5 +365,9 @@
   "nodo.electrum.note_offline": "خادم المحفظة الخفيفة لا يستجيب. تأكد من تشغيل ElectrumX.",
   "nodo.electrum.note_error": "تعذّر الاتصال بخادم المحفظة الخفيفة.",
   "nodo.electrum.error_conn": "خطأ في الاتصال",
-  "nodo.footer.logs": "السجلات"
+  "nodo.footer.logs": "السجلات",
+
+  "explorer.tx_type_sparkmint": "Sparkmint",
+  "explorer.tx_type_sparkspend": "Sparkspend",
+  "explorer.spark_unshielded": "(U)"
 }
