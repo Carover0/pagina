@@ -175,8 +175,8 @@
   "explorer.tag_op_return": "OP_RETURN/other",
   "explorer.copy_result": "[ copy ]",
   "explorer.copy_btn_toast": "✓ copied",
-  "explorer.error_validate": "❌ no",
-  "explorer.ok_validate": "✅ yes",
+  "explorer.error_validate": "no",
+  "explorer.ok_validate": "yes",
   "explorer.is_valid": "valid",
   "explorer.is_valid_spark": "valid (Spark)",
   "explorer.is_mine": "belongs to wallet",
@@ -366,5 +366,9 @@
   "nodo.electrum.note_offline": "The lightwallet server is not responding. Check that ElectrumX is running.",
   "nodo.electrum.note_error": "Could not connect to the lightwallet server.",
   "nodo.electrum.error_conn": "Connection error",
-  "nodo.footer.logs": "Logs"
+  "nodo.footer.logs": "Logs",
+
+  "explorer.tx_type_sparkmint": "Sparkmint",
+  "explorer.tx_type_sparkspend": "Sparkspend",
+  "explorer.spark_unshielded": "(U)"
 }
