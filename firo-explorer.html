@@ -182,6 +182,7 @@
         white-space: nowrap;
     }
 
+    /* El primer botón empuja ambos hacia la derecha */
     .btn-blocks:first-of-type {
         margin-inline-start: auto;
     }
@@ -719,6 +720,8 @@
         flex-direction: row-reverse;
     }
 
+    /* ============ RESPONSIVE ============ */
+
     @media (max-width: 1100px) {
         .stats-bar { gap: 6px 22px; }
         .btn-blocks { font-size: 9px; padding: 3px 12px; }
@@ -1098,31 +1101,38 @@
             } catch (e) { return null; }
         }
 
-        function getTxType(tx) {
-            if (!tx) return 'unknown';
+function getTxType(tx) {
+    if (!tx) return 'unknown';
 
-            if (tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase) return 'coinbase';
+    if (tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase) return 'coinbase';
 
-            if (tx.sparkData) return 'spark';
-            if (tx.vin && tx.vin.some(v => v.lTags && v.lTags.length > 0)) return 'spark';
-            if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return 'spark';
-            if (tx.bindingSig) return 'spark';
+    // Spark por tipo de script en vout (lo que devuelve tu API)
+    if (tx.vout && tx.vout.some(v => v.scriptPubKey?.type === 'sparkmint')) return 'sparkmint';
+    if (tx.vout && tx.vout.some(v => v.scriptPubKey?.type === 'sparkspend')) return 'sparkspend';
 
-            if (tx.vin && tx.vin.length > 0 && tx.vout && tx.vout.length > 0) return 'transparent';
+    // Spark por otros campos (por compatibilidad)
+    if (tx.sparkData) return 'spark';
+    if (tx.vin && tx.vin.some(v => v.lTags && v.lTags.length > 0)) return 'spark';
+    if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return 'spark';
+    if (tx.bindingSig) return 'spark';
 
-            return 'unknown';
-        }
+    if (tx.vin && tx.vin.length > 0 && tx.vout && tx.vout.length > 0) return 'transparent';
 
-        function getTxTypeLabel(tx) {
-            const type = getTxType(tx);
-            const labels = {
-                'coinbase': t('explorer.tx_type_coinbase'),
-                'spark': t('explorer.tx_type_spark'),
-                'transparent': t('explorer.tx_type_transparent'),
-                'unknown': t('explorer.tx_type_unknown')
-            };
-            return labels[type] || t('explorer.tx_type_unknown');
-        }
+    return 'unknown';
+}
+
+function getTxTypeLabel(tx) {
+    const type = getTxType(tx);
+    const labels = {
+        'coinbase':    t('explorer.tx_type_coinbase'),
+        'sparkmint':   t('explorer.tx_type_sparkmint'),
+        'sparkspend':  t('explorer.tx_type_sparkspend'),
+        'spark':       t('explorer.tx_type_spark'),
+        'transparent': t('explorer.tx_type_transparent'),
+        'unknown':     t('explorer.tx_type_unknown')
+    };
+    return labels[type] || t('explorer.tx_type_unknown');
+}
 
         function renderOutput(html) {
             document.getElementById('output').innerHTML = html;
@@ -1327,16 +1337,30 @@
                     let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span></div>`;
 
                     res += `<div class="row"><span class="key">${t('explorer.label_txid')}</span><span class="val">${makeLink(txid)}</span></div>`;
-                    res +=
-                        `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${tx.blockheight || tx.height ? makeLink(String(tx.blockheight || tx.height)) : t('explorer.label_unconfirmed')}</span></div>`;
+
+
+if (tx.height && tx.blockhash) {
+    res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))} · ${makeLink(tx.blockhash)}</span></div>`;
+} else if (tx.height) {
+    res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))}</span></div>`;
+} else if (tx.blockhash) {
+    res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(tx.blockhash)}</span></div>`;
+} else {
+    res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${t('explorer.label_unconfirmed')}</span></div>`;
+}
+
+
                     res +=
                         `<div class="row"><span class="key">${t('explorer.label_confirmations')}</span><span class="val">${tx.confirmations || 0}</span></div>`;
                     if (tx.blocktime || tx.time) {
                         res +=
                             `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date((tx.blocktime || tx.time)*1000).toLocaleString()}</span></div>`;
                     }
-                    res +=
-                        `<div class="row"><span class="key">${t('explorer.label_version')}</span><span class="val">${tx.version || 'N/A'}${tx.type !== undefined ? ' · ' + t('explorer.label_type') + ' ' + tx.type : ''}</span></div>`;
+                    
+let versionStr = tx.version || 'N/A';
+if (tx.locktime !== undefined) versionStr += ` · LockTime ${tx.locktime}`;
+res += `<div class="row"><span class="key">${t('explorer.label_version')}</span><span class="val">${versionStr}</span></div>`;
+
                     if (tx.size) res += `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${tx.size} bytes</span></div>`;
                     if (tx.instantlock) res +=
                         `<div class="row"><span class="key">${t('explorer.label_instantlock')}</span><span class="val" style="color:#31db72;">${t('explorer.ok_validate')}</span></div>`;
@@ -1347,25 +1371,31 @@
                         res += renderSparkDetails(tx);
                     }
 
-                    let totalIn = 0;
-                    const entradasTransparentes = tx.vin?.filter(vin => vin.txid && !vin.lTags) || [];
-                    if (entradasTransparentes.length > 0) {
-                        res += `<div class="divider"></div>`;
-                        res +=
-                            `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
-                        for (let i = 0; i < entradasTransparentes.length; i++) {
-                            const vin = entradasTransparentes[i];
-                            let value = vin.value;
-                            if (!value) value = await getVinValue(vin.txid, vin.vout);
-                            if (value) totalIn += value;
-                            const valStr = value ? ` ${value.toFixed(8)} ${moneda}` : '';
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${makeLink(vin.txid)}:${vin.vout}</span>${valStr ? `<span class="val gold">${valStr}</span>` : ''}</div>`;
-                        }
-                        if (totalIn > 0) {
-                            res +=
-                                `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_in')}</span><span class="val gold">${totalIn.toFixed(8)} ${moneda}</span></div>`;
-                        }
+let totalIn = 0;
+const entradasTransparentes = tx.vin?.filter(vin => vin.txid && !vin.lTags) || [];
+if (entradasTransparentes.length > 0) {
+    res += `<div class="divider"></div>`;
+    res +=
+        `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
+    for (let i = 0; i < entradasTransparentes.length; i++) {
+        const vin = entradasTransparentes[i];
+        let value = vin.value;
+        if (value == null) value = await getVinValue(vin.txid, vin.vout);
+        if (value != null) totalIn += value;
+
+        const valStr = value != null ? ` ${value.toFixed(8)} ${moneda}` : '';
+
+        const origen = `${makeLink(vin.txid)}:${vin.vout}`;
+
+        res +=
+            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${origen}</span>${valStr ? `<span class="val gold">${valStr}</span>` : ''}</div>`;
+    }
+    if (totalIn > 0) {
+        res +=
+            `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_in')}</span><span class="val gold">${totalIn.toFixed(8)} ${moneda}</span></div>`;
+    }
+
+                        
                     } else if (tx.vin && tx.vin.length > 0 && !entradasTransparentes.length && tipo !== 'spark') {
                         res += `<div class="divider"></div>`;
                         res +=
@@ -1387,15 +1417,30 @@
                             `<div class="row"><span class="key">${t('explorer.section_outputs')}</span><span class="val gold">${tx.vout.length}</span></div>`;
 
                         let totalOut = 0;
-                        for (let i = 0; i < tx.vout.length; i++) {
-                            const vout = tx.vout[i];
-                            totalOut += vout.value || 0;
-                            let addr = t('explorer.tag_op_return');
-                            if (vout.scriptPubKey?.addresses?.[0]) addr = vout.scriptPubKey.addresses[0];
-                            else if (vout.scriptPubKey?.address) addr = vout.scriptPubKey.address;
-                            res +=
-                                `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${(vout.value || 0).toFixed(8)} ${moneda}</span> → ${makeLink(addr)}</div>`;
-                        }
+for (let i = 0; i < tx.vout.length; i++) {
+    const vout = tx.vout[i];
+    totalOut += vout.value || 0;
+
+    const spk = vout.scriptPubKey || {};
+    let destino;
+    let sufijo = '';
+
+    if (spk.type === 'sparkmint' || spk.type === 'sparkspend') {
+        destino = `<span style="color:#ff7b87;">${escapeHtml(spk.type)}</span>`;
+        sufijo = ` <span style="color:#6a6255;">${t('explorer.spark_unshielded')}</span>`;
+    } else if (spk.addresses?.[0]) {
+        destino = makeLink(spk.addresses[0]);
+    } else if (spk.address) {
+        destino = makeLink(spk.address);
+    } else if (spk.type === 'nulldata' || (spk.asm && spk.asm.startsWith('OP_RETURN'))) {
+        destino = `<span style="color:#5a5348;">OP_RETURN</span>`;
+    } else {
+        destino = `<span style="color:#5a5348;">${escapeHtml(spk.type || 'unknown')}</span>`;
+    }
+
+    res +=
+        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${(vout.value || 0).toFixed(8)} ${moneda}</span> → ${destino}${sufijo}</div>`;
+}
 
                         if (totalOut > 0) {
                             res +=
