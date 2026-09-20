@@ -1,15 +1,10 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zcash · Monitor de Nodo</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             min-height: 100vh;
@@ -22,7 +17,6 @@
             color: #ece8e0;
             padding: 0;
             margin: 0;
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -38,7 +32,6 @@
             padding: 20px 28px;
         }
 
-        /* ── HEADER ── */
         .header {
             display: flex;
             flex-wrap: wrap;
@@ -52,22 +45,15 @@
             backdrop-filter: blur(8px);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+        .brand { display: flex; align-items: center; gap: 14px; }
 
         .brand img {
-            width: 38px;
-            height: 38px;
+            width: 38px; height: 38px;
             filter: drop-shadow(0 0 16px rgba(221, 157, 52, 0.25));
             transition: filter 0.3s;
         }
 
-        .brand img:hover {
-            filter: drop-shadow(0 0 24px rgba(221, 157, 52, 0.4));
-        }
+        .brand img:hover { filter: drop-shadow(0 0 24px rgba(221, 157, 52, 0.4)); }
 
         .brand h1 {
             font-size: 21px;
@@ -100,12 +86,8 @@
             border-bottom: 2px solid transparent;
         }
 
-        .nav-links a:hover {
-            color: #dd9d34;
-            border-bottom-color: #dd9d34;
-        }
+        .nav-links a:hover { color: #dd9d34; border-bottom-color: #dd9d34; }
 
-        /* ── STATS BAR ── */
         .stats-bar {
             display: flex;
             flex-wrap: wrap;
@@ -118,11 +100,7 @@
             font-size: 13px;
         }
 
-        .stats-bar .stat {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-        }
+        .stats-bar .stat { display: flex; align-items: baseline; gap: 6px; }
 
         .stats-bar .label {
             color: #4a443a;
@@ -131,13 +109,8 @@
             letter-spacing: 0.8px;
         }
 
-        .stats-bar .value {
-            color: #f5ede4;
-            font-weight: 600;
-            font-size: 14px;
-        }
+        .stats-bar .value { color: #f5ede4; font-weight: 600; font-size: 14px; }
 
-        /* ── BOTÓN BLOQUES EN VIVO ── */
         .btn-live {
             margin-left: auto;
             display: inline-flex;
@@ -166,8 +139,7 @@
 
         .btn-live .dot {
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background: #31db72;
             border-radius: 50%;
             animation: pulse-dot 1.5s ease-in-out infinite;
@@ -179,7 +151,6 @@
             50% { opacity: 0.4; transform: scale(0.8); }
         }
 
-        /* ── PANEL ── */
         .panel {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 14px;
@@ -189,9 +160,7 @@
             transition: border-color 0.3s;
         }
 
-        .panel:hover {
-            border-color: rgba(221, 157, 52, 0.1);
-        }
+        .panel:hover { border-color: rgba(221, 157, 52, 0.1); }
 
         .panel-title {
             display: flex;
@@ -206,15 +175,13 @@
         }
 
         .panel-title img {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             filter: drop-shadow(0 0 12px rgba(221, 157, 52, 0.2));
         }
 
-        /* ── CARDS GRID ── */
         .cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 18px;
         }
 
@@ -249,15 +216,9 @@
             border-bottom: 1px solid rgba(221, 157, 52, 0.02);
         }
 
-        .card-item:last-child {
-            border-bottom: none;
-        }
+        .card-item:last-child { border-bottom: none; }
 
-        .card-item .label {
-            color: #6a6255;
-            font-size: 11px;
-            letter-spacing: 0.3px;
-        }
+        .card-item .label { color: #6a6255; font-size: 11px; letter-spacing: 0.3px; }
 
         .card-item .value {
             color: #f5ede4;
@@ -266,24 +227,11 @@
             word-break: break-all;
         }
 
-        .card-item .value.positive {
-            color: #31db72;
-        }
+        .card-item .value.positive { color: #31db72; }
+        .card-item .value.negative { color: #ff756f; }
+        .card-item .value.gold { color: #dd9d34; }
+        .card-item .value.mono { font-size: 11px; color: #8a8275; }
 
-        .card-item .value.negative {
-            color: #ff756f;
-        }
-
-        .card-item .value.gold {
-            color: #dd9d34;
-        }
-
-        .card-item .value.mono {
-            font-size: 11px;
-            color: #8a8275;
-        }
-
-        /* ── NOTE ── */
         .note {
             color: #5a5348;
             font-size: 12px;
@@ -295,7 +243,6 @@
             border: 1px solid rgba(221, 157, 52, 0.04);
         }
 
-        /* ── FOOTER ── */
         .footer {
             margin-top: 18px;
             padding-top: 14px;
@@ -309,21 +256,10 @@
             gap: 10px;
         }
 
-        .footer a {
-            color: #6a6255;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
+        .footer a { color: #6a6255; text-decoration: none; transition: color 0.2s; }
+        .footer a:hover { color: #dd9d34; }
 
-        .footer a:hover {
-            color: #dd9d34;
-        }
-
-        .footer-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 18px;
-        }
+        .footer-links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
 
         .footer-links a {
             font-size: 11px;
@@ -332,226 +268,52 @@
             transition: all 0.2s;
         }
 
-        .footer-links a:hover {
-            color: #dd9d34;
-            border-bottom-color: rgba(221, 157, 52, 0.15);
-        }
+        .footer-links a:hover { color: #dd9d34; border-bottom-color: rgba(221, 157, 52, 0.15); }
 
-        /* ── TOAST ── */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: rgba(221, 157, 52, 0.08);
-            backdrop-filter: blur(12px);
-            color: #f5ede4;
-            padding: 10px 32px;
-            border-radius: 40px;
-            border: 1px solid rgba(221, 157, 52, 0.12);
-            font-family: 'Lucida Console', monospace;
-            font-size: 12px;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
-            z-index: 999;
-            letter-spacing: 0.3px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
-            .app {
-                padding: 12px 14px;
-                gap: 12px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                padding: 14px 18px;
-            }
-
-            .brand h1 {
-                font-size: 17px;
-            }
-
-            .brand img {
-                width: 30px;
-                height: 30px;
-            }
-
-            .nav-links {
-                font-size: 11px;
-                gap: 2px 14px;
-            }
-
-            .stats-bar {
-                font-size: 11px;
-                padding: 8px 14px;
-                gap: 4px 16px;
-            }
-
-            .btn-live {
-                margin-left: 0;
-                padding: 4px 14px;
-                font-size: 10px;
-                width: 100%;
-                justify-content: center;
-            }
-
-            .panel {
-                padding: 18px 16px;
-            }
-
-            .panel-title {
-                font-size: 15px;
-            }
-
-            .panel-title img {
-                width: 28px;
-                height: 28px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .card {
-                padding: 14px 16px;
-            }
-
-            .card-item .value {
-                font-size: 11px;
-            }
-
-            .footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-            }
-
-            .footer-links {
-                gap: 4px 12px;
-            }
+            .app { padding: 12px 14px; gap: 12px; }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+            .brand h1 { font-size: 17px; }
+            .brand img { width: 30px; height: 30px; }
+            .nav-links { font-size: 11px; gap: 2px 14px; }
+            .stats-bar { font-size: 11px; padding: 8px 14px; gap: 4px 16px; }
+            .btn-live { margin-left: 0; padding: 4px 14px; font-size: 10px; width: 100%; justify-content: center; }
+            .panel { padding: 18px 16px; }
+            .panel-title { font-size: 15px; }
+            .panel-title img { width: 28px; height: 28px; }
+            .cards { grid-template-columns: 1fr; gap: 12px; }
+            .card { padding: 14px 16px; }
+            .card-item .value { font-size: 11px; }
+            .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .footer-links { gap: 4px 12px; }
         }
 
         @media (max-width: 480px) {
-            .app {
-                padding: 8px 10px;
-                gap: 10px;
-            }
-
-            .header {
-                padding: 10px 14px;
-            }
-
-            .brand h1 {
-                font-size: 15px;
-            }
-
-            .brand h1 small {
-                font-size: 10px;
-            }
-
-            .brand img {
-                width: 26px;
-                height: 26px;
-            }
-
-            .stats-bar {
-                font-size: 10px;
-                padding: 6px 12px;
-                gap: 3px 12px;
-            }
-
-            .stats-bar .value {
-                font-size: 12px;
-            }
-
-            .btn-live {
-                font-size: 9px;
-                padding: 3px 12px;
-                gap: 6px;
-            }
-
-            .btn-live .dot {
-                width: 6px;
-                height: 6px;
-            }
-
-            .panel {
-                padding: 14px 12px;
-                border-radius: 10px;
-            }
-
-            .panel-title {
-                font-size: 13px;
-                gap: 10px;
-                margin-bottom: 16px;
-                padding-bottom: 10px;
-            }
-
-            .panel-title img {
-                width: 24px;
-                height: 24px;
-            }
-
-            .card {
-                padding: 12px 14px;
-            }
-
-            .card-title {
-                font-size: 9px;
-            }
-
-            .card-item {
-                padding: 4px 0;
-                flex-wrap: wrap;
-                gap: 2px;
-            }
-
-            .card-item .label {
-                font-size: 10px;
-                min-width: 80px;
-            }
-
-            .card-item .value {
-                font-size: 10px;
-                text-align: left;
-                flex: 1;
-            }
-
-            .note {
-                font-size: 10px;
-                padding: 10px 12px;
-            }
-
-            .footer {
-                font-size: 10px;
-            }
-
-            .footer-links a {
-                font-size: 10px;
-            }
+            .app { padding: 8px 10px; gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
+            .stats-bar { font-size: 10px; padding: 6px 12px; gap: 3px 12px; }
+            .stats-bar .value { font-size: 12px; }
+            .btn-live { font-size: 9px; padding: 3px 12px; gap: 6px; }
+            .btn-live .dot { width: 6px; height: 6px; }
+            .panel { padding: 14px 12px; border-radius: 10px; }
+            .panel-title { font-size: 13px; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; }
+            .panel-title img { width: 24px; height: 24px; }
+            .card { padding: 12px 14px; }
+            .card-title { font-size: 9px; }
+            .card-item { padding: 4px 0; flex-wrap: wrap; gap: 2px; }
+            .card-item .label { font-size: 10px; min-width: 80px; }
+            .card-item .value { font-size: 10px; text-align: left; flex: 1; }
+            .note { font-size: 10px; padding: 10px 12px; }
+            .footer { font-size: 10px; }
+            .footer-links a { font-size: 10px; }
         }
 
         @media (min-width: 1920px) {
-            .app {
-                max-width: 1600px;
-                padding: 24px 40px;
-            }
-
-            .card-item .value {
-                font-size: 13px;
-            }
+            .app { max-width: 1600px; padding: 24px 40px; }
+            .card-item .value { font-size: 13px; }
         }
     </style>
 </head>
@@ -568,7 +330,6 @@
                 <a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a>
                 <a href="https://carover0.github.io/pagina/zec-consola.html">[CONSOLA]</a>
                 <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a>
-                <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a>
                 <a href="https://carover0.github.io/pagina/">[INICIO]</a>
             </nav>
         </header>
@@ -577,7 +338,6 @@
             <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
             <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
-            <div class="stat"><span class="label">PRECIO</span><span class="value" id="stat-price">—</span></div>
 
             <a href="https://carover0.github.io/pagina/zec-bloques.html" class="btn-live">
                 <span class="dot"></span>
@@ -593,7 +353,6 @@
 
             <div class="cards">
 
-                <!-- Nodo Estado -->
                 <div class="card">
                     <div class="card-title">Nodo · Estado</div>
                     <div class="card-item"><span class="label">VERSIÓN</span><span class="value" id="node-version">---</span></div>
@@ -610,31 +369,13 @@
                     <div class="card-item"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
                     <div class="card-item"><span class="label">RECOMPENSA</span><span class="value" id="node-hashrate">---</span></div>
                     <div class="card-item"><span class="label">CHAIN</span><span class="value" id="node-chain">---</span></div>
+                    <div class="card-item"><span class="label">NETWORK UPGRADE</span><span class="value gold" id="node-network-upgrade">---</span></div>
                     <div class="card-item"><span class="label">ÚLTIMO BLOQUE</span><span class="value mono" id="node-bestblock">---</span></div>
-                </div>
-
-                <!-- Mercado -->
-                <div class="card">
-                    <div class="card-title">Zcash · Mercado</div>
-                    <div class="card-item"><span class="label">PRECIO USD</span><span class="value gold" id="price-usd">---</span></div>
-                    <div class="card-item"><span class="label">ACTUALIZADO</span><span class="value mono" id="price-time">---</span></div>
-                </div>
-
-                <!-- Lightwalletd -->
-                <div class="card">
-                    <div class="card-title">Lightwalletd</div>
-                    <div class="card-item"><span class="label">SERVIDOR</span><span class="value mono">carover0.xyz:9067</span></div>
-                    <div class="card-item"><span class="label">ESTADO</span><span class="value" id="zecwallet-status">Verificando...</span></div>
-                    <div class="card-item"><span class="label">TLS</span><span class="value positive">HABILITADO</span></div>
-                    <div class="card-item"><span class="label">UPTIME 30D</span><span class="value" id="node-uptime30d">---</span></div>
-                    <div class="card-item"><span class="label">LATENCIA</span><span class="value" id="zecwallet-latency">---</span></div>
-                    <div class="card-item"><span class="label">VERSIÓN</span><span class="value" id="zecwallet-version">---</span></div>
-                    <div class="card-item"><span class="label">ÚLTIMA COMPROBACIÓN</span><span class="value mono" id="zecwallet-time">---</span></div>
                 </div>
 
             </div>
 
-            <p class="note" id="zecwallet-note">Conectá tu wallet Zcash a este servidor para contribuir a la descentralización de la red.</p>
+            <p class="note">Nodo Zebra propio operando en Mainnet. Los datos se actualizan cada 60 segundos desde <a href="https://carover0.xyz/zec/status.json" target="_blank" style="color:#dd9d34;">status.json</a>.</p>
 
             <footer class="footer">
                 <span>actualizado en tiempo real</span>
@@ -649,13 +390,9 @@
 
     </div>
 
-    <div class="toast" id="toast"></div>
-
     <script>
-        // ─── CONFIGURACIÓN ──────────────────────────────────────────────
         const NODE_JSON_URL = 'https://carover0.xyz/zec/status.json';
 
-        // ─── HELPERS ────────────────────────────────────────────────────
         function formatUptime(s) {
             if (!s) return '---';
             s = parseInt(s);
@@ -681,63 +418,54 @@
             return Number(d).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
-        function showToast(msg) {
-            const el = document.getElementById('toast');
-            el.textContent = msg;
-            el.classList.add('show');
-            clearTimeout(el._timer);
-            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
-        }
-
-        // ─── RENDER ─────────────────────────────────────────────────────
         function displayNodeData(data) {
             if (!data) return;
 
-            const synced = data.health?.synced;
             const net = data.network || {};
             const chain = data.chain || {};
             const node = data.node || {};
+            const health = data.health || {};
 
-            // Stats 
             document.getElementById('stat-height').textContent = chain.height ? Number(chain.height).toLocaleString() : '—';
             document.getElementById('stat-connections').textContent = net.connections !== undefined ? net.connections : '—';
             document.getElementById('stat-mempool').textContent = data.mempool?.size ?? '0';
-            document.getElementById('stat-price').textContent = data.price?.usd ? '$' + data.price.usd.toFixed(2) : '—';
 
-            // Nodo
-            document.getElementById('node-version').textContent = data.versions?.zcashd ? 'Zebra ' + data.versions.zcashd :
-            '---';
+            const version = node.zebra_version || '---';
+            document.getElementById('node-version').textContent = version !== '---' && version !== 'null' ? 'Zebra ' + version : '---';
+
             const stateEl = document.getElementById('node-state');
-            if (synced === undefined) {
+            if (health.zebra_running === true) {
+                stateEl.textContent = 'OPERATIVO';
+                stateEl.className = 'value positive';
+            } else if (health.zebra_running === false) {
+                stateEl.textContent = 'DETENIDO';
+                stateEl.className = 'value negative';
+            } else {
                 stateEl.textContent = '---';
                 stateEl.className = 'value';
-            } else {
-                stateEl.textContent = synced ? 'SINCRONIZADO' : 'SINCRONIZANDO';
-                stateEl.className = 'value ' + (synced ? 'positive' : 'negative');
             }
+
             document.getElementById('node-blocks').textContent = chain.height ? Number(chain.height).toLocaleString() : '---';
-            document.getElementById('node-connections').textContent = net.connections !== undefined ? `${net.connections} (${net.inbound || 0} IN · ${net.outbound || 0} OUT)` :
-                '---';
-            document.getElementById('node-mempool-detail').textContent = data.mempool?.size !== undefined ? `${data.mempool.size} TX` :
-                '---';
+            document.getElementById('node-connections').textContent = net.connections !== undefined
+                ? `${net.connections} (${net.inbound || 0} IN · ${net.outbound || 0} OUT)`
+                : '---';
+            document.getElementById('node-mempool-detail').textContent = data.mempool?.size !== undefined
+                ? `${data.mempool.size} TX`
+                : '---';
             document.getElementById('node-uptime').textContent = formatUptime(node.uptime_seconds);
 
-            // Red
             document.getElementById('node-difficulty').textContent = formatDifficulty(chain.difficulty);
-            document.getElementById('node-hashrate').textContent = data.mining?.block_reward ? `${data.mining.block_reward} ZEC` :
-                '---';
+            document.getElementById('node-hashrate').textContent = data.mining?.block_reward
+                ? `${data.mining.block_reward} ZEC`
+                : '---';
             document.getElementById('node-chain').textContent = chain.name || '---';
+            document.getElementById('node-network-upgrade').textContent = chain.network_upgrade || '---';
             document.getElementById('node-bestblock').textContent = formatHash(chain.best_block);
-
-            // Precio
-            document.getElementById('price-usd').textContent = data.price?.usd ? `$${data.price.usd.toFixed(2)}` : '---';
-            document.getElementById('price-time').textContent = new Date().toLocaleTimeString();
         }
 
-        // ─── FETCH ────────────────────────────────────────────────────────
         async function fetchNodeData() {
             try {
-                const r = await fetch(NODE_JSON_URL);
+                const r = await fetch(NODE_JSON_URL, { cache: 'no-store' });
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const data = await r.json();
                 displayNodeData(data);
@@ -746,66 +474,8 @@
             }
         }
 
-        async function fetchUptime() {
-            try {
-                const r = await fetch('https://carover0.xyz/uptime.txt');
-                if (!r.ok) throw new Error('No disponible');
-                const text = await r.text();
-                const match = text.match(/([0-9.]+)%\s*\((\d+)\/(\d+)\)/);
-                document.getElementById('node-uptime30d').innerHTML = match ?
-                    `${match[1]}% <span style="color:#5a5348;">(${match[2]}/${match[3]})</span>` :
-                    text || '---';
-            } catch (e) {
-                console.error('Uptime:', e);
-                document.getElementById('node-uptime30d').textContent = '---';
-            }
-        }
-
-        async function fetchZecLightwalletStatus() {
-            const status = document.getElementById('zecwallet-status');
-            const latency = document.getElementById('zecwallet-latency');
-            const version = document.getElementById('zecwallet-version');
-            const time = document.getElementById('zecwallet-time');
-            const note = document.getElementById('zecwallet-note');
-
-            try {
-                const r = await fetch('https://carover0.xyz/api/zec/rpc.php?token=zec2026&cmd=ping-lightwalletd');
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const d = await r.json();
-
-                if (d.status === 'online') {
-                    status.textContent = '🟢 ONLINE';
-                    status.className = 'value positive';
-                    latency.textContent = d.latency || 'N/A';
-                    version.textContent = d.lwd_version || 'N/A';
-                    time.textContent = d.timestamp ? new Date(d.timestamp * 1000).toLocaleTimeString() : '---';
-                    note.textContent = '✅ Servidor lightwalletd operativo.';
-                } else {
-                    status.textContent = '🔴 OFFLINE';
-                    status.className = 'value negative';
-                    latency.textContent = '---';
-                    version.textContent = '---';
-                    time.textContent = d.timestamp ? new Date(d.timestamp * 1000).toLocaleTimeString() : '---';
-                    note.textContent = `⚠️ ${d.error || 'No responde'}`;
-                }
-            } catch (e) {
-                status.textContent = '🔴 OFFLINE';
-                status.className = 'value negative';
-                latency.textContent = '---';
-                version.textContent = '---';
-                time.textContent = '---';
-                note.textContent = '⚠️ Error de conexión con la API.';
-            }
-        }
-
-        // ─── INIT ────────────────────────────────────────────────────────
         fetchNodeData();
-        fetchUptime();
-        fetchZecLightwalletStatus();
-
         setInterval(fetchNodeData, 60000);
-        setInterval(fetchUptime, 600000);
-        setInterval(fetchZecLightwalletStatus, 60000);
     </script>
 
 </body>
