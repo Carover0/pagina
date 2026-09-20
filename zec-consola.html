@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -138,7 +137,6 @@
             filter: drop-shadow(0 0 12px rgba(221, 157, 52, 0.2));
         }
 
-        /* ── HELP BOX ── */
         .help-box {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 10px;
@@ -586,9 +584,7 @@
             </div>
             <nav class="nav-links">
                 <a href="https://carover0.github.io/pagina/zec-nodo.html">[NODO]</a>
-                <a href="https://carover0.github.io/pagina/zec-info.html">[ZCASH]</a>
                 <a href="https://carover0.github.io/pagina/zec-explorer.html">[EXPLORADOR]</a>
-                <a href="https://carover0.github.io/pagina/zec-servidores.html">[SERVIDORES]</a>
                 <a href="https://carover0.github.io/pagina/">[INICIO]</a>
             </nav>
         </header>
@@ -647,7 +643,6 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── CONFIGURACION ──────────────────────────────────────────────
         const API_URL = "https://carover0.xyz/api/zec/rpc.php";
         const TOKEN = "zec2026";
 
@@ -705,7 +700,6 @@
                 output += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
                 outputDiv.innerHTML = output;
 
-                // Scroll al resultado
                 const wrapper = outputDiv.parentElement;
                 wrapper.scrollTop = 0;
 
@@ -737,7 +731,6 @@
             }
         };
 
-        // ─── EVENTOS ─────────────────────────────────────────────────────
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F8') { e.preventDefault();
                 window.copyResult(); }
@@ -761,12 +754,10 @@
             }
         });
 
-        // ─── FOCUS ──────────────────────────────────────────────────────
         window.addEventListener('load', () => {
             document.getElementById('cmdInput').focus();
         });
 
-        // ─── EXPONER FUNCIONES GLOBALES ────────────────────────────────
         window.fillCommand = fillCommand;
     </script>
 
