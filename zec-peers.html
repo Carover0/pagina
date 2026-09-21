@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -539,12 +538,10 @@
                 <div class="note">Actualización cada 60 segundos · Ordenados por ping (menor a mayor)</div>
             </div>
 
-            <!-- Peers List -->
             <div class="peers-list" id="peersList">
                 <div class="placeholder">Cargando peers...</div>
             </div>
 
-            <!-- Footer -->
             <footer class="footer">
                 <a href="https://carover0.xyz/api/zec/rpc.php?token=zec2026&cmd=getpeerinfo" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/api/zec/rpc.php?token=zec2026&cmd=getpeerinfo</a>
                 <span>actualizado: <span id="update-time">---</span></span>
@@ -626,7 +623,6 @@
 
             document.getElementById('peerCount').textContent = peersData.length;
 
-            // Ordenar por ping
             const ordenados = [...peersData].sort((a, b) => {
                 const pingA = a.pingtime ? a.pingtime * 1000 : 999999;
                 const pingB = b.pingtime ? b.pingtime * 1000 : 999999;
@@ -679,7 +675,6 @@
             container.innerHTML = html;
         }
 
-        // ─── FETCH ──────────────────────────────────────────────────────
         async function cargarDatos() {
             try {
                 const response = await fetch(API_URL + '?token=' + TOKEN + '&cmd=getpeerinfo');
@@ -705,7 +700,6 @@
             }
         }
 
-        // ─── INIT ────────────────────────────────────────────────────────
         cargarDatos();
         setInterval(cargarDatos, 60000);
     </script>
