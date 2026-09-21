@@ -362,7 +362,6 @@
                     <div class="card-item"><span class="label">TIEMPO EN LÍNEA</span><span class="value" id="node-uptime">---</span></div>
                 </div>
 
-                <!-- Red -->
                 <div class="card">
                     <div class="card-title">Nodo · Red</div>
                     <div class="card-item"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
@@ -389,93 +388,104 @@
 
     </div>
 
-    <script>
-        const NODE_JSON_URL = 'https://carover0.xyz/zec/status.json';
+<script>
+    const NODE_JSON_URL = 'https://carover0.xyz/zec/status.json';
 
-        function formatUptime(s) {
-            if (!s) return '---';
-            s = parseInt(s);
-            const d = Math.floor(s / 86400);
-            s %= 86400;
-            const h = Math.floor(s / 3600);
-            s %= 3600;
-            const m = Math.floor(s / 60);
-            let parts = [];
-            if (d > 0) parts.push(d + 'd');
-            if (h > 0) parts.push(h + 'h');
-            if (m > 0 || parts.length === 0) parts.push(m + 'min');
-            return parts.join(' ');
+    function formatUptime(s) {
+        if (!s) return '---';
+        s = parseInt(s);
+        const d = Math.floor(s / 86400);
+        s %= 86400;
+        const h = Math.floor(s / 3600);
+        s %= 3600;
+        const m = Math.floor(s / 60);
+        let parts = [];
+        if (d > 0) parts.push(d + 'd');
+        if (h > 0) parts.push(h + 'h');
+        if (m > 0 || parts.length === 0) parts.push(m + 'min');
+        return parts.join(' ');
+    }
+
+    function formatHash(h) {
+        if (!h || h === '0') return '---';
+        return h.substring(0, 16) + '…' + h.substring(h.length - 4);
+    }
+
+    function formatDifficulty(d) {
+        if (!d) return '---';
+        return Number(d).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function displayNodeData(data) {
+        if (!data) return;
+
+        const net = data.network || {};
+        const chain = data.chain || {};
+        const node = data.node || {};
+        const health = data.health || {};
+
+        document.getElementById('stat-height').textContent = chain.height ? Number(chain.height).toLocaleString() : '—';
+        document.getElementById('stat-connections').textContent = net.connections !== undefined ? net.connections : '—';
+        document.getElementById('stat-mempool').textContent = data.mempool?.size ?? '0';
+
+        const version = node.zebra_version || '---';
+        document.getElementById('node-version').textContent = version !== '---' && version !== 'null' ? 'Zebra ' + version : '---';
+
+        const stateEl = document.getElementById('node-state');
+        if (health.zebra_running === true) {
+            stateEl.textContent = 'OPERATIVO';
+            stateEl.className = 'value positive';
+        } else if (health.zebra_running === false) {
+            stateEl.textContent = 'DETENIDO';
+            stateEl.className = 'value negative';
+        } else {
+            stateEl.textContent = '---';
+            stateEl.className = 'value';
         }
 
-        function formatHash(h) {
-            if (!h || h === '0') return '---';
-            return h.substring(0, 16) + '…' + h.substring(h.length - 4);
+        document.getElementById('node-blocks').textContent = chain.height ? Number(chain.height).toLocaleString() : '---';
+        document.getElementById('node-connections').textContent = net.connections !== undefined
+            ? `${net.connections} (${net.inbound || 0} IN · ${net.outbound || 0} OUT)`
+            : '---';
+        document.getElementById('node-mempool-detail').textContent = data.mempool?.size !== undefined
+            ? `${data.mempool.size} TX`
+            : '---';
+        document.getElementById('node-uptime').textContent = formatUptime(node.uptime_seconds);
+
+        document.getElementById('node-difficulty').textContent = formatDifficulty(chain.difficulty);
+
+        const height = parseInt(chain.height) || 0;
+        let reward;
+        if (height >= 4406400) {
+            reward = 0.78125;
+        } else if (height >= 2726400) {
+            reward = 1.5625;
+        } else if (height >= 1046400) {
+            reward = 3.125;
+        } else {
+            reward = 6.25;
         }
+        document.getElementById('node-hashrate').textContent = reward + ' ZEC';
 
-        function formatDifficulty(d) {
-            if (!d) return '---';
-            return Number(d).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        document.getElementById('node-chain').textContent = chain.name || '---';
+        document.getElementById('node-network-upgrade').textContent = chain.network_upgrade || '---';
+        document.getElementById('node-bestblock').textContent = formatHash(chain.best_block);
+    }
+
+    async function fetchNodeData() {
+        try {
+            const r = await fetch(NODE_JSON_URL, { cache: 'no-store' });
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const data = await r.json();
+            displayNodeData(data);
+        } catch (e) {
+            console.error('Error de conexión:', e);
         }
+    }
 
-        function displayNodeData(data) {
-            if (!data) return;
-
-            const net = data.network || {};
-            const chain = data.chain || {};
-            const node = data.node || {};
-            const health = data.health || {};
-
-            document.getElementById('stat-height').textContent = chain.height ? Number(chain.height).toLocaleString() : '—';
-            document.getElementById('stat-connections').textContent = net.connections !== undefined ? net.connections : '—';
-            document.getElementById('stat-mempool').textContent = data.mempool?.size ?? '0';
-
-            const version = node.zebra_version || '---';
-            document.getElementById('node-version').textContent = version !== '---' && version !== 'null' ? 'Zebra ' + version : '---';
-
-            const stateEl = document.getElementById('node-state');
-            if (health.zebra_running === true) {
-                stateEl.textContent = 'OPERATIVO';
-                stateEl.className = 'value positive';
-            } else if (health.zebra_running === false) {
-                stateEl.textContent = 'DETENIDO';
-                stateEl.className = 'value negative';
-            } else {
-                stateEl.textContent = '---';
-                stateEl.className = 'value';
-            }
-
-            document.getElementById('node-blocks').textContent = chain.height ? Number(chain.height).toLocaleString() : '---';
-            document.getElementById('node-connections').textContent = net.connections !== undefined
-                ? `${net.connections} (${net.inbound || 0} IN · ${net.outbound || 0} OUT)`
-                : '---';
-            document.getElementById('node-mempool-detail').textContent = data.mempool?.size !== undefined
-                ? `${data.mempool.size} TX`
-                : '---';
-            document.getElementById('node-uptime').textContent = formatUptime(node.uptime_seconds);
-
-            document.getElementById('node-difficulty').textContent = formatDifficulty(chain.difficulty);
-            document.getElementById('node-hashrate').textContent = data.mining?.block_reward
-                ? `${data.mining.block_reward} ZEC`
-                : '---';
-            document.getElementById('node-chain').textContent = chain.name || '---';
-            document.getElementById('node-network-upgrade').textContent = chain.network_upgrade || '---';
-            document.getElementById('node-bestblock').textContent = formatHash(chain.best_block);
-        }
-
-        async function fetchNodeData() {
-            try {
-                const r = await fetch(NODE_JSON_URL, { cache: 'no-store' });
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const data = await r.json();
-                displayNodeData(data);
-            } catch (e) {
-                console.error('Error de conexión:', e);
-            }
-        }
-
-        fetchNodeData();
-        setInterval(fetchNodeData, 60000);
-    </script>
+    fetchNodeData();
+    setInterval(fetchNodeData, 60000);
+</script>
 
 </body>
 </html>
