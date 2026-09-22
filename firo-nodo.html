@@ -4,38 +4,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firo · Monitor de Nodo</title>
     <style>
-        * {
-            margin: 0;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
             padding: 0;
-            box-sizing: border-box;
+            margin: 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-x: hidden;
         }
 
-body {
-    min-height: 100vh;
-    background: #0a080c;
-    background-image:
-        radial-gradient(ellipse at 30% 40%, rgba(155, 28, 46, 0.08) 0%, transparent 60%),
-        radial-gradient(ellipse at 70% 80%, rgba(155, 28, 46, 0.05) 0%, transparent 50%),
-        linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
-    font-family: 'Lucida Console', 'Courier New', monospace;
-    color: #ece8e0;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-items: flex-start;      
-    justify-content: center;
-    overflow-x: hidden;
-}
-
-.app {
-    width: 100%;
-    max-width: 1400px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    padding: 20px 28px;
-}
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
 
         .header {
             display: flex;
@@ -50,11 +46,7 @@ body {
             backdrop-filter: blur(8px);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
+        .brand { display: flex; align-items: center; gap: 14px; }
 
         .brand img {
             width: 38px;
@@ -63,9 +55,7 @@ body {
             transition: filter 0.3s;
         }
 
-        .brand img:hover {
-            filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5));
-        }
+        .brand img:hover { filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5)); }
 
         .brand h1 {
             font-size: 21px;
@@ -100,10 +90,7 @@ body {
             border-bottom: 2px solid transparent;
         }
 
-        .nav-links a:hover {
-            color: #ff7b87;
-            border-bottom-color: #ff7b87;
-        }
+        .nav-links a:hover { color: #ff7b87; border-bottom-color: #ff7b87; }
 
         .stats-bar {
             display: flex;
@@ -117,11 +104,7 @@ body {
             font-size: 13px;
         }
 
-        .stats-bar .stat {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-        }
+        .stats-bar .stat { display: flex; align-items: baseline; gap: 6px; }
 
         .stats-bar .label {
             color: #4a443a;
@@ -130,15 +113,8 @@ body {
             letter-spacing: 0.8px;
         }
 
-        .stats-bar .value {
-            color: #f5ede4;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .stats-bar .value.firo {
-            color: #ff7b87;
-        }
+        .stats-bar .value { color: #f5ede4; font-weight: 600; font-size: 14px; }
+        .stats-bar .value.firo { color: #ff7b87; }
 
         .btn-blocks {
             display: inline-flex;
@@ -165,9 +141,7 @@ body {
             box-shadow: 0 4px 20px rgba(155, 28, 46, 0.2);
         }
 
-        .btn-blocks .icon {
-            font-size: 14px;
-        }
+        .btn-blocks .icon { font-size: 14px; }
 
         .btn-blocks img.icon {
             width: 14px;
@@ -201,9 +175,7 @@ body {
             flex-direction: column;
         }
 
-        .panel:hover {
-            border-color: rgba(155, 28, 46, 0.15);
-        }
+        .panel:hover { border-color: rgba(155, 28, 46, 0.15); }
 
         .panel-title {
             display: flex;
@@ -260,9 +232,7 @@ body {
             border-bottom: 1px solid rgba(155, 28, 46, 0.02);
         }
 
-        .card-item:last-child {
-            border-bottom: none;
-        }
+        .card-item:last-child { border-bottom: none; }
 
         .card-item .label {
             color: #6a6255;
@@ -277,26 +247,11 @@ body {
             word-break: break-all;
         }
 
-        .card-item .value.positive {
-            color: #31db72;
-        }
-
-        .card-item .value.negative {
-            color: #ff7b87;
-        }
-
-        .card-item .value.gold {
-            color: #dd9d34;
-        }
-
-        .card-item .value.red {
-            color: #ff7b87;
-        }
-
-        .card-item .value.mono {
-            font-size: 11px;
-            color: #8a8275;
-        }
+        .card-item .value.positive { color: #31db72; }
+        .card-item .value.negative { color: #ff7b87; }
+        .card-item .value.gold { color: #dd9d34; }
+        .card-item .value.red { color: #ff7b87; }
+        .card-item .value.mono { font-size: 11px; color: #8a8275; }
 
         .note {
             color: #5a5348;
@@ -322,21 +277,10 @@ body {
             gap: 10px;
         }
 
-        .footer a {
-            color: #6a6255;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
+        .footer a { color: #6a6255; text-decoration: none; transition: color 0.2s; }
+        .footer a:hover { color: #ff7b87; }
 
-        .footer a:hover {
-            color: #ff7b87;
-        }
-
-        .footer-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 18px;
-        }
+        .footer-links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
 
         .footer-links a {
             font-size: 11px;
@@ -371,17 +315,9 @@ body {
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        .lang-switcher {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            margin-inline-start: auto;
-        }
+        .lang-switcher { display: inline-flex; align-items: center; gap: 4px; margin-inline-start: auto; }
 
         .lang-switcher button {
             background: transparent;
@@ -396,10 +332,7 @@ body {
             transition: all 0.25s;
         }
 
-        .lang-switcher button:hover {
-            color: #ff7b87;
-            border-color: rgba(155, 28, 46, 0.35);
-        }
+        .lang-switcher button:hover { color: #ff7b87; border-color: rgba(155, 28, 46, 0.35); }
 
         .lang-switcher button.active {
             color: #ff7b87;
@@ -419,117 +352,176 @@ body {
         }
 
         [dir="rtl"] .footer-links,
-        [dir="rtl"] .nav-links {
-            flex-direction: row-reverse;
+        [dir="rtl"] .nav-links { flex-direction: row-reverse; }
+
+        @media (max-width: 1100px) {
+            .stats-bar { gap: 6px 22px; }
+            .btn-blocks { font-size: 9px; padding: 3px 12px; }
+            .stats-bar .value { font-size: 13px; }
         }
 
-@media (max-width: 1100px) {
-    .stats-bar { gap: 6px 22px; }
-    .btn-blocks { font-size: 9px; padding: 3px 12px; }
-    .stats-bar .value { font-size: 13px; }
-}
+        @media (max-width: 900px) {
+            .stats-bar { flex-wrap: wrap; gap: 8px 20px; }
+            .stats-bar .stat { flex: 0 1 auto; }
+            .btn-blocks { flex: 1 1 calc(50% - 10px); justify-content: center; margin-inline-start: 0; }
+        }
 
-@media (max-width: 900px) {
-    .stats-bar {
-        flex-wrap: wrap;
-        gap: 8px 20px;
-    }
-    .stats-bar .stat { flex: 0 1 auto; }
-    .btn-blocks {
-        flex: 1 1 calc(50% - 10px);
-        justify-content: center;
-        margin-inline-start: 0;
-    }
-}
+        @media (max-width: 768px) {
+            .app { padding: 12px 14px; gap: 12px; }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+            .brand h1 { font-size: 17px; }
+            .brand img { width: 30px; height: 30px; }
+            .nav-links { font-size: 11px; gap: 2px 14px; }
+            .lang-switcher { margin-inline-start: 0; justify-content: center; }
+            .stats-bar { font-size: 11px; padding: 10px 14px; gap: 8px 18px; }
+            .stats-bar .stat { flex: 0 1 auto; }
+            .stats-bar .value { font-size: 13px; }
+            .btn-blocks { font-size: 9px; padding: 4px 12px; margin-inline-start: 0; flex: 1 1 calc(50% - 9px); justify-content: center; }
+            .panel { padding: 18px 16px; }
+            .panel-title { font-size: 15px; }
+            .panel-title img { width: 28px; height: 28px; }
+            .cards { grid-template-columns: 1fr; gap: 12px; }
+            .card { padding: 14px 16px; }
+            .card-item .value { font-size: 11px; }
+            .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .footer-links { gap: 4px 12px; }
+        }
 
-@media (max-width: 768px) {
-    .app { padding: 12px 14px; gap: 12px; }
-    .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
-    .brand h1 { font-size: 17px; }
-    .brand img { width: 30px; height: 30px; }
-    .nav-links { font-size: 11px; gap: 2px 14px; }
-    .lang-switcher { margin-inline-start: 0; justify-content: center; }
+        @media (max-width: 480px) {
+            .app { padding: 8px 10px; gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
+            .stats-bar { font-size: 10px; padding: 8px 12px; gap: 6px 12px; }
+            .stats-bar .stat { flex: 1 1 calc(50% - 6px); justify-content: space-between; }
+            .stats-bar .value { font-size: 12px; }
+            .btn-blocks { font-size: 8px; padding: 4px 10px; gap: 4px; flex: 1 1 100%; justify-content: center; margin-inline-start: 0; }
+            .btn-blocks .icon,
+            .btn-blocks img.icon { width: 12px; height: 12px; }
+            .btn-blocks .pulse { width: 5px; height: 5px; }
+            .panel { padding: 14px 12px; border-radius: 10px; }
+            .panel-title { font-size: 13px; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; }
+            .panel-title img { width: 24px; height: 24px; }
+            .card { padding: 12px 14px; }
+            .card-title { font-size: 9px; }
+            .card-item { padding: 4px 0; flex-wrap: wrap; gap: 2px; }
+            .card-item .label { font-size: 10px; min-width: 90px; }
+            .card-item .value { font-size: 10px; text-align: start; flex: 1; }
+            .note { font-size: 10px; padding: 10px 12px; }
+            .footer { font-size: 10px; }
+            .footer-links a { font-size: 10px; }
+        }
 
-    .stats-bar {
-        font-size: 11px;
-        padding: 10px 14px;
-        gap: 8px 18px;
-    }
-    .stats-bar .stat { flex: 0 1 auto; }
-    .stats-bar .value { font-size: 13px; }
-    .btn-blocks {
-        font-size: 9px;
-        padding: 4px 12px;
-        margin-inline-start: 0;
-        flex: 1 1 calc(50% - 9px);
-        justify-content: center;
-    }
+        @media (max-width: 360px) {
+            .stats-bar .stat { flex: 1 1 100%; }
+            .btn-blocks { font-size: 8px; padding: 3px 8px; }
+            .card-item .label { min-width: 70px; font-size: 9px; }
+            .card-item .value { font-size: 9px; }
+        }
 
-    .panel { padding: 18px 16px; }
-    .panel-title { font-size: 15px; }
-    .panel-title img { width: 28px; height: 28px; }
-    .cards { grid-template-columns: 1fr; gap: 12px; }
-    .card { padding: 14px 16px; }
-    .card-item .value { font-size: 11px; }
+        @media (min-width: 1920px) {
+            .app { max-width: 1600px; padding: 24px 40px; }
+            .card-item .value { font-size: 13px; }
+        }
 
-    .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
-    .footer-links { gap: 4px 12px; }
-}
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-@media (max-width: 480px) {
-    .app { padding: 8px 10px; gap: 10px; }
-    .header { padding: 10px 14px; }
-    .brand h1 { font-size: 15px; }
-    .brand h1 small { font-size: 10px; }
-    .brand img { width: 26px; height: 26px; }
+        .modal-overlay.activo { display: flex; }
 
-    .stats-bar {
-        font-size: 10px;
-        padding: 8px 12px;
-        gap: 6px 12px;
-    }
-    .stats-bar .stat {
-        flex: 1 1 calc(50% - 6px);
-        justify-content: space-between;
-    }
-    .stats-bar .value { font-size: 12px; }
+        .modal-content {
+            background: #161114;
+            border: 1px solid rgba(155,28,46,0.3);
+            border-radius: 18px;
+            padding: 28px 32px;
+            max-width: 560px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
 
-    .btn-blocks {
-        font-size: 8px;
-        padding: 4px 10px;
-        gap: 4px;
-        flex: 1 1 100%;
-        justify-content: center;
-        margin-inline-start: 0;
-    }
-    .btn-blocks .icon,
-    .btn-blocks img.icon { width: 12px; height: 12px; }
-    .btn-blocks .pulse { width: 5px; height: 5px; }
+        @keyframes modalIn {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-    .panel { padding: 14px 12px; border-radius: 10px; }
-    .panel-title { font-size: 13px; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; }
-    .panel-title img { width: 24px; height: 24px; }
-    .card { padding: 12px 14px; }
-    .card-title { font-size: 9px; }
-    .card-item { padding: 4px 0; flex-wrap: wrap; gap: 2px; }
-    .card-item .label { font-size: 10px; min-width: 90px; }
-    .card-item .value { font-size: 10px; text-align: start; flex: 1; }
-    .note { font-size: 10px; padding: 10px 12px; }
-    .footer { font-size: 10px; }
-    .footer-links a { font-size: 10px; }
-}
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(155,28,46,0.2);
+            color: #ff7b87;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-@media (max-width: 360px) {
-    .stats-bar .stat { flex: 1 1 100%; }
-    .btn-blocks { font-size: 8px; padding: 3px 8px; }
-    .card-item .label { min-width: 70px; font-size: 9px; }
-    .card-item .value { font-size: 9px; }
-}
+        .modal-close:hover { background: rgba(155,28,46,0.2); }
 
-@media (min-width: 1920px) {
-    .app { max-width: 1600px; padding: 24px 40px; }
-    .card-item .value { font-size: 13px; }
-}
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 16px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(155,28,46,0.15);
+        }
+
+        .modal-logo {
+            width: 64px;
+            height: 64px;
+            filter: drop-shadow(0 0 20px rgba(155,28,46,0.4));
+        }
+
+        .modal-header h2 { font-size: 18px; font-weight: 400; color: #f5e6c8; }
+
+        .modal-body .fila {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(155,28,46,0.06);
+        }
+
+        .modal-body .fila:last-child { border-bottom: none; }
+
+        .modal-body .fila .label {
+            color: #4a443a;
+            font-size: 10px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .modal-body .fila .valor {
+            color: #ece8e0;
+            font-weight: 500;
+            text-align: right;
+            word-break: break-all;
+        }
+
+        .modal-body .fila .valor.firo { color: #ff7b87; }
+        .modal-body .fila .valor.mono { font-size: 10px; color: #8a8275; }
+        .modal-body .fila .valor.positive { color: #31db72; }
+        .modal-body .fila .valor.negative { color: #ff7b87; }
     </style>
 </head>
 <body>
@@ -542,6 +534,7 @@ body {
                 <h1>Firo <small data-i18n="nodo.title_short">monitor</small></h1>
             </div>
             <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/firo-masternodos.html" data-i18n="common.nav.masternodos">[MASTERNODOS]</a>
                 <a href="https://carover0.github.io/pagina/firo-nombres.html" data-i18n="common.nav.names">[NAMES]</a>
                 <a href="https://carover0.github.io/pagina/firo-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
                 <a href="https://carover0.github.io/pagina/firo-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
@@ -618,6 +611,16 @@ body {
                     <div class="card-item"><span class="label" data-i18n="common.label.response">RESPUESTA</span><span class="value mono" id="electrum-ping">---</span></div>
                 </div>
 
+                <div class="card" id="masternodeCard" style="cursor:pointer;">
+                    <div class="card-title" data-i18n="nodo.card.masternode">Masternodo</div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.mn.status">ESTADO</span><span class="value positive" id="mn-status">—</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.mn.service">SERVICIO</span><span class="value mono" id="mn-service">—</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.mn.protx">PROTX HASH</span><span class="value mono" id="mn-protx">—</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.mn.payee">DIRECCIÓN DE PAGO</span><span class="value mono" id="mn-payee">—</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.mn.lastpaid">ÚLTIMO PAGO</span><span class="value mono" id="mn-lastpaid">—</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.mn.pose">PENALIZACIÓN</span><span class="value" id="mn-pose">—</span></div>
+                </div>
+
             </div>
 
             <p class="note" id="electrum-note" data-i18n="nodo.electrum.note_default">Conectá tu wallet FIRO a este servidor para contribuir a la descentralización de la red.</p>
@@ -634,200 +637,315 @@ body {
 
     </div>
 
+    <div id="modal" class="modal-overlay" onclick="cerrarModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="cerrarModal()">✕</button>
+            <div class="modal-header">
+                <img src="assets/firo.png" alt="Firo" class="modal-logo">
+                <h2 id="modalTitle">Masternodo</h2>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script src="js/i18n.js"></script>
-    <script>
-        const NODE_JSON_URL = 'https://carover0.xyz/api/firo.json';
-        const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
+<script src="js/i18n.js"></script>
+<script>
+    const NODE_JSON_URL = 'https://carover0.xyz/api/firo.json';
+    const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
+    const MI_NODO = "45.67.217.147:8168";
 
-        const t = (key) => FiroI18n.t(key);
+    const t = (key) => FiroI18n.t(key);
 
-        let cachedNodeData = null;
-        let cachedPrice = null;
+    let cachedNodeData = null;
+    let cachedPrice = null;
+    let cachedMasternode = null;
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return String(text).replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function formatUptime(s) {
+        if (!s) return '---';
+        s = parseInt(s);
+        const d = Math.floor(s / 86400);
+        s %= 86400;
+        const h = Math.floor(s / 3600);
+        s %= 3600;
+        const m = Math.floor(s / 60);
+        let parts = [];
+        if (d > 0) parts.push(d + t('common.unit.day'));
+        if (h > 0) parts.push(h + t('common.unit.hour'));
+        if (m > 0 || parts.length === 0) parts.push(m + t('common.unit.min'));
+        return parts.join(' ');
+    }
+
+    function formatHash(h) {
+        if (!h) return '---';
+        return h.substring(0, 16) + '…' + h.substring(h.length - 4);
+    }
+
+    function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(el._timer);
+        el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    function updateStatsBar() {
+        const data = cachedNodeData;
+        const price = cachedPrice;
+
+        document.getElementById('stat-height').textContent = data?.blockchain?.blocks ? Number(data.blockchain.blocks).toLocaleString() : '—';
+        document.getElementById('stat-connections').textContent = data?.network?.connections ?? '—';
+        document.getElementById('stat-mempool').textContent = data?.mempool?.txcount ?? '0';
+        document.getElementById('stat-price').textContent = price ? '$' + price.toFixed(4) : '—';
+    }
+
+    function displayNodeData(d) {
+        if (!d) return;
+
+        const synced = !!d.health?.synced;
+        const time = (d.datetime || '').split(' ')[1] || '';
+
+        document.getElementById('node-version').textContent = d.network?.subversion || 'N/A';
+        const stateEl = document.getElementById('node-state');
+        stateEl.textContent = synced ? t('common.state.synced') : t('common.state.syncing');
+        stateEl.className = 'value ' + (synced ? 'positive' : 'negative');
+        document.getElementById('node-blocks').textContent = Number(d.blockchain?.blocks || 0).toLocaleString();
+        document.getElementById('node-connections').textContent =
+            `${d.network?.connections ?? 0} (${d.peers?.inbound ?? 0} ${t('common.unit.in')} · ${d.peers?.outbound ?? 0} ${t('common.unit.out')})`;
+        document.getElementById('node-mempool').textContent = `${d.mempool?.txcount ?? 0} ${t('common.unit.tx').toUpperCase()}`;
+        document.getElementById('node-uptime').textContent = formatUptime(d.node?.uptime_seconds);
+        document.getElementById('node-difficulty').textContent = Number(d.blockchain?.difficulty || 0).toFixed(2);
+        document.getElementById('node-hashrate').textContent = (Number(d.mining?.networkhashps || 0) / 1e9).toFixed(2) + ' GH/s';
+        document.getElementById('node-chain').textContent = d.blockchain?.chain || '---';
+        document.getElementById('node-bestblock').textContent = formatHash(d.blockchain?.bestblockhash);
+        document.getElementById('node-timestamp').textContent =
+            `${d.timestamp || '---'} ${time ? '(' + time + ' UTC)' : ''}`;
+    }
+
+    async function fetchNodeData() {
+        try {
+            const r = await fetch(NODE_JSON_URL);
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const data = await r.json();
+            cachedNodeData = data;
+            displayNodeData(data);
+            updateStatsBar();
+            return data;
+        } catch (e) {
+            console.error('Error de conexión:', e);
+            document.getElementById('node-version').textContent = t('common.state.connection_error');
+            return null;
         }
+    }
 
-        function formatUptime(s) {
-            if (!s) return '---';
-            s = parseInt(s);
-            const d = Math.floor(s / 86400);
-            s %= 86400;
-            const h = Math.floor(s / 3600);
-            s %= 3600;
-            const m = Math.floor(s / 60);
-            let parts = [];
-            if (d > 0) parts.push(d + t('common.unit.day'));
-            if (h > 0) parts.push(h + t('common.unit.hour'));
-            if (m > 0 || parts.length === 0) parts.push(m + t('common.unit.min'));
-            return parts.join(' ');
+    async function fetchMarketData() {
+        try {
+            const d = await (await fetch(COINGECKO_API)).json();
+            const m = d.market_data;
+            const p = m.current_price.usd;
+            cachedPrice = p;
+
+            document.getElementById('market-price').textContent = '$' + p.toFixed(4);
+
+            const c24 = m.price_change_percentage_24h;
+            const c7 = m.price_change_percentage_7d;
+            const el24 = document.getElementById('market-24h');
+            const el7 = document.getElementById('market-7d');
+            el24.textContent = (c24 >= 0 ? '+' : '') + c24.toFixed(2) + '%';
+            el24.className = 'value ' + (c24 >= 0 ? 'positive' : 'negative');
+            el7.textContent = (c7 >= 0 ? '+' : '') + c7.toFixed(2) + '%';
+            el7.className = 'value ' + (c7 >= 0 ? 'positive' : 'negative');
+
+            document.getElementById('market-cap').textContent = '$' + (m.market_cap.usd / 1e6).toFixed(2) + 'M';
+            document.getElementById('market-volume').textContent = '$' + (m.total_volume.usd / 1e6).toFixed(2) + 'M';
+            document.getElementById('market-updated').textContent = new Date().toLocaleTimeString();
+
+            updateStatsBar();
+            return p;
+        } catch (e) {
+            document.getElementById('market-price').textContent = '---';
+            document.getElementById('market-24h').textContent = '---';
+            document.getElementById('market-7d').textContent = '---';
+            document.getElementById('market-cap').textContent = '---';
+            document.getElementById('market-volume').textContent = '---';
+            document.getElementById('market-updated').textContent = t('common.state.error');
+            return null;
         }
+    }
 
-        function formatHash(h) {
-            if (!h) return '---';
-            return h.substring(0, 16) + '…' + h.substring(h.length - 4);
-        }
+    async function fetchElectrumStatus() {
+        try {
+            const r = await fetch('https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=ping-electrum');
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const d = await r.json();
 
-        function showToast(msg) {
-            const el = document.getElementById('toast');
-            el.textContent = msg;
-            el.classList.add('show');
-            clearTimeout(el._timer);
-            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
-        }
+            const statusEl = document.getElementById('electrum-status');
+            const versionEl = document.getElementById('electrum-version');
+            const pingEl = document.getElementById('electrum-ping');
+            const noteEl = document.getElementById('electrum-note');
 
-        function updateStatsBar() {
-            const data = cachedNodeData;
-            const price = cachedPrice;
-
-            document.getElementById('stat-height').textContent = data?.blockchain?.blocks ? Number(data.blockchain.blocks)
-                .toLocaleString() : '—';
-            document.getElementById('stat-connections').textContent = data?.network?.connections ?? '—';
-            document.getElementById('stat-mempool').textContent = data?.mempool?.txcount ?? '0';
-            document.getElementById('stat-price').textContent = price ? '$' + price.toFixed(4) : '—';
-        }
-
-        function displayNodeData(d) {
-            if (!d) return;
-
-            const synced = !!d.health?.synced;
-            const time = (d.datetime || '').split(' ')[1] || '';
-
-            document.getElementById('node-version').textContent = d.network?.subversion || 'N/A';
-            const stateEl = document.getElementById('node-state');
-            stateEl.textContent = synced ? t('common.state.synced') : t('common.state.syncing');
-            stateEl.className = 'value ' + (synced ? 'positive' : 'negative');
-            document.getElementById('node-blocks').textContent = Number(d.blockchain?.blocks || 0).toLocaleString();
-            document.getElementById('node-connections').textContent =
-                `${d.network?.connections ?? 0} (${d.peers?.inbound ?? 0} ${t('common.unit.in')} · ${d.peers?.outbound ?? 0} ${t('common.unit.out')})`;
-            document.getElementById('node-mempool').textContent = `${d.mempool?.txcount ?? 0} ${t('common.unit.tx').toUpperCase()}`;
-            document.getElementById('node-uptime').textContent = formatUptime(d.node?.uptime_seconds);
-            document.getElementById('node-difficulty').textContent = Number(d.blockchain?.difficulty || 0).toFixed(2);
-            document.getElementById('node-hashrate').textContent = (Number(d.mining?.networkhashps || 0) / 1e9).toFixed(2) +
-            ' GH/s';
-            document.getElementById('node-chain').textContent = d.blockchain?.chain || '---';
-            document.getElementById('node-bestblock').textContent = formatHash(d.blockchain?.bestblockhash);
-            document.getElementById('node-timestamp').textContent =
-                `${d.timestamp || '---'} ${time ? '(' + time + ' UTC)' : ''}`;
-        }
-
-        async function fetchNodeData() {
-            try {
-                const r = await fetch(NODE_JSON_URL);
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const data = await r.json();
-                cachedNodeData = data;
-                displayNodeData(data);
-                updateStatsBar();
-                return data;
-            } catch (e) {
-                console.error('Error de conexión:', e);
-                document.getElementById('node-version').textContent = t('common.state.connection_error');
-                return null;
-            }
-        }
-
-        async function fetchMarketData() {
-            try {
-                const d = await (await fetch(COINGECKO_API)).json();
-                const m = d.market_data;
-                const p = m.current_price.usd;
-                cachedPrice = p;
-
-                document.getElementById('market-price').textContent = '$' + p.toFixed(4);
-
-                const c24 = m.price_change_percentage_24h;
-                const c7 = m.price_change_percentage_7d;
-                const el24 = document.getElementById('market-24h');
-                const el7 = document.getElementById('market-7d');
-                el24.textContent = (c24 >= 0 ? '+' : '') + c24.toFixed(2) + '%';
-                el24.className = 'value ' + (c24 >= 0 ? 'positive' : 'negative');
-                el7.textContent = (c7 >= 0 ? '+' : '') + c7.toFixed(2) + '%';
-                el7.className = 'value ' + (c7 >= 0 ? 'positive' : 'negative');
-
-                document.getElementById('market-cap').textContent = '$' + (m.market_cap.usd / 1e6).toFixed(2) + 'M';
-                document.getElementById('market-volume').textContent = '$' + (m.total_volume.usd / 1e6).toFixed(2) + 'M';
-                document.getElementById('market-updated').textContent = new Date().toLocaleTimeString();
-
-                updateStatsBar();
-                return p;
-            } catch (e) {
-                document.getElementById('market-price').textContent = '---';
-                document.getElementById('market-24h').textContent = '---';
-                document.getElementById('market-7d').textContent = '---';
-                document.getElementById('market-cap').textContent = '---';
-                document.getElementById('market-volume').textContent = '---';
-                document.getElementById('market-updated').textContent = t('common.state.error');
-                return null;
-            }
-        }
-
-        async function fetchElectrumStatus() {
-            try {
-                const r = await fetch('https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=ping-electrum');
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const d = await r.json();
-
-                const statusEl = document.getElementById('electrum-status');
-                const versionEl = document.getElementById('electrum-version');
-                const pingEl = document.getElementById('electrum-ping');
-                const noteEl = document.getElementById('electrum-note');
-
-                if (d.status === 'online') {
-                    statusEl.textContent = t('common.state.online');
-                    statusEl.className = 'value positive';
-                    versionEl.textContent = Array.isArray(d.version) ? d.version[0] : d.version;
-                    pingEl.textContent = new Date(d.timestamp * 1000).toLocaleTimeString();
-                    noteEl.textContent = t('nodo.electrum.note_online');
-                } else {
-                    statusEl.textContent = t('common.state.offline');
-                    statusEl.className = 'value negative';
-                    versionEl.textContent = '---';
-                    pingEl.textContent = '❌ ' + (d.error || t('common.state.unknown'));
-                    noteEl.textContent = '⚠️ ' + t('nodo.electrum.note_offline');
-                }
-            } catch (e) {
-                const statusEl = document.getElementById('electrum-status');
+            if (d.status === 'online') {
+                statusEl.textContent = t('common.state.online');
+                statusEl.className = 'value positive';
+                versionEl.textContent = Array.isArray(d.version) ? d.version[0] : d.version;
+                pingEl.textContent = new Date(d.timestamp * 1000).toLocaleTimeString();
+                noteEl.textContent = t('nodo.electrum.note_online');
+            } else {
                 statusEl.textContent = t('common.state.offline');
                 statusEl.className = 'value negative';
-                document.getElementById('electrum-version').textContent = '---';
-                document.getElementById('electrum-ping').textContent = '❌ ' + t('nodo.electrum.error_conn');
-                document.getElementById('electrum-note').textContent = '⚠️ ' + t('nodo.electrum.note_error');
+                versionEl.textContent = '---';
+                pingEl.textContent = '❌ ' + (d.error || t('common.state.unknown'));
+                noteEl.textContent = '⚠️ ' + t('nodo.electrum.note_offline');
+            }
+        } catch (e) {
+            const statusEl = document.getElementById('electrum-status');
+            statusEl.textContent = t('common.state.offline');
+            statusEl.className = 'value negative';
+            document.getElementById('electrum-version').textContent = '---';
+            document.getElementById('electrum-ping').textContent = '❌ ' + t('nodo.electrum.error_conn');
+            document.getElementById('electrum-note').textContent = '⚠️ ' + t('nodo.electrum.note_error');
+        }
+    }
+
+    function abrirModal(datos) {
+        const modal = document.getElementById('modal');
+        const body = document.getElementById('modalBody');
+        const title = document.getElementById('modalTitle');
+        title.textContent = datos.titulo || 'Masternodo';
+        let html = '';
+        datos.filas.forEach(f => {
+            html += `
+                <div class="fila">
+                    <span class="label">${f.label}</span>
+                    <span class="valor ${f.clase || ''}">${f.valor}</span>
+                </div>`;
+        });
+        body.innerHTML = html;
+        modal.classList.add('activo');
+    }
+
+    function cerrarModal(e) {
+        if (e && e.target !== e.currentTarget && e.type === 'click') return;
+        document.getElementById('modal').classList.remove('activo');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') cerrarModal();
+    });
+
+    async function fetchMasternodeData() {
+        try {
+            const r = await fetch('https://carover0.xyz/api/firo/masternode-live.php?limit=1');
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const data = await r.json();
+
+            const mn = {
+                status: 'READY',
+                service: MI_NODO,
+                proTxHash: '70070ca66cf05fca3ceee647233923ed290e806a5535ef45d03459df596e0830',
+                payee: 'a7dkMS3D4gv6Vvcu31uCSRXQEgHTLgFjos',
+                owner: 'aCsRaKbL8vXTvi5jbMDLP7xAzZnD2JJ1Se',
+                voting: 'aCsRaKbL8vXTvi5jbMDLP7xAzZnD2JJ1Se',
+                operator: '18775505362c3d083bf464640025b0481c803a6338e892533bc57384df1a46ff4794d5b10e0b839d6a7e19bf9454588e',
+                collateral: '1fcb357a5c8db8f0f0ceb096bf32bbd95233c01a504f9f6ecb6b4979e7e09ce1:0',
+                registeredHeight: 1381118,
+                lastPaidHeight: 0,
+                posePenalty: 0,
+                poseBanHeight: -1,
+                nextWinner: null
+            };
+
+            if (data.stats && data.stats.next_winner) {
+                if (data.stats.next_winner.payee === mn.payee) {
+                    mn.nextWinner = data.stats.next_winner.height;
+                }
+            }
+
+            cachedMasternode = mn;
+            actualizarCardMasternode(mn);
+            return mn;
+        } catch (e) {
+            console.error('Error cargando masternodo:', e);
+            document.getElementById('mn-status').textContent = '❌ Error';
+            document.getElementById('mn-status').className = 'value negative';
+            return null;
+        }
+    }
+
+    function actualizarCardMasternode(mn) {
+        document.getElementById('mn-status').textContent = mn.status === 'READY' ? 'Activo' : mn.status;
+        document.getElementById('mn-status').className = 'value ' + (mn.status === 'READY' ? 'positive' : 'negative');
+        document.getElementById('mn-service').textContent = mn.service;
+        document.getElementById('mn-protx').textContent = mn.proTxHash.slice(0,10) + '…' + mn.proTxHash.slice(-6);
+        document.getElementById('mn-payee').textContent = mn.payee.slice(0,10) + '…' + mn.payee.slice(-6);
+        document.getElementById('mn-lastpaid').textContent = mn.lastPaidHeight === 0 ? t('nodo.modal.notpaid') : '#' + mn.lastPaidHeight.toLocaleString();
+        document.getElementById('mn-pose').textContent = mn.posePenalty === 0 ? t('nodo.modal.clean') : '⚠️ ' + mn.posePenalty;
+        document.getElementById('mn-pose').className = 'value ' + (mn.posePenalty === 0 ? 'positive' : 'negative');
+
+        document.getElementById('masternodeCard').onclick = () => {
+            abrirModal({
+                titulo: t('nodo.modal.title'),
+                filas: [
+                    { label: t('nodo.modal.status'),     valor: mn.status === 'READY' ? t('nodo.modal.ready') : mn.status, clase: mn.status === 'READY' ? 'positive' : 'negative' },
+                    { label: t('nodo.modal.service'),    valor: mn.service, clase: 'mono' },
+                    { label: t('nodo.modal.protx'),      valor: mn.proTxHash, clase: 'mono' },
+                    { label: t('nodo.modal.payee'),      valor: mn.payee, clase: 'mono firo' },
+                    { label: t('nodo.modal.owner'),      valor: mn.owner, clase: 'mono' },
+                    { label: t('nodo.modal.voting'),     valor: mn.voting, clase: 'mono' },
+                    { label: t('nodo.modal.operator'),   valor: mn.operator, clase: 'mono' },
+                    { label: t('nodo.modal.collateral'), valor: mn.collateral, clase: 'mono' },
+                    { label: t('nodo.modal.registered'), valor: '#' + mn.registeredHeight.toLocaleString() },
+                    { label: t('nodo.modal.lastpaid'),   valor: mn.lastPaidHeight === 0 ? t('nodo.modal.notpaid') : '#' + mn.lastPaidHeight.toLocaleString(), clase: mn.lastPaidHeight === 0 ? 'mono' : 'firo' },
+                    { label: t('nodo.modal.pose'),       valor: mn.posePenalty === 0 ? t('nodo.modal.clean') : '⚠️ ' + mn.posePenalty, clase: mn.posePenalty === 0 ? 'positive' : 'negative' },
+                    { label: t('nodo.modal.next'),       valor: mn.nextWinner ? '#' + mn.nextWinner.toLocaleString() : t('nodo.modal.inqueue'), clase: mn.nextWinner ? 'firo' : 'mono' }
+                ]
+            });
+        };
+    }
+
+    window.onLangChange = function () {
+        if (cachedNodeData) displayNodeData(cachedNodeData);
+        updateStatsBar();
+        fetchElectrumStatus();
+        if (cachedMasternode) {
+            actualizarCardMasternode(cachedMasternode);
+            if (document.getElementById('modal').classList.contains('activo')) {
+                document.getElementById('masternodeCard').click();
             }
         }
+    };
 
-        window.onLangChange = function () {
-            if (cachedNodeData) displayNodeData(cachedNodeData);
-            updateStatsBar();
-            fetchElectrumStatus();
-        };
+    async function init() {
+        await FiroI18n.init();
+        await Promise.all([
+            fetchNodeData(),
+            fetchMarketData()
+        ]);
+        fetchElectrumStatus();
+        fetchMasternodeData();
+    }
 
-        async function init() {
-            await FiroI18n.init();
-            await Promise.all([
-                fetchNodeData(),
-                fetchMarketData()
-            ]);
-            fetchElectrumStatus();
-        }
+    init();
 
-        init();
+    setInterval(() => {
+        fetchNodeData();
+        fetchMarketData();
+        fetchMasternodeData();
+    }, 60000);
 
-        setInterval(() => {
-            fetchNodeData();
-            fetchMarketData();
-        }, 60000);
-
-        setInterval(fetchElectrumStatus, 60000);
-    </script>
-
+    setInterval(fetchElectrumStatus, 60000);
+</script>
 </body>
 </html>
