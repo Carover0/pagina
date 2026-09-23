@@ -601,16 +601,15 @@
                     <div class="card-item"><span class="label" data-i18n="common.label.updated">ACTUALIZADO</span><span class="value mono" id="market-updated">---</span></div>
                 </div>
 
-                <div class="card">
-                    <div class="card-title" data-i18n="nodo.card.electrum">ElectrumX · Conectar Wallet</div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.server">SERVIDOR</span><span class="value mono">carover0.xyz</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.port">PUERTO</span><span class="value mono">50002</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="electrum-status" data-i18n="common.state.checking">Comprobando...</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.tls">TLS</span><span class="value positive" data-i18n="common.state.enabled">HABILITADO</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="electrum-version">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.response">RESPUESTA</span><span class="value mono" id="electrum-ping">---</span></div>
-                </div>
-
+<div class="card" id="electrumCard" style="cursor:pointer;">
+    <div class="card-title" data-i18n="nodo.card.electrum">ElectrumX · Conectar Wallet</div>
+    <div class="card-item"><span class="label" data-i18n="common.label.server">SERVIDOR</span><span class="value mono">carover0.xyz</span></div>
+    <div class="card-item"><span class="label" data-i18n="common.label.port">PUERTO</span><span class="value mono">50002</span></div>
+    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="electrum-status" data-i18n="common.state.checking">Comprobando...</span></div>
+    <div class="card-item"><span class="label" data-i18n="common.label.tls">TLS</span><span class="value positive" data-i18n="common.state.enabled">HABILITADO</span></div>
+    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="electrum-version">---</span></div>
+    <div class="card-item"><span class="label" data-i18n="common.label.response">RESPUESTA</span><span class="value mono" id="electrum-ping">---</span></div>
+</div>
                 <div class="card" id="masternodeCard" style="cursor:pointer;">
                     <div class="card-title" data-i18n="nodo.card.masternode">Masternodo</div>
                     <div class="card-item"><span class="label" data-i18n="nodo.mn.status">ESTADO</span><span class="value positive" id="mn-status">—</span></div>
@@ -935,6 +934,9 @@
         ]);
         fetchElectrumStatus();
         fetchMasternodeData();
+	document.getElementById('electrumCard').onclick = () => {
+    window.open('https://www.firostatus.com/', '_blank', 'noopener,noreferrer');
+};
     }
 
     init();
