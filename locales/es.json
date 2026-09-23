@@ -434,8 +434,14 @@
   "nodo.modal.inqueue": "En cola",
 
   "masternodos.stats.payment": "⏱️ Pago estimado",
-  "common.btn.sobre-firo": "Sobre FIRO"
+  "common.btn.sobre-firo": "Sobre FIRO",
 
-  
+  "nodo.footer.colabora": "[COLABORA]",
+  "nodo.colabora.title": "COLABORA CON EL NODO",
+  "nodo.colabora.desc": "Si queres apoyar el mantenimiento de este nodo y servicios, podes enviar FIRO a cualquiera de estas direcciones:",
+  "nodo.colabora.copy": "Copiar",
+  "nodo.colabora.copied": "¡Copiado!",
+  "nodo.colabora.thanks": "¡Gracias por tu apoyo! ❤️",
+ 
 }
 
