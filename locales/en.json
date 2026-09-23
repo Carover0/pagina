@@ -434,6 +434,13 @@
   "nodo.modal.inqueue": "In queue",
   "masternodos.stats.payment": "⏱️ Estimated payment",
 
-  "common.btn.sobre-firo": "About FIRO"
+  "common.btn.sobre-firo": "About FIRO",
+
+  "nodo.footer.colabora": "[COLLABORATE]",
+  "nodo.colabora.title": "COLLABORATE WITH THE NODE",
+  "nodo.colabora.desc": "If you want to support the maintenance of this node and services, you can send FIRO to any of these addresses:",
+  "nodo.colabora.copy": "Copy",
+  "nodo.colabora.copied": "Copied!",
+  "nodo.colabora.thanks": "Thanks for your support! ❤️"  
   
 }
