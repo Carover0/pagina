@@ -430,5 +430,7 @@
   "nodo.modal.notpaid": "لم يتم الدفع بعد",
   "nodo.modal.clean": "نظيف",
   "nodo.modal.inqueue": "في الانتظار",
-  "masternodos.stats.payment": "⏱️ الدفعة المتوقعة"  
+  "masternodos.stats.payment": "⏱️ الدفعة المتوقعة",
+
+  "common.btn.sobre-firo": "حول FIRO"
 }
