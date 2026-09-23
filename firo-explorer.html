@@ -95,6 +95,15 @@
         flex: 1;
     }
 
+    #output .coin {
+        width: 14px;
+        height: 14px;
+        vertical-align: -3px;
+        margin-right: 3px;
+        display: inline-block;
+        filter: drop-shadow(0 0 6px rgba(155, 28, 46, 0.4));
+    }
+
     .nav-links a {
         color: #6a6255;
         text-decoration: none;
@@ -182,7 +191,6 @@
         white-space: nowrap;
     }
 
-    /* El primer botón empuja ambos hacia la derecha */
     .btn-blocks:first-of-type {
         margin-inline-start: auto;
     }
@@ -607,23 +615,6 @@
         margin: 4px 0 8px 8px;
     }
 
-    .spark-detail .sub-key {
-        color: #6a6255;
-        min-width: 100px;
-        display: inline-block;
-        font-size: 11px;
-        letter-spacing: 0.3px;
-    }
-
-    .spark-detail .sub-val {
-        color: #e0d8cc;
-        font-size: 12px;
-    }
-
-    .spark-detail .sub-val.gold {
-        color: #ff7b87;
-    }
-
     .spark-detail .action-header {
         color: #ff7b87;
         font-size: 12px;
@@ -705,23 +696,6 @@
         border-color: rgba(155, 28, 46, 0.4);
     }
 
-    [dir="rtl"] .stats-bar .value,
-    [dir="rtl"] #output .row .val,
-    [dir="rtl"] #output .tx-item .txid-link,
-    [dir="rtl"] #output pre,
-    [dir="rtl"] .spark-field .field-val {
-        direction: ltr;
-        unicode-bidi: embed;
-    }
-
-    [dir="rtl"] .nav-links,
-    [dir="rtl"] .footer-bar,
-    [dir="rtl"] .breadcrumb {
-        flex-direction: row-reverse;
-    }
-
-    /* ============ RESPONSIVE ============ */
-
     @media (max-width: 1100px) {
         .stats-bar { gap: 6px 22px; }
         .btn-blocks { font-size: 9px; padding: 3px 12px; }
@@ -770,7 +744,6 @@
         .footer-bar { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 18px; }
         .footer-bar .api { font-size: 10px; padding: 2px 14px; }
         .spark-detail { padding-left: 12px; }
-        .spark-detail .sub-key { min-width: 70px; }
         .spark-field .field-key { min-width: 60px; }
     }
 
@@ -882,7 +855,7 @@
         <div class="output-wrapper">
             <div id="output">
                 <div class="placeholder">
-                    <div class="icon"><img src="assets\firo.png" width="48px"></div>
+                    <div class="icon"><img src="assets/firo.png" width="48px"></div>
                     <div data-i18n="explorer.placeholder_title">explorador de bloques Firo</div>
                     <div class="sub" data-i18n="explorer.placeholder_sub">bloque · transacción · dirección</div>
                 </div>
@@ -900,217 +873,226 @@
 
     <script src="js/i18n.js"></script>
     <script>
-        const API_URL = "https://carover0.xyz/api/firo/rpc.php";
-        const TOKEN = "firo2026";
-        const STATUS_URL = "https://carover0.xyz/api/firo.json";
 
-        const t = (key) => FiroI18n.t(key);
+// Calcula la base de assets ignorando la subruta /firo-explorer/...
+function getAssetBase() {
+    let path = window.location.pathname;
+    path = path.replace(/\/firo-explorer(\/.*|\.html.*)?$/, '/');
+    if (!path.endsWith('/')) path += '/';
+    return path;
+}
 
-        let historyStack = [];
-        let currentIndex = -1;
+const ASSET_BASE = getAssetBase();
 
-        function pushHistory(query, label) {
-            historyStack = historyStack.slice(0, currentIndex + 1);
-            historyStack.push({ query: query, label: label || query });
-            currentIndex = historyStack.length - 1;
-            updateBackButton();
-            updateBreadcrumb();
+const API_URL = "https://carover0.xyz/api/firo/rpc.php";
+const TOKEN = "firo2026";
+const STATUS_URL = "https://carover0.xyz/api/firo.json";
+
+const COIN_HTML = `<img src="${ASSET_BASE}assets/firo.png" alt="FIRO" title="FIRO" class="coin" onerror="this.style.display='none'">`;
+
+const t = (key) => FiroI18n.t(key);
+
+let historyStack = [];
+let currentIndex = -1;
+
+function pushHistory(query, label) {
+    historyStack = historyStack.slice(0, currentIndex + 1);
+    historyStack.push({ query: query, label: label || query });
+    currentIndex = historyStack.length - 1;
+    updateBackButton();
+    updateBreadcrumb();
+}
+
+function goBack() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        const entry = historyStack[currentIndex];
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.value = entry.query;
+            const cmd = detectCommand(entry.query);
+            updateUrlWithSearch(cmd);
+            executeSearch(cmd);
         }
+        updateBackButton();
+        updateBreadcrumb();
+    }
+}
 
-        function goBack() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                const entry = historyStack[currentIndex];
-                const input = document.getElementById('searchInput');
-                if (input) {
-                    input.value = entry.query;
-                    const cmd = detectCommand(entry.query);
-                    updateUrlWithSearch(cmd);
-                    executeSearch(cmd);
-                }
-                updateBackButton();
-                updateBreadcrumb();
-            }
+function updateBackButton() {
+    const btn = document.getElementById('backBtn');
+    if (currentIndex > 0) {
+        btn.classList.add('show');
+    } else {
+        btn.classList.remove('show');
+    }
+}
+
+function updateBreadcrumb() {
+    const container = document.getElementById('breadcrumb');
+    if (historyStack.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    const maxDisplay = 4;
+    const start = Math.max(0, historyStack.length - maxDisplay);
+    const entries = historyStack.slice(start);
+
+    if (start > 0) {
+        html += `<span class="crumb" onclick="goToHistory(0)">⏪</span><span class="sep">·</span>`;
+    }
+
+    for (let i = 0; i < entries.length; i++) {
+        const idx = start + i;
+        const entry = entries[i];
+        const isCurrent = idx === currentIndex;
+        const label = entry.label.length > 30 ? entry.label.substring(0, 28) + '…' : entry.label;
+        if (isCurrent) {
+            html += `<span class="crumb current">${escapeHtml(label)}</span>`;
+        } else {
+            html += `<span class="crumb" onclick="goToHistory(${idx})">${escapeHtml(label)}</span>`;
         }
-
-        function updateBackButton() {
-            const btn = document.getElementById('backBtn');
-            if (currentIndex > 0) {
-                btn.classList.add('show');
-            } else {
-                btn.classList.remove('show');
-            }
+        if (i < entries.length - 1) {
+            html += `<span class="sep">›</span>`;
         }
+    }
 
-        function updateBreadcrumb() {
-            const container = document.getElementById('breadcrumb');
-            if (historyStack.length === 0) {
-                container.innerHTML = '';
-                return;
-            }
+    container.innerHTML = html;
+}
 
-            let html = '';
-            const maxDisplay = 4;
-            const start = Math.max(0, historyStack.length - maxDisplay);
-            const entries = historyStack.slice(start);
-
-            if (start > 0) {
-                html += `<span class="crumb" onclick="goToHistory(0)">⏪</span><span class="sep">·</span>`;
-            }
-
-            for (let i = 0; i < entries.length; i++) {
-                const idx = start + i;
-                const entry = entries[i];
-                const isCurrent = idx === currentIndex;
-                const label = entry.label.length > 30 ? entry.label.substring(0, 28) + '…' : entry.label;
-                if (isCurrent) {
-                    html += `<span class="crumb current">${escapeHtml(label)}</span>`;
-                } else {
-                    html += `<span class="crumb" onclick="goToHistory(${idx})">${escapeHtml(label)}</span>`;
-                }
-                if (i < entries.length - 1) {
-                    html += `<span class="sep">›</span>`;
-                }
-            }
-
-            container.innerHTML = html;
+function goToHistory(index) {
+    if (index >= 0 && index < historyStack.length && index !== currentIndex) {
+        currentIndex = index;
+        const entry = historyStack[index];
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.value = entry.query;
+            const cmd = detectCommand(entry.query);
+            updateUrlWithSearch(cmd);
+            executeSearch(cmd);
         }
+        updateBackButton();
+        updateBreadcrumb();
+    }
+}
 
-        function goToHistory(index) {
-            if (index >= 0 && index < historyStack.length && index !== currentIndex) {
-                currentIndex = index;
-                const entry = historyStack[index];
-                const input = document.getElementById('searchInput');
-                if (input) {
-                    input.value = entry.query;
-                    const cmd = detectCommand(entry.query);
-                    updateUrlWithSearch(cmd);
-                    executeSearch(cmd);
-                }
-                updateBackButton();
-                updateBreadcrumb();
-            }
-        }
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return String(text).replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
+function makeLink(text) {
+    if (!text) return '';
+    const encoded = encodeURIComponent(text);
+    return `<span class="link" onclick="navigateTo('${encoded}')">${escapeHtml(text)}</span>`;
+}
 
-        function makeLink(text) {
-            if (!text) return '';
-            const encoded = encodeURIComponent(text);
-            return `<span class="link" onclick="navigateTo('${encoded}')">${escapeHtml(text)}</span>`;
-        }
+function navigateTo(query) {
+    const decoded = decodeURIComponent(query);
+    const input = document.getElementById('searchInput');
+    if (input) {
+        input.value = decoded;
+        const cmd = detectCommand(decoded);
+        const label = getLabelForQuery(cmd);
+        pushHistory(cmd, label);
+        updateUrlWithSearch(cmd);
+        executeSearch(cmd);
+    }
+}
 
-        function navigateTo(query) {
-            const decoded = decodeURIComponent(query);
-            const input = document.getElementById('searchInput');
-            if (input) {
-                input.value = decoded;
-                const cmd = detectCommand(decoded);
-                const label = getLabelForQuery(cmd);
-                pushHistory(cmd, label);
-                updateUrlWithSearch(cmd);
-                executeSearch(cmd);
-            }
-        }
+function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+}
 
-        function showToast(msg) {
-            const el = document.getElementById('toast');
-            el.textContent = msg;
-            el.classList.add('show');
-            clearTimeout(el._timer);
-            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
-        }
+function detectSearchFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    if (queryParam) return queryParam;
+    const path = window.location.pathname;
+    const match = path.match(/\/firo-explorer\/(.+)$/);
+    if (match && match[1]) return match[1];
+    return null;
+}
 
-        function detectSearchFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const queryParam = urlParams.get('q');
-            if (queryParam) return queryParam;
-            const path = window.location.pathname;
-            const match = path.match(/\/firo-explorer\/(.+)$/);
-            if (match && match[1]) return match[1];
-            return null;
-        }
+function updateUrlWithSearch(parametro) {
+    const basePath = window.location.origin + '/pagina';
+    const newUrl = basePath + '/firo-explorer/' + encodeURIComponent(parametro);
+    window.history.replaceState({}, '', newUrl);
+}
 
-        function updateUrlWithSearch(parametro) {
-            const basePath = window.location.origin + '/pagina';
-            const newUrl = basePath + '/firo-explorer/' + encodeURIComponent(parametro);
-            window.history.replaceState({}, '', newUrl);
-        }
+function detectCommand(input) {
+    input = input.trim();
+    if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
+        input.startsWith('validateaddress') || input.startsWith('getaddressbalance') ||
+        input.startsWith('HASH:')) {
+        return input;
+    }
+    if (/^\d+$/.test(input)) return `getblockhash ${input}`;
+    if (/^[a-fA-F0-9]{64}$/.test(input)) return `HASH:${input}`;
+    if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
+        return `validateaddress ${input}`;
+    }
+    if (input.length > 50) {
+        if (input.startsWith('validateaddress')) return input;
+        return `validateaddress ${input}`;
+    }
+    return input;
+}
 
-        function detectCommand(input) {
-            input = input.trim();
-            if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
-                input.startsWith('validateaddress') || input.startsWith('getaddressbalance') ||
-                input.startsWith('HASH:')) {
-                return input;
-            }
-            if (/^\d+$/.test(input)) return `getblockhash ${input}`;
-            if (/^[a-fA-F0-9]{64}$/.test(input)) return `HASH:${input}`;
-            if (/^[Ff][a-zA-Z0-9]{33,34}$/.test(input) || /^[aA][a-zA-Z0-9]{33,34}$/.test(input)) {
-                return `validateaddress ${input}`;
-            }
-            if (input.length > 50) {
-                if (input.startsWith('validateaddress')) return input;
-                return `validateaddress ${input}`;
-            }
-            return input;
-        }
+function getLabelForQuery(q) {
+    const s = q.trim();
+    if (s.startsWith('getblock ')) return t('explorer.label_block_prefix') + ' ' + s.replace('getblock ', '');
+    if (s.startsWith('getrawtransaction ')) return 'TX ' + s.replace('getrawtransaction ', '').replace(' 1', '')
+        .substring(0, 16) + '…';
+    if (s.startsWith('getaddressbalance ')) return t('explorer.label_address') + ' ' + s.replace('getaddressbalance ', '').substring(0, 12) + '…';
+    if (s.startsWith('validateaddress ') || s.startsWith('z_validateaddress ')) return t('explorer.label_validate') + ' ' + s.split(' ')[1].substring(0, 12) + '…';
+    if (s.startsWith('UA:')) return 'UA ' + s.substring(3, 16) + '…';
+    if (/^\d+$/.test(s)) return t('explorer.label_block_prefix') + ' ' + s;
+    if (/^[a-fA-F0-9]{64}$/.test(s)) return 'TX ' + s.substring(0, 16) + '…';
+    return s.substring(0, 20) + (s.length > 20 ? '…' : '');
+}
 
-        function getLabelForQuery(q) {
-            const s = q.trim();
-            if (s.startsWith('getblock ')) return t('explorer.label_block_prefix') + ' ' + s.replace('getblock ', '');
-            if (s.startsWith('getrawtransaction ')) return 'TX ' + s.replace('getrawtransaction ', '').replace(' 1', '')
-                .substring(0, 16) + '…';
-            if (s.startsWith('getaddressbalance ')) return t('explorer.label_address') + ' ' + s.replace('getaddressbalance ', '').substring(0, 12) +
-                '…';
-            if (s.startsWith('validateaddress ') || s.startsWith('z_validateaddress ')) return t('explorer.label_validate') + ' ' + s.split(' ')[1]
-                .substring(0, 12) + '…';
-            if (s.startsWith('UA:')) return 'UA ' + s.substring(3, 16) + '…';
-            if (/^\d+$/.test(s)) return t('explorer.label_block_prefix') + ' ' + s;
-            if (/^[a-fA-F0-9]{64}$/.test(s)) return 'TX ' + s.substring(0, 16) + '…';
-            return s.substring(0, 20) + (s.length > 20 ? '…' : '');
-        }
+async function loadNetworkStats() {
+    try {
+        const r = await fetch(STATUS_URL);
+        const d = await r.json();
+        document.getElementById('stat-height').textContent = d.blockchain?.blocks?.toLocaleString() || '---';
+        document.getElementById('stat-difficulty').textContent = d.blockchain?.difficulty?.toFixed(2) || '---';
+        document.getElementById('stat-connections').textContent = d.network?.connections || '---';
+        document.getElementById('stat-mempool').textContent = d.mempool?.txcount || '0';
+    } catch (e) {}
+}
 
-        async function loadNetworkStats() {
-            try {
-                const r = await fetch(STATUS_URL);
-                const d = await r.json();
-                document.getElementById('stat-height').textContent = d.blockchain?.blocks?.toLocaleString() || '---';
-                document.getElementById('stat-difficulty').textContent = d.blockchain?.difficulty?.toFixed(2) || '---';
-                document.getElementById('stat-connections').textContent = d.network?.connections || '---';
-                document.getElementById('stat-mempool').textContent = d.mempool?.txcount || '0';
-            } catch (e) {}
+async function getVinValue(txid, vout) {
+    try {
+        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
+        const data = await r.json();
+        if (data.result && data.result.vout && data.result.vout[vout]) {
+            return data.result.vout[vout].value;
         }
-
-        async function getVinValue(txid, vout) {
-            try {
-                const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
-                const data = await r.json();
-                if (data.result && data.result.vout && data.result.vout[vout]) {
-                    return data.result.vout[vout].value;
-                }
-                return null;
-            } catch (e) { return null; }
-        }
+        return null;
+    } catch (e) { return null; }
+}
 
 function getTxType(tx) {
     if (!tx) return 'unknown';
 
     if (tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase) return 'coinbase';
 
-    // Spark por tipo de script en vout (lo que devuelve tu API)
     if (tx.vout && tx.vout.some(v => v.scriptPubKey?.type === 'sparkmint')) return 'sparkmint';
     if (tx.vout && tx.vout.some(v => v.scriptPubKey?.type === 'sparkspend')) return 'sparkspend';
 
-    // Spark por otros campos (por compatibilidad)
     if (tx.sparkData) return 'spark';
     if (tx.vin && tx.vin.some(v => v.lTags && v.lTags.length > 0)) return 'spark';
     if (tx.vShieldedSpend?.length > 0 || tx.vShieldedOutput?.length > 0) return 'spark';
@@ -1134,500 +1116,462 @@ function getTxTypeLabel(tx) {
     return labels[type] || t('explorer.tx_type_unknown');
 }
 
-        function renderOutput(html) {
-            document.getElementById('output').innerHTML = html;
-        }
-
-        function renderPlaceholder() {
-            renderOutput(`
-            <div class="placeholder">
-              <div class="icon"><img src="assets/firo.png" width="48"></div>
-              <div>${t('explorer.placeholder_title')}</div>
-              <div class="sub">${t('explorer.placeholder_sub')}</div>
-            </div>
-          `);
-        }
-
-        function renderLoading() {
-            renderOutput(`
-            <div class="loading">
-              <span class="spinner"></span>
-              ${t('explorer.loading')}
-            </div>
-          `);
-        }
-
-        function renderSparkDetails(tx) {
-            let html = '';
-
-            html += `<div class="divider"></div>`;
-            html += `<div class="row"><span class="key">${t('explorer.tag_spark')}</span><span class="val gold">${t('explorer.tag_spark_private')}</span></div>`;
-
-            if (tx.sparkData) {
-                html += `<div class="spark-detail">`;
-                html += `<div class="action-header"><span class="badge">sparkData</span></div>`;
-                html +=
-                    `<div class="spark-field"><span class="field-key">${t('explorer.label_spark_size')}</span><span class="field-val">${(tx.sparkData.length / 2).toFixed(0)} bytes</span></div>`;
-                html +=
-                    `<div class="spark-field"><span class="field-key">${t('explorer.label_spark_hex')}</span><span class="field-val small">${escapeHtml(tx.sparkData.substring(0, 120))}…</span></div>`;
-                html += `</div>`;
-            }
-
-            if (tx.vin) {
-                let hasLTags = false;
-                tx.vin.forEach((vin, i) => {
-                    if (vin.lTags && vin.lTags.length > 0) {
-                        if (!hasLTags) {
-                            html += `<div class="spark-detail">`;
-                            html += `<div class="action-header"><span class="badge">${t('explorer.label_spark_nullifiers')}</span></div>`;
-                            hasLTags = true;
-                        }
-                        vin.lTags.forEach((tag, j) => {
-                            html +=
-                                `<div class="spark-field"><span class="field-key">#${i}.${j}</span><span class="field-val">${escapeHtml(tag)}</span></div>`;
-                        });
-                    }
-                });
-                if (hasLTags) html += `</div>`;
-            }
-
-            if (tx.vin) {
-                let totalFees = 0;
-                tx.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
-                if (totalFees > 0) {
-                    html +=
-                        `<div class="spark-detail"><div class="spark-field"><span class="field-key gold">${t('explorer.label_spark_fee')}</span><span class="field-val gold">${totalFees.toFixed(8)} FIRO</span></div></div>`;
-                }
-            }
-
-            if (tx.bindingSig) {
-                html += `<div class="spark-detail">`;
-                html +=
-                    `<div class="spark-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(tx.bindingSig)}</span></div>`;
-                html += `</div>`;
-            }
-
-            html +=
-                `<div class="spark-detail" style="border-left-color: rgba(155,28,46,0.2);margin-top:8px;">`;
-            html +=
-                `<div class="spark-field"><span class="field-key gold">🔒 ${t('explorer.label_private')}</span><span class="field-val">${t('explorer.label_no_crypto_link')}</span></div>`;
-            html += `</div>`;
-
-            return html;
-        }
-
-        async function executeSearch(q) {
-            const raw = q.trim();
-            if (!raw) { renderPlaceholder(); return; }
-
-            renderLoading();
-
-            if (q.startsWith('HASH:')) {
-                const hash = q.substring(5);
-                try {
-                    const blockTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblock%20${hash}`);
-                    const blockData = await blockTest.json();
-                    if (blockData.result && blockData.result.hash) {
-                        return executeSearch(`getblock ${hash}`);
-                    }
-                } catch (e) {}
-                try {
-                    const txTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${hash}%201`);
-                    const txData = await txTest.json();
-                    if (txData.result && txData.result.txid) {
-                        return executeSearch(`getrawtransaction ${hash} 1`);
-                    }
-                } catch (e) {}
-                renderOutput(`<div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${t('explorer.no_hash_found')} ${escapeHtml(hash)}</div>`);
-                return;
-            }
-
-            const cmd = detectCommand(raw);
-
-            try {
-                const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
-                const data = await r.json();
-
-                if (data.error) {
-                    renderOutput(`
-                <div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${escapeHtml(cmd)}</div>
-                <div style="color:#ff756f;padding:6px 0;">${t('common.state.error')}: ${escapeHtml(JSON.stringify(data.error))}</div>
-                <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
-              `);
-                    return;
-                }
-
-                const result = data.result;
-
-                if (cmd.includes('getblockhash') && typeof result === 'string' && result.length === 64) {
-                    const hash = result;
-                    updateUrlWithSearch(hash);
-                    return executeSearch(`getblock ${hash}`);
-                }
-
-                if (!result) {
-                    renderOutput(`
-                <div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>
-                <div style="color:#3d3830;">${t('explorer.no_result')}</div>
-                <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
-              `);
-                    return;
-                }
-
-                if (cmd.includes('getblock') && result.hash) {
-                    const b = result;
-                    let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_block')}</span> #${b.height}</div>`;
-                    res += `<div class="row"><span class="key">${t('explorer.label_hash')}</span><span class="val">${makeLink(b.hash)}</span></div>`;
-                    res += `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
-                    res +=
-                        `<div class="row"><span class="key">${t('explorer.label_difficulty')}</span><span class="val">${b.difficulty?.toFixed(2) ?? '—'}</span></div>`;
-                    res +=
-                        `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${b.size ? b.size + ' bytes' : '—'}</span></div>`;
-                    if (b.previousblockhash) res +=
-                        `<div class="row"><span class="key">${t('explorer.label_previous')}</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
-                    if (b.nextblockhash) res +=
-                        `<div class="row"><span class="key">${t('explorer.label_next')}</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
-                    res += `<div class="divider"></div>`;
-                    res +=
-                        `<div class="row"><span class="key">${t('explorer.label_transactions')}</span><span class="val gold">${b.tx?.length ?? 0}</span></div>`;
-
-                    if (b.tx && b.tx.length > 0) {
-                        const txs = b.tx.slice(0, 50);
-                        const txPromises = txs.map(async (txid) => {
-                            try {
-                                const txR = await fetch(
-                                    `${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
-                                const txData = await txR.json();
-                                return { txid, data: txData.result };
-                            } catch (e) { return { txid, data: null }; }
-                        });
-
-                        const txResults = await Promise.all(txPromises);
-
-                        for (const { txid, data } of txResults) {
-                            const typeLabel = data ? getTxTypeLabel(data) : t('explorer.tx_type_unknown');
-                            const isSpark = data && getTxType(data) === 'spark';
-
-                            res += `<div class="tx-item">
-                        <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
-                        <div class="tx-meta">
-                          <span style="${isSpark ? 'color:#ff7b87;' : 'color:#6a6255;'}">${typeLabel}</span>
-                          ${data && data.vout ? `<span>${data.vout.length} ${t('explorer.label_outputs')}</span>` : ''}
-                          ${data && data.vin ? `<span>${data.vin.length} ${t('explorer.label_inputs')}</span>` : ''}
-                          ${data && data.size ? `<span>${data.size} bytes</span>` : ''}
-                        </div>
-                      </div>`;
-                        }
-                        if (b.tx.length > 50) res +=
-                            `<div style="color:#3d3830;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
-                    }
-
-                    res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
-                    renderOutput(res);
-                    return;
-                }
-
-                if (cmd.includes('getrawtransaction') && result) {
-                    const tx = result;
-                    const txid = tx.txid || tx.hash;
-                    const tipo = getTxType(tx);
-                    const tipoLabel = getTxTypeLabel(tx);
-                    const moneda = 'FIRO';
-
-                    let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span></div>`;
-
-                    res += `<div class="row"><span class="key">${t('explorer.label_txid')}</span><span class="val">${makeLink(txid)}</span></div>`;
-
-
-if (tx.height && tx.blockhash) {
-    res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))} · ${makeLink(tx.blockhash)}</span></div>`;
-} else if (tx.height) {
-    res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))}</span></div>`;
-} else if (tx.blockhash) {
-    res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(tx.blockhash)}</span></div>`;
-} else {
-    res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${t('explorer.label_unconfirmed')}</span></div>`;
+function renderOutput(html) {
+    document.getElementById('output').innerHTML = html;
 }
 
-
-                    res +=
-                        `<div class="row"><span class="key">${t('explorer.label_confirmations')}</span><span class="val">${tx.confirmations || 0}</span></div>`;
-                    if (tx.blocktime || tx.time) {
-                        res +=
-                            `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date((tx.blocktime || tx.time)*1000).toLocaleString()}</span></div>`;
-                    }
-                    
-let versionStr = tx.version || 'N/A';
-if (tx.locktime !== undefined) versionStr += ` · LockTime ${tx.locktime}`;
-res += `<div class="row"><span class="key">${t('explorer.label_version')}</span><span class="val">${versionStr}</span></div>`;
-
-                    if (tx.size) res += `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${tx.size} bytes</span></div>`;
-                    if (tx.instantlock) res +=
-                        `<div class="row"><span class="key">${t('explorer.label_instantlock')}</span><span class="val" style="color:#31db72;">${t('explorer.ok_validate')}</span></div>`;
-                    if (tx.chainlock) res +=
-                        `<div class="row"><span class="key">${t('explorer.label_chainlock')}</span><span class="val" style="color:#31db72;">${t('explorer.ok_validate')}</span></div>`;
-
-                    if (tipo === 'spark') {
-                        res += renderSparkDetails(tx);
-                    }
-
-let totalIn = 0;
-const entradasTransparentes = tx.vin?.filter(vin => vin.txid && !vin.lTags) || [];
-if (entradasTransparentes.length > 0) {
-    res += `<div class="divider"></div>`;
-    res +=
-        `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
-    for (let i = 0; i < entradasTransparentes.length; i++) {
-        const vin = entradasTransparentes[i];
-        let value = vin.value;
-        if (value == null) value = await getVinValue(vin.txid, vin.vout);
-        if (value != null) totalIn += value;
-
-        const valStr = value != null ? ` ${value.toFixed(8)} ${moneda}` : '';
-
-        const origen = `${makeLink(vin.txid)}:${vin.vout}`;
-
-        res +=
-            `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${origen}</span>${valStr ? `<span class="val gold">${valStr}</span>` : ''}</div>`;
-    }
-    if (totalIn > 0) {
-        res +=
-            `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_in')}</span><span class="val gold">${totalIn.toFixed(8)} ${moneda}</span></div>`;
-    }
-
-                        
-                    } else if (tx.vin && tx.vin.length > 0 && !entradasTransparentes.length && tipo !== 'spark') {
-                        res += `<div class="divider"></div>`;
-                        res +=
-                            `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${tx.vin.length}</span></div>`;
-                        tx.vin.forEach((vin, i) => {
-                            if (vin.coinbase) {
-                                res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff7b87;">${t('explorer.tag_coinbase')}</span></div>`;
-                            } else {
-                                res +=
-                                    `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">${t('explorer.tag_input')}</span></div>`;
-                            }
-                        });
-                    }
-
-                    if (tx.vout && tx.vout.length > 0) {
-                        res += `<div class="divider"></div>`;
-                        res +=
-                            `<div class="row"><span class="key">${t('explorer.section_outputs')}</span><span class="val gold">${tx.vout.length}</span></div>`;
-
-                        let totalOut = 0;
-for (let i = 0; i < tx.vout.length; i++) {
-    const vout = tx.vout[i];
-    totalOut += vout.value || 0;
-
-    const spk = vout.scriptPubKey || {};
-    let destino;
-    let sufijo = '';
-
-    if (spk.type === 'sparkmint' || spk.type === 'sparkspend') {
-        destino = `<span style="color:#ff7b87;">${escapeHtml(spk.type)}</span>`;
-        sufijo = ` <span style="color:#6a6255;">${t('explorer.spark_unshielded')}</span>`;
-    } else if (spk.addresses?.[0]) {
-        destino = makeLink(spk.addresses[0]);
-    } else if (spk.address) {
-        destino = makeLink(spk.address);
-    } else if (spk.type === 'nulldata' || (spk.asm && spk.asm.startsWith('OP_RETURN'))) {
-        destino = `<span style="color:#5a5348;">OP_RETURN</span>`;
-    } else {
-        destino = `<span style="color:#5a5348;">${escapeHtml(spk.type || 'unknown')}</span>`;
-    }
-
-    res +=
-        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${(vout.value || 0).toFixed(8)} ${moneda}</span> → ${destino}${sufijo}</div>`;
+function renderPlaceholder() {
+    renderOutput(`
+    <div class="placeholder">
+      <div class="icon"><img src="${ASSET_BASE}assets/firo.png" width="48"></div>
+      <div>${t('explorer.placeholder_title')}</div>
+      <div class="sub">${t('explorer.placeholder_sub')}</div>
+    </div>
+  `);
 }
 
-                        if (totalOut > 0) {
-                            res +=
-                                `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_out')}</span><span class="val gold">${totalOut.toFixed(8)} ${moneda}</span></div>`;
-                        }
+function renderLoading() {
+    renderOutput(`
+    <div class="loading">
+      <span class="spinner"></span>
+      ${t('explorer.loading')}
+    </div>
+  `);
+}
 
-                        if (tipo !== 'spark' && tipo !== 'coinbase' && totalIn > 0) {
-                            const fee = totalIn - totalOut;
-                            if (fee > 0) {
-                                res += `<div class="divider"></div>`;
-                                res +=
-                                    `<div class="row"><span class="key">${t('explorer.label_fee')}</span><span class="val" style="color:#ff756f;">${fee.toFixed(8)} ${moneda}</span></div>`;
-                            }
-                        }
-                    }
+function renderSparkDetails(tx) {
+    let html = '';
 
-                    res += `<div class="divider"></div>`;
-                    res += `<div class="row"><span class="key">${t('explorer.label_summary')}</span></div>`;
-                    res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_type')}</span><span class="val">${tipo === 'spark' ? t('explorer.tx_type_spark_short') : tipo === 'coinbase' ? t('explorer.tx_type_coinbase_short') : t('explorer.tx_type_transparent_short')}</span></div>`;
-                    res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_inputs_short')}</span><span class="val">${tx.vin?.length || 0}</span></div>`;
-                    res +=
-                        `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_outputs_short')}</span><span class="val">${tx.vout?.length || 0}</span></div>`;
+    html += `<div class="divider"></div>`;
+    html += `<div class="row"><span class="key">${t('explorer.tag_spark')}</span><span class="val gold">${t('explorer.tag_spark_private')}</span></div>`;
 
-                    res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
-                    renderOutput(res);
-                    return;
+    if (tx.sparkData) {
+        html += `<div class="spark-detail">`;
+        html += `<div class="action-header"><span class="badge">sparkData</span></div>`;
+        html += `<div class="spark-field"><span class="field-key">${t('explorer.label_spark_size')}</span><span class="field-val">${(tx.sparkData.length / 2).toFixed(0)} bytes</span></div>`;
+        html += `<div class="spark-field"><span class="field-key">${t('explorer.label_spark_hex')}</span><span class="field-val small">${escapeHtml(tx.sparkData.substring(0, 120))}…</span></div>`;
+        html += `</div>`;
+    }
+
+    if (tx.vin) {
+        let hasLTags = false;
+        tx.vin.forEach((vin, i) => {
+            if (vin.lTags && vin.lTags.length > 0) {
+                if (!hasLTags) {
+                    html += `<div class="spark-detail">`;
+                    html += `<div class="action-header"><span class="badge">${t('explorer.label_spark_nullifiers')}</span></div>`;
+                    hasLTags = true;
                 }
-
-                if (cmd.includes('validateaddress') && result) {
-                    const v = result;
-                    const direccion = v.address || cmd.split(' ')[1] || t('explorer.label_unknown');
-                    let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_address')}</span></div>`;
-                    res += `<div class="row"><span class="key">${t('explorer.label_address')}</span><span class="val">${makeLink(direccion)}</span></div>`;
-
-                    if (v.isvalidSpark !== undefined) {
-                        res +=
-                            `<div class="row"><span class="key">${t('explorer.is_valid_spark')}</span><span class="val">${v.isvalidSpark ? t('explorer.ok_validate') : t('explorer.error_validate')}</span></div>`;
-                        if (v.isvalidSpark) {
-                            res += `<div class="row"><span class="key">${t('explorer.label_type')}</span><span class="val">shielded (Spark)</span></div>`;
-                        }
-                    } else {
-                        res +=
-                            `<div class="row"><span class="key">${t('explorer.is_valid')}</span><span class="val">${v.isvalid ? t('explorer.ok_validate') : t('explorer.error_validate')}</span></div>`;
-                        if (v.isvalid) {
-                            let tipo = t('explorer.label_transparent');
-                            if (v.isscript) tipo = 'script';
-                            else if (v.iswatchonly) tipo = 'watchonly';
-                            res += `<div class="row"><span class="key">${t('explorer.label_type')}</span><span class="val">${tipo}</span></div>`;
-                            if (v.scriptPubKey) {
-                                res +=
-                                    `<div class="row"><span class="key">scriptPubKey</span><span class="val mono">${escapeHtml(v.scriptPubKey)}</span></div>`;
-                            }
-                        }
-                    }
-                    if (v.ismine !== undefined) {
-                        res +=
-                            `<div class="row"><span class="key">${t('explorer.is_mine')}</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
-                    }
-
-                    res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
-                    renderOutput(res);
-                    return;
-                }
-
-                let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
-                res +=
-                    `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
-                res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
-                renderOutput(res);
-
-            } catch (e) {
-                renderOutput(`
-              <div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${t('common.state.error')}</div>
-              <div style="color:#ff756f;padding:6px 0;">${escapeHtml(e.message)}</div>
-              <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
-            `);
-            }
-
-            document.getElementById('searchInput').value = '';
-        }
-
-        window.copyResult = function() {
-            const outputPre = document.querySelector('#output pre:last-of-type');
-            if (outputPre) {
-                navigator.clipboard.writeText(outputPre.innerText).then(() => {
-                    document.querySelector('.prompt').textContent = '✓';
-                    setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
-                    showToast(t('common.copy.ok'));
+                vin.lTags.forEach((tag, j) => {
+                    html += `<div class="spark-field"><span class="field-key">#${i}.${j}</span><span class="field-val">${escapeHtml(tag)}</span></div>`;
                 });
-            } else {
-                const out = document.getElementById('output');
-                const text = out.textContent;
-                if (text) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        showToast(t('common.copy.ok'));
-                    });
-                }
-            }
-        };
-
-        window.navigateTo = navigateTo;
-        window.executeSearch = executeSearch;
-        window.goBack = goBack;
-        window.goToHistory = goToHistory;
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F8') { e.preventDefault();
-                window.copyResult(); }
-            if (e.key === 'F9') {
-                e.preventDefault();
-                document.getElementById('searchInput').value = '';
-                renderPlaceholder();
-                document.querySelector('.prompt').textContent = '♥';
-                setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
-                const baseUrl = window.location.origin + '/pagina/firo-explorer';
-                window.history.replaceState({}, '', baseUrl);
-                historyStack = [];
-                currentIndex = -1;
-                updateBackButton();
-                updateBreadcrumb();
-                loadNetworkStats();
-            }
-            if (e.key === 'ArrowLeft' && (e.altKey || e.metaKey)) {
-                e.preventDefault();
-                goBack();
             }
         });
+        if (hasLTags) html += `</div>`;
+    }
 
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const rawInput = searchInput.value.trim();
-                if (rawInput) {
-                    const cmd = detectCommand(rawInput);
+    if (tx.vin) {
+        let totalFees = 0;
+        tx.vin.forEach(vin => { if (vin.nFees) totalFees += vin.nFees; });
+        if (totalFees > 0) {
+            html += `<div class="spark-detail"><div class="spark-field"><span class="field-key gold">${t('explorer.label_spark_fee')}</span><span class="field-val gold">${COIN_HTML}${totalFees.toFixed(8)}</span></div></div>`;
+        }
+    }
+
+    if (tx.bindingSig) {
+        html += `<div class="spark-detail">`;
+        html += `<div class="spark-field"><span class="field-key">bindingSig</span><span class="field-val small">${escapeHtml(tx.bindingSig)}</span></div>`;
+        html += `</div>`;
+    }
+
+    html += `<div class="spark-detail" style="border-left-color: rgba(155,28,46,0.2);margin-top:8px;">`;
+    html += `<div class="spark-field"><span class="field-key gold">🔒 ${t('explorer.label_private')}</span><span class="field-val">${t('explorer.label_no_crypto_link')}</span></div>`;
+    html += `</div>`;
+
+    return html;
+}
+
+async function executeSearch(q) {
+    const raw = q.trim();
+    if (!raw) { renderPlaceholder(); return; }
+
+    renderLoading();
+
+    if (q.startsWith('HASH:')) {
+        const hash = q.substring(5);
+        try {
+            const blockTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblock%20${hash}`);
+            const blockData = await blockTest.json();
+            if (blockData.result && blockData.result.hash) {
+                return executeSearch(`getblock ${hash}`);
+            }
+        } catch (e) {}
+        try {
+            const txTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${hash}%201`);
+            const txData = await txTest.json();
+            if (txData.result && txData.result.txid) {
+                return executeSearch(`getrawtransaction ${hash} 1`);
+            }
+        } catch (e) {}
+        renderOutput(`<div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${t('explorer.no_hash_found')} ${escapeHtml(hash)}</div>`);
+        return;
+    }
+
+    const cmd = detectCommand(raw);
+
+    try {
+        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
+        const data = await r.json();
+
+        if (data.error) {
+            renderOutput(`
+        <div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${escapeHtml(cmd)}</div>
+        <div style="color:#ff756f;padding:6px 0;">${t('common.state.error')}: ${escapeHtml(JSON.stringify(data.error))}</div>
+        <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
+      `);
+            return;
+        }
+
+        const result = data.result;
+
+        if (cmd.includes('getblockhash') && typeof result === 'string' && result.length === 64) {
+            const hash = result;
+            updateUrlWithSearch(hash);
+            return executeSearch(`getblock ${hash}`);
+        }
+
+        if (!result) {
+            renderOutput(`
+        <div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>
+        <div style="color:#3d3830;">${t('explorer.no_result')}</div>
+        <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
+      `);
+            return;
+        }
+
+        if (cmd.includes('getblock') && result.hash) {
+            const b = result;
+            let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_block')}</span> #${b.height}</div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_hash')}</span><span class="val">${makeLink(b.hash)}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_difficulty')}</span><span class="val">${b.difficulty?.toFixed(2) ?? '—'}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${b.size ? b.size + ' bytes' : '—'}</span></div>`;
+            if (b.previousblockhash) res += `<div class="row"><span class="key">${t('explorer.label_previous')}</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
+            if (b.nextblockhash) res += `<div class="row"><span class="key">${t('explorer.label_next')}</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
+            res += `<div class="divider"></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_transactions')}</span><span class="val gold">${b.tx?.length ?? 0}</span></div>`;
+
+            if (b.tx && b.tx.length > 0) {
+                const txs = b.tx.slice(0, 50);
+                const txPromises = txs.map(async (txid) => {
+                    try {
+                        const txR = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
+                        const txData = await txR.json();
+                        return { txid, data: txData.result };
+                    } catch (e) { return { txid, data: null }; }
+                });
+
+                const txResults = await Promise.all(txPromises);
+
+                for (const { txid, data } of txResults) {
+                    const typeLabel = data ? getTxTypeLabel(data) : t('explorer.tx_type_unknown');
+                    const isSpark = data && getTxType(data) === 'spark';
+
+                    res += `<div class="tx-item">
+                    <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
+                    <div class="tx-meta">
+                      <span style="${isSpark ? 'color:#ff7b87;' : 'color:#6a6255;'}">${typeLabel}</span>
+                      ${data && data.vout ? `<span>${data.vout.length} ${t('explorer.label_outputs')}</span>` : ''}
+                      ${data && data.vin ? `<span>${data.vin.length} ${t('explorer.label_inputs')}</span>` : ''}
+                      ${data && data.size ? `<span>${data.size} bytes</span>` : ''}
+                    </div>
+                  </div>`;
+                }
+                if (b.tx.length > 50) res += `<div style="color:#3d3830;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
+            }
+
+            res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
+            renderOutput(res);
+            return;
+        }
+
+        if (cmd.includes('getrawtransaction') && result) {
+            const tx = result;
+            const txid = tx.txid || tx.hash;
+            const tipo = getTxType(tx);
+            const tipoLabel = getTxTypeLabel(tx);
+
+            let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span></div>`;
+
+            res += `<div class="row"><span class="key">${t('explorer.label_txid')}</span><span class="val">${makeLink(txid)}</span></div>`;
+
+            if (tx.height && tx.blockhash) {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))} · ${makeLink(tx.blockhash)}</span></div>`;
+            } else if (tx.height) {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))}</span></div>`;
+            } else if (tx.blockhash) {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(tx.blockhash)}</span></div>`;
+            } else {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${t('explorer.label_unconfirmed')}</span></div>`;
+            }
+
+            res += `<div class="row"><span class="key">${t('explorer.label_confirmations')}</span><span class="val">${tx.confirmations || 0}</span></div>`;
+            if (tx.blocktime || tx.time) {
+                res += `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date((tx.blocktime || tx.time)*1000).toLocaleString()}</span></div>`;
+            }
+
+            let versionStr = tx.version || 'N/A';
+            if (tx.locktime !== undefined) versionStr += ` · LockTime ${tx.locktime}`;
+            res += `<div class="row"><span class="key">${t('explorer.label_version')}</span><span class="val">${versionStr}</span></div>`;
+
+            if (tx.size) res += `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${tx.size} bytes</span></div>`;
+            if (tx.instantlock) res += `<div class="row"><span class="key">${t('explorer.label_instantlock')}</span><span class="val" style="color:#31db72;">${t('explorer.ok_validate')}</span></div>`;
+            if (tx.chainlock) res += `<div class="row"><span class="key">${t('explorer.label_chainlock')}</span><span class="val" style="color:#31db72;">${t('explorer.ok_validate')}</span></div>`;
+
+            if (tipo === 'spark') {
+                res += renderSparkDetails(tx);
+            }
+
+            let totalIn = 0;
+            const entradasTransparentes = tx.vin?.filter(vin => vin.txid && !vin.lTags) || [];
+            if (entradasTransparentes.length > 0) {
+                res += `<div class="divider"></div>`;
+                res += `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${entradasTransparentes.length}</span></div>`;
+                for (let i = 0; i < entradasTransparentes.length; i++) {
+                    const vin = entradasTransparentes[i];
+                    let value = vin.value;
+                    if (value == null) value = await getVinValue(vin.txid, vin.vout);
+                    if (value != null) totalIn += value;
+
+                    const valStr = value != null ? `<span class="val gold">${COIN_HTML}${value.toFixed(8)}</span>` : '';
+                    const origen = `${makeLink(vin.txid)}:${vin.vout}`;
+
+                    res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${origen}</span>${valStr}</div>`;
+                }
+                if (totalIn > 0) {
+                    res += `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_in')}</span><span class="val gold">${COIN_HTML}${totalIn.toFixed(8)}</span></div>`;
+                }
+            } else if (tx.vin && tx.vin.length > 0 && tipo !== 'spark') {
+                res += `<div class="divider"></div>`;
+                res += `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${tx.vin.length}</span></div>`;
+                tx.vin.forEach((vin, i) => {
+                    if (vin.coinbase) {
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#ff7b87;">${t('explorer.tag_coinbase')}</span></div>`;
+                    } else {
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#5a5348;">${t('explorer.tag_input')}</span></div>`;
+                    }
+                });
+            }
+
+            if (tx.vout && tx.vout.length > 0) {
+                res += `<div class="divider"></div>`;
+                res += `<div class="row"><span class="key">${t('explorer.section_outputs')}</span><span class="val gold">${tx.vout.length}</span></div>`;
+
+                let totalOut = 0;
+                for (let i = 0; i < tx.vout.length; i++) {
+                    const vout = tx.vout[i];
+                    totalOut += vout.value || 0;
+
+                    const spk = vout.scriptPubKey || {};
+                    let destino;
+                    let sufijo = '';
+
+                    if (spk.type === 'sparkmint' || spk.type === 'sparkspend') {
+                        destino = `<span style="color:#ff7b87;">${escapeHtml(spk.type)}</span>`;
+                        sufijo = ` <span style="color:#6a6255;">${t('explorer.spark_unshielded')}</span>`;
+                    } else if (spk.addresses?.[0]) {
+                        destino = makeLink(spk.addresses[0]);
+                    } else if (spk.address) {
+                        destino = makeLink(spk.address);
+                    } else if (spk.type === 'nulldata' || (spk.asm && spk.asm.startsWith('OP_RETURN'))) {
+                        destino = `<span style="color:#5a5348;">OP_RETURN</span>`;
+                    } else {
+                        destino = `<span style="color:#5a5348;">${escapeHtml(spk.type || 'unknown')}</span>`;
+                    }
+
+                    res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${COIN_HTML}${(vout.value || 0).toFixed(8)}</span> → ${destino}${sufijo}</div>`;
+                }
+
+                if (totalOut > 0) {
+                    res += `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_out')}</span><span class="val gold">${COIN_HTML}${totalOut.toFixed(8)}</span></div>`;
+                }
+
+                if (tipo !== 'spark' && tipo !== 'coinbase' && totalIn > 0) {
+                    const fee = totalIn - totalOut;
+                    if (fee > 0) {
+                        res += `<div class="divider"></div>`;
+                        res += `<div class="row"><span class="key">${t('explorer.label_fee')}</span><span class="val" style="color:#ff756f;">${COIN_HTML}${fee.toFixed(8)}</span></div>`;
+                    }
+                }
+            }
+
+            res += `<div class="divider"></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_summary')}</span></div>`;
+            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_type')}</span><span class="val">${tipo === 'spark' ? t('explorer.tx_type_spark_short') : tipo === 'coinbase' ? t('explorer.tx_type_coinbase_short') : t('explorer.tx_type_transparent_short')}</span></div>`;
+            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_inputs_short')}</span><span class="val">${tx.vin?.length || 0}</span></div>`;
+            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">${t('explorer.label_outputs_short')}</span><span class="val">${tx.vout?.length || 0}</span></div>`;
+
+            res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
+            renderOutput(res);
+            return;
+        }
+
+        if (cmd.includes('validateaddress') && result) {
+            const v = result;
+            const direccion = v.address || cmd.split(' ')[1] || t('explorer.label_unknown');
+            let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_address')}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_address')}</span><span class="val">${makeLink(direccion)}</span></div>`;
+
+            if (v.isvalidSpark !== undefined) {
+                res += `<div class="row"><span class="key">${t('explorer.is_valid_spark')}</span><span class="val">${v.isvalidSpark ? t('explorer.ok_validate') : t('explorer.error_validate')}</span></div>`;
+                if (v.isvalidSpark) {
+                    res += `<div class="row"><span class="key">${t('explorer.label_type')}</span><span class="val">shielded (Spark)</span></div>`;
+                }
+            } else {
+                res += `<div class="row"><span class="key">${t('explorer.is_valid')}</span><span class="val">${v.isvalid ? t('explorer.ok_validate') : t('explorer.error_validate')}</span></div>`;
+                if (v.isvalid) {
+                    let tipo = t('explorer.label_transparent');
+                    if (v.isscript) tipo = 'script';
+                    else if (v.iswatchonly) tipo = 'watchonly';
+                    res += `<div class="row"><span class="key">${t('explorer.label_type')}</span><span class="val">${tipo}</span></div>`;
+                    if (v.scriptPubKey) {
+                        res += `<div class="row"><span class="key">scriptPubKey</span><span class="val mono">${escapeHtml(v.scriptPubKey)}</span></div>`;
+                    }
+                }
+            }
+            if (v.ismine !== undefined) {
+                res += `<div class="row"><span class="key">${t('explorer.is_mine')}</span><span class="val">${v.ismine ? 'sí' : 'no'}</span></div>`;
+            }
+
+            res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
+            renderOutput(res);
+            return;
+        }
+
+        {
+            let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
+            res += `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#6a6255;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
+            res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
+            renderOutput(res);
+        }
+
+    } catch (e) {
+        renderOutput(`
+      <div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${t('common.state.error')}</div>
+      <div style="color:#ff756f;padding:6px 0;">${escapeHtml(e.message)}</div>
+      <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
+    `);
+    }
+
+    document.getElementById('searchInput').value = '';
+}
+
+window.copyResult = function() {
+    const outputPre = document.querySelector('#output pre:last-of-type');
+    if (outputPre) {
+        navigator.clipboard.writeText(outputPre.innerText).then(() => {
+            document.querySelector('.prompt').textContent = '✓';
+            setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
+            showToast(t('common.copy.ok'));
+        });
+    } else {
+        const out = document.getElementById('output');
+        const text = out.textContent;
+        if (text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(t('common.copy.ok'));
+            });
+        }
+    }
+};
+
+window.navigateTo = navigateTo;
+window.executeSearch = executeSearch;
+window.goBack = goBack;
+window.goToHistory = goToHistory;
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F8') {
+        e.preventDefault();
+        window.copyResult();
+    }
+    if (e.key === 'F9') {
+        e.preventDefault();
+        document.getElementById('searchInput').value = '';
+        renderPlaceholder();
+        document.querySelector('.prompt').textContent = '♥';
+        setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
+        const baseUrl = window.location.origin + '/pagina/firo-explorer';
+        window.history.replaceState({}, '', baseUrl);
+        historyStack = [];
+        currentIndex = -1;
+        updateBackButton();
+        updateBreadcrumb();
+        loadNetworkStats();
+    }
+    if (e.key === 'ArrowLeft' && (e.altKey || e.metaKey)) {
+        e.preventDefault();
+        goBack();
+    }
+});
+
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const rawInput = searchInput.value.trim();
+        if (rawInput) {
+            const cmd = detectCommand(rawInput);
+            const label = getLabelForQuery(cmd);
+            pushHistory(cmd, label);
+            updateUrlWithSearch(cmd);
+            executeSearch(cmd);
+        }
+    }
+});
+searchInput.addEventListener('paste', () => {
+    setTimeout(() => {
+        const input = searchInput.value;
+        const cmd = detectCommand(input);
+        if (cmd !== input) searchInput.value = cmd;
+    }, 10);
+});
+
+(function() {
+    const searchParam = detectSearchFromUrl();
+    if (searchParam) {
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    const cmd = detectCommand(searchParam);
+                    input.value = cmd;
                     const label = getLabelForQuery(cmd);
                     pushHistory(cmd, label);
-                    updateUrlWithSearch(cmd);
                     executeSearch(cmd);
                 }
-            }
+            }, 500);
         });
-        searchInput.addEventListener('paste', () => {
-            setTimeout(() => {
-                const input = searchInput.value;
-                const cmd = detectCommand(input);
-                if (cmd !== input) searchInput.value = cmd;
-            }, 10);
-        });
+    }
+})();
 
-        (function() {
-            const searchParam = detectSearchFromUrl();
-            if (searchParam) {
-                window.addEventListener('load', function() {
-                    setTimeout(() => {
-                        const input = document.getElementById('searchInput');
-                        if (input) {
-                            const cmd = detectCommand(searchParam);
-                            input.value = cmd;
-                            const label = getLabelForQuery(cmd);
-                            pushHistory(cmd, label);
-                            executeSearch(cmd);
-                        }
-                    }, 500);
-                });
-            }
-        })();
+window.onLangChange = function () {
+    if (currentIndex >= 0 && historyStack[currentIndex]) {
+        const entry = historyStack[currentIndex];
+        const label = getLabelForQuery(entry.query);
+        entry.label = label;
+        updateBreadcrumb();
+        executeSearch(entry.query);
+    } else {
+        renderPlaceholder();
+    }
+};
 
-        window.onLangChange = function () {
-            if (currentIndex >= 0 && historyStack[currentIndex]) {
-                const entry = historyStack[currentIndex];
-                const label = getLabelForQuery(entry.query);
-                entry.label = label;
-                updateBreadcrumb();
-                executeSearch(entry.query);
-            } else {
-                renderPlaceholder();
-            }
-        };
-
-        (async () => {
-            await FiroI18n.init();
-            loadNetworkStats();
-            setInterval(loadNetworkStats, 30000);
-        })();
+(async () => {
+    await FiroI18n.init();
+    loadNetworkStats();
+    setInterval(loadNetworkStats, 30000);
+})();
     </script>
 
 </body>
