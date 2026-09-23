@@ -432,5 +432,12 @@
   "nodo.modal.inqueue": "في الانتظار",
   "masternodos.stats.payment": "⏱️ الدفعة المتوقعة",
 
-  "common.btn.sobre-firo": "حول FIRO"
+  "common.btn.sobre-firo": "حول FIRO",
+  "nodo.footer.colabora": "[تعاون]",
+  "nodo.colabora.title": "تعاون مع العقدة",
+  "nodo.colabora.desc": "إذا كنت ترغب في دعم صيانة هذه العقدة والخدمات، يمكنك إرسال FIRO إلى أي من هذه العناوين:",
+  "nodo.colabora.copy": "نسخ",
+  "nodo.colabora.copied": "تم النسخ!",
+  "nodo.colabora.thanks": "شكرًا لدعمك! ❤️"
+  
 }
