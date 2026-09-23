@@ -429,8 +429,8 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(6px);
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(2px);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -522,6 +522,103 @@
         .modal-body .fila .valor.mono { font-size: 10px; color: #8a8275; }
         .modal-body .fila .valor.positive { color: #31db72; }
         .modal-body .fila .valor.negative { color: #ff7b87; }
+
+.modal-colabora .modal-content {
+    max-width: 480px;
+    text-align: center;
+}
+
+.modal-colabora .modal-header {
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.modal-colabora .modal-header img {
+    width: 56px;
+    height: 56px;
+}
+
+.modal-colabora .modal-header h2 {
+    font-size: 16px;
+    color: #f5e6c8;
+    letter-spacing: 1px;
+}
+
+.modal-colabora .modal-body p {
+    font-size: 12px;
+    color: #8a8275;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+
+.direccion-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(155,28,46,0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    transition: border-color 0.25s;
+}
+
+.direccion-item:hover {
+    border-color: rgba(155,28,46,0.3);
+}
+
+.direccion-item .direccion-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.direccion-item .direccion-info .nombre {
+    font-size: 11px;
+    color: #ff7b87;
+    letter-spacing: 0.5px;
+}
+
+.direccion-item .direccion-info .address {
+    font-size: 11px;
+    color: #ece8e0;
+    font-family: 'Lucida Console', monospace;
+    word-break: break-all;
+    text-align: left;
+    direction: ltr;
+}
+
+.btn-copiar {
+    background: rgba(155,28,46,0.12);
+    border: 1px solid rgba(155,28,46,0.2);
+    color: #ff7b87;
+    font-family: 'Lucida Console', monospace;
+    font-size: 10px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.25s;
+    white-space: nowrap;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+.btn-copiar:hover {
+    background: rgba(155,28,46,0.25);
+    border-color: rgba(155,28,46,0.45);
+    transform: translateY(-1px);
+}
+
+.btn-copiar.copiado {
+    background: rgba(49,219,114,0.15);
+    border-color: rgba(49,219,114,0.3);
+    color: #31db72;
+}
+
     </style>
 </head>
 <body>
@@ -539,7 +636,8 @@
                 <a href="https://carover0.github.io/pagina/firo-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
                 <a href="https://carover0.github.io/pagina/firo-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
                 <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
-                <a href="https://carover0.xyz/api/firo-log.php?token=carover0" target="_blank" data-i18n="nodo.footer.logs">[LOGS]</a>
+                <a href="#" onclick="abrirModalColabora(event)" data-i18n="nodo.footer.colabora">[COLABORA]</a>
+
             </nav>
             <div class="lang-switcher" role="group" aria-label="Language">
                 <button type="button" data-lang="es" class="active">ES</button>
@@ -653,6 +751,39 @@
             <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
+
+
+<div id="modalColabora" class="modal-overlay modal-colabora" onclick="cerrarModalColabora(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="cerrarModalColabora()">✕</button>
+        <div class="modal-header">
+            <img src="assets/firo.png" alt="Firo">
+            <h2 data-i18n="nodo.colabora.title">COLABORA CON EL NODO</h2>
+        </div>
+        <div class="modal-body">
+            <p data-i18n="nodo.colabora.desc">Si queres apoyar el mantenimiento de este nodo y servicios, podes enviar FIRO a cualquiera de estas direcciones:</p>
+
+            <div class="direccion-item">
+                <div class="direccion-info">
+                    <span class="nombre">mascarcarol</span>
+                    <span class="address" id="addr-mascarcarol">mascarcarol</span>
+                </div>
+                <button class="btn-copiar" onclick="copiarDireccion('addr-mascarcarol', this)" data-i18n="nodo.colabora.copy">Copiar</button>
+            </div>
+
+            <div class="direccion-item">
+                <div class="direccion-info">
+                    <span class="nombre">carover0.firo</span>
+                    <span class="address" id="addr-carover0">carover0.firo</span>
+                </div>
+                <button class="btn-copiar" onclick="copiarDireccion('addr-carover0', this)" data-i18n="nodo.colabora.copy">Copiar</button>
+            </div>
+
+            <p style="margin-top:16px;font-size:10px;color:#4a443a;" data-i18n="nodo.colabora.thanks">¡Gracias por tu apoyo! ❤️</p>
+        </div>
+    </div>
+</div>
+
 
     <div class="toast" id="toast"></div>
 
@@ -932,6 +1063,53 @@
             }
         }
     };
+
+function abrirModalColabora(e) {
+    if (e) e.preventDefault();
+    document.getElementById('modalColabora').classList.add('activo');
+}
+
+function cerrarModalColabora(e) {
+    if (e && e.target !== e.currentTarget && e.type === 'click') return;
+    document.getElementById('modalColabora').classList.remove('activo');
+    document.querySelectorAll('#modalColabora .btn-copiar').forEach(btn => {
+        btn.classList.remove('copiado');
+        btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+    });
+}
+
+function copiarDireccion(id, btn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const texto = el.textContent.trim();
+    navigator.clipboard.writeText(texto).then(() => {
+        btn.textContent = t('nodo.colabora.copied') || '¡Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => {
+            btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+            btn.classList.remove('copiado');
+        }, 2000);
+    }).catch(() => {
+        const range = document.createRange();
+        range.selectNode(el);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        btn.textContent = t('nodo.colabora.copied') || '¡Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => {
+            btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+            btn.classList.remove('copiado');
+        }, 2000);
+    });
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        cerrarModalColabora();
+    }
+});
 
     async function init() {
         await FiroI18n.init();
