@@ -7,7 +7,7 @@
   "common.nav.home": "[INICIO]",
   "common.nav.logs": "[LOGS]",
 
-  "common.btn.blocks": "Bloques en tiempo real",
+  "common.btn.blocks": "🧱 Bloques en tiempo real",
   "common.btn.buy": "Compra FIRO",
   "common.btn.copy": "copiar",
   "common.btn.update": "↻ Actualizar",
@@ -433,6 +433,9 @@
   "nodo.modal.clean": "Limpio",
   "nodo.modal.inqueue": "En cola",
 
-  "masternodos.stats.payment": "⏱️ Pago estimado"  
+  "masternodos.stats.payment": "⏱️ Pago estimado",
+  "common.btn.sobre-firo": "Sobre FIRO"
+
+  
 }
 
