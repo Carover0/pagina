@@ -110,8 +110,8 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(2px);
             z-index: 999;
             align-items: center;
             justify-content: center;
@@ -670,6 +670,51 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        .firo-argentina-badge {
+            color: var(--gold);
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 181, 48, 0.25);
+            background: rgba(255, 181, 48, 0.05);
+            padding: 1px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .firo-argentina-badge:hover {
+            background: rgba(255, 181, 48, 0.12);
+            border-color: rgba(255, 181, 48, 0.4);
+        }
+
+        .firo-modal-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 24px;
+            margin: 12px 0;
+        }
+
+        .firo-modal-stats .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(79, 70, 229, 0.04);
+            font-size: 13px;
+        }
+
+        .firo-modal-stats .stat-item .label {
+            color: #6a6255;
+        }
+
+        .firo-modal-stats .stat-item .value {
+            color: #f5ede4;
+        }
+
+        .firo-modal-stats .stat-item .value.green {
+            color: var(--green);
+        }
+
         @media (max-width: 1024px) {
             .card-grid { grid-template-columns: 1fr; }
             .reactor-grid { grid-template-columns: 1fr; }
@@ -691,6 +736,7 @@
             .bar-line .bar i { width: 9px; height: 11px; }
             .node-item .node-name a { font-size: 14px; }
             .node-item .node-stats { font-size: 11px; }
+            .firo-modal-stats { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
@@ -722,6 +768,7 @@
             .reactor-info { font-size: 11px; }
             .reactor-footer { font-size: 11px; }
             .footer { font-size: 11px; flex-direction: column; text-align: center; }
+            .firo-argentina-badge { font-size: 10px; padding: 0px 8px; }
         }
 
         @media (min-width: 1920px) {
@@ -742,6 +789,7 @@
                 <a href="https://carover0.github.io/pagina/usdt-block.html">[USDT-BLOCK]</a>
                 <a onclick="openModal('info')">[ACERCA]</a>
                 <a onclick="openModal('donate')">[APOYAR]</a>
+                <a href="https://carover0.github.io/pagina/precios.html">[PRECIOS]</a>
             </nav>
         </header>
 
@@ -766,6 +814,22 @@
                         </div>
                     </div>
                 </div>
+
+<div class="node-item">
+    <div class="coin-icon"><img src="assets/firo.png" alt="Firo"></div>
+    <div class="node-info">
+        <div class="node-name">
+            <a onclick="openFiroModal()" style="cursor:pointer;">FIRO</a>
+            <span class="status online" id="firo2-status">ONLINE</span>
+        </div>
+        <div class="node-stats">
+            <span>Height: <span class="val" id="firo2-height">—</span></span>
+            <span>Peers: <span class="val" id="firo2-peers">—</span></span>
+            <span>Mempool: <span class="val" id="firo2-mempool">—</span></span>
+            <span>Version: <span class="val" id="firo2-version">—</span></span>
+        </div>
+    </div>
+</div>
 
                 <div class="node-item">
                     <div class="coin-icon"><img src="assets/zcash.png" alt="Zcash"></div>
@@ -799,24 +863,8 @@
                     </div>
                 </div>
 
-                <div class="node-item">
-                    <div class="coin-icon"><img src="assets/ycash.png" alt="Ycash"></div>
-                    <div class="node-info">
-                        <div class="node-name">
-                            <a href="https://carover0.github.io/pagina/ycash-nodo.html">YCASH</a>
-                            <span class="status online" id="ycash-status">ONLINE</span>
-                        </div>
-                        <div class="node-stats">
-                            <span>Height: <span class="val" id="ycash-height">—</span></span>
-                            <span>Peers: <span class="val" id="ycash-peers">—</span></span>
-                            <span>Mempool: <span class="val" id="ycash-mempool">—</span></span>
-                            <span>Version: <span class="val" id="ycash-version">—</span></span>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <!-- Card 2: Estado del VPS -->
             <div class="card">
                 <div class="card-title">ESTADO DEL VPS</div>
 
@@ -849,7 +897,6 @@
                 <div class="vps-status-text online" id="vps-status">ALL SYSTEMS OPERATIONAL</div>
             </div>
 
-            <!-- Card 3: TRON -->
             <div class="card card-full">
                 <div class="card-title">
                     <img src="assets/tron.png" alt="Tron" style="height:30px;width:30px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(79,70,229,0.2));">
@@ -924,13 +971,80 @@
 
     <div class="toast" id="toast"></div>
 
+    <div class="modal-overlay" id="modal-firo2">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('firo2')">✕</button>
+            <div class="modal-title">
+                <span class="icon"><img src="assets/firo.png" width="32" style="filter:drop-shadow(0 0 12px rgba(79,70,229,0.3));"></span>
+                FIRO · NODO ARGENTINA
+            </div>
+            <div class="modal-body">
+                <div class="desc" style="font-size:15px; color:var(--red); letter-spacing:0.5px; margin-bottom:8px;">
+                    🧉 AUTOPROCLAMADO ÚNICO NODO FIRO EN ARGENTINA
+                </div>
+                <div class="desc" style="font-size:13px; color:#8a8275;">
+                    Este nodo funciona de manera autónoma y es el único nodo completo de Firo operado desde Argentina.
+                </div>
+
+                <div class="divider" style="margin-top:16px;">
+                    <span class="highlight">▸ DATOS EN TIEMPO REAL</span>
+                </div>
+
+                <div class="firo-modal-stats">
+                    <div class="stat-item">
+                        <span class="label">Altura</span>
+                        <span class="value" id="modal-firo2-height">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Conexiones</span>
+                        <span class="value" id="modal-firo2-peers">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Mempool</span>
+                        <span class="value" id="modal-firo2-mempool">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Versión</span>
+                        <span class="value" id="modal-firo2-version">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Protocolo</span>
+                        <span class="value" id="modal-firo2-protocol">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Dificultad</span>
+                        <span class="value" id="modal-firo2-difficulty">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Relay fee</span>
+                        <span class="value" id="modal-firo2-relayfee">—</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Network active</span>
+                        <span class="value green" id="modal-firo2-network">—</span>
+                    </div>
+                </div>
+
+                <div class="desc" style="font-size:12px; color:#5a5348; margin-top:10px;">
+                    Datos obtenidos desde <span class="highlight">carover0.xyz/cacaX/firo_status_X.json</span>
+                </div>
+
+                <div class="divider">
+                    <span style="color:#3d3830;font-size:12px;">
+                        <span class="highlight">♥</span> Infraestructura propia · <span class="highlight">cΔrovΣr0</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="modal-info">
         <div class="modal">
             <button class="modal-close" onclick="closeModal('info')">✕</button>
             <div class="modal-title"><span class="icon"><img src="assets/info.png" width="32"></span> ¿QUÉ ES ESTO?</div>
             <div class="modal-body">
                 <div class="desc">
-                    ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Zcash, Firo, Ycash y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
+                    ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Zcash, Firo y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
                 </div>
 
                 <div class="desc" style="font-size:13px; color:#5a5348;">
@@ -942,9 +1056,9 @@
                 </div>
 
                 <ul class="feature-list">
-                    <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Zcash, Firo, Ycash, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Zcash, Firo, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Zcash, Firo, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Zcash, Firo, PIVX)</span></li>
                     <li><span class="check">◈</span> <span class="highlight">Estadísticas</span> → Información sobre suministro, pools de valor, halvings y actualizaciones de protocolo.</li>
                     <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Zcash, Firo)</span></li>
                 </ul>
@@ -995,13 +1109,6 @@
                     <span class="copy-hint">[copiar]</span>
                 </div>
 
-                <div class="donation-addr" onclick="copyAddress('s1MnYtobqQZZ2gfmUzVbJA6k3qukfVQSGJE', 'Ycash YEC')">
-                    <span class="coin-icon"><img src="assets/ycash.png" alt="Ycash"></span>
-                    <span class="coin-name">Ycash YEC</span>
-                    <span class="address">s1MnYtobqQZZ2gfmUzVbJA6k3qukfVQSGJE</span>
-                    <span class="copy-hint">[copiar]</span>
-                </div>
-
                 <div class="donation-note">
                     ◆ Hacé clic en cualquier dirección para copiarla al portapapeles.
                 </div>
@@ -1020,6 +1127,10 @@
             const modal = document.getElementById('modal-' + type);
             if (modal) modal.classList.remove('active');
             document.body.style.overflow = '';
+        }
+
+        function openFiroModal() {
+            openModal('firo2');
         }
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -1120,7 +1231,6 @@
                 offline('zcash');
             }
 
-            // ─── FIRO ───
             try {
                 const r = await fetch('https://carover0.xyz/firo/status.json');
                 const d = await r.json();
@@ -1136,6 +1246,36 @@
             }
 
             try {
+                const r = await fetch('https://carover0.xyz/cacaX/firo_status_X.json');
+                const d = await r.json();
+                setNode('firo2', {
+                    height: d.height,
+                    connections: d.connections,
+                    mempool: d.mempool,
+                    version: d.subversion || d.version
+                });
+                show('modal-firo2-height', format(d.height));
+                show('modal-firo2-peers', d.connections);
+                show('modal-firo2-mempool', d.mempool);
+                show('modal-firo2-version', d.subversion || d.version || '—');
+                show('modal-firo2-protocol', d.protocolversion || '—');
+                show('modal-firo2-difficulty', d.difficulty ? d.difficulty.toFixed(6) : '—');
+                show('modal-firo2-relayfee', d.relayfee ? d.relayfee.toFixed(8) : '—');
+                show('modal-firo2-network', d.networkactive ? 'SÍ' : 'NO');
+            } catch (e) {
+                console.log('Firo2 error:', e);
+                offline('firo2');
+                show('modal-firo2-height', 'ERROR');
+                show('modal-firo2-peers', '—');
+                show('modal-firo2-mempool', '—');
+                show('modal-firo2-version', '—');
+                show('modal-firo2-protocol', '—');
+                show('modal-firo2-difficulty', '—');
+                show('modal-firo2-relayfee', '—');
+                show('modal-firo2-network', '—');
+            }
+
+            try {
                 const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json');
                 const d = await r.json();
                 setNode('pivx', {
@@ -1147,20 +1287,6 @@
             } catch (e) {
                 console.log('PIVX error:', e);
                 offline('pivx');
-            }
-
-            try {
-                const r = await fetch('https://carover0.xyz/cacaX/ycash_status.json');
-                const d = await r.json();
-                setNode('ycash', {
-                    height: d.height,
-                    connections: d.connections,
-                    mempool: d.mempool,
-                    version: d.software_subversion
-                });
-            } catch (e) {
-                console.log('Ycash error:', e);
-                offline('ycash');
             }
 
             try {
@@ -1415,6 +1541,7 @@
         window.openModal = openModal;
         window.closeModal = closeModal;
         window.copyAddress = copyAddress;
+        window.openFiroModal = openFiroModal;
 
         updateStatus();
         setInterval(updateStatus, 30000);
