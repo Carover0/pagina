@@ -190,7 +190,7 @@ const TRANSLATIONS = {
         "nodo.note_ok":                 "El nodo está totalmente sincronizado. Datos actualizados cada 5 minutos.",
         "nodo.footer.colabora":         "[COLABORA]",
         "nodo.colabora.title":          "COLABORA CON EL NODO",
-        "nodo.colabora.desc":           "Si quieres apoyar el mantenimiento de este nodo y servicios, puedes enviar BCH a cualquiera de estas direcciones:",
+        "nodo.colabora.desc":           "Si queres apoyar el mantenimiento de este nodo y servicios, podes enviar BCH a cualquiera de estas direcciones:",
         "nodo.colabora.copy":           "Copiar",
         "nodo.colabora.copied":         "¡Copiado!",
         "nodo.colabora.thanks":         "¡Gracias por tu apoyo! ❤️"
