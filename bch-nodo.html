@@ -1,0 +1,893 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCH · Monitor de Nodo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: #06100d;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(10, 193, 143, 0.10) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(10, 193, 143, 0.06) 0%, transparent 50%),
+                linear-gradient(160deg, #06100d 0%, #0b1a16 50%, #08120f 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #dbece7;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(10, 193, 143, 0.25);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand { display: flex; align-items: center; gap: 14px; }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(10, 193, 143, 0.4));
+            transition: filter 0.3s;
+        }
+
+        .brand img:hover { filter: drop-shadow(0 0 24px rgba(10, 193, 143, 0.7)); }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #d9f5ec;
+            text-shadow: 0 0 30px rgba(10, 193, 143, 0.20);
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #4a7a6e;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .nav-links a {
+            color: #4a7a6e;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover { color: #0ac18f; border-bottom-color: #0ac18f; }
+
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 32px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(10, 193, 143, 0.12);
+            font-size: 13px;
+        }
+
+        .stats-bar .stat { display: flex; align-items: baseline; gap: 6px; }
+
+        .stats-bar .label {
+            color: #3a5a52;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stats-bar .value { color: #e6f5f0; font-weight: 600; font-size: 14px; }
+        .stats-bar .value.bch { color: #0ac18f; }
+
+        .btn-blocks {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(10, 193, 143, 0.12);
+            color: #0ac18f;
+            border: 1px solid rgba(10, 193, 143, 0.25);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-family: 'Lucida Console', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            margin-inline-start: auto;
+        }
+
+        .btn-blocks:hover {
+            background: rgba(10, 193, 143, 0.22);
+            border-color: rgba(10, 193, 143, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(10, 193, 143, 0.25);
+        }
+
+        .btn-blocks img.icon {
+            width: 14px;
+            height: 14px;
+            filter: drop-shadow(0 0 6px rgba(10, 193, 143, 0.5));
+        }
+
+        .btn-blocks .pulse {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #31db72;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.7); }
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(10, 193, 143, 0.10);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel:hover { border-color: rgba(10, 193, 143, 0.20); }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #0ac18f;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(10, 193, 143, 0.08);
+        }
+
+        .panel-title img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 12px rgba(10, 193, 143, 0.4));
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid rgba(10, 193, 143, 0.06);
+            transition: all 0.25s;
+        }
+
+        .card:hover {
+            border-color: rgba(10, 193, 143, 0.20);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-title {
+            color: #3a5a52;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(10, 193, 143, 0.06);
+        }
+
+        .card-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(10, 193, 143, 0.03);
+        }
+
+        .card-item:last-child { border-bottom: none; }
+
+        .card-item .label {
+            color: #4a7a6e;
+            font-size: 11px;
+            letter-spacing: 0.3px;
+        }
+
+        .card-item .value {
+            color: #e6f5f0;
+            font-size: 12px;
+            text-align: end;
+            word-break: break-all;
+        }
+
+        .card-item .value.positive { color: #31db72; }
+        .card-item .value.negative { color: #ff7b87; }
+        .card-item .value.gold { color: #dd9d34; }
+        .card-item .value.bch { color: #0ac18f; }
+        .card-item .value.mono { font-size: 11px; color: #6a8a82; }
+
+        .note {
+            color: #4a6a62;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(10, 193, 143, 0.06);
+        }
+
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(10, 193, 143, 0.08);
+            font-size: 11px;
+            color: #3a5a52;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer a { color: #4a6a62; text-decoration: none; transition: color 0.2s; }
+        .footer a:hover { color: #0ac18f; }
+
+        .footer-links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+
+        .footer-links a {
+            font-size: 11px;
+            color: #4a7a6e;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #0ac18f;
+            border-bottom-color: rgba(10, 193, 143, 0.25);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(10, 193, 143, 0.12);
+            backdrop-filter: blur(12px);
+            color: #e6f5f0;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(10, 193, 143, 0.20);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .lang-switcher { display: inline-flex; align-items: center; gap: 4px; margin-inline-start: auto; }
+
+        .lang-switcher button {
+            background: transparent;
+            border: 1px solid rgba(10, 193, 143, 0.20);
+            color: #4a7a6e;
+            font-family: 'Lucida Console', monospace;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .lang-switcher button:hover { color: #0ac18f; border-color: rgba(10, 193, 143, 0.45); }
+
+        .lang-switcher button.active {
+            color: #0ac18f;
+            background: rgba(10, 193, 143, 0.15);
+            border-color: rgba(10, 193, 143, 0.5);
+        }
+
+        @media (max-width: 1100px) {
+            .stats-bar { gap: 6px 22px; }
+            .btn-blocks { font-size: 9px; padding: 3px 12px; }
+            .stats-bar .value { font-size: 13px; }
+        }
+
+        @media (max-width: 900px) {
+            .stats-bar { flex-wrap: wrap; gap: 8px 20px; }
+            .stats-bar .stat { flex: 0 1 auto; }
+            .btn-blocks { flex: 1 1 calc(50% - 10px); justify-content: center; margin-inline-start: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .app { padding: 12px 14px; gap: 12px; }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+            .brand h1 { font-size: 17px; }
+            .brand img { width: 30px; height: 30px; }
+            .nav-links { font-size: 11px; gap: 2px 14px; }
+            .lang-switcher { margin-inline-start: 0; justify-content: center; }
+            .stats-bar { font-size: 11px; padding: 10px 14px; gap: 8px 18px; }
+            .stats-bar .value { font-size: 13px; }
+            .btn-blocks { font-size: 9px; padding: 4px 12px; margin-inline-start: 0; flex: 1 1 calc(50% - 9px); justify-content: center; }
+            .panel { padding: 18px 16px; }
+            .panel-title { font-size: 15px; }
+            .panel-title img { width: 28px; height: 28px; }
+            .cards { grid-template-columns: 1fr; gap: 12px; }
+            .card { padding: 14px 16px; }
+            .card-item .value { font-size: 11px; }
+            .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .footer-links { gap: 4px 12px; }
+        }
+
+        @media (max-width: 480px) {
+            .app { padding: 8px 10px; gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
+            .stats-bar { font-size: 10px; padding: 8px 12px; gap: 6px 12px; }
+            .stats-bar .stat { flex: 1 1 calc(50% - 6px); justify-content: space-between; }
+            .stats-bar .value { font-size: 12px; }
+            .btn-blocks { font-size: 8px; padding: 4px 10px; gap: 4px; flex: 1 1 100%; justify-content: center; margin-inline-start: 0; }
+            .btn-blocks img.icon { width: 12px; height: 12px; }
+            .btn-blocks .pulse { width: 5px; height: 5px; }
+            .panel { padding: 14px 12px; border-radius: 10px; }
+            .panel-title { font-size: 13px; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; }
+            .panel-title img { width: 24px; height: 24px; }
+            .card { padding: 12px 14px; }
+            .card-title { font-size: 9px; }
+            .card-item { padding: 4px 0; flex-wrap: wrap; gap: 2px; }
+            .card-item .label { font-size: 10px; min-width: 90px; }
+            .card-item .value { font-size: 10px; text-align: start; flex: 1; }
+            .note { font-size: 10px; padding: 10px 12px; }
+            .footer { font-size: 10px; }
+            .footer-links a { font-size: 10px; }
+        }
+
+        @media (max-width: 360px) {
+            .stats-bar .stat { flex: 1 1 100%; }
+            .btn-blocks { font-size: 8px; padding: 3px 8px; }
+            .card-item .label { min-width: 70px; font-size: 9px; }
+            .card-item .value { font-size: 9px; }
+        }
+
+        @media (min-width: 1920px) {
+            .app { max-width: 1600px; padding: 24px 40px; }
+            .card-item .value { font-size: 13px; }
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.activo { display: flex; }
+
+        .modal-content {
+            background: #0b1a16;
+            border: 1px solid rgba(10, 193, 143, 0.3);
+            border-radius: 18px;
+            padding: 28px 32px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        @keyframes modalIn {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(10, 193, 143, 0.25);
+            color: #0ac18f;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover { background: rgba(10, 193, 143, 0.2); }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 16px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(10, 193, 143, 0.15);
+        }
+
+        .modal-logo {
+            width: 64px;
+            height: 64px;
+            filter: drop-shadow(0 0 20px rgba(10, 193, 143, 0.4));
+        }
+
+        .modal-header h2 { font-size: 18px; font-weight: 400; color: #d9f5ec; }
+
+        .modal-body .fila {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(10, 193, 143, 0.08);
+        }
+
+        .modal-body .fila:last-child { border-bottom: none; }
+
+        .modal-body .fila .label {
+            color: #3a5a52;
+            font-size: 10px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .modal-body .fila .valor {
+            color: #dbece7;
+            font-weight: 500;
+            text-align: right;
+            word-break: break-all;
+        }
+
+        .modal-body .fila .valor.bch { color: #0ac18f; }
+        .modal-body .fila .valor.mono { font-size: 10px; color: #6a8a82; }
+        .modal-body .fila .valor.positive { color: #31db72; }
+        .modal-body .fila .valor.negative { color: #ff7b87; }
+
+        .modal-colabora .modal-content { max-width: 680px; text-align: left; }
+        .modal-colabora .modal-header { justify-content: center; flex-direction: column; gap: 8px; }
+        .modal-colabora .modal-header img { width: 56px; height: 56px; }
+        .modal-colabora .modal-header h2 { font-size: 16px; color: #d9f5ec; letter-spacing: 1px; }
+        .modal-colabora .modal-body p { font-size: 12px; color: #6a8a82; margin-bottom: 18px; line-height: 1.5; }
+
+        .direccion-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(10, 193, 143, 0.15);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            transition: border-color 0.25s;
+        }
+
+        .direccion-item:hover { border-color: rgba(10, 193, 143, 0.4); }
+
+        .direccion-item .direccion-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .direccion-item .direccion-info .nombre {
+            font-size: 11px;
+            color: #0ac18f;
+            letter-spacing: 0.5px;
+        }
+
+        .direccion-item .direccion-info .address {
+            font-size: 11px;
+            color: #dbece7;
+            font-family: 'Lucida Console', monospace;
+            word-break: break-all;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .btn-copiar {
+            background: rgba(10, 193, 143, 0.12);
+            border: 1px solid rgba(10, 193, 143, 0.25);
+            color: #0ac18f;
+            font-family: 'Lucida Console', monospace;
+            font-size: 10px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s;
+            white-space: nowrap;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
+
+        .btn-copiar:hover {
+            background: rgba(10, 193, 143, 0.25);
+            border-color: rgba(10, 193, 143, 0.55);
+            transform: translateY(-1px);
+        }
+
+        .btn-copiar.copiado {
+            background: rgba(49,219,114,0.15);
+            border-color: rgba(49,219,114,0.35);
+            color: #31db72;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+
+        <header class="header">
+            <div class="brand">
+                <img src="assets/bch.png" alt="BCH" onerror="this.style.display='none'">
+                <h1>BCH <small data-i18n="nodo.title_short">monitor</small></h1>
+            </div>
+            <nav class="nav-links">
+                <a href="https://carover0.github.io/pagina/bch-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+                <a href="https://carover0.github.io/pagina/bch-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
+                <a href="#" onclick="abrirModalColabora(event)" data-i18n="nodo.footer.colabora">[COLABORA]</a>
+            </nav>
+            <div class="lang-switcher" role="group" aria-label="Language">
+                <button type="button" data-lang="es" class="active">ES</button>
+                <button type="button" data-lang="en">EN</button>
+            </div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat"><span class="label" data-i18n="common.label.height">ALTURA</span><span class="value" id="stat-height">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#2f4a42;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.price">PRECIO</span><span class="value bch" id="stat-price">—</span></div>
+
+            <a href="https://carover0.github.io/pagina/bch-bloques.html" target="_self" class="btn-blocks">
+                <span data-i18n="common.btn.blocks">🧱 Bloques en tiempo real</span>
+                <span class="pulse"></span>
+            </a>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">
+                <img src="assets/bch.png" alt="BCH" onerror="this.style.display='none'">
+                <span data-i18n="nodo.panel_title">MONITOR DE NODO BCH</span>
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <div class="card-title" data-i18n="nodo.card.node_state">Nodo · Estado</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="node-version">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="node-state">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.blocks">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.uptime">TIEMPO EN LÍNEA</span><span class="value" id="node-uptime">---</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" data-i18n="nodo.card.network">Nodo · Red</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.difficulty">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.hashrate">HASHRATE</span><span class="value" id="node-hashrate">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.chain">CADENA</span><span class="value" id="node-chain">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.bestblock">ÚLTIMO BLOQUE</span><span class="value mono" id="node-bestblock">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.size">TAMAÑO EN DISCO</span><span class="value" id="node-size">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.updated">ÚLTIMA ACTUALIZACIÓN</span><span class="value mono" id="node-timestamp">---</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" data-i18n="nodo.card.market">BCH · Mercado</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.price_usd">PRECIO USD</span><span class="value gold" id="market-price">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.24h">24h %</span><span class="value" id="market-24h">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.7d">7d %</span><span class="value" id="market-7d">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.marketcap">MARKET CAP</span><span class="value" id="market-cap">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.vol_24h">VOLUMEN 24h</span><span class="value" id="market-volume">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.updated">ACTUALIZADO</span><span class="value mono" id="market-updated">---</span></div>
+                </div>
+            </div>
+ 
+            <footer class="footer">
+                <div class="footer-links">
+                    <a href="https://carover0.xyz/api/bch.json" target="_blank"> API</a>
+                </div>
+            </footer>
+        </div>
+
+    </div>
+
+    <div id="modalColabora" class="modal-overlay modal-colabora" onclick="cerrarModalColabora(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="cerrarModalColabora()">✕</button>
+            <div class="modal-header">
+                <img src="assets/bch.png" alt="BCH" onerror="this.style.display='none'">
+                <h2 data-i18n="nodo.colabora.title">COLABORA CON EL NODO</h2>
+            </div>
+            <div class="modal-body">
+                <p data-i18n="nodo.colabora.desc">Si quieres apoyar el mantenimiento de este nodo y servicios, puedes enviar BCH a cualquiera de estas direcciones:</p>
+
+                <div class="direccion-item">
+                    <div class="direccion-info">
+                        <span class="nombre">carover0</span>
+                        <span class="address" id="addr-carover0">bitcoincash:qqn6ruf8w809esah89qkvje9xlq4x947gv52jlhd72</span>
+                    </div>
+                    <button class="btn-copiar" onclick="copiarDireccion('addr-carover0', this)" data-i18n="nodo.colabora.copy">Copiar</button>
+                </div>
+
+                <p style="margin-top:16px;font-size:10px;color:#3a5a52;" data-i18n="nodo.colabora.thanks">¡Gracias por tu apoyo! ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/i18n-bch.js"></script>
+    <script>
+    const NODE_JSON_URL = 'https://carover0.xyz/api/bch.json';
+    const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/bitcoin-cash?localization=false&market_data=true';
+
+    const t = (key) => (window.FiroI18n ? FiroI18n.t(key) : key);
+
+    let cachedNodeData = null;
+    let cachedPrice = null;
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+    }
+
+    function formatUptime(s) {
+        if (!s) return '---';
+        s = parseInt(s);
+        const d = Math.floor(s / 86400);
+        s %= 86400;
+        const h = Math.floor(s / 3600);
+        s %= 3600;
+        const m = Math.floor(s / 60);
+        let parts = [];
+        if (d > 0) parts.push(d + t('common.unit.day'));
+        if (h > 0) parts.push(h + t('common.unit.hour'));
+        if (m > 0 || parts.length === 0) parts.push(m + t('common.unit.min'));
+        return parts.join(' ');
+    }
+
+    function formatHash(h) {
+        if (!h) return '---';
+        return h.substring(0, 16) + '…' + h.substring(h.length - 4);
+    }
+
+    function formatBytes(bytes) {
+        if (!bytes || bytes === 0) return '0 B';
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+    }
+
+    function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(el._timer);
+        el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    function updateStatsBar() {
+        const data = cachedNodeData;
+        const price = cachedPrice;
+
+        document.getElementById('stat-height').textContent = data?.blockchain?.blocks
+            ? Number(data.blockchain.blocks).toLocaleString()
+            : '—';
+        document.getElementById('stat-connections').textContent = data?.network?.connections ?? '—';
+        document.getElementById('stat-mempool').textContent = data?.mempool?.txcount ?? '0';
+        document.getElementById('stat-price').textContent = price ? '$' + price.toFixed(2) : '—';
+    }
+
+    function displayNodeData(d) {
+        if (!d) return;
+
+        const isSynced = d.health?.state === 'ok';
+        const datetime = d.datetime || '';
+
+        document.getElementById('node-version').textContent = d.network?.subversion || 'N/A';
+
+        const stateEl = document.getElementById('node-state');
+        stateEl.textContent = d.health?.synced || '---';
+        stateEl.className = 'value ' + (isSynced ? 'positive' : 'gold');
+
+        document.getElementById('node-blocks').textContent =
+            `${Number(d.blockchain?.blocks || 0).toLocaleString()} / ${Number(d.blockchain?.headers || 0).toLocaleString()}`;
+
+        document.getElementById('node-connections').textContent =
+            `${d.network?.connections ?? 0} (${d.peers?.inbound ?? 0} ${t('common.unit.in')} · ${d.peers?.outbound ?? 0} ${t('common.unit.out')})`;
+
+        document.getElementById('node-mempool').textContent = `${d.mempool?.txcount ?? 0} ${t('common.unit.tx').toUpperCase()}`;
+        document.getElementById('node-uptime').textContent = formatUptime(d.node?.uptime_seconds);
+
+        document.getElementById('node-difficulty').textContent = Number(d.blockchain?.difficulty || 0).toFixed(2);
+        document.getElementById('node-hashrate').textContent = (Number(d.mining?.networkhashps || 0) / 1e18).toFixed(2) + ' EH/s';
+        document.getElementById('node-chain').textContent = d.blockchain?.chain || '---';
+        document.getElementById('node-bestblock').textContent = formatHash(d.blockchain?.bestblockhash);
+        document.getElementById('node-size').textContent = formatBytes(d.blockchain?.size_on_disk_bytes);
+        document.getElementById('node-timestamp').textContent = datetime || '---';
+    }
+
+    async function fetchNodeData() {
+        try {
+            const r = await fetch(NODE_JSON_URL);
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const data = await r.json();
+            cachedNodeData = data;
+            displayNodeData(data);
+            updateStatsBar();
+            return data;
+        } catch (e) {
+            console.error('Error cargando nodo:', e);
+            document.getElementById('node-version').textContent = t('common.state.connection_error');
+            return null;
+        }
+    }
+
+    async function fetchMarketData() {
+        try {
+            const d = await (await fetch(COINGECKO_API)).json();
+            const m = d.market_data;
+            const p = m.current_price.usd;
+            cachedPrice = p;
+
+            document.getElementById('market-price').textContent = '$' + p.toFixed(2);
+
+            const c24 = m.price_change_percentage_24h;
+            const c7 = m.price_change_percentage_7d;
+            const el24 = document.getElementById('market-24h');
+            const el7 = document.getElementById('market-7d');
+            el24.textContent = (c24 >= 0 ? '+' : '') + c24.toFixed(2) + '%';
+            el24.className = 'value ' + (c24 >= 0 ? 'positive' : 'negative');
+            el7.textContent = (c7 >= 0 ? '+' : '') + c7.toFixed(2) + '%';
+            el7.className = 'value ' + (c7 >= 0 ? 'positive' : 'negative');
+
+            document.getElementById('market-cap').textContent = '$' + (m.market_cap.usd / 1e9).toFixed(2) + 'B';
+            document.getElementById('market-volume').textContent = '$' + (m.total_volume.usd / 1e9).toFixed(2) + 'B';
+            document.getElementById('market-updated').textContent = new Date().toLocaleTimeString();
+
+            updateStatsBar();
+            return p;
+        } catch (e) {
+            ['market-price', 'market-24h', 'market-7d', 'market-cap', 'market-volume'].forEach(id => {
+                document.getElementById(id).textContent = '---';
+            });
+            document.getElementById('market-updated').textContent = t('common.state.error');
+            return null;
+        }
+    }
+
+    function abrirModalColabora(e) {
+        if (e) e.preventDefault();
+        document.getElementById('modalColabora').classList.add('activo');
+    }
+
+    function cerrarModalColabora(e) {
+        if (e && e.target !== e.currentTarget && e.type === 'click') return;
+        document.getElementById('modalColabora').classList.remove('activo');
+        document.querySelectorAll('#modalColabora .btn-copiar').forEach(btn => {
+            btn.classList.remove('copiado');
+            btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+        });
+    }
+
+    function copiarDireccion(id, btn) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const texto = el.textContent.trim();
+        navigator.clipboard.writeText(texto).then(() => {
+            btn.textContent = t('nodo.colabora.copied') || '¡Copiado!';
+            btn.classList.add('copiado');
+            setTimeout(() => {
+                btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+                btn.classList.remove('copiado');
+            }, 2000);
+        }).catch(() => {
+            const range = document.createRange();
+            range.selectNode(el);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            btn.textContent = t('nodo.colabora.copied') || '¡Copiado!';
+            btn.classList.add('copiado');
+            setTimeout(() => {
+                btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+                btn.classList.remove('copiado');
+            }, 2000);
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') cerrarModalColabora();
+    });
+
+    window.onLangChange = function () {
+        if (cachedNodeData) displayNodeData(cachedNodeData);
+        updateStatsBar();
+    };
+
+    async function init() {
+        if (window.FiroI18n && FiroI18n.init) {
+            await FiroI18n.init();
+        }
+        await Promise.all([
+            fetchNodeData(),
+            fetchMarketData()
+        ]);
+    }
+
+    init();
+
+    setInterval(() => {
+        fetchNodeData();
+        fetchMarketData();
+    }, 300000);
+    </script>
+
+</body>
+</html>
