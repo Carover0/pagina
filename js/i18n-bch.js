@@ -1,32 +1,17 @@
 const TRANSLATIONS = {
     es: {
-
-        // NODO — Extras
-"nodo.card.cert":               "Certificado SSL",
-"nodo.cert.issuer":             "EMISOR",
-"nodo.cert.subject":            "DOMINIO",
-"nodo.cert.valid_from":         "VÁLIDO DESDE",
-"nodo.cert.valid_to":           "VÁLIDO HASTA",
-"nodo.cert.days":               "DÍAS RESTANTES",
-"nodo.note_default":            "Este nodo BCH está sincronizando la blockchain. Los datos se actualizan cada 5 minutos.",
-"nodo.note_syncing":            "El nodo está sincronizando la blockchain. Bloques pendientes:",
-"nodo.note_ok":                 "El nodo está totalmente sincronizado. Datos actualizados cada 5 minutos.",
-"nodo.footer.colabora":         "[COLABORA]",
-"nodo.colabora.title":          "COLABORA CON EL NODO",
-"nodo.colabora.desc":           "Si quieres apoyar el mantenimiento de este nodo y servicios, puedes enviar BCH a cualquiera de estas direcciones:",
-"nodo.colabora.copy":           "Copiar",
-"nodo.colabora.copied":         "¡Copiado!",
-"nodo.colabora.thanks":         "¡Gracias por tu apoyo! ❤️",
         "common.nav.node":              "[NODO]",
         "common.nav.explorer":          "[EXPLORADOR]",
         "common.nav.console":           "[CONSOLA]",
         "common.nav.blocks":            "[BLOQUES]",
         "common.nav.home":              "[INICIO]",
         "common.nav.logs":              "[LOGS]",
+
         "common.btn.blocks":            "🧱 Bloques en tiempo real",
         "common.btn.update":            "↻ Actualizar",
         "common.btn.updating":          "↻ Actualizando...",
         "common.btn.copy":              "copiar",
+
         "common.label.height":          "ALTURA",
         "common.label.difficulty":      "DIFICULTAD",
         "common.label.connections":     "CONEXIONES",
@@ -50,6 +35,7 @@ const TRANSLATIONS = {
         "common.label.response":        "RESPUESTA",
         "common.label.address":         "dirección",
         "common.label.size":            "Tamaño",
+
         "common.unit.tx":               "tx",
         "common.unit.block":            "Bloque",
         "common.unit.blocks":           "bloques",
@@ -62,6 +48,7 @@ const TRANSLATIONS = {
         "common.unit.secs":             "seg",
         "common.unit.in":               "IN",
         "common.unit.out":              "OUT",
+
         "common.state.synced":          "SINCRONIZADO",
         "common.state.syncing":         "SINCRONIZANDO",
         "common.state.online":          "ONLINE",
@@ -71,15 +58,18 @@ const TRANSLATIONS = {
         "common.state.error":           "Error",
         "common.state.connection_error":"ERROR DE CONEXIÓN",
         "common.state.unknown":         "desconocido",
+
         "common.footer.realtime":       "actualizado en tiempo real",
         "common.footer.api":            "API ·",
         "common.footer.mainnet":        "BCH mainnet",
         "common.footer.updated_at":     "actualizado",
         "common.footer.loading":        "cargando",
+
         "common.copy.ok":               "✓ copiado",
         "common.error.connection":      "Error de conexión",
         "common.error.no_result":       "sin resultado",
         "common.error.connection_prefix": "⚠️ Error de conexión:",
+
         "bch.title_short":              "bloques en vivo",
         "bch.stats.difficulty":         "⛏️ Dificultad",
         "bch.stats.mempool":            "📦 Mempool",
@@ -106,6 +96,7 @@ const TRANSLATIONS = {
         "bch.mempool.vacio":            "vacío",
         "bch.no_blocks":                "⚠️ No se encontraron bloques",
         "bch.updated_at":               "actualizado",
+
         "consola.title_short":          "consola RPC",
         "consola.help.simple_title":    "COMANDOS BÁSICOS (sin parámetros)",
         "consola.help.params_title":    "COMANDOS CON PARÁMETROS",
@@ -123,6 +114,7 @@ const TRANSLATIONS = {
         "consola.shortcut_copy_label":  "copiar",
         "consola.shortcut_clear":       "F9",
         "consola.shortcut_clear_label": "limpiar",
+
         "explorer.title_short":         "explorador",
         "explorer.back":                "← volver",
         "explorer.search_placeholder":  "bloque · hash · txid · dirección",
@@ -178,22 +170,32 @@ const TRANSLATIONS = {
         "explorer.shortcut_copy_label": "copiar",
         "explorer.shortcut_clear":      "F9",
         "explorer.shortcut_clear_label":"limpiar",
+
         "nodo.title_short":             "monitor",
         "nodo.panel_title":             "MONITOR DE NODO BCH",
         "nodo.card.node_state":         "Nodo · Estado",
         "nodo.card.network":            "Nodo · Red",
         "nodo.card.market":             "BCH · Mercado",
-        "nodo.card.electrum":           "ElectrumX · Conectar Wallet",
+        "nodo.card.cert":               "Certificado SSL",
+        "nodo.cert.issuer":             "EMISOR",
+        "nodo.cert.subject":            "DOMINIO",
+        "nodo.cert.valid_from":         "VÁLIDO DESDE",
+        "nodo.cert.valid_to":           "VÁLIDO HASTA",
+        "nodo.cert.days":               "DÍAS RESTANTES",
         "nodo.label.24h":               "24h %",
         "nodo.label.7d":                "7d %",
         "nodo.label.vol_24h":           "VOLUMEN 24h",
-        "nodo.electrum.note_default":   "Conectá tu wallet BCH a este servidor para contribuir a la descentralización de la red.",
-        "nodo.electrum.note_online":    "Servidor lightwallet operativo y respondiendo correctamente.",
-        "nodo.electrum.note_offline":   "El servidor lightwallet no responde. Verifica que ElectrumX esté corriendo.",
-        "nodo.electrum.note_error":     "No se pudo conectar al servidor lightwallet.",
-        "nodo.electrum.error_conn":     "Error de conexión",
-        "nodo.footer.logs":             "Logs"
+        "nodo.note_default":            "Este nodo BCH está sincronizando la blockchain. Los datos se actualizan cada 5 minutos.",
+        "nodo.note_syncing":            "El nodo está sincronizando la blockchain. Bloques pendientes:",
+        "nodo.note_ok":                 "El nodo está totalmente sincronizado. Datos actualizados cada 5 minutos.",
+        "nodo.footer.colabora":         "[COLABORA]",
+        "nodo.colabora.title":          "COLABORA CON EL NODO",
+        "nodo.colabora.desc":           "Si quieres apoyar el mantenimiento de este nodo y servicios, puedes enviar BCH a cualquiera de estas direcciones:",
+        "nodo.colabora.copy":           "Copiar",
+        "nodo.colabora.copied":         "¡Copiado!",
+        "nodo.colabora.thanks":         "¡Gracias por tu apoyo! ❤️"
     },
+
     en: {
         "common.nav.node":              "[NODE]",
         "common.nav.explorer":          "[EXPLORER]",
@@ -201,10 +203,12 @@ const TRANSLATIONS = {
         "common.nav.blocks":            "[BLOCKS]",
         "common.nav.home":              "[HOME]",
         "common.nav.logs":              "[LOGS]",
+
         "common.btn.blocks":            "🧱 Live blocks",
         "common.btn.update":            "↻ Refresh",
         "common.btn.updating":          "↻ Refreshing...",
         "common.btn.copy":              "copy",
+
         "common.label.height":          "HEIGHT",
         "common.label.difficulty":      "DIFFICULTY",
         "common.label.connections":     "CONNECTIONS",
@@ -228,6 +232,7 @@ const TRANSLATIONS = {
         "common.label.response":        "RESPONSE",
         "common.label.address":         "address",
         "common.label.size":            "Size",
+
         "common.unit.tx":               "tx",
         "common.unit.block":            "Block",
         "common.unit.blocks":           "blocks",
@@ -240,6 +245,7 @@ const TRANSLATIONS = {
         "common.unit.secs":             "sec",
         "common.unit.in":               "IN",
         "common.unit.out":              "OUT",
+
         "common.state.synced":          "SYNCED",
         "common.state.syncing":         "SYNCING",
         "common.state.online":          "ONLINE",
@@ -249,15 +255,18 @@ const TRANSLATIONS = {
         "common.state.error":           "Error",
         "common.state.connection_error":"CONNECTION ERROR",
         "common.state.unknown":         "unknown",
+
         "common.footer.realtime":       "updated in real time",
         "common.footer.api":            "API ·",
         "common.footer.mainnet":        "BCH mainnet",
         "common.footer.updated_at":     "updated",
         "common.footer.loading":        "loading",
+
         "common.copy.ok":               "✓ copied",
         "common.error.connection":      "Connection error",
         "common.error.no_result":       "no result",
         "common.error.connection_prefix": "⚠️ Connection error:",
+
         "bch.title_short":              "live blocks",
         "bch.stats.difficulty":         "⛏️ Difficulty",
         "bch.stats.mempool":            "📦 Mempool",
@@ -284,6 +293,7 @@ const TRANSLATIONS = {
         "bch.mempool.vacio":            "empty",
         "bch.no_blocks":                "⚠️ No blocks found",
         "bch.updated_at":               "updated",
+
         "consola.title_short":          "RPC console",
         "consola.help.simple_title":    "BASIC COMMANDS (no params)",
         "consola.help.params_title":    "COMMANDS WITH PARAMS",
@@ -301,6 +311,7 @@ const TRANSLATIONS = {
         "consola.shortcut_copy_label":  "copy",
         "consola.shortcut_clear":       "F9",
         "consola.shortcut_clear_label": "clear",
+
         "explorer.title_short":         "explorer",
         "explorer.back":                "← back",
         "explorer.search_placeholder":  "block · hash · txid · address",
@@ -356,37 +367,30 @@ const TRANSLATIONS = {
         "explorer.shortcut_copy_label": "copy",
         "explorer.shortcut_clear":      "F9",
         "explorer.shortcut_clear_label":"clear",
+
         "nodo.title_short":             "monitor",
         "nodo.panel_title":             "BCH NODE MONITOR",
         "nodo.card.node_state":         "Node · Status",
         "nodo.card.network":            "Node · Network",
         "nodo.card.market":             "BCH · Market",
-        "nodo.card.electrum":           "ElectrumX · Connect Wallet",
+        "nodo.card.cert":               "SSL Certificate",
+        "nodo.cert.issuer":             "ISSUER",
+        "nodo.cert.subject":            "DOMAIN",
+        "nodo.cert.valid_from":         "VALID FROM",
+        "nodo.cert.valid_to":           "VALID TO",
+        "nodo.cert.days":               "DAYS REMAINING",
         "nodo.label.24h":               "24h %",
         "nodo.label.7d":                "7d %",
         "nodo.label.vol_24h":           "24h VOLUME",
-        "nodo.electrum.note_default":   "Connect your BCH wallet to this server to help decentralize the network.",
-        "nodo.electrum.note_online":    "Lightwallet server online and responding correctly.",
-        "nodo.electrum.note_offline":   "Lightwallet server not responding. Check that ElectrumX is running.",
-        "nodo.electrum.note_error":     "Could not connect to lightwallet server.",
-        "nodo.electrum.error_conn":     "Connection error",
-        "nodo.footer.logs":             "Logs",
-        // NODE — Extras
-"nodo.card.cert":               "SSL Certificate",
-"nodo.cert.issuer":             "ISSUER",
-"nodo.cert.subject":            "DOMAIN",
-"nodo.cert.valid_from":         "VALID FROM",
-"nodo.cert.valid_to":           "VALID TO",
-"nodo.cert.days":               "DAYS REMAINING",
-"nodo.note_default":            "This BCH node is syncing the blockchain. Data refreshes every 5 minutes.",
-"nodo.note_syncing":            "Node is syncing the blockchain. Blocks behind:",
-"nodo.note_ok":                 "Node is fully synced. Data refreshes every 5 minutes.",
-"nodo.footer.colabora":         "[CONTRIBUTE]",
-"nodo.colabora.title":          "CONTRIBUTE TO THE NODE",
-"nodo.colabora.desc":           "If you want to support the maintenance of this node and services, you can send BCH to any of these addresses:",
-"nodo.colabora.copy":           "Copy",
-"nodo.colabora.copied":         "Copied!",
-"nodo.colabora.thanks":         "Thanks for your support! ❤️"
+        "nodo.note_default":            "This BCH node is syncing the blockchain. Data refreshes every 5 minutes.",
+        "nodo.note_syncing":            "Node is syncing the blockchain. Blocks behind:",
+        "nodo.note_ok":                 "Node is fully synced. Data refreshes every 5 minutes.",
+        "nodo.footer.colabora":         "[CONTRIBUTE]",
+        "nodo.colabora.title":          "CONTRIBUTE TO THE NODE",
+        "nodo.colabora.desc":           "If you want to support the maintenance of this node and services, you can send BCH to any of these addresses:",
+        "nodo.colabora.copy":           "Copy",
+        "nodo.colabora.copied":         "Copied!",
+        "nodo.colabora.thanks":         "Thanks for your support! ❤️"
     }
 };
 
