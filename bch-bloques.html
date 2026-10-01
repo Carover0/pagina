@@ -1,0 +1,466 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCH · Bloques en Vivo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: #06100d;
+            background-image: radial-gradient(ellipse at 30% 40%, rgba(10, 193, 143, 0.10) 0%, transparent 60%),
+                              radial-gradient(ellipse at 70% 80%, rgba(10, 193, 143, 0.06) 0%, transparent 50%),
+                              linear-gradient(160deg, #06100d 0%, #0b1a16 50%, #08120f 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .app { width: 100%; max-width: 1200px; }
+
+        .header {
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px; background: rgba(255,255,255,0.02); border-radius: 14px;
+            border: 1px solid rgba(10, 193, 143, 0.25); backdrop-filter: blur(8px); margin-bottom: 24px;
+        }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand img {
+            width: 38px; height: 38px;
+            filter: drop-shadow(0 0 16px rgba(10, 193, 143, 0.4));
+            transition: filter 0.3s;
+        }
+        .brand img:hover {
+            filter: drop-shadow(0 0 24px rgba(10, 193, 143, 0.7));
+        }
+        .brand h1 { font-size: 21px; font-weight: 400; color: #d9f5ec; }
+        .brand h1 small { font-size: 12px; color: #4a7a6e; }
+
+        .nav-links {
+            display: flex; flex-wrap: wrap; gap: 4px 18px;
+            font-size: 12px; letter-spacing: 0.3px;
+            justify-content: center; flex: 1;
+        }
+        .nav-links a {
+            color: #4a7a6e; text-decoration: none;
+            transition: all 0.25s; padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-links a:hover {
+            color: #0ac18f;
+            border-bottom-color: #0ac18f;
+        }
+
+        .stats-panel {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;
+            padding: 16px 20px; background: rgba(255,255,255,0.015); border-radius: 14px;
+            border: 1px solid rgba(10, 193, 143, 0.10); margin-bottom: 24px;
+        }
+        .stat-item .label { font-size: 8px; text-transform: uppercase; color: #3a5a52; }
+        .stat-item .value { font-size: 15px; font-weight: 500; color: #e6f5f0; }
+        .stat-item .value.bch { color: #0ac18f; }
+        .stat-item .value.mono { font-size: 11px; color: #6a8a82; word-break: break-all; }
+        .stat-item .sub { font-size: 10px; color: #4a6a62; }
+
+        .stat-item .mempool-status {
+            display: inline-block; padding: 0 8px; border-radius: 10px;
+            font-size: 9px; font-weight: bold; margin-left: 4px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .stat-item .mempool-status.bajo { color: #31db72; background: rgba(49, 219, 114, 0.15); border: 1px solid rgba(49, 219, 114, 0.2); }
+        .stat-item .mempool-status.normal { color: #dd9d34; background: rgba(221, 157, 52, 0.15); border: 1px solid rgba(221, 157, 52, 0.2); }
+        .stat-item .mempool-status.alto { color: #ff7b87; background: rgba(255, 123, 135, 0.15); border: 1px solid rgba(255, 123, 135, 0.2); }
+
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px; margin-bottom: 24px; min-height: 300px;
+        }
+
+        .block-card {
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            padding: 18px 20px 16px;
+            border: 1px solid rgba(10, 193, 143, 0.10);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            cursor: pointer; text-decoration: none; color: inherit; display: block;
+        }
+        .block-card:hover {
+            border-color: rgba(10, 193, 143, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 40px rgba(10, 193, 143, 0.20);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .block-card.new-block {
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideIn {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .block-top {
+            display: flex; justify-content: space-between; align-items: baseline;
+            border-bottom: 1px solid rgba(10, 193, 143, 0.08); padding-bottom: 8px; margin-bottom: 10px;
+        }
+        .block-height { font-size: 18px; font-weight: 600; color: #e6f5f0; }
+        .block-height small { font-size: 11px; color: #4a7a6e; font-weight: 300; margin-left: 6px; }
+        .block-time { font-size: 11px; color: #4a7a6e; background: rgba(255,255,255,0.03); padding: 2px 12px; border-radius: 20px; border: 1px solid rgba(10, 193, 143, 0.08); }
+        .block-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 12px; }
+        .block-row .label { color: #3a5a52; font-size: 9px; text-transform: uppercase; }
+        .block-row .value { color: #dbece7; font-weight: 500; }
+        .block-row .value.bch { color: #0ac18f; }
+        .block-row .value.mono { font-size: 10px; color: #6a8a82; }
+        .block-footer {
+            margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(10, 193, 143, 0.08);
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px;
+        }
+        .miner-tag {
+            background: rgba(10, 193, 143, 0.10); padding: 2px 12px; border-radius: 20px;
+            font-size: 9px; color: #0ac18f; border: 1px solid rgba(10, 193, 143, 0.10);
+            word-break: break-all; max-width: 200px;
+        }
+        .block-hint { font-size: 9px; color: #3a5a52; }
+        .block-hint.bch { color: #0ac18f; }
+        .error-msg { color: #ff756f; padding: 20px; text-align: center; background: rgba(255,0,0,0.05); border-radius: 12px; border: 1px solid rgba(255,0,0,0.1); }
+
+        .footer { display: flex; flex-wrap: wrap; justify-content: flex-end; padding-top: 14px; border-top: 1px solid rgba(10, 193, 143, 0.10); font-size: 10px; color: #3a5a52; }
+        .footer a { color: #4a7a6e; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; cursor: pointer; }
+        .footer a:hover { color: #0ac18f; border-bottom-color: rgba(10, 193, 143, 0.20); }
+        .footer-links { display: flex; gap: 16px; }
+
+        .cashaddr-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 4px 0; font-size: 11px;
+        }
+        .cashaddr-row .label { color: #3a5a52; font-size: 9px; text-transform: uppercase; }
+        .cashaddr-row .value {
+            font-family: 'Lucida Console', monospace;
+            font-size: 9px;
+            color: #0ac18f;
+            word-break: break-all;
+            max-width: 200px;
+            text-align: right;
+        }
+
+        @media (max-width: 700px) {
+            .header { flex-direction: column; align-items: stretch; gap: 10px; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .stats-panel { grid-template-columns: 1fr 1fr; }
+            .nav-links { font-size: 11px; gap: 2px 14px; justify-content: center; margin-left: 0; }
+            .lang-switcher { margin-inline-start: 0; justify-content: center; }
+        }
+        @media (max-width: 450px) {
+            .stats-panel { grid-template-columns: 1fr; }
+            .block-top { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .block-time { align-self: flex-start; }
+        }
+
+        .lang-switcher {
+            display: inline-flex; align-items: center; gap: 4px; margin-inline-start: auto;
+        }
+        .lang-switcher button {
+            background: transparent;
+            border: 1px solid rgba(10, 193, 143, 0.20);
+            color: #4a7a6e;
+            font-family: 'Lucida Console', monospace;
+            font-size: 10px; letter-spacing: 0.5px;
+            padding: 4px 10px; border-radius: 12px;
+            cursor: pointer; transition: all 0.25s;
+        }
+        .lang-switcher button:hover {
+            color: #0ac18f; border-color: rgba(10, 193, 143, 0.45);
+        }
+        .lang-switcher button.active {
+            color: #0ac18f;
+            background: rgba(10, 193, 143, 0.15);
+            border-color: rgba(10, 193, 143, 0.5);
+        }
+
+        [dir="rtl"] .stat-item .value,
+        [dir="rtl"] .block-row .value,
+        [dir="rtl"] .stat-item .sub,
+        [dir="rtl"] .block-time {
+            direction: ltr; unicode-bidi: embed;
+        }
+        [dir="rtl"] .footer-links,
+        [dir="rtl"] .nav-links { flex-direction: row-reverse; }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header class="header">
+        <div class="brand">
+            <img src="assets/bch.png" alt="BCH" onerror="this.style.display='none'">
+            <h1>BCH <small data-i18n="bch.title_short">bloques en vivo</small></h1>
+        </div>
+        <nav class="nav-links">
+            <a href="https://carover0.github.io/pagina/bch-nodo.html" data-i18n="common.nav.node">[NODO]</a>
+            <a href="https://carover0.github.io/pagina/bch-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+            <a href="https://carover0.github.io/pagina/bch-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
+            <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
+        </nav>
+        <div class="lang-switcher" role="group" aria-label="Language">
+            <button type="button" data-lang="es" class="active">ES</button>
+            <button type="button" data-lang="en">EN</button>
+            
+        </div>
+    </header>
+
+    <div class="stats-panel" id="statsPanel">
+        <div class="stat-item">
+            <div class="label" data-i18n="bch.stats.difficulty">⛏️ Dificultad</div>
+            <div class="value bch" id="statDiff">—</div>
+            <div class="sub" id="statHeight" data-i18n="bch.block_prefix">Bloque #</div>
+        </div>
+        <div class="stat-item">
+            <div class="label" data-i18n="bch.stats.mempool">📦 Mempool</div>
+            <div class="value" id="statMempool"><span id="mempoolCount">—</span> <span class="mempool-status" id="mempoolStatus" data-i18n="common.footer.loading">cargando</span></div>
+            <div class="sub" id="statMempoolDetail">—</div>
+        </div>
+        <div class="stat-item">
+            <div class="label" data-i18n="bch.stats.last_block">🔗 Último bloque</div>
+            <div class="value mono" id="statBestBlock">—</div>
+            <div class="sub" id="statBlockTime" data-i18n="common.footer.loading">cargando</div>
+        </div>
+    </div>
+
+    <div class="cards-grid" id="blockContainer">
+        <div class="error-msg" data-i18n="bch.loading">⏳ Cargando bloques desde el nodo BCH...</div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#" onclick="refreshData(); return false;" id="refreshLink" data-i18n="common.btn.update">↻ Actualizar</a>
+        </div>
+    </footer>
+</div>
+
+<script src="js/i18n-bch.js"></script>
+<script>
+const API_URL        = "https://carover0.xyz/api/bch/rpc.php?token=bch2026&cmd=getrecentblocks&limit=8";
+const MEMPOOL_INFO_URL = "https://carover0.xyz/api/bch/rpc.php?token=bch2026&cmd=getmempoolinfo";
+
+let previousBlocks = [];
+let currentHeight = 0;
+
+const t = (key) => (window.FiroI18n ? FiroI18n.t(key) : key);
+
+function getExplorerLink(hash) {
+    return `https://carover0.github.io/pagina/bch-explorer/${hash}`;
+}
+
+function formatMiner(miner) {
+    if (!miner || miner === 'Desconocido') return t('bch.miner_unknown');
+    if (miner.length > 20) {
+        return miner.substring(0, 10) + '...' + miner.substring(miner.length - 6);
+    }
+    return miner;
+}
+
+function formatCashAddr(addr) {
+    if (!addr || addr === 'Desconocido') return '—';
+    if (addr.length > 24) {
+        return addr.substring(0, 12) + '…' + addr.substring(addr.length - 8);
+    }
+    return addr;
+}
+
+function formatHash(hash) {
+    if (!hash || hash.length < 20) return hash || '—';
+    return hash.substring(0, 10) + '…' + hash.substring(hash.length - 10);
+}
+
+function formatBytes(bytes) {
+    if (!bytes || bytes === 0) return '0 B';
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function getMempoolStatus(size) {
+    if (size === 0) return { text: t('bch.mempool.empty'), class: 'bajo' };
+    if (size < 10) return { text: t('bch.mempool.low'), class: 'bajo' };
+    if (size < 50) return { text: t('bch.mempool.normal'), class: 'normal' };
+    if (size < 200) return { text: t('bch.mempool.high'), class: 'alto' };
+    return { text: t('bch.mempool.congested'), class: 'alto' };
+}
+
+function createBlockCard(block, isNew = false) {
+    const card = document.createElement('a');
+    card.className = 'block-card' + (isNew ? ' new-block' : '');
+    card.href = getExplorerLink(block.hash);
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+
+    const minerDisplay    = formatMiner(block.miner);
+    const cashaddrDisplay = formatCashAddr(block.cashaddr);
+    const timeDisplay     = block.time || new Date().toLocaleTimeString();
+
+    card.innerHTML = `
+        <div class="block-top">
+            <span class="block-height">#${block.height.toLocaleString()} <small>BCH</small></span>
+            <span class="block-time">${timeDisplay}</span>
+        </div>
+        <div class="block-row">
+            <span class="label">${t('bch.miner')}</span>
+            <span class="value bch" style="font-size:10px;word-break:break-all;max-width:180px;text-align:right;">${minerDisplay}</span>
+        </div>
+        <div class="cashaddr-row">
+            <span class="label">CashAddr</span>
+            <span class="value">${cashaddrDisplay}</span>
+        </div>
+        <div class="block-row">
+            <span class="label">${t('bch.tx_count')}</span>
+            <span class="value">${block.tx_count || 0} <span style="color:#4a6a62;font-size:10px;">${t('common.unit.tx').toUpperCase()}</span></span>
+        </div>
+        <div class="block-row">
+            <span class="label">${t('bch.size')}</span>
+            <span class="value mono">${block.size || '—'}</span>
+        </div>
+        <div class="block-row">
+            <span class="label">${t('bch.difficulty')}</span>
+            <span class="value">${block.difficulty || '—'}</span>
+        </div>
+        <div class="block-footer">
+            <span class="miner-tag">⛏️ ${minerDisplay}</span>
+            <span class="block-hint bch">${t('bch.view_explorer')}</span>
+        </div>
+    `;
+
+    return card;
+}
+
+function detectNewBlocks(newBlocks) {
+    if (previousBlocks.length === 0) return [];
+    const prevHeights = new Set(previousBlocks.map(b => b.height));
+    return newBlocks.filter(b => !prevHeights.has(b.height));
+}
+
+function renderBlocks(data) {
+    const container = document.getElementById('blockContainer');
+    if (!container) return;
+
+    if (data.error) {
+        container.innerHTML = `<div class="error-msg">⚠️ ${data.error}</div>`;
+        return;
+    }
+
+    if (!data.blocks || data.blocks.length === 0) {
+        container.innerHTML = `<div class="error-msg">${t('bch.no_blocks')}</div>`;
+        return;
+    }
+
+    const newBlocks = detectNewBlocks(data.blocks);
+    const isNew = (height) => newBlocks.some(b => b.height === height);
+
+    previousBlocks = [...data.blocks];
+    currentHeight = data.stats?.height || 0;
+
+    container.innerHTML = '';
+    data.blocks.forEach((block) => {
+        const card = createBlockCard(block, isNew(block.height));
+        container.appendChild(card);
+    });
+}
+
+async function fetchMempoolInfo() {
+    try {
+        const response = await fetch(MEMPOOL_INFO_URL);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+
+        const info = data.result || data;
+        if (info && typeof info.size !== 'undefined') {
+            const size  = info.size  || 0;
+            const bytes = info.bytes || 0;
+            const usage = info.usage || 0;
+
+            const status = getMempoolStatus(size);
+
+            document.getElementById('mempoolCount').textContent = size;
+            const statusEl = document.getElementById('mempoolStatus');
+            statusEl.textContent = status.text;
+            statusEl.className = 'mempool-status ' + status.class;
+
+            let detail = '';
+            if (bytes > 0) {
+                detail = formatBytes(bytes) + ' ' + t('bch.mempool.data');
+                if (usage > 0) {
+                    detail += ' · ' + formatBytes(usage) + ' ' + t('bch.mempool.ram');
+                }
+            } else {
+                detail = t('bch.mempool.vacio');
+            }
+            document.getElementById('statMempoolDetail').textContent = detail;
+        }
+    } catch (error) {
+        console.error('Error fetching mempool:', error);
+        document.getElementById('mempoolCount').textContent = '—';
+        const statusEl = document.getElementById('mempoolStatus');
+        statusEl.textContent = t('bch.mempool.error');
+        statusEl.className = 'mempool-status alto';
+        document.getElementById('statMempoolDetail').textContent = t('bch.mempool.error_conn');
+    }
+}
+
+function updateStats(data) {
+    if (!data || data.error) return;
+    document.getElementById('statDiff').textContent = data.stats?.difficulty || '—';
+    document.getElementById('statHeight').textContent = `${t('bch.block_prefix')}${data.stats?.height || '—'}`;
+
+    const bestBlock = data.stats?.best_block || '';
+    document.getElementById('statBestBlock').textContent = formatHash(bestBlock);
+    document.getElementById('statBlockTime').textContent = `${t('bch.updated_at')} ${new Date().toLocaleTimeString()}`;
+}
+
+async function fetchData() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        renderBlocks(data);
+        updateStats(data);
+        await fetchMempoolInfo();
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('blockContainer').innerHTML = `
+            <div class="error-msg">${t('common.error.connection_prefix')} ${error.message}</div>
+        `;
+    }
+}
+
+window.refreshData = function() {
+    const link = document.getElementById('refreshLink');
+    link.textContent = t('common.btn.updating');
+    fetchData().finally(() => { link.textContent = t('common.btn.update'); });
+    return false;
+};
+
+window.onLangChange = function () {
+    if (previousBlocks.length > 0) {
+        const fakeData = { blocks: previousBlocks, stats: { height: currentHeight } };
+        renderBlocks(fakeData);
+    }
+    const refresh = document.getElementById('refreshLink');
+    if (refresh) refresh.textContent = t('common.btn.update');
+    const statusEl = document.getElementById('mempoolStatus');
+    if (statusEl) {
+        const status = getMempoolStatus(parseInt(document.getElementById('mempoolCount').textContent) || 0);
+        statusEl.textContent = status.text;
+        statusEl.className = 'mempool-status ' + status.class;
+    }
+};
+
+(async () => {
+    if (window.FiroI18n && FiroI18n.init) {
+        await FiroI18n.init();
+    }
+    fetchData();
+    setInterval(fetchData, 100000);
+})();
+</script>
+</body>
+</html>
