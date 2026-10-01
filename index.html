@@ -33,7 +33,6 @@
             color: #ece8e0;
             padding: 0;
             margin: 0;
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -789,12 +788,12 @@
                 <a href="https://carover0.github.io/pagina/usdt-block.html">[USDT-BLOCK]</a>
                 <a onclick="openModal('info')">[ACERCA]</a>
                 <a onclick="openModal('donate')">[APOYAR]</a>
+                <a href="https://carover0.github.io/pagina/precios.html">[PRECIOS]</a>
             </nav>
         </header>
 
         <div class="card-grid">
 
-            <!-- Card 1: Full Nodos -->
             <div class="card">
                 <div class="card-title">FULL NODOS <span class="count">· 4</span></div>
 
@@ -814,34 +813,34 @@
                     </div>
                 </div>
 
-<div class="node-item">
-    <div class="coin-icon"><img src="assets/firo.png" alt="Firo"></div>
-    <div class="node-info">
-        <div class="node-name">
-            <a onclick="openFiroModal()" style="cursor:pointer;">FIRO</a>
-            <span class="status online" id="firo2-status">ONLINE</span>
-        </div>
-        <div class="node-stats">
-            <span>Height: <span class="val" id="firo2-height">—</span></span>
-            <span>Peers: <span class="val" id="firo2-peers">—</span></span>
-            <span>Mempool: <span class="val" id="firo2-mempool">—</span></span>
-            <span>Version: <span class="val" id="firo2-version">—</span></span>
-        </div>
-    </div>
-</div>
-
                 <div class="node-item">
-                    <div class="coin-icon"><img src="assets/zcash.png" alt="Zcash"></div>
+                    <div class="coin-icon"><img src="assets/firo.png" alt="Firo"></div>
                     <div class="node-info">
                         <div class="node-name">
-                            <a href="https://carover0.github.io/pagina/zec-nodo.html">ZCASH</a>
-                            <span class="status online" id="zcash-status">ONLINE</span>
+                            <a onclick="openFiroModal()" style="cursor:pointer;">FIRO</a>
+                            <span class="status online" id="firo2-status">ONLINE</span>
                         </div>
                         <div class="node-stats">
-                            <span>Height: <span class="val" id="zcash-height">—</span></span>
-                            <span>Peers: <span class="val" id="zcash-peers">—</span></span>
-                            <span>Mempool: <span class="val" id="zcash-mempool">—</span></span>
-                            <span>Version: <span class="val" id="zcash-version">—</span></span>
+                            <span>Height: <span class="val" id="firo2-height">—</span></span>
+                            <span>Peers: <span class="val" id="firo2-peers">—</span></span>
+                            <span>Mempool: <span class="val" id="firo2-mempool">—</span></span>
+                            <span>Version: <span class="val" id="firo2-version">—</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="node-item">
+                    <div class="coin-icon"><img src="assets/bch.png" alt="BCH"></div>
+                    <div class="node-info">
+                        <div class="node-name">
+                            <a href="https://carover0.github.io/pagina/bch-nodo.html">BCH</a>
+                            <span class="status online" id="bch-status">ONLINE</span>
+                        </div>
+                        <div class="node-stats">
+                            <span>Height: <span class="val" id="bch-height">—</span></span>
+                            <span>Peers: <span class="val" id="bch-peers">—</span></span>
+                            <span>Mempool: <span class="val" id="bch-mempool">—</span></span>
+                            <span>Version: <span class="val" id="bch-version">—</span></span>
                         </div>
                     </div>
                 </div>
@@ -1035,7 +1034,7 @@
             <div class="modal-title"><span class="icon"><img src="assets/info.png" width="32"></span> ¿QUÉ ES ESTO?</div>
             <div class="modal-body">
                 <div class="desc">
-                    ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Zcash, Firo y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
+                    ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Bitcoin Cash, Firo y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
                 </div>
 
                 <div class="desc" style="font-size:13px; color:#5a5348;">
@@ -1047,11 +1046,11 @@
                 </div>
 
                 <ul class="feature-list">
-                    <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Zcash, Firo, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Zcash, Firo, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Zcash, Firo, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Bitcoin Cash, Firo, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Bitcoin Cash, Firo, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Bitcoin Cash, Firo, PIVX)</span></li>
                     <li><span class="check">◈</span> <span class="highlight">Estadísticas</span> → Información sobre suministro, pools de valor, halvings y actualizaciones de protocolo.</li>
-                    <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Zcash, Firo)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Firo)</span></li>
                 </ul>
 
                 <div class="desc" style="margin-top:10px;">
@@ -1079,10 +1078,10 @@
                     <span class="highlight">✧ Direcciones de donación</span>
                 </div>
 
-                <div class="donation-addr" onclick="copyAddress('qr9rquwsmhvnjay9e5amlwkmzqyw7a2xmq6qj9j2q2', 'BCH')">
-                    <span class="coin-icon"><img src="assets/bch.png" alt="bch"></span>
-                    <span class="coin-name">BCH</span>
-                    <span class="address">qr9rquwsmhvnjay9e5amlwkmzqyw7a2xmq6qj9j2q2</span>
+                <div class="donation-addr" onclick="copyAddress('bitcoincash:qqn6ruf8w809esah89qkvje9xlq4x947gv52jlhd72', 'Bitcoin Cash BCH')">
+                    <span class="coin-icon"><img src="assets/bch.png" alt="BCH"></span>
+                    <span class="coin-name">Bitcoin Cash BCH</span>
+                    <span class="address">bitcoincash:qqn6ruf8w809esah89qkvje9xlq4x947gv52jlhd72</span>
                     <span class="copy-hint">[copiar]</span>
                 </div>
 
@@ -1093,19 +1092,15 @@
                     <span class="copy-hint">[copiar]</span>
                 </div>
 
-                <div class="donation-addr" onclick="copyAddress('carover0.firo', 'FIRO')">
+                <div class="donation-addr" onclick="copyAddress('carover0.firo', 'Firo FIRO')">
                     <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
-                    <span class="coin-name">FIRO</span>
+                    <span class="coin-name">Firo FIRO</span>
                     <span class="address">carover0.firo</span>
                     <span class="copy-hint">[copiar]</span>
                 </div>
 
                 <div class="donation-note">
                     → Hacé clic en cualquier dirección para copiarla al portapapeles.
-                </div>
-
-                <div class="donation-note">
-                    ◆ Hacé clic en cualquier dirección para copiarla al portapapeles.
                 </div>
             </div>
         </div>
@@ -1211,19 +1206,19 @@
             show('vps-update', now.toLocaleString('es-AR', { hour12: false }) + ' UTC');
 
             try {
-                const r = await fetch('https://carover0.xyz/zec/status.json', { cache: 'no-store' });
+                const r = await fetch('https://carover0.xyz/api/bch.json', { cache: 'no-store' });
                 const d = await r.json();
-                setNode('zcash', {
-                    height: d.chain?.height,
+                setNode('bch', {
+                    height: d.blockchain?.blocks,
                     connections: d.network?.connections,
-                    mempool: d.mempool?.size,
-                    version: d.node?.zebra_version && d.node.zebra_version !== 'null'
-                        ? 'Zebra ' + d.node.zebra_version
+                    mempool: d.mempool?.txcount,
+                    version: d.network?.subversion && d.network.subversion !== 'null'
+                        ? d.network.subversion
                         : '—'
                 });
             } catch (e) {
-                console.log('Zcash error:', e);
-                offline('zcash');
+                console.log('BCH error:', e);
+                offline('bch');
             }
 
             try {
