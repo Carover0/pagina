@@ -1,5 +1,22 @@
 const TRANSLATIONS = {
     es: {
+
+        // NODO — Extras
+"nodo.card.cert":               "Certificado SSL",
+"nodo.cert.issuer":             "EMISOR",
+"nodo.cert.subject":            "DOMINIO",
+"nodo.cert.valid_from":         "VÁLIDO DESDE",
+"nodo.cert.valid_to":           "VÁLIDO HASTA",
+"nodo.cert.days":               "DÍAS RESTANTES",
+"nodo.note_default":            "Este nodo BCH está sincronizando la blockchain. Los datos se actualizan cada 5 minutos.",
+"nodo.note_syncing":            "El nodo está sincronizando la blockchain. Bloques pendientes:",
+"nodo.note_ok":                 "El nodo está totalmente sincronizado. Datos actualizados cada 5 minutos.",
+"nodo.footer.colabora":         "[COLABORA]",
+"nodo.colabora.title":          "COLABORA CON EL NODO",
+"nodo.colabora.desc":           "Si quieres apoyar el mantenimiento de este nodo y servicios, puedes enviar BCH a cualquiera de estas direcciones:",
+"nodo.colabora.copy":           "Copiar",
+"nodo.colabora.copied":         "¡Copiado!",
+"nodo.colabora.thanks":         "¡Gracias por tu apoyo! ❤️",
         "common.nav.node":              "[NODO]",
         "common.nav.explorer":          "[EXPLORADOR]",
         "common.nav.console":           "[CONSOLA]",
@@ -353,7 +370,23 @@ const TRANSLATIONS = {
         "nodo.electrum.note_offline":   "Lightwallet server not responding. Check that ElectrumX is running.",
         "nodo.electrum.note_error":     "Could not connect to lightwallet server.",
         "nodo.electrum.error_conn":     "Connection error",
-        "nodo.footer.logs":             "Logs"
+        "nodo.footer.logs":             "Logs",
+        // NODE — Extras
+"nodo.card.cert":               "SSL Certificate",
+"nodo.cert.issuer":             "ISSUER",
+"nodo.cert.subject":            "DOMAIN",
+"nodo.cert.valid_from":         "VALID FROM",
+"nodo.cert.valid_to":           "VALID TO",
+"nodo.cert.days":               "DAYS REMAINING",
+"nodo.note_default":            "This BCH node is syncing the blockchain. Data refreshes every 5 minutes.",
+"nodo.note_syncing":            "Node is syncing the blockchain. Blocks behind:",
+"nodo.note_ok":                 "Node is fully synced. Data refreshes every 5 minutes.",
+"nodo.footer.colabora":         "[CONTRIBUTE]",
+"nodo.colabora.title":          "CONTRIBUTE TO THE NODE",
+"nodo.colabora.desc":           "If you want to support the maintenance of this node and services, you can send BCH to any of these addresses:",
+"nodo.colabora.copy":           "Copy",
+"nodo.colabora.copied":         "Copied!",
+"nodo.colabora.thanks":         "Thanks for your support! ❤️"
     }
 };
 
