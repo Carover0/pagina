@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -10,12 +9,12 @@
         let searchParam = null;
         
         const explorers = [
-            { name: 'zec-explorer', pattern: /\/zec-explorer\/(.+)$/ },
-            { name: 'pivx-explorer', pattern: /\/pivx-explorer\/(.+)$/ },
-            { name: 'ycash-explorer', pattern: /\/ycash-explorer\/(.+)$/ },
+            { name: 'zec-explorer',    pattern: /\/zec-explorer\/(.+)$/ },
+            { name: 'pivx-explorer',   pattern: /\/pivx-explorer\/(.+)$/ },
+            { name: 'ycash-explorer',  pattern: /\/ycash-explorer\/(.+)$/ },
             { name: 'komodo-explorer', pattern: /\/komodo-explorer\/(.+)$/ },
-	        { name: 'firo-explorer', pattern: /\/firo-explorer\/(.+)$/ } 
-    
+            { name: 'firo-explorer',   pattern: /\/firo-explorer\/(.+)$/ },
+            { name: 'bch-explorer',    pattern: /\/bch-explorer\/(.+)$/ }
         ];
         
         for (let exp of explorers) {
