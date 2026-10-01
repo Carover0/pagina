@@ -245,8 +245,43 @@ const MEMPOOL_INFO_URL = "https://carover0.xyz/api/bch/rpc.php?token=bch2026&cmd
 
 let previousBlocks = [];
 let currentHeight = 0;
+let isFetching = false;  
 
 const t = (key) => (window.FiroI18n ? FiroI18n.t(key) : key);
+
+async function fetchWithTimeout(url, timeoutMs = 15000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const response = await fetch(url, {
+            signal: controller.signal,
+            cache: 'no-store',
+            headers: { 'Accept': 'application/json' }
+        });
+        clearTimeout(timer);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch {
+            throw new Error('Respuesta no es JSON válido');
+        }
+    } catch (e) {
+        clearTimeout(timer);
+        throw e;
+    }
+}
+
+async function fetchWithRetry(url, retries = 2, timeoutMs = 15000) {
+    for (let i = 0; i <= retries; i++) {
+        try {
+            return await fetchWithTimeout(url, timeoutMs);
+        } catch (e) {
+            if (i === retries) throw e;
+            await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+        }
+    }
+}
 
 function getExplorerLink(hash) {
     return `https://carover0.github.io/pagina/bch-explorer/${hash}`;
@@ -368,9 +403,7 @@ function renderBlocks(data) {
 
 async function fetchMempoolInfo() {
     try {
-        const response = await fetch(MEMPOOL_INFO_URL);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
+        const data = await fetchWithTimeout(MEMPOOL_INFO_URL, 10000);
 
         const info = data.result || data;
         if (info && typeof info.size !== 'undefined') {
@@ -417,18 +450,20 @@ function updateStats(data) {
 }
 
 async function fetchData() {
+    if (isFetching) return;   
+    isFetching = true;
     try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
+        const data = await fetchWithRetry(API_URL, 2, 15000);
         renderBlocks(data);
         updateStats(data);
-        await fetchMempoolInfo();
+        fetchMempoolInfo().catch(e => console.warn('Mempool:', e));
     } catch (error) {
         console.error('Error:', error);
         document.getElementById('blockContainer').innerHTML = `
             <div class="error-msg">${t('common.error.connection_prefix')} ${error.message}</div>
         `;
+    } finally {
+        isFetching = false;
     }
 }
 
@@ -459,7 +494,7 @@ window.onLangChange = function () {
         await FiroI18n.init();
     }
     fetchData();
-    setInterval(fetchData, 100000);
+    setInterval(fetchData, 50000);  
 })();
 </script>
 </body>
