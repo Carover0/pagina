@@ -1,0 +1,1342 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCH · Explorador</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        height: 100vh;
+        overflow: hidden;
+        background: #06100d;
+        background-image:
+            radial-gradient(ellipse at 30% 40%, rgba(10, 193, 143, 0.10) 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 80%, rgba(10, 193, 143, 0.06) 0%, transparent 50%),
+            linear-gradient(160deg, #06100d 0%, #0b1a16 50%, #08120f 100%);
+        font-family: 'Lucida Console', 'Courier New', monospace;
+        color: #dbece7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .app {
+        width: 100%;
+        max-width: 1400px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 20px 28px;
+        overflow: hidden;
+    }
+
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px 20px;
+        padding: 16px 24px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 14px;
+        border: 1px solid rgba(10, 193, 143, 0.25);
+        backdrop-filter: blur(8px);
+        flex-shrink: 0;
+    }
+
+    .brand { display: flex; align-items: center; gap: 14px; }
+
+    .brand img {
+        width: 38px;
+        height: 38px;
+        filter: drop-shadow(0 0 16px rgba(10, 193, 143, 0.4));
+        transition: filter 0.3s;
+    }
+
+    .brand img:hover {
+        filter: drop-shadow(0 0 24px rgba(10, 193, 143, 0.7));
+    }
+
+    .brand h1 {
+        font-size: 21px;
+        font-weight: 400;
+        letter-spacing: 1.5px;
+        color: #d9f5ec;
+        text-shadow: 0 0 30px rgba(10, 193, 143, 0.20);
+    }
+
+    .brand h1 small {
+        font-size: 12px;
+        color: #4a7a6e;
+        letter-spacing: 2px;
+        font-weight: 300;
+    }
+
+    .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 18px;
+        font-size: 12px;
+        letter-spacing: 0.3px;
+        justify-content: center;
+        flex: 1;
+    }
+
+    #output .coin {
+        width: 14px;
+        height: 14px;
+        vertical-align: -3px;
+        margin-right: 3px;
+        display: inline-block;
+        filter: drop-shadow(0 0 6px rgba(10, 193, 143, 0.5));
+    }
+
+    .nav-links a {
+        color: #4a7a6e;
+        text-decoration: none;
+        transition: all 0.25s;
+        padding: 4px 0;
+        border-bottom: 2px solid transparent;
+    }
+
+    .nav-links a:hover {
+        color: #0ac18f;
+        border-bottom-color: #0ac18f;
+    }
+
+    .back-btn {
+        color: #0ac18f;
+        cursor: pointer;
+        padding: 4px 12px;
+        border: 1px solid rgba(10, 193, 143, 0.20);
+        border-radius: 20px;
+        font-size: 11px;
+        transition: all 0.25s;
+        background: rgba(10, 193, 143, 0.05);
+        display: none;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .back-btn:hover {
+        background: rgba(10, 193, 143, 0.12);
+        border-color: rgba(10, 193, 143, 0.4);
+    }
+
+    .back-btn.show { display: inline-flex; }
+
+    .stats-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 32px;
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        border: 1px solid rgba(10, 193, 143, 0.12);
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+
+    .stats-bar .stat {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+
+    .stats-bar .label {
+        color: #3a5a52;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    .stats-bar .value {
+        color: #e6f5f0;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .btn-blocks {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(10, 193, 143, 0.12);
+        color: #0ac18f;
+        border: 1px solid rgba(10, 193, 143, 0.25);
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-family: 'Lucida Console', monospace;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        letter-spacing: 0.3px;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .btn-blocks:first-of-type { margin-inline-start: auto; }
+
+    .btn-blocks:hover {
+        background: rgba(10, 193, 143, 0.22);
+        border-color: rgba(10, 193, 143, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(10, 193, 143, 0.25);
+    }
+
+    .btn-blocks .icon { font-size: 12px; }
+
+    .btn-blocks img.icon {
+        width: 14px;
+        height: 14px;
+        display: block;
+        object-fit: contain;
+        filter: drop-shadow(0 0 6px rgba(10, 193, 143, 0.5));
+        flex-shrink: 0;
+    }
+
+    .btn-blocks .pulse {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: #31db72;
+        border-radius: 50%;
+        animation: pulse 1.5s ease-in-out infinite;
+        flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.3; transform: scale(0.7); }
+    }
+
+    .search-section {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 14px;
+        padding: 2px 2px 2px 22px;
+        border: 1px solid rgba(10, 193, 143, 0.20);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .search-section:focus-within {
+        border-color: rgba(10, 193, 143, 0.5);
+        box-shadow: 0 0 0 4px rgba(10, 193, 143, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .search-section .prompt {
+        color: #0ac18f;
+        font-size: 16px;
+        user-select: none;
+        transition: transform 0.2s;
+    }
+
+    .search-section:focus-within .prompt { transform: scale(1.1); }
+
+    .search-section input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        padding: 15px 8px 15px 4px;
+        font-family: 'Lucida Console', 'Courier New', monospace;
+        font-size: 15px;
+        color: #e6f5f0;
+        outline: none;
+        min-width: 0;
+        letter-spacing: 0.2px;
+    }
+
+    .search-section input::placeholder {
+        color: #2f4a42;
+        letter-spacing: 0.5px;
+    }
+
+    .search-section .shortcuts {
+        display: flex;
+        gap: 4px;
+        padding-right: 16px;
+        font-size: 10px;
+        color: #2f4a42;
+    }
+
+    .search-section .shortcuts kbd {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 4px 12px;
+        border-radius: 6px;
+        color: #4a6a62;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        font-family: 'Lucida Console', monospace;
+        font-size: 9px;
+        letter-spacing: 0.3px;
+        transition: all 0.2s;
+    }
+
+    .search-section .shortcuts kbd:hover {
+        background: rgba(10, 193, 143, 0.08);
+        border-color: rgba(10, 193, 143, 0.15);
+        color: #6a8a82;
+    }
+
+    .output-wrapper {
+        flex: 1 1 auto;
+        min-height: 0;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 14px;
+        border: 1px solid rgba(10, 193, 143, 0.08);
+        padding: 24px 28px;
+        overflow-y: auto;
+        box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(4px);
+        transition: border-color 0.3s;
+    }
+
+    .output-wrapper:hover { border-color: rgba(10, 193, 143, 0.15); }
+
+    .output-wrapper::-webkit-scrollbar { width: 6px; }
+    .output-wrapper::-webkit-scrollbar-track { background: transparent; }
+    .output-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(10, 193, 143, 0.25);
+        border-radius: 10px;
+    }
+
+    #output {
+        font-family: 'Lucida Console', 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.8;
+        color: #d0e5de;
+    }
+
+    #output .cmd-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #0ac18f;
+        font-size: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(10, 193, 143, 0.08);
+        margin-bottom: 18px;
+    }
+
+    #output .cmd-line .tag {
+        background: rgba(10, 193, 143, 0.12);
+        padding: 2px 16px;
+        border-radius: 20px;
+        font-size: 11px;
+        color: #0ac18f;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(10, 193, 143, 0.08);
+    }
+
+    #output .row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 2px 12px;
+        padding: 3px 0;
+    }
+
+    #output .row .key {
+        color: #4a6a62;
+        font-size: 12px;
+        min-width: 100px;
+        letter-spacing: 0.2px;
+    }
+
+    #output .row .val {
+        color: #e6f5f0;
+        word-break: break-all;
+    }
+
+    #output .row .val.gold { color: #0ac18f; }
+
+    #output .row .val .link {
+        color: #0ac18f;
+        text-decoration: none;
+        transition: all 0.2s;
+        border-bottom: 1px solid rgba(10, 193, 143, 0.20);
+        padding-bottom: 1px;
+        word-break: break-all;
+        cursor: pointer;
+    }
+
+    #output .row .val .link:hover {
+        color: #4ddcb0;
+        border-bottom-color: #0ac18f;
+    }
+
+    #output .divider {
+        height: 1px;
+        background: linear-gradient(to right, rgba(10, 193, 143, 0.10), transparent);
+        margin: 14px 0;
+    }
+
+    #output .tx-item {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 10px;
+        padding: 10px 16px;
+        border-left: 2px solid rgba(10, 193, 143, 0.15);
+        margin: 4px 0;
+        transition: all 0.15s;
+    }
+
+    #output .tx-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-left-color: rgba(10, 193, 143, 0.35);
+    }
+
+    #output .tx-item .txid-link {
+        color: #0ac18f;
+        text-decoration: none;
+        font-size: 13px;
+        word-break: break-all;
+        transition: all 0.2s;
+        border-bottom: 1px solid rgba(10, 193, 143, 0.15);
+        cursor: pointer;
+    }
+
+    #output .tx-item .txid-link:hover {
+        color: #4ddcb0;
+        border-bottom-color: #0ac18f;
+    }
+
+    #output .tx-item .tx-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 20px;
+        font-size: 12px;
+        color: #4a7a6e;
+        margin-top: 2px;
+    }
+
+    #output .copy-btn {
+        margin-top: 18px;
+        background: rgba(10, 193, 143, 0.08);
+        border: 1px solid rgba(10, 193, 143, 0.15);
+        color: #0ac18f;
+        font-family: 'Lucida Console', monospace;
+        font-size: 12px;
+        padding: 7px 24px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.25s;
+        letter-spacing: 0.3px;
+    }
+
+    #output .copy-btn:hover {
+        background: rgba(10, 193, 143, 0.15);
+        border-color: #0ac18f;
+        box-shadow: 0 0 30px rgba(10, 193, 143, 0.08);
+    }
+
+    #output .placeholder {
+        color: #2f4a42;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+        gap: 12px;
+    }
+
+    #output .placeholder .icon { font-size: 48px; opacity: 0.15; }
+    #output .placeholder .sub { font-size: 13px; color: #223a33; letter-spacing: 0.5px; }
+
+    #output .loading {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: #3a5a52;
+        padding: 20px 0;
+    }
+
+    #output .loading .spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(10, 193, 143, 0.15);
+        border-top-color: #0ac18f;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer-bar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 24px;
+        background: rgba(255, 255, 255, 0.01);
+        border-radius: 12px;
+        border: 1px solid rgba(10, 193, 143, 0.06);
+        font-size: 11px;
+        color: #2f4a42;
+        flex-shrink: 0;
+    }
+
+    .footer-bar a { color: #4a6a62; text-decoration: none; transition: color 0.25s; }
+    .footer-bar a:hover { color: #0ac18f; }
+
+    .footer-bar .api {
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 3px 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: all 0.2s;
+    }
+
+    .footer-bar .api:hover {
+        border-color: rgba(10, 193, 143, 0.12);
+        background: rgba(10, 193, 143, 0.03);
+    }
+
+    .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: rgba(10, 193, 143, 0.12);
+        backdrop-filter: blur(12px);
+        color: #e6f5f0;
+        padding: 10px 32px;
+        border-radius: 40px;
+        border: 1px solid rgba(10, 193, 143, 0.20);
+        font-family: 'Lucida Console', monospace;
+        font-size: 12px;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+        z-index: 999;
+        letter-spacing: 0.3px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 12px;
+        padding: 6px 0;
+        font-size: 11px;
+        color: #3a5a52;
+        min-height: 28px;
+        flex-shrink: 0;
+    }
+
+    .breadcrumb .crumb {
+        color: #4a7a6e;
+        cursor: pointer;
+        transition: color 0.2s;
+        border-bottom: 1px solid transparent;
+    }
+
+    .breadcrumb .crumb:hover {
+        color: #0ac18f;
+        border-bottom-color: rgba(10, 193, 143, 0.25);
+    }
+
+    .breadcrumb .crumb.current {
+        color: #0ac18f;
+        cursor: default;
+        border-bottom-color: transparent;
+    }
+
+    .breadcrumb .sep { color: #2f4a42; }
+
+    .lang-switcher {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-inline-start: auto;
+    }
+
+    .lang-switcher button {
+        background: transparent;
+        border: 1px solid rgba(10, 193, 143, 0.20);
+        color: #4a7a6e;
+        font-family: 'Lucida Console', monospace;
+        font-size: 10px;
+        letter-spacing: 0.5px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+
+    .lang-switcher button:hover {
+        color: #0ac18f;
+        border-color: rgba(10, 193, 143, 0.45);
+    }
+
+    .lang-switcher button.active {
+        color: #0ac18f;
+        background: rgba(10, 193, 143, 0.15);
+        border-color: rgba(10, 193, 143, 0.5);
+    }
+
+    @media (max-width: 1100px) {
+        .stats-bar { gap: 6px 22px; }
+        .btn-blocks { font-size: 9px; padding: 3px 12px; }
+        .stats-bar .value { font-size: 13px; }
+    }
+
+    @media (max-width: 900px) {
+        .stats-bar { flex-wrap: wrap; gap: 8px 20px; }
+        .stats-bar .stat { flex: 0 1 auto; }
+        .btn-blocks {
+            flex: 1 1 calc(50% - 10px);
+            justify-content: center;
+            margin-inline-start: 0;
+        }
+        .btn-blocks:first-of-type { margin-inline-start: 0; }
+    }
+
+    @media (max-width: 768px) {
+        .app { padding: 12px 14px; gap: 12px; }
+        .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+        .brand h1 { font-size: 17px; }
+        .brand img { width: 30px; height: 30px; }
+        .nav-links { font-size: 11px; gap: 2px 14px; }
+        .lang-switcher { margin-inline-start: 0; justify-content: center; }
+        .stats-bar { font-size: 11px; padding: 10px 14px; gap: 8px 18px; }
+        .stats-bar .value { font-size: 13px; }
+        .btn-blocks { font-size: 9px; padding: 4px 12px; flex: 1 1 calc(50% - 9px); justify-content: center; margin-inline-start: 0; }
+        .btn-blocks:first-of-type { margin-inline-start: 0; }
+        .search-section { padding: 2px 2px 2px 14px; }
+        .search-section input { font-size: 14px; padding: 12px 4px; }
+        .search-section .shortcuts { display: none; }
+        .output-wrapper { padding: 16px 18px; min-height: 0; }
+        #output { font-size: 12px; }
+        #output .row .key { min-width: 70px; font-size: 11px; }
+        .footer-bar { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 18px; }
+        .footer-bar .api { font-size: 10px; padding: 2px 14px; }
+    }
+
+    @media (max-width: 480px) {
+        .app { padding: 8px 10px; gap: 10px; }
+        .header { padding: 10px 14px; }
+        .brand h1 { font-size: 15px; }
+        .brand h1 small { font-size: 10px; }
+        .brand img { width: 26px; height: 26px; }
+        .stats-bar { font-size: 10px; padding: 8px 12px; gap: 6px 12px; }
+        .stats-bar .stat { flex: 1 1 calc(50% - 6px); justify-content: space-between; }
+        .stats-bar .value { font-size: 12px; }
+        .btn-blocks { font-size: 8px; padding: 4px 10px; gap: 4px; flex: 1 1 100%; justify-content: center; margin-inline-start: 0; }
+        .btn-blocks:first-of-type { margin-inline-start: 0; }
+        .btn-blocks img.icon { width: 12px; height: 12px; }
+        .btn-blocks .pulse { width: 5px; height: 5px; }
+        .search-section input { font-size: 13px; padding: 10px 4px; }
+        .output-wrapper { padding: 12px 14px; min-height: 0; }
+        #output { font-size: 11px; line-height: 1.6; }
+        #output .row .key { min-width: 60px; font-size: 10px; }
+        #output .tx-item { padding: 8px 12px; }
+        #output .copy-btn { font-size: 11px; padding: 5px 16px; }
+    }
+
+    @media (max-width: 360px) {
+        .stats-bar .stat { flex: 1 1 100%; }
+        .btn-blocks { font-size: 8px; padding: 3px 8px; }
+        .btn-blocks img.icon { width: 11px; height: 11px; }
+        #output .row .key { min-width: 50px; font-size: 10px; }
+    }
+
+    @media (min-width: 1920px) {
+        .app { max-width: 1600px; padding: 24px 40px; }
+        #output { font-size: 14px; }
+        #output .row .key { min-width: 120px; }
+    }
+</style>
+</head>
+<body>
+
+    <div class="app">
+
+        <header class="header">
+            <div class="brand">
+                <img src="assets/bch.png" alt="BCH" onerror="this.style.display='none'">
+                <h1>BCH <small data-i18n="explorer.title_short">explorador</small></h1>
+            </div>
+            <nav class="nav-links">
+                <span class="back-btn" id="backBtn" onclick="goBack()" data-i18n="explorer.back">← volver</span>
+                <a href="https://carover0.github.io/pagina/bch-nodo.html" data-i18n="common.nav.node">[NODO]</a>
+                <a href="https://carover0.github.io/pagina/bch-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
+                <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
+            </nav>
+            <div class="lang-switcher" role="group" aria-label="Language">
+                <button type="button" data-lang="es" class="active">ES</button>
+                <button type="button" data-lang="en">EN</button>
+            </div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat"><span class="label" data-i18n="common.label.height">ALTURA</span><span class="value" id="stat-height">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.difficulty">DIFICULTAD</span><span class="value" id="stat-difficulty">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#2f4a42;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
+
+            <a href="https://carover0.github.io/pagina/bch-bloques.html" target="_self" class="btn-blocks">
+                <span data-i18n="common.btn.blocks">Bloques en tiempo real</span>
+                <span class="pulse"></span>
+            </a>
+        </div>
+
+        <div class="breadcrumb" id="breadcrumb"></div>
+
+        <div class="search-section">
+            <span class="prompt">►</span>
+            <input type="text" id="searchInput" data-i18n-placeholder="explorer.search_placeholder" placeholder="bloque · hash · txid · dirección" autofocus spellcheck="false">
+            <div class="shortcuts">
+                <kbd>F8</kbd> <span data-i18n="explorer.shortcut_copy_label">copiar</span>
+                <kbd>F9</kbd> <span data-i18n="explorer.shortcut_clear_label">limpiar</span>
+            </div>
+        </div>
+
+        <div class="output-wrapper">
+            <div id="output">
+                <div class="placeholder">
+                    <div class="icon"><img src="assets/bch.png" width="48px" onerror="this.style.display='none'"></div>
+                    <div data-i18n="explorer.placeholder_title">explorador de bloques BCH</div>
+                    <div class="sub" data-i18n="explorer.placeholder_sub">bloque · transacción · dirección</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer-bar">
+            <span><span data-i18n="common.footer.api">API ·</span> <a href="https://carover0.xyz/api/bch/rpc.php" target="_blank" rel="noopener" class="api">https://carover0.xyz/api/bch/rpc.php</a></span>
+            <span style="font-size:10px;color:#223a33;" data-i18n="common.footer.mainnet">BCH mainnet</span>
+        </footer>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/i18n-bch.js"></script>
+    <script>
+
+const API_URL  = "https://carover0.xyz/api/bch/rpc.php";
+const TOKEN    = "bch2026";
+
+function getAssetBase() {
+    let path = window.location.pathname;
+    path = path.replace(/\/bch-explorer(\/.*|\.html.*)?$/, '/');
+    if (!path.endsWith('/')) path += '/';
+    return path;
+}
+
+const ASSET_BASE = getAssetBase();
+const COIN_HTML = `<img src="${ASSET_BASE}assets/bch.png" alt="BCH" title="BCH" class="coin" onerror="this.style.display='none'">`;
+
+const t = (key) => (window.FiroI18n ? FiroI18n.t(key) : key);
+
+let historyStack = [];
+let currentIndex = -1;
+
+function pushHistory(query, label) {
+    historyStack = historyStack.slice(0, currentIndex + 1);
+    historyStack.push({ query: query, label: label || query });
+    currentIndex = historyStack.length - 1;
+    updateBackButton();
+    updateBreadcrumb();
+}
+
+function goBack() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        const entry = historyStack[currentIndex];
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.value = entry.query;
+            const cmd = detectCommand(entry.query);
+            updateUrlWithSearch(cmd);
+            executeSearch(cmd);
+        }
+        updateBackButton();
+        updateBreadcrumb();
+    }
+}
+
+function updateBackButton() {
+    const btn = document.getElementById('backBtn');
+    if (currentIndex > 0) btn.classList.add('show');
+    else btn.classList.remove('show');
+}
+
+function updateBreadcrumb() {
+    const container = document.getElementById('breadcrumb');
+    if (historyStack.length === 0) { container.innerHTML = ''; return; }
+
+    let html = '';
+    const maxDisplay = 4;
+    const start = Math.max(0, historyStack.length - maxDisplay);
+    const entries = historyStack.slice(start);
+
+    if (start > 0) html += `<span class="crumb" onclick="goToHistory(0)">⏪</span><span class="sep">·</span>`;
+
+    for (let i = 0; i < entries.length; i++) {
+        const idx = start + i;
+        const entry = entries[i];
+        const isCurrent = idx === currentIndex;
+        const label = entry.label.length > 30 ? entry.label.substring(0, 28) + '…' : entry.label;
+        if (isCurrent) html += `<span class="crumb current">${escapeHtml(label)}</span>`;
+        else html += `<span class="crumb" onclick="goToHistory(${idx})">${escapeHtml(label)}</span>`;
+        if (i < entries.length - 1) html += `<span class="sep">›</span>`;
+    }
+
+    container.innerHTML = html;
+}
+
+function goToHistory(index) {
+    if (index >= 0 && index < historyStack.length && index !== currentIndex) {
+        currentIndex = index;
+        const entry = historyStack[index];
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.value = entry.query;
+            const cmd = detectCommand(entry.query);
+            updateUrlWithSearch(cmd);
+            executeSearch(cmd);
+        }
+        updateBackButton();
+        updateBreadcrumb();
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+}
+
+function makeLink(text) {
+    if (!text) return '';
+    const encoded = encodeURIComponent(text);
+    return `<span class="link" onclick="navigateTo('${encoded}')">${escapeHtml(text)}</span>`;
+}
+
+function navigateTo(query) {
+    const decoded = decodeURIComponent(query);
+    const input = document.getElementById('searchInput');
+    if (input) {
+        input.value = decoded;
+        const cmd = detectCommand(decoded);
+        const label = getLabelForQuery(cmd);
+        pushHistory(cmd, label);
+        updateUrlWithSearch(cmd);
+        executeSearch(cmd);
+    }
+}
+
+function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+function detectSearchFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const q = urlParams.get('q');
+    if (q) return q;
+    const path = window.location.pathname;
+    const match = path.match(/\/bch-explorer\/(.+)$/);
+    if (match && match[1]) return match[1];
+    return null;
+}
+
+function updateUrlWithSearch(parametro) {
+    const basePath = window.location.origin + '/pagina';
+    const newUrl = basePath + '/bch-explorer/' + encodeURIComponent(parametro);
+    window.history.replaceState({}, '', newUrl);
+}
+
+function detectCommand(input) {
+    input = input.trim();
+    if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
+        input.startsWith('validateaddress') || input.startsWith('getblockbyheight') ||
+        input.startsWith('HASH:')) {
+        return input;
+    }
+    if (/^\d+$/.test(input)) return `getblockbyheight ${input}`;
+    if (/^[a-fA-F0-9]{64}$/.test(input)) return `HASH:${input}`;
+    if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(input) ||
+        /^(bitcoincash:)?[qp][a-z0-9]{41}$/.test(input)) {
+        return `validateaddress ${input}`;
+    }
+    if (input.length > 50) {
+        if (input.startsWith('validateaddress')) return input;
+        return `validateaddress ${input}`;
+    }
+    return input;
+}
+
+function getLabelForQuery(q) {
+    const s = q.trim();
+    if (s.startsWith('getblockbyheight ')) return t('explorer.label_block_prefix') + ' ' + s.replace('getblockbyheight ', '');
+    if (s.startsWith('getblock ')) return t('explorer.label_block_prefix') + ' ' + s.replace('getblock ', '').substring(0, 12) + '…';
+    if (s.startsWith('getrawtransaction ')) return 'TX ' + s.replace('getrawtransaction ', '').replace(' 1', '').substring(0, 16) + '…';
+    if (s.startsWith('validateaddress ')) return t('explorer.label_validate') + ' ' + s.split(' ')[1].substring(0, 12) + '…';
+    if (/^\d+$/.test(s)) return t('explorer.label_block_prefix') + ' ' + s;
+    if (/^[a-fA-F0-9]{64}$/.test(s)) return 'TX ' + s.substring(0, 16) + '…';
+    return s.substring(0, 20) + (s.length > 20 ? '…' : '');
+}
+
+async function loadNetworkStats() {
+    try {
+        const rH = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblockcount`);
+        const dH = await rH.json();
+        if (dH.result !== undefined) {
+            document.getElementById('stat-height').textContent = Number(dH.result).toLocaleString();
+        }
+
+        const rD = await fetch(`${API_URL}?token=${TOKEN}&cmd=getdifficulty`);
+        const dD = await rD.json();
+        if (dD.result !== undefined) {
+            document.getElementById('stat-difficulty').textContent = Number(dD.result).toFixed(2);
+        }
+
+        const rM = await fetch(`${API_URL}?token=${TOKEN}&cmd=getmempoolinfo`);
+        const dM = await rM.json();
+        const info = dM.result || dM;
+        if (info && typeof info.size !== 'undefined') {
+            document.getElementById('stat-mempool').textContent = info.size;
+        }
+    } catch (e) {}
+}
+
+function renderOutput(html) {
+    document.getElementById('output').innerHTML = html;
+}
+
+function renderPlaceholder() {
+    renderOutput(`
+        <div class="placeholder">
+            <div class="icon"><img src="${ASSET_BASE}assets/bch.png" width="48" onerror="this.style.display='none'"></div>
+            <div>${t('explorer.placeholder_title')}</div>
+            <div class="sub">${t('explorer.placeholder_sub')}</div>
+        </div>
+    `);
+}
+
+function renderLoading() {
+    renderOutput(`
+        <div class="loading">
+            <span class="spinner"></span>
+            ${t('explorer.loading')}
+        </div>
+    `);
+}
+
+async function executeSearch(q) {
+    const raw = q.trim();
+    if (!raw) { renderPlaceholder(); return; }
+
+    renderLoading();
+
+    if (q.startsWith('HASH:')) {
+        const hash = q.substring(5);
+        try {
+            const blockTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblock%20${hash}%201`);
+            const blockData = await blockTest.json();
+            if (blockData.result && blockData.result.hash) {
+                return executeSearch(`getblock ${hash}`);
+            }
+        } catch (e) {}
+        try {
+            const txTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${hash}%201`);
+            const txData = await txTest.json();
+            if (txData.result && txData.result.txid) {
+                return executeSearch(`getrawtransaction ${hash} 1`);
+            }
+        } catch (e) {}
+        renderOutput(`<div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${t('explorer.no_hash_found')} ${escapeHtml(hash)}</div>`);
+        return;
+    }
+
+    const cmd = detectCommand(raw);
+
+    try {
+        const r = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
+        const data = await r.json();
+
+        if (data.error) {
+            renderOutput(`
+                <div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${escapeHtml(cmd)}</div>
+                <div style="color:#ff756f;padding:6px 0;">${t('common.state.error')}: ${escapeHtml(JSON.stringify(data.error))}</div>
+                <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
+            `);
+            return;
+        }
+
+        const result = data.result;
+
+        if (cmd.includes('getblockbyheight') && result && typeof result === 'object' && result.hash) {
+            updateUrlWithSearch(result.hash);
+            return executeSearch(`getblock ${result.hash}`);
+        }
+
+        if (!result) {
+            renderOutput(`
+                <div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>
+                <div style="color:#2f4a42;">${t('explorer.no_result')}</div>
+                <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
+            `);
+            return;
+        }
+
+        if (cmd.includes('getblock') && result.hash) {
+            const b = result;
+            let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_block')}</span> #${b.height}</div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_hash')}</span><span class="val">${makeLink(b.hash)}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_difficulty')}</span><span class="val">${b.difficulty?.toFixed ? b.difficulty.toFixed(2) : (b.difficulty || '—')}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${b.size ? b.size + ' bytes' : '—'}</span></div>`;
+
+            if (b.nonce !== undefined) res += `<div class="row"><span class="key">Nonce</span><span class="val">${b.nonce}</span></div>`;
+            if (b.bits) res += `<div class="row"><span class="key">Bits</span><span class="val">${b.bits}</span></div>`;
+
+            if (b.previousblockhash) res += `<div class="row"><span class="key">${t('explorer.label_previous')}</span><span class="val">${makeLink(b.previousblockhash)}</span></div>`;
+            if (b.nextblockhash) res += `<div class="row"><span class="key">${t('explorer.label_next')}</span><span class="val">${makeLink(b.nextblockhash)}</span></div>`;
+
+            res += `<div class="divider"></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_transactions')}</span><span class="val gold">${b.tx?.length ?? 0}</span></div>`;
+
+            if (b.tx && b.tx.length > 0) {
+                const isVerbose = typeof b.tx[0] === 'object';
+                const txs = b.tx.slice(0, 50);
+
+                if (isVerbose) {
+                    for (const tx of txs) {
+                        const txid = tx.txid || tx.hash;
+                        const isCoinbase = tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase;
+                        const typeLabel = isCoinbase ? t('explorer.tx_type_coinbase') : t('explorer.tx_type_transparent');
+                        res += `<div class="tx-item">
+                            <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
+                            <div class="tx-meta">
+                                <span style="${isCoinbase ? 'color:#0ac18f;' : 'color:#4a7a6e;'}">${typeLabel}</span>
+                                ${tx.vout ? `<span>${tx.vout.length} ${t('explorer.label_outputs')}</span>` : ''}
+                                ${tx.vin ? `<span>${tx.vin.length} ${t('explorer.label_inputs')}</span>` : ''}
+                                ${tx.size ? `<span>${tx.size} bytes</span>` : ''}
+                            </div>
+                        </div>`;
+                    }
+                } else {
+                    const txPromises = txs.map(async (txid) => {
+                        try {
+                            const txR = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${txid}%201`);
+                            const txData = await txR.json();
+                            return { txid, data: txData.result };
+                        } catch (e) { return { txid, data: null }; }
+                    });
+
+                    const txResults = await Promise.all(txPromises);
+
+                    for (const { txid, data } of txResults) {
+                        const isCoinbase = data && data.vin && data.vin.length === 1 && data.vin[0].coinbase;
+                        const typeLabel = isCoinbase ? t('explorer.tx_type_coinbase') : t('explorer.tx_type_transparent');
+
+                        res += `<div class="tx-item">
+                            <span class="txid-link" onclick="navigateTo('${encodeURIComponent(txid)}')">${escapeHtml(txid)}</span>
+                            <div class="tx-meta">
+                                <span style="${isCoinbase ? 'color:#0ac18f;' : 'color:#4a7a6e;'}">${typeLabel}</span>
+                                ${data && data.vout ? `<span>${data.vout.length} ${t('explorer.label_outputs')}</span>` : ''}
+                                ${data && data.vin ? `<span>${data.vin.length} ${t('explorer.label_inputs')}</span>` : ''}
+                                ${data && data.size ? `<span>${data.size} bytes</span>` : ''}
+                            </div>
+                        </div>`;
+                    }
+                }
+
+                if (b.tx.length > 50) res += `<div style="color:#2f4a42;font-size:12px;padding:4px 0;">… y ${b.tx.length - 50} más</div>`;
+            }
+
+            res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
+            renderOutput(res);
+            return;
+        }
+
+        if (cmd.includes('getrawtransaction') && result) {
+            const tx = result;
+            const txid = tx.txid || tx.hash;
+            const isCoinbase = tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase;
+            const tipoLabel = isCoinbase ? t('explorer.tx_type_coinbase') : t('explorer.tx_type_transparent');
+
+            let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_txid')}</span><span class="val">${makeLink(txid)}</span></div>`;
+
+            if (tx.height && tx.blockhash) {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))} · ${makeLink(tx.blockhash)}</span></div>`;
+            } else if (tx.height) {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))}</span></div>`;
+            } else if (tx.blockhash) {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(tx.blockhash)}</span></div>`;
+            } else {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${t('explorer.label_unconfirmed')}</span></div>`;
+            }
+
+            res += `<div class="row"><span class="key">${t('explorer.label_confirmations')}</span><span class="val">${tx.confirmations || 0}</span></div>`;
+            if (tx.blocktime || tx.time) {
+                res += `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date((tx.blocktime || tx.time)*1000).toLocaleString()}</span></div>`;
+            }
+
+            let versionStr = tx.version || 'N/A';
+            if (tx.locktime !== undefined) versionStr += ` · LockTime ${tx.locktime}`;
+            res += `<div class="row"><span class="key">${t('explorer.label_version')}</span><span class="val">${versionStr}</span></div>`;
+
+            if (tx.size) res += `<div class="row"><span class="key">${t('explorer.label_size')}</span><span class="val">${tx.size} bytes</span></div>`;
+
+            let totalIn = 0;
+            if (tx.vin && tx.vin.length > 0) {
+                res += `<div class="divider"></div>`;
+                res += `<div class="row"><span class="key">${t('explorer.section_inputs')}</span><span class="val gold">${tx.vin.length}</span></div>`;
+
+                for (let i = 0; i < tx.vin.length; i++) {
+                    const vin = tx.vin[i];
+                    if (vin.coinbase) {
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#4a7a6e;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="color:#0ac18f;">${t('explorer.tag_coinbase')}</span></div>`;
+                    } else {
+                        let value = vin.value;
+                        if (value == null) {
+                            try {
+                                const rv = await fetch(`${API_URL}?token=${TOKEN}&cmd=getrawtransaction%20${vin.txid}%201`);
+                                const dv = await rv.json();
+                                if (dv.result && dv.result.vout && dv.result.vout[vin.vout]) {
+                                    value = dv.result.vout[vin.vout].value;
+                                }
+                            } catch (e) {}
+                        }
+                        if (value != null) totalIn += value;
+
+                        const valStr = value != null ? `<span class="val gold">${COIN_HTML}${value.toFixed(8)}</span>` : '';
+                        const origen = `${makeLink(vin.txid)}:${vin.vout}`;
+
+                        let addrOrigen = '';
+                        if (vin.scriptPubKey && (vin.scriptPubKey.addresses || vin.scriptPubKey.address)) {
+                            const a = vin.scriptPubKey.addresses?.[0] || vin.scriptPubKey.address;
+                            if (a) addrOrigen = ` <span style="color:#4a6a62;">(${makeLink(a)})</span>`;
+                        }
+
+                        res += `<div class="row" style="padding-left:14px;font-size:12px;color:#4a7a6e;"><span class="key" style="min-width:24px;">#${i}</span><span class="val" style="font-size:12px;">${origen}${addrOrigen}</span>${valStr}</div>`;
+                    }
+                }
+
+                if (totalIn > 0) {
+                    res += `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_in')}</span><span class="val gold">${COIN_HTML}${totalIn.toFixed(8)}</span></div>`;
+                }
+            }
+
+            if (tx.vout && tx.vout.length > 0) {
+                res += `<div class="divider"></div>`;
+                res += `<div class="row"><span class="key">${t('explorer.section_outputs')}</span><span class="val gold">${tx.vout.length}</span></div>`;
+
+                let totalOut = 0;
+                for (let i = 0; i < tx.vout.length; i++) {
+                    const vout = tx.vout[i];
+                    totalOut += vout.value || 0;
+
+                    const spk = vout.scriptPubKey || {};
+                    let destino;
+
+                    if (spk.addresses?.[0]) {
+                        destino = makeLink(spk.addresses[0]);
+                    } else if (spk.address) {
+                        destino = makeLink(spk.address);
+                    } else if (spk.type === 'nulldata' || (spk.asm && spk.asm.startsWith('OP_RETURN'))) {
+                        destino = `<span style="color:#4a6a62;">OP_RETURN</span>`;
+                    } else {
+                        destino = `<span style="color:#4a6a62;">${escapeHtml(spk.type || 'unknown')}</span>`;
+                    }
+
+                    res += `<div class="row" style="padding-left:14px;font-size:12px;color:#4a7a6e;"><span class="key" style="min-width:24px;">#${i}</span><span class="val gold">${COIN_HTML}${(vout.value || 0).toFixed(8)}</span> → ${destino}</div>`;
+                }
+
+                if (totalOut > 0) {
+                    res += `<div class="row" style="margin-top:2px;"><span class="key">${t('explorer.label_total_out')}</span><span class="val gold">${COIN_HTML}${totalOut.toFixed(8)}</span></div>`;
+                }
+
+                if (!isCoinbase && totalIn > 0) {
+                    const fee = totalIn - totalOut;
+                    if (fee > 0) {
+                        res += `<div class="divider"></div>`;
+                        res += `<div class="row"><span class="key">${t('explorer.label_fee')}</span><span class="val" style="color:#ff756f;">${COIN_HTML}${fee.toFixed(8)}</span></div>`;
+                    }
+                }
+            }
+
+            res += `<div class="divider"></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_summary')}</span></div>`;
+            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#4a7a6e;"><span class="key" style="min-width:60px;">${t('explorer.label_type')}</span><span class="val">${isCoinbase ? t('explorer.tx_type_coinbase_short') : t('explorer.tx_type_transparent_short')}</span></div>`;
+            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#4a7a6e;"><span class="key" style="min-width:60px;">${t('explorer.label_inputs_short')}</span><span class="val">${tx.vin?.length || 0}</span></div>`;
+            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#4a7a6e;"><span class="key" style="min-width:60px;">${t('explorer.label_outputs_short')}</span><span class="val">${tx.vout?.length || 0}</span></div>`;
+
+            res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
+            renderOutput(res);
+            return;
+        }
+
+        if (cmd.includes('validateaddress') && result) {
+            const v = result;
+            const direccion = v.address || cmd.split(' ')[1] || t('explorer.label_unknown');
+            let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_address')}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.label_address')}</span><span class="val">${makeLink(direccion)}</span></div>`;
+            res += `<div class="row"><span class="key">${t('explorer.is_valid')}</span><span class="val">${v.isvalid ? t('explorer.ok_validate') : t('explorer.error_validate')}</span></div>`;
+
+            if (v.address) {
+                if (/^(bitcoincash:)?[qp]/.test(v.address)) {
+                    res += `<div class="row"><span class="key">Formato</span><span class="val">CashAddr</span></div>`;
+                } else if (/^[13]/.test(v.address)) {
+                    res += `<div class="row"><span class="key">Formato</span><span class="val">Legacy (Base58)</span></div>`;
+                }
+            }
+
+            if (v.isscript !== undefined) {
+                res += `<div class="row"><span class="key">Script</span><span class="val">${v.isscript ? 'sí' : 'no'}</span></div>`;
+            }
+
+            if (v.scriptPubKey) {
+                res += `<div class="row"><span class="key">scriptPubKey</span><span class="val mono">${escapeHtml(v.scriptPubKey)}</span></div>`;
+            }
+
+            res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
+            renderOutput(res);
+            return;
+        }
+
+        {
+            let res = `<div class="cmd-line"><span class="tag">◌</span> ${escapeHtml(cmd)}</div>`;
+            res += `<pre style="font-family:'Lucida Console',monospace;font-size:12px;color:#4a7a6e;background:rgba(0,0,0,0.2);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">${escapeHtml(JSON.stringify(result, null, 2))}</pre>`;
+            res += `<button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>`;
+            renderOutput(res);
+        }
+
+    } catch (e) {
+        renderOutput(`
+            <div class="cmd-line"><span class="tag">${t('explorer.tag_not_found')}</span> ${t('common.state.error')}</div>
+            <div style="color:#ff756f;padding:6px 0;">${escapeHtml(e.message)}</div>
+            <button class="copy-btn" onclick="copyResult()">${t('explorer.copy_result')}</button>
+        `);
+    }
+
+    document.getElementById('searchInput').value = '';
+}
+
+window.copyResult = function() {
+    const outputPre = document.querySelector('#output pre:last-of-type');
+    if (outputPre) {
+        navigator.clipboard.writeText(outputPre.innerText).then(() => {
+            document.querySelector('.prompt').textContent = '✓';
+            setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
+            showToast(t('common.copy.ok'));
+        });
+    } else {
+        const out = document.getElementById('output');
+        const text = out.textContent;
+        if (text) {
+            navigator.clipboard.writeText(text).then(() => showToast(t('common.copy.ok')));
+        }
+    }
+};
+
+window.navigateTo = navigateTo;
+window.executeSearch = executeSearch;
+window.goBack = goBack;
+window.goToHistory = goToHistory;
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F8') {
+        e.preventDefault();
+        window.copyResult();
+    }
+    if (e.key === 'F9') {
+        e.preventDefault();
+        document.getElementById('searchInput').value = '';
+        renderPlaceholder();
+        document.querySelector('.prompt').textContent = '♥';
+        setTimeout(() => document.querySelector('.prompt').textContent = '►', 1000);
+        const baseUrl = window.location.origin + '/pagina/bch-explorer';
+        window.history.replaceState({}, '', baseUrl);
+        historyStack = [];
+        currentIndex = -1;
+        updateBackButton();
+        updateBreadcrumb();
+        loadNetworkStats();
+    }
+    if (e.key === 'ArrowLeft' && (e.altKey || e.metaKey)) {
+        e.preventDefault();
+        goBack();
+    }
+});
+
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const rawInput = searchInput.value.trim();
+        if (rawInput) {
+            const cmd = detectCommand(rawInput);
+            const label = getLabelForQuery(cmd);
+            pushHistory(cmd, label);
+            updateUrlWithSearch(cmd);
+            executeSearch(cmd);
+        }
+    }
+});
+searchInput.addEventListener('paste', () => {
+    setTimeout(() => {
+        const input = searchInput.value;
+        const cmd = detectCommand(input);
+        if (cmd !== input) searchInput.value = cmd;
+    }, 10);
+});
+
+(function() {
+    const searchParam = detectSearchFromUrl();
+    if (searchParam) {
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const input = document.getElementById('searchInput');
+                if (input) {
+                    const cmd = detectCommand(searchParam);
+                    input.value = cmd;
+                    const label = getLabelForQuery(cmd);
+                    pushHistory(cmd, label);
+                    executeSearch(cmd);
+                }
+            }, 500);
+        });
+    }
+})();
+
+window.onLangChange = function () {
+    if (currentIndex >= 0 && historyStack[currentIndex]) {
+        const entry = historyStack[currentIndex];
+        entry.label = getLabelForQuery(entry.query);
+        updateBreadcrumb();
+        executeSearch(entry.query);
+    } else {
+        renderPlaceholder();
+    }
+};
+
+(async () => {
+    if (window.FiroI18n && FiroI18n.init) {
+        await FiroI18n.init();
+    }
+    loadNetworkStats();
+    setInterval(loadNetworkStats, 30000);
+})();
+    </script>
+
+</body>
+</html>
