@@ -620,7 +620,7 @@
                     <div class="card-title" data-i18n="nodo.card.node_state">Nodo · Estado</div>
                     <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="node-version">---</span></div>
                     <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="node-state">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.blocks">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.blocks">ALTURA</span><span class="value" id="node-blocks">---</span></div>
                     <div class="card-item"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
                     <div class="card-item"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
                     <div class="card-item"><span class="label" data-i18n="common.label.uptime">TIEMPO EN LÍNEA</span><span class="value" id="node-uptime">---</span></div>
@@ -756,7 +756,7 @@
         stateEl.className = 'value ' + (isSynced ? 'positive' : 'gold');
 
         document.getElementById('node-blocks').textContent =
-            `${Number(d.blockchain?.blocks || 0).toLocaleString()} / ${Number(d.blockchain?.headers || 0).toLocaleString()}`;
+            `${Number(d.blockchain?.blocks || 0).toLocaleString()}`;
 
         document.getElementById('node-connections').textContent =
             `${d.network?.connections ?? 0} (${d.peers?.inbound ?? 0} ${t('common.unit.in')} · ${d.peers?.outbound ?? 0} ${t('common.unit.out')})`;
