@@ -982,44 +982,55 @@
         if (e.key === 'Escape') cerrarModal();
     });
 
-    async function fetchMasternodeData() {
+async function fetchMasternodeData() {
+    const PROTX = '70070ca66cf05fca3ceee647233923ed290e806a5535ef45d03459df596e0830';
+    try {
+        const r = await fetch(`https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=masternode-status&protx=${PROTX}`);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const s = await r.json();
+
+        if (s.error) throw new Error(s.error);
+
+        const st = s.state || {};
+
+        const mn = {
+            status: (st.PoSePenalty === 0 && st.PoSeBanHeight === -1) ? 'READY' : 'POSE_BANNED',
+            service: st.service || MI_NODO,
+            proTxHash: s.proTxHash || PROTX,
+            payee: st.payoutAddress || '---',
+            owner: st.ownerAddress || '---',
+            voting: st.votingAddress || '---',
+            operator: st.pubKeyOperator || '---',
+            collateral: s.collateralHash
+                ? `${s.collateralHash}:${s.collateralIndex ?? 0}`
+                : '---',
+            registeredHeight: st.registeredHeight || 0,
+            lastPaidHeight: st.lastPaidHeight || 0,        
+            posePenalty: st.PoSePenalty ?? 0,
+            poseBanHeight: st.PoSeBanHeight ?? -1,
+            nextWinner: null
+        };
+
         try {
-            const r = await fetch('https://carover0.xyz/api/firo/masternode-live.php?limit=1');
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            const data = await r.json();
-
-            const mn = {
-                status: 'READY',
-                service: MI_NODO,
-                proTxHash: '70070ca66cf05fca3ceee647233923ed290e806a5535ef45d03459df596e0830',
-                payee: 'a7dkMS3D4gv6Vvcu31uCSRXQEgHTLgFjos',
-                owner: 'aCsRaKbL8vXTvi5jbMDLP7xAzZnD2JJ1Se',
-                voting: 'aCsRaKbL8vXTvi5jbMDLP7xAzZnD2JJ1Se',
-                operator: '18775505362c3d083bf464640025b0481c803a6338e892533bc57384df1a46ff4794d5b10e0b839d6a7e19bf9454588e',
-                collateral: '1fcb357a5c8db8f0f0ceb096bf32bbd95233c01a504f9f6ecb6b4979e7e09ce1:0',
-                registeredHeight: 1381118,
-                lastPaidHeight: 0,
-                posePenalty: 0,
-                poseBanHeight: -1,
-                nextWinner: null
-            };
-
-            if (data.stats && data.stats.next_winner) {
-                if (data.stats.next_winner.payee === mn.payee) {
-                    mn.nextWinner = data.stats.next_winner.height;
+            const rStats = await fetch('https://carover0.xyz/api/firo/masternode-live.php?limit=1');
+            if (rStats.ok) {
+                const stats = await rStats.json();
+                if (stats.stats?.next_winner?.payee === mn.payee) {
+                    mn.nextWinner = stats.stats.next_winner.height;
                 }
             }
+        } catch (_) {}
 
-            cachedMasternode = mn;
-            actualizarCardMasternode(mn);
-            return mn;
-        } catch (e) {
-            console.error('Error cargando masternodo:', e);
-            document.getElementById('mn-status').textContent = '❌ Error';
-            document.getElementById('mn-status').className = 'value negative';
-            return null;
-        }
+        cachedMasternode = mn;
+        actualizarCardMasternode(mn);
+        return mn;
+    } catch (e) {
+        console.error('Error cargando masternodo:', e);
+        document.getElementById('mn-status').textContent = '❌ Error';
+        document.getElementById('mn-status').className = 'value negative';
+        return null;
     }
+}
 
     function actualizarCardMasternode(mn) {
         document.getElementById('mn-status').textContent = mn.status === 'READY' ? 'Activo' : mn.status;
