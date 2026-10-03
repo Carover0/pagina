@@ -1,7 +1,7 @@
 const TRANSLATIONS = {
     es: {
         "explorer.prefork_notice": "Bloque heredado de Bitcoin",
-	    "explorer.prefork_notice_tx": "Transacción heredada de Bitcoin",
+        "explorer.prefork_notice_tx": "Transacción heredada de Bitcoin",
         "common.nav.node":              "[NODO]",
         "common.nav.explorer":          "[EXPLORADOR]",
         "common.nav.console":           "[CONSOLA]",
