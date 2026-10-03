@@ -468,6 +468,26 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    #output .prefork-notice {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(247, 147, 26, 0.08);
+        border: 1px solid rgba(247, 147, 26, 0.25);
+        border-radius: 10px;
+        padding: 10px 16px;
+        margin: 8px 0 14px 0;
+        font-size: 12px;
+        color: #f7931a;
+        letter-spacing: 0.2px;
+    }
+    #output .prefork-notice img {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+    #output .prefork-notice .txt { color: #c98a4a; }
+
     .footer-bar {
         display: flex;
         flex-wrap: wrap;
@@ -726,6 +746,7 @@
 
 const API_URL  = "https://carover0.xyz/api/bch/rpc.php";
 const TOKEN    = "bch2026";
+const FORK_HEIGHT = 478559;
 
 function getAssetBase() {
     let path = window.location.pathname;
@@ -735,7 +756,12 @@ function getAssetBase() {
 }
 
 const ASSET_BASE = getAssetBase();
-const COIN_HTML = `<img src="${ASSET_BASE}assets/bch.png" alt="BCH" title="BCH" class="coin" onerror="this.style.display='none'">`;
+const COIN_HTML_BCH = `<img src="${ASSET_BASE}assets/bch.png" alt="BCH" title="BCH" class="coin" onerror="this.style.display='none'">`;
+const COIN_HTML_BTC = `<img src="${ASSET_BASE}assets/btc.png" alt="BTC" title="BTC (pre-fork)" class="coin" onerror="this.style.display='none'">`;
+
+function coinForHeight(height) {
+    return (height !== undefined && height < FORK_HEIGHT) ? COIN_HTML_BTC : COIN_HTML_BCH;
+}
 
 const t = (key) => (window.FiroI18n ? FiroI18n.t(key) : key);
 
@@ -996,7 +1022,18 @@ async function executeSearch(q) {
 
         if (cmd.includes('getblock') && result.hash) {
             const b = result;
+            const isPrefork = b.height < FORK_HEIGHT;
+            const coin = coinForHeight(b.height);
+
             let res = `<div class="cmd-line"><span class="tag">${t('explorer.tag_block')}</span> #${b.height}</div>`;
+
+            if (isPrefork) {
+                res += `<div class="prefork-notice">
+                    <img src="${ASSET_BASE}assets/btc.png" alt="BTC" onerror="this.style.display='none'">
+                    <span class="txt">${t('explorer.prefork_notice')} — Bitcoin (pre-fork, altura &lt; ${FORK_HEIGHT})</span>
+                </div>`;
+            }
+
             res += `<div class="row"><span class="key">${t('explorer.label_hash')}</span><span class="val">${makeLink(b.hash)}</span></div>`;
             res += `<div class="row"><span class="key">${t('explorer.label_date')}</span><span class="val">${new Date(b.time*1000).toLocaleString()}</span></div>`;
             res += `<div class="row"><span class="key">${t('explorer.label_difficulty')}</span><span class="val">${b.difficulty?.toFixed ? b.difficulty.toFixed(2) : (b.difficulty || '—')}</span></div>`;
@@ -1071,13 +1108,35 @@ async function executeSearch(q) {
             const isCoinbase = tx.vin && tx.vin.length === 1 && tx.vin[0].coinbase;
             const tipoLabel = isCoinbase ? t('explorer.tx_type_coinbase') : t('explorer.tx_type_transparent');
 
+            let txHeight = tx.height;
+            if (txHeight === undefined && tx.blockhash) {
+                try {
+                    const rH = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblockheader%20${tx.blockhash}%20true`);
+                    const dH = await rH.json();
+                    if (dH.result && typeof dH.result.height !== 'undefined') {
+                        txHeight = dH.result.height;
+                    }
+                } catch (e) {}
+            }
+
+            const isPrefork = txHeight !== undefined && txHeight < FORK_HEIGHT;
+            const COIN_HTML = COIN_HTML_BCH;
+
             let res = `<div class="cmd-line"><span class="tag">${tipoLabel}</span></div>`;
+
+            if (isPrefork) {
+                res += `<div class="prefork-notice">
+                    <img src="${ASSET_BASE}assets/btc.png" alt="BTC" onerror="this.style.display='none'">
+                    <span class="txt">${t('explorer.prefork_notice_tx')} — Bitcoin (bloque #${txHeight}, pre-fork)</span>
+                </div>`;
+            }
+
             res += `<div class="row"><span class="key">${t('explorer.label_txid')}</span><span class="val">${makeLink(txid)}</span></div>`;
 
-            if (tx.height && tx.blockhash) {
-                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))} · ${makeLink(tx.blockhash)}</span></div>`;
-            } else if (tx.height) {
-                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(tx.height))}</span></div>`;
+            if (txHeight && tx.blockhash) {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(txHeight))} · ${makeLink(tx.blockhash)}</span></div>`;
+            } else if (txHeight) {
+                res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(String(txHeight))}</span></div>`;
             } else if (tx.blockhash) {
                 res += `<div class="row"><span class="key">${t('explorer.label_block')}</span><span class="val">${makeLink(tx.blockhash)}</span></div>`;
             } else {
