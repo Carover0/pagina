@@ -1,0 +1,420 @@
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIRO · Red de Nodos</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #0a080c;
+      background-image: radial-gradient(ellipse at 30% 40%, rgba(155,28,46,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 80%, rgba(155,28,46,0.05) 0%, transparent 50%),
+                        linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+      font-family: 'Lucida Console', 'Courier New', monospace;
+      color: #ece8e0;
+    }
+
+    #mapa {
+      height: 100vh; width: 100%;
+      background: radial-gradient(ellipse at 50% 50%, #101820 0%, #0a080c 80%);
+    }
+
+    #panel {
+      position: absolute; top: 20px; left: 20px; z-index: 1000;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(155,28,46,0.2);
+      padding: 16px 20px; border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      font-size: 12px; min-width: 240px;
+    }
+    #panel h2 {
+      font-size: 13px; font-weight: 400; letter-spacing: 0.5px;
+      margin-bottom: 14px; color: #f5e6c8; text-transform: uppercase;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid rgba(155,28,46,0.1); padding-bottom: 10px;
+    }
+    #panel h2 img { width: 24px; height: 24px; object-fit: contain;
+      filter: drop-shadow(0 0 16px rgba(155,28,46,0.3)); }
+    #panel h2 small { font-size: 10px; color: #6a6255; margin-left: auto; }
+    #panel .row {
+      display: flex; justify-content: space-between;
+      padding: 5px 0; border-bottom: 1px solid rgba(120,140,200,0.04);
+      font-size: 11px;
+    }
+    #panel .row:last-child { border-bottom: none; }
+    #panel .label { color: #4a443a; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+    #panel .value { font-weight: 500; color: #f5ede4; }
+    #panel .enabled { color: #27A17C; }
+    #panel .banned { color: #ff7b87; }
+
+    #leyenda {
+      position: absolute; bottom: 30px; left: 20px; z-index: 1000;
+      background: rgba(255,255,255,0.02); backdrop-filter: blur(8px);
+      border: 1px solid rgba(155,28,46,0.2);
+      padding: 12px 16px; border-radius: 12px; font-size: 11px;
+    }
+    #leyenda .item { display: flex; align-items: center; gap: 10px; padding: 3px 0; color: #8a8275; }
+    #leyenda .box { width: 12px; height: 12px; border-radius: 3px; }
+    #leyenda .box.blanco { background: #1a2028; border: 1px solid #3a4550; }
+    #leyenda .box.rojo   { background: #9B1C2E; }
+    #leyenda .box.verde  { background: #27A17C; }
+
+    .leaflet-popup-content-wrapper {
+      background: rgba(22,17,20,0.95); backdrop-filter: blur(12px);
+      color: #ece8e0; border-radius: 12px;
+      border: 1px solid rgba(155,28,46,0.3);
+      box-shadow: 0 8px 40px rgba(155,28,46,0.2);
+      font-family: 'Lucida Console', 'Courier New', monospace;
+    }
+    .leaflet-popup-content { margin: 14px 18px; font-size: 12px; line-height: 1.6; }
+    .leaflet-popup-content b { color: #ff7b87; font-weight: 500; }
+    .leaflet-popup-tip { background: rgba(22,17,20,0.95); border: 1px solid rgba(155,28,46,0.3); }
+    .leaflet-popup-close-button { color: #6a6255 !important; }
+
+    .pais-numero {
+      background: transparent; border: none; box-shadow: none;
+      color: #f5e6c8; font-family: 'Lucida Console', 'Courier New', monospace;
+      font-weight: 600; font-size: 11px;
+      text-shadow: 0 0 4px #000, 0 0 3px #000, 1px 1px 3px #000, -1px -1px 3px #000;
+      pointer-events: none;
+    }
+    .pais-numero::before { display: none; }
+
+    #logo-firo {
+      position: absolute; bottom: 30px; right: 80px; z-index: 1000;
+      width: 32px; height: 32px; object-fit: contain; opacity: 0.85;
+      filter: drop-shadow(0 0 16px rgba(155,28,46,0.3)); transition: all 0.3s;
+    }
+    #logo-firo:hover { opacity: 1; filter: drop-shadow(0 0 24px rgba(155,28,46,0.5)); }
+
+    .btn-mundo {
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; cursor: pointer;
+      background: rgba(22,17,20,0.95);
+      border: 1px solid rgba(155,28,46,0.35);
+      border-radius: 8px; color: #ff7b87;
+      font-size: 16px; line-height: 1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: all 0.2s;
+    }
+    .btn-mundo:hover { background: rgba(155,28,46,0.25); color: #fff; }
+
+#modal-pais {
+  position: fixed; inset: 0; z-index: 2000;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(5, 3, 6, 0.55);
+  backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+#modal-pais.visible {
+  opacity: 1; pointer-events: auto;
+}
+
+#modal-pais .card {
+  position: relative;
+  width: 320px; max-width: calc(100vw - 40px);
+  background: rgba(22,17,20,0.96);
+  border: 1px solid rgba(155,28,46,0.35);
+  border-radius: 16px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6),
+              0 0 40px rgba(155,28,46,0.15);
+  transform: translateY(12px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(.2,.8,.3,1.2);
+  font-family: 'Lucida Console', 'Courier New', monospace;
+  color: #ece8e0;
+}
+#modal-pais.visible .card {
+  transform: translateY(0) scale(1);
+}
+
+#modal-pais .cerrar {
+  position: absolute; top: 10px; right: 14px;
+  background: none; border: none; cursor: pointer;
+  color: #6a6255; font-size: 18px; line-height: 1;
+  font-family: inherit; transition: color 0.2s;
+}
+#modal-pais .cerrar:hover { color: #ff7b87; }
+
+#modal-pais .sparky {
+  display: block; margin: 0 auto 10px;
+  width: 120px; height: auto;
+}
+
+#modal-pais h3 {
+  text-align: center; font-size: 15px; font-weight: 500;
+  color: #f5e6c8; letter-spacing: 0.5px;
+  margin-bottom: 14px; padding-bottom: 12px;
+  border-bottom: 1px solid rgba(155,28,46,0.15);
+}
+
+#modal-pais .fila {
+  display: flex; justify-content: space-between;
+  padding: 6px 0; font-size: 11px;
+}
+#modal-pais .fila + .fila {
+  border-top: 1px solid rgba(120,140,200,0.05);
+}
+#modal-pais .k { color: #4a443a; text-transform: uppercase;
+  font-size: 9px; letter-spacing: 0.5px; }
+#modal-pais .v { color: #f5ede4; font-weight: 500; }
+#modal-pais .v.ok   { color: #27A17C; }
+#modal-pais .v.bad  { color: #ff7b87; }
+
+@media (max-width: 480px) {
+  #modal-pais .card { width: calc(100vw - 32px); }
+}
+
+#btn-web {
+  position: absolute; top: 20px; right: 20px; z-index: 1000;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; cursor: pointer;
+  background: rgba(22,17,20,0.95);
+  border: 1px solid rgba(155,28,46,0.35);
+  border-radius: 10px;
+  color: #ff7b87;
+  font-family: 'Lucida Console', 'Courier New', monospace;
+  font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: all 0.2s;
+}
+#btn-web:hover {
+  background: rgba(155,28,46,0.25);
+  color: #fff;
+  border-color: rgba(155,28,46,0.6);
+}
+#btn-web svg { width: 14px; height: 14px; }
+
+.nav-links { display:flex; flex-wrap:wrap; gap:4px 18px; font-size:12px; justify-content:center; flex:1; }
+.nav-links a { color:#6a6255; text-decoration:none; transition:all 0.25s; padding:4px 0; border-bottom:2px solid transparent; }
+.nav-links a:hover { color:#ff7b87; border-bottom-color:#ff7b87; }
+  </style>
+</head>
+<body>
+  <div id="panel">
+    <h2>
+      <img src="assets/firo.png" alt="Firo" />
+      Firo Red
+      <small>v8.11</small>
+    </h2>
+    <div class="row"><span class="label">Total</span><span class="value" id="total">—</span></div>
+    <div class="row"><span class="label">Activos</span><span class="value enabled" id="enabled">—</span></div>
+    <div class="row"><span class="label">Bloqueados</span><span class="value banned" id="otros">—</span></div>
+    <div class="row"><span class="label">Países</span><span class="value" id="paises">—</span></div>
+  </div>
+
+  <div id="leyenda">
+    <div class="item"><span class="box blanco"></span> Sin nodos</div>
+    <div class="item"><span class="box rojo"></span> Con nodos Firo</div>
+  </div>
+
+    <nav class="nav-links">
+      <a href="https://carover0.github.io/pagina/firo-nodo.html">[NODO]</a>
+      <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a>
+      <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a>
+      <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+    </nav>
+
+
+    </div>
+
+<div id="modal-pais">
+  <div class="card">
+    <button class="cerrar" aria-label="Cerrar">✕</button>
+    <img class="sparky" src="assets/sparky.png" alt="" />
+    <h3 id="mp-nombre">—</h3>
+    <div class="fila"><span class="k">Total</span><span class="v" id="mp-total">—</span></div>
+    <div class="fila"><span class="k">Activos</span><span class="v ok" id="mp-activos">—</span></div>
+    <div class="fila"><span class="k">Bloqueados</span><span class="v bad" id="mp-bloqueados">—</span></div>
+  </div>
+</div>
+
+  <div id="mapa"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+function getISO(props) {
+  const candidatos = [
+    props['ISO_A2_EH'],
+    props['ISO_A2'],
+    props['ISO3166-1-Alpha-2'],
+    props['iso_a2']
+  ];
+  for (const v of candidatos) {
+    const iso = String(v || '').trim().toUpperCase();
+    if (iso && iso !== '-99') return iso;
+  }
+  return '';
+}  
+ const map = L.map('mapa', {
+  zoomControl: false,
+  attributionControl: false,
+  worldCopyJump: true,
+  minZoom: 2,
+  maxZoom: 10,
+  maxBounds: [[-85, -180], [85, 180]],
+  maxBoundsViscosity: 1.0
+}).setView([20, 0], 2)
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    const MundoControl = L.Control.extend({
+      options: { position: 'bottomright' },
+      onAdd: function () {
+        const div = L.DomUtil.create('div', 'btn-mundo');
+        div.title = 'Ver el mundo';
+        div.innerHTML = '🌍';
+        L.DomEvent.disableClickPropagation(div);
+        div.onclick = () => map.setView([20, 0], 2);
+        return div;
+      }
+    });
+    new MundoControl().addTo(map);
+
+Promise.all([
+  fetch('https://carover0.xyz/api/firo/masternodes.php')
+    .then(r => r.json()),
+  fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
+    .then(r => r.json())
+])
+.then(([znodes, paisesGeo]) => {
+
+  const nodosPorPais = {};
+  znodes.forEach(z => {
+    const iso = String(z.pais_iso || 'UNKNOWN').trim().toUpperCase();
+    (nodosPorPais[iso] = nodosPorPais[iso] || []).push(z);
+  });
+
+  function puntoEtiqueta(layer) {
+    const centroBounds = layer.getBounds().getCenter();
+
+    const latlngs = layer.getLatLngs();
+    const anillos = [];
+    (function recorrer(arr) {
+      if (!arr.length) return;
+      if (arr[0] instanceof L.LatLng) anillos.push(arr);
+      else arr.forEach(recorrer);
+    })(latlngs);
+
+    if (!anillos.length) return centroBounds;
+
+    let mejor = anillos[0], mejorArea = 0;
+    for (const anillo of anillos) {
+      const b = L.latLngBounds(anillo);
+      const area = (b.getEast() - b.getWest()) * (b.getNorth() - b.getSouth());
+      if (area > mejorArea) { mejorArea = area; mejor = anillo; }
+    }
+
+    let lat = 0, lng = 0;
+    mejor.forEach(p => { lat += p.lat; lng += p.lng; });
+    const centroGrande = L.latLng(lat / mejor.length, lng / mejor.length);
+
+    const dLat = Math.abs(centroBounds.lat - centroGrande.lat);
+    const dLng = Math.abs(centroBounds.lng - centroGrande.lng);
+    const distancia = Math.sqrt(dLat * dLat + dLng * dLng);
+
+    return distancia > 8 ? centroGrande : centroBounds;
+  }
+
+const modal    = document.getElementById('modal-pais');
+const mpNombre = document.getElementById('mp-nombre');
+const mpTotal  = document.getElementById('mp-total');
+const mpAct    = document.getElementById('mp-activos');
+const mpBloq   = document.getElementById('mp-bloqueados');
+
+function abrirModal(nombre, total, activos, bloqueados) {
+  mpNombre.textContent = nombre;
+  mpTotal.textContent  = total;
+  mpAct.textContent    = activos;
+  mpBloq.textContent   = bloqueados;
+  modal.classList.add('visible');
+}
+function cerrarModal() {
+  modal.classList.remove('visible');
+}
+
+modal.querySelector('.cerrar').addEventListener('click', cerrarModal);
+modal.addEventListener('click', e => {
+  if (e.target === modal) cerrarModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') cerrarModal();
+});
+
+  L.geoJSON(paisesGeo, {
+    style: feature => {
+      const iso = getISO(feature.properties);
+      const tiene = !!nodosPorPais[iso];
+      return {
+        fillColor:   tiene ? '#9B1C2E' : '#151b22',
+        fillOpacity: tiene ? 0.85 : 0.75,
+        color:       tiene ? '#ff7b87' : '#2a333d',
+        weight:      tiene ? 0.8 : 0.4,
+        opacity:     1
+      };
+    },
+    onEachFeature: (feature, layer) => {
+      const iso = getISO(feature.properties);
+      const nombrePais = feature.properties.ADMIN || feature.properties.NAME || '—';
+      const nodos = nodosPorPais[iso] || [];
+      const count = nodos.length;
+
+      if (count > 0) {
+        const enabled = nodos.filter(z => z.status === 'ENABLED').length;
+        const bloqueados = count - enabled;
+
+        layer.on('click', () => {
+          abrirModal(nombrePais, count, enabled, bloqueados);
+        });
+
+        const bounds = layer.getBounds();
+        const areaPais = (bounds.getEast() - bounds.getWest()) *
+                         (bounds.getNorth() - bounds.getSouth());
+
+        if (areaPais > 15 || count >= 20) {
+          L.marker(puntoEtiqueta(layer), {
+            icon: L.divIcon({
+              className: 'pais-numero',
+              html: String(count),
+              iconSize: [30, 14],
+              iconAnchor: [15, 7]
+            }),
+            interactive: false
+          }).addTo(map);
+        }
+
+        layer.on('mouseover', () => layer.setStyle({ weight: 2, color: '#ff7b87' }));
+        layer.on('mouseout',  () => layer.setStyle({ weight: 0.8, color: '#ff7b87' }));
+      } else {
+        layer.on('click', () => {
+          abrirModal(nombrePais, 0, 0, 0);
+        });
+        layer.on('mouseover', () => layer.setStyle({ weight: 1, color: '#4a5a6a' }));
+        layer.on('mouseout',  () => layer.setStyle({ weight: 0.4, color: '#2a333d' }));
+      }
+    }
+  }).addTo(map);
+
+  const activos = znodes.filter(z => z.status === 'ENABLED').length;
+  const totalPaises = Object.keys(nodosPorPais).length;
+
+  document.getElementById('total').textContent   = znodes.length.toLocaleString();
+  document.getElementById('enabled').textContent = activos.toLocaleString();
+  document.getElementById('otros').textContent   = (znodes.length - activos).toLocaleString();
+  document.getElementById('paises').textContent  = totalPaises;
+
+})
+.catch(err => {
+  console.error(err);
+  document.getElementById('total').textContent = 'Error';
+});
+
+  </script>
+</body>
+</html>
