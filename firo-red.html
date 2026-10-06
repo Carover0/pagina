@@ -195,13 +195,12 @@
 .nav-links a { color:#6a6255; text-decoration:none; transition:all 0.25s; padding:4px 0; border-bottom:2px solid transparent; }
 .nav-links a:hover { color:#ff7b87; border-bottom-color:#ff7b87; }
 
- #mapa:focus,
+#mapa:focus,
 .leaflet-container:focus,
 .leaflet-container:focus-visible {
   outline: none;
 }
-
-  </style>
+</style>
 </head>
 <body>
   <div id="panel">
@@ -227,9 +226,7 @@
       <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a>
       <a href="https://carover0.github.io/pagina/">[INICIO]</a>
     </nav>
-
-
-    </div>
+ </div>
 
 <div id="modal-pais">
   <div class="card">
@@ -269,6 +266,8 @@ function getISO(props) {
   maxBoundsViscosity: 1.0,
   keyboard: false
 }).setView([20, 0], 2)
+
+map.getContainer().removeAttribute('tabindex');
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -355,6 +354,8 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') cerrarModal();
 });
 
+  const marcadoresNumero = [];
+
   L.geoJSON(paisesGeo, {
     style: feature => {
       const iso = getISO(feature.properties);
@@ -385,18 +386,20 @@ document.addEventListener('keydown', e => {
         const areaPais = (bounds.getEast() - bounds.getWest()) *
                          (bounds.getNorth() - bounds.getSouth());
 
-        if (areaPais > 15 || count >= 20) {
-          L.marker(puntoEtiqueta(layer), {
-            icon: L.divIcon({
-              className: 'pais-numero',
-              html: String(count),
-              iconSize: [30, 14],
-              iconAnchor: [15, 7]
-            }),
-            interactive: false
-          }).addTo(map);
-        }
+	if (areaPais > 15 || count >= 20) {
+	  const marcador = L.marker(puntoEtiqueta(layer), {
+	    icon: L.divIcon({
+	      className: 'pais-numero',
+	      html: String(count),
+	      iconSize: [40, 20],
+	      iconAnchor: [20, 10]
+	    }),
+	    interactive: false
+	  }).addTo(map);
 
+	  marcador._count = count;
+	  marcadoresNumero.push(marcador);
+	}
         layer.on('mouseover', () => layer.setStyle({ weight: 2, color: '#ff7b87' }));
         layer.on('mouseout',  () => layer.setStyle({ weight: 0.8, color: '#ff7b87' }));
       } else {
@@ -409,7 +412,22 @@ document.addEventListener('keydown', e => {
     }
   }).addTo(map);
 
-  const activos = znodes.filter(z => z.status === 'ENABLED').length;
+	function escalarNumeros() {
+	  const z = map.getZoom();
+	  const escala = Math.max(1, (z - 1) * 0.7);
+
+	  marcadoresNumero.forEach(m => {
+	    const el = m.getElement();
+	    if (el) {
+	      el.style.fontSize = (11 * escala) + 'px';
+	    }
+	  });
+	}
+
+map.on('zoomend', escalarNumeros);
+escalarNumeros(); 
+
+    const activos = znodes.filter(z => z.status === 'ENABLED').length;
   const totalPaises = Object.keys(nodosPorPais).length;
 
   document.getElementById('total').textContent   = znodes.length.toLocaleString();
