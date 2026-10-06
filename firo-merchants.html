@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIRO · Merchants accepting Firo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #0a080c;
+      background-image:
+        radial-gradient(ellipse at 30% 40%, rgba(155,28,46,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(155,28,46,0.05) 0%, transparent 50%),
+        linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+      font-family: 'Lucida Console', 'Courier New', monospace;
+      color: #ece8e0;
+    }
+
+    #mapa {
+      height: 100vh; width: 100%;
+      background: radial-gradient(ellipse at 50% 50%, #101820 0%, #0a080c 80%);
+    }
+
+    #panel {
+      position: absolute; top: 20px; left: 20px; z-index: 1000;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(155,28,46,0.2);
+      padding: 16px 20px; border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      font-size: 12px; min-width: 240px;
+    }
+    #panel h2 {
+      font-size: 13px; font-weight: 400; letter-spacing: 0.5px;
+      margin-bottom: 14px; color: #f5e6c8; text-transform: uppercase;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid rgba(155,28,46,0.1); padding-bottom: 10px;
+    }
+    #panel h2 img {
+      width: 24px; height: 24px; object-fit: contain;
+      filter: drop-shadow(0 0 16px rgba(155,28,46,0.3));
+    }
+    #panel h2 small { font-size: 10px; color: #6a6255; margin-left: auto; }
+    #panel .row {
+      display: flex; justify-content: space-between;
+      padding: 5px 0; border-bottom: 1px solid rgba(120,140,200,0.04);
+      font-size: 11px;
+    }
+    #panel .row:last-child { border-bottom: none; }
+    #panel .label { color: #4a443a; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+    #panel .value { font-weight: 500; color: #f5ede4; }
+    #panel .enabled { color: #27A17C; }
+
+    #panel .nav-links {
+      display: flex; flex-wrap: wrap; gap: 4px 12px;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid rgba(155,28,46,0.15);
+      font-size: 12px; justify-content: flex-start;
+    }
+    #panel .nav-links a {
+      color: #6a6255; text-decoration: none;
+      border-bottom: 2px solid transparent;
+    }
+    #panel .nav-links a:hover {
+      color: #ff7b87; border-bottom-color: #ff7b87;
+    }
+
+    #leyenda {
+      position: absolute; bottom: 30px; left: 20px; z-index: 1000;
+      background: rgba(255,255,255,0.02); backdrop-filter: blur(8px);
+      border: 1px solid rgba(155,28,46,0.2);
+      padding: 12px 16px; border-radius: 12px; font-size: 11px;
+    }
+    #leyenda .item { display: flex; align-items: center; gap: 10px; padding: 3px 0; color: #8a8275; }
+    #leyenda .box { width: 14px; height: 14px; border-radius: 3px; }
+    #leyenda .box.blanco { background: #1a2028; border: 1px solid #3a4550; }
+    #leyenda .box.rojo   { background: #9B1C2E; }
+
+    .leaflet-popup-content-wrapper {
+      background: linear-gradient(160deg, rgba(30,22,26,0.98) 0%, rgba(18,14,18,0.99) 100%);
+      color: #ece8e0;
+      border-radius: 14px;
+      border: 1px solid rgba(155,28,46,0.45);
+      box-shadow:
+        0 18px 50px rgba(0,0,0,0.65),
+        0 0 0 1px rgba(255,123,135,0.08) inset,
+        0 0 40px rgba(155,28,46,0.25);
+      font-family: 'Lucida Console', 'Courier New', monospace;
+      padding: 0; overflow: hidden;
+      min-width: 240px;
+    }
+    .leaflet-popup-content {
+      margin: 0; font-size: 13px; line-height: 1.6;
+      width: auto !important;
+    }
+    .leaflet-popup-content b { color: #f5e6c8; font-weight: 600; }
+    .leaflet-popup-tip {
+      background: rgba(22,17,20,0.98);
+      border: 1px solid rgba(155,28,46,0.45);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+    .leaflet-popup-close-button {
+      color: #ff7b87 !important;
+      font-size: 20px !important;
+      width: 28px !important; height: 28px !important;
+      line-height: 26px !important;
+      top: 8px !important; right: 8px !important;
+      border-radius: 50%;
+      background: rgba(155,28,46,0.15);
+      border: 1px solid rgba(155,28,46,0.3);
+      transition: all 0.15s ease;
+    }
+    .leaflet-popup-close-button:hover {
+      background: rgba(155,28,46,0.5) !important;
+      color: #fff !important;
+    }
+
+    .pais-numero {
+      background: transparent; border: none; box-shadow: none;
+      color: #f5e6c8; font-family: 'Lucida Console', 'Courier New', monospace;
+      font-weight: 600; font-size: 11px;
+      text-shadow: 0 0 4px #000, 0 0 3px #000, 1px 1px 3px #000, -1px -1px 3px #000;
+      pointer-events: none;
+    }
+    .pais-numero::before { display: none; }
+
+    #logo-firo {
+      position: absolute; bottom: 30px; right: 80px; z-index: 1000;
+      width: 32px; height: 32px; object-fit: contain; opacity: 0.85;
+      filter: drop-shadow(0 0 16px rgba(155,28,46,0.3));
+    }
+
+    .btn-ver {
+      display: block; width: 100%; margin-top: 10px;
+      padding: 8px 12px; cursor: pointer;
+      background: rgba(155,28,46,0.15);
+      border: 1px solid rgba(155,28,46,0.5);
+      color: #ff7b87; font-family: inherit; font-size: 11px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      border-radius: 8px;
+    }
+    .btn-ver:hover { background: rgba(155,28,46,0.3); color: #fff; }
+
+    .btn-mundo {
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; cursor: pointer;
+      background: rgba(22,17,20,0.95);
+      border: 1px solid rgba(155,28,46,0.35);
+      border-radius: 8px; color: #ff7b87;
+      font-size: 16px; line-height: 1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .btn-mundo:hover { background: rgba(155,28,46,0.25); color: #fff; }
+
+    #top-actions {
+      position: absolute; top: 20px; right: 20px; z-index: 1000;
+      display: flex; gap: 10px; align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-top {
+      padding: 10px 16px; cursor: pointer;
+      background: #9B1C2E; color: #fff;
+      border: 1px solid #ff7b87;
+      border-radius: 10px;
+      font-family: inherit; font-size: 12px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(155,28,46,0.5);
+      text-decoration: none;
+      display: inline-flex; align-items: center;
+      white-space: nowrap;
+    }
+    .btn-top:hover {
+      background: #b8243a;
+      box-shadow: 0 4px 28px rgba(155,28,46,0.8);
+      color: #fff;
+    }
+    .btn-top.secondary {
+      background: rgba(155,28,46,0.15);
+      color: #ff7b87;
+      border-color: rgba(155,28,46,0.55);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .btn-top.secondary:hover {
+      background: rgba(155,28,46,0.4);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(155,28,46,0.6);
+    }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 2100;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+      width: 100%; max-width: 720px; max-height: 90vh;
+      background: rgba(22,17,20,0.98);
+      border: 1px solid rgba(155,28,46,0.35);
+      border-radius: 14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .modal-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(155,28,46,0.2);
+    }
+    .modal-header h3 {
+      font-size: 14px; color: #f5e6c8; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .modal-close {
+      margin-left: auto; background: none; border: none; cursor: pointer;
+      color: #6a6255; font-size: 20px; line-height: 1;
+      font-family: inherit; padding: 4px 8px; border-radius: 6px;
+    }
+    .modal-close:hover { color: #ff7b87; background: rgba(155,28,46,0.1); }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; text-align: center; }
+
+    .modal-body img.sparky {
+      display: block; margin: 4px auto 20px;
+      max-width: 160px; width: 35%; height: auto;
+    }
+
+    .modal-head-logo {
+      width: 28px; height: 28px; object-fit: contain; flex-shrink: 0;
+      filter: drop-shadow(0 0 10px rgba(155,28,46,0.6));
+    }
+
+    #accept-body p {
+      font-size: 12px; color: #b8b0a4; line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    #accept-body .btn-wallet {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; width: 100%;
+      padding: 14px 18px; margin-bottom: 24px;
+      background: rgba(155,28,46,0.18);
+      border: 1px solid rgba(155,28,46,0.55);
+      color: #ff7b87; text-decoration: none;
+      font-family: inherit; font-size: 12px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      border-radius: 10px; box-sizing: border-box;
+    }
+    #accept-body .btn-wallet:hover {
+      background: rgba(155,28,46,0.4); color: #fff;
+      box-shadow: 0 6px 20px rgba(155,28,46,0.4);
+    }
+    #accept-body .btn-wallet img {
+      width: 22px; height: 22px; object-fit: contain;
+      filter: drop-shadow(0 0 6px rgba(155,28,46,0.6));
+    }
+    #accept-body .badges-title {
+      font-size: 10px; color: #6a6255;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    #accept-body .badges-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    #accept-body .badge-card {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 14px 10px;
+      border: 1px solid rgba(155,28,46,0.2);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+      text-decoration: none;
+    }
+    #accept-body .badge-card:hover {
+      border-color: rgba(155,28,46,0.6);
+      background: rgba(155,28,46,0.08);
+    }
+    #accept-body .badge-card img {
+      max-width: 140px; width: 70%; height: auto;
+      margin-bottom: 10px; border-radius: 6px;
+    }
+    #accept-body .badge-card .hint {
+      font-size: 10px; color: #8a8275;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    #community-body p {
+      font-size: 12px; color: #b8b0a4; line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    #community-body .socials-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    #community-body .social-card {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px; padding: 20px 14px;
+      border: 1px solid rgba(155,28,46,0.2);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+      color: #ff7b87; text-decoration: none;
+      font-size: 12px; letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    #community-body .social-card:hover {
+      border-color: rgba(155,28,46,0.6);
+      background: rgba(155,28,46,0.1);
+      color: #fff;
+    }
+    #community-body .social-card img {
+      width: 36px; height: 36px; object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(155,28,46,0.5));
+    }
+
+    #support-body p {
+      font-size: 12px; color: #b8b0a4; line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .support-block {
+      margin-bottom: 14px;
+      border: 1px solid rgba(155,28,46,0.2);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+      overflow: hidden;
+    }
+    .support-label {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      background: rgba(155,28,46,0.1);
+      border-bottom: 1px solid rgba(155,28,46,0.2);
+      font-size: 10px; color: #ff7b87;
+      text-transform: uppercase; letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .support-label img {
+      width: 14px; height: 14px; object-fit: contain;
+      filter: drop-shadow(0 0 6px rgba(155,28,46,0.6));
+    }
+    .support-addr {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 12px 14px;
+      cursor: pointer;
+      font-size: 13px; color: #f5e6c8;
+      letter-spacing: 0.3px; user-select: none;
+    }
+    .support-addr:hover { background: rgba(155,28,46,0.1); }
+    .support-addr .copy-hint {
+      font-size: 9px; color: #6a6255;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border: 1px solid rgba(155,28,46,0.3);
+      border-radius: 20px;
+    }
+    .support-addr.copied { background: rgba(39,161,124,0.15); }
+    .support-addr.copied .copy-hint {
+      color: #27A17C;
+      border-color: rgba(39,161,124,0.5);
+    }
+    .support-note {
+      margin-top: 16px;
+      font-size: 11px; color: #6a6255;
+      text-align: center; line-height: 1.5;
+    }
+
+    #privacy-body { text-align: left; }
+    #privacy-body > p {
+      font-size: 12px; color: #b8b0a4; line-height: 1.7;
+      margin-bottom: 22px;
+    }
+    #privacy-body > p b { color: #f5e6c8; }
+    .privacy-section {
+      margin-bottom: 16px; padding: 12px 14px;
+      border: 1px solid rgba(155,28,46,0.2);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+    }
+    .privacy-section h4 {
+      font-size: 11px; color: #ff7b87;
+      text-transform: uppercase; letter-spacing: 1px;
+      font-weight: 600; margin-bottom: 6px;
+    }
+    .privacy-section p {
+      font-size: 12px; color: #b8b0a4;
+      line-height: 1.65; margin: 0;
+    }
+    .privacy-section p b { color: #f5e6c8; }
+    .privacy-section a {
+      color: #ff7b87; text-decoration: none;
+      border-bottom: 1px dashed rgba(255,123,135,0.5);
+    }
+    .privacy-section a:hover {
+      color: #fff; border-bottom-color: #fff;
+    }
+    .privacy-note {
+      margin-top: 20px; padding-top: 16px;
+      border-top: 1px dashed rgba(155,28,46,0.2);
+      font-size: 11px; color: #6a6255;
+      text-align: center; line-height: 1.5;
+    }
+    #privacy-body .privacy-grid {
+      display: grid; grid-template-columns: 120px 1fr;
+      gap: 20px; align-items: start; text-align: left;
+    }
+    #privacy-body .privacy-side {
+      position: sticky; top: 0;
+      display: flex; justify-content: center; padding-top: 4px;
+    }
+    #privacy-body .privacy-side img {
+      width: 100%; max-width: 120px; height: auto;
+      filter: drop-shadow(0 0 14px rgba(155,28,46,0.45));
+    }
+    #privacy-body .privacy-main > p:first-child {
+      font-size: 12px; color: #b8b0a4; line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    #privacy-body .privacy-main > p:first-child b { color: #f5e6c8; }
+
+    #suggest-body p {
+      font-size: 12px; color: #b8b0a4; line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    #suggest-example {
+      background: rgba(155,28,46,0.06);
+      border: 1px solid rgba(155,28,46,0.25);
+      border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 20px;
+      font-size: 11px;
+    }
+    #suggest-example .ex-title {
+      color: #ff7b87; text-transform: uppercase;
+      letter-spacing: 0.5px; font-size: 10px;
+      margin-bottom: 10px;
+    }
+    #suggest-example .ex-row {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 3px 0;
+      border-bottom: 1px dashed rgba(155,28,46,0.12);
+      color: #8a8275;
+    }
+    #suggest-example .ex-row:last-child { border-bottom: none; }
+    #suggest-example .ex-row span:last-child { color: #f5ede4; }
+
+    #suggest-form label {
+      display: block; font-size: 10px; color: #6a6255;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin: 10px 0 4px;
+    }
+    #suggest-form label .req { color: #ff7b87; }
+    #suggest-form input,
+    #suggest-form select {
+      width: 100%; padding: 8px 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(155,28,46,0.2);
+      border-radius: 8px;
+      color: #ece8e0; font-family: inherit;
+      font-size: 12px; outline: none;
+    }
+    #suggest-form input:focus,
+    #suggest-form select:focus {
+      border-color: rgba(155,28,46,0.6);
+    }
+    #suggest-form select { cursor: pointer; appearance: none; }
+    #suggest-form .geo-row {
+      display: flex; gap: 8px; align-items: flex-end;
+    }
+    #suggest-form .geo-row .geo-inputs {
+      flex: 1; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    #suggest-form .geo-btn {
+      padding: 8px 10px;
+      background: rgba(155,28,46,0.15);
+      border: 1px solid rgba(155,28,46,0.5);
+      color: #ff7b87;
+      border-radius: 8px;
+      font-family: inherit; font-size: 11px;
+      cursor: pointer; letter-spacing: 0.5px;
+      white-space: nowrap;
+      height: 34px; line-height: 1;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    #suggest-form .geo-btn:hover:not(:disabled) {
+      background: rgba(155,28,46,0.35); color: #fff;
+    }
+    #suggest-form .geo-btn:disabled { opacity: 0.5; cursor: wait; }
+    #suggest-form .geo-status {
+      font-size: 10px; color: #8a8275;
+      margin-top: 4px; min-height: 12px;
+    }
+    #suggest-form .geo-status.ok  { color: #27A17C; }
+    #suggest-form .geo-status.err { color: #ff7b87; }
+
+    #suggest-form #suggest-submit {
+      display: block; width: 100%; margin-top: 20px;
+      padding: 12px 16px;
+      background: #9B1C2E; color: #fff;
+      border: 1px solid #ff7b87;
+      border-radius: 10px;
+      font-family: inherit; font-size: 12px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      font-weight: 600; cursor: pointer;
+    }
+    #suggest-form #suggest-submit:hover:not(:disabled) {
+      background: #b8243a;
+      box-shadow: 0 4px 20px rgba(155,28,46,0.6);
+    }
+    #suggest-form #suggest-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .suggest-msg {
+      margin-top: 12px; font-size: 11px;
+      text-align: center; min-height: 16px;
+    }
+    .suggest-msg.ok  { color: #27A17C; }
+    .suggest-msg.err { color: #ff7b87; }
+
+    #modal-backdrop {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    #modal-backdrop.open { display: flex; }
+
+    #modal {
+      width: 100%; max-width: 720px; max-height: 88vh;
+      background: linear-gradient(160deg, rgba(30,22,26,0.98) 0%, rgba(18,14,18,0.99) 100%);
+      border: 1px solid rgba(155,28,46,0.45);
+      border-radius: 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,123,135,0.08) inset;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    #modal-header {
+      position: relative;
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px 18px;
+      border-bottom: 1px solid rgba(155,28,46,0.25);
+      background:
+        radial-gradient(ellipse at 0% 0%, rgba(155,28,46,0.25) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(155,28,46,0.08) 0%, transparent 100%);
+      overflow: hidden;
+    }
+    #modal-header .sparky-head {
+      width: 52px; height: 52px; object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 18px rgba(155,28,46,0.7));
+    }
+    #modal-header .head-text {
+      display: flex; flex-direction: column; gap: 3px; min-width: 0;
+    }
+    #modal-header h3 {
+      font-size: 15px; color: #f5e6c8; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-shadow: 0 0 20px rgba(155,28,46,0.5);
+    }
+    #modal-header .count {
+      font-size: 10px; color: #ff7b87;
+      text-transform: uppercase; letter-spacing: 1px;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    #modal-header .count::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: #27A17C; box-shadow: 0 0 8px #27A17C;
+    }
+    #modal-close {
+      margin-left: auto;
+      background: rgba(155,28,46,0.1);
+      border: 1px solid rgba(155,28,46,0.25);
+      cursor: pointer;
+      color: #ff7b87; font-size: 18px; line-height: 1;
+      font-family: inherit; padding: 0;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    #modal-close:hover {
+      color: #fff; background: rgba(155,28,46,0.45);
+      box-shadow: 0 0 16px rgba(155,28,46,0.6);
+    }
+    #modal-buscar {
+      margin: 16px 24px 0;
+      padding: 11px 14px 11px 38px;
+      background: rgba(255,255,255,0.03)
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff7b87' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>")
+        no-repeat 12px center;
+      border: 1px solid rgba(155,28,46,0.25);
+      border-radius: 10px;
+      color: #ece8e0; font-family: inherit; font-size: 12px;
+      outline: none;
+    }
+    #modal-buscar:focus {
+      border-color: rgba(255,123,135,0.7);
+      background-color: rgba(155,28,46,0.08);
+      box-shadow: 0 0 0 3px rgba(155,28,46,0.15);
+    }
+    #modal-buscar::placeholder { color: #5a5348; }
+    #modal-lista {
+      padding: 16px 24px 24px;
+      overflow-y: auto; flex: 1;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    #modal-lista::-webkit-scrollbar { width: 8px; }
+    #modal-lista::-webkit-scrollbar-track { background: transparent; }
+    #modal-lista::-webkit-scrollbar-thumb {
+      background: rgba(155,28,46,0.4); border-radius: 4px;
+    }
+    #modal-lista::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,123,135,0.6);
+    }
+
+    .comercio {
+      position: relative;
+      padding: 14px 16px 14px 46px;
+      border: 1px solid rgba(155,28,46,0.2);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.005) 100%);
+    }
+    .comercio::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 12px 0 0 12px;
+      background: linear-gradient(180deg, #ff7b87 0%, #9B1C2E 100%);
+      opacity: 0.5;
+    }
+    .comercio:hover {
+      border-color: rgba(255,123,135,0.6);
+      background: linear-gradient(135deg, rgba(155,28,46,0.12) 0%, rgba(155,28,46,0.03) 100%);
+      box-shadow: 0 6px 24px rgba(155,28,46,0.25);
+    }
+    .comercio:hover::before { opacity: 1; }
+    .comercio .idx {
+      position: absolute; left: 12px; top: 14px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(155,28,46,0.25);
+      border: 1px solid rgba(255,123,135,0.4);
+      color: #ff7b87; font-size: 10px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .comercio .nom {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 15px; color: #f5e6c8; font-weight: 600;
+      margin-bottom: 6px;
+      text-shadow: 0 0 12px rgba(155,28,46,0.3);
+    }
+    .comercio .nom .logo-nom {
+      width: 17px; height: 17px; object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 6px rgba(155,28,46,0.8));
+    }
+    .comercio .badges-row {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+    }
+    .comercio .cat {
+      display: inline-block; font-size: 10px; letter-spacing: 0.8px;
+      text-transform: uppercase; color: #ff7b87;
+      background: rgba(155,28,46,0.2);
+      border: 1px solid rgba(155,28,46,0.35);
+      padding: 3px 9px; border-radius: 20px; font-weight: 600;
+    }
+    .comercio .dir {
+      font-size: 12px; color: #8a8275; line-height: 1.5;
+      margin-bottom: 8px;
+      display: flex; align-items: flex-start; gap: 6px;
+    }
+    .comercio .dir::before {
+      content: '📍'; font-size: 11px; flex-shrink: 0;
+      filter: grayscale(0.3);
+    }
+    .comercio .links {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; margin-top: 8px;
+      flex-wrap: wrap; padding-top: 8px;
+      border-top: 1px dashed rgba(155,28,46,0.15);
+    }
+    .comercio .links a {
+      display: inline-flex; align-items: center; gap: 5px;
+      color: #ff7b87; text-decoration: none;
+      padding: 4px 10px;
+      background: rgba(155,28,46,0.1);
+      border: 1px solid rgba(155,28,46,0.25);
+      border-radius: 20px;
+      font-size: 11px; letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .comercio .links a:hover {
+      background: rgba(155,28,46,0.35);
+      color: #fff;
+      border-color: rgba(255,123,135,0.6);
+    }
+    .comercio .links img {
+      width: 13px; height: 13px; object-fit: contain;
+      vertical-align: middle;
+    }
+
+    .sin-resultados {
+      text-align: center; padding: 30px 20px;
+      color: #8a8275; font-size: 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .sin-resultados img {
+      width: 90px; height: 90px; object-fit: contain;
+      opacity: 0.6;
+      filter: drop-shadow(0 0 20px rgba(155,28,46,0.5));
+    }
+    .sin-resultados .msg { color: #f5e6c8; font-size: 13px; letter-spacing: 0.5px; }
+    .sin-resultados .sub { color: #6a6255; font-size: 11px; }
+
+    .popup-pais { min-width: 260px; max-width: 300px; padding: 2px 4px; }
+    .popup-pais-head {
+      display: flex; align-items: center; gap: 12px;
+      padding-bottom: 12px; margin-bottom: 12px;
+      border-bottom: 1px solid rgba(155,28,46,0.2);
+    }
+    .popup-pais-head img {
+      width: 64px; height: 64px; object-fit: contain; flex-shrink: 0;
+      filter: drop-shadow(0 0 12px rgba(155,28,46,0.6));
+    }
+    .popup-pais-title {
+      display: flex; flex-direction: column; gap: 4px;
+      min-width: 0; flex: 1;
+    }
+    .popup-pais-title b {
+      font-size: 14px; color: #f5e6c8; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-shadow: 0 0 12px rgba(155,28,46,0.4);
+    }
+    .popup-pais-count {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; color: #ff7b87;
+      text-transform: uppercase; letter-spacing: 0.8px;
+    }
+    .popup-pais-count .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #27A17C; box-shadow: 0 0 6px #27A17C; flex-shrink: 0;
+    }
+    .popup-pais-cats {
+      margin-bottom: 12px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .popup-pais-cats .cat-row {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; padding: 6px 10px;
+      background: rgba(155,28,46,0.08);
+      border: 1px solid rgba(155,28,46,0.18);
+      border-radius: 6px;
+    }
+    .popup-pais-cats .cat-row .cat-name {
+      color: #b8b0a4; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .popup-pais-cats .cat-row .cat-count {
+      color: #ff7b87; font-size: 12px; font-weight: 700;
+      flex-shrink: 0; min-width: 20px; text-align: right;
+    }
+    .popup-pais .btn-ver {
+      display: block; width: 100%; margin-top: 12px;
+      padding: 9px 12px; cursor: pointer;
+      background: rgba(155,28,46,0.15);
+      border: 1px solid rgba(155,28,46,0.5);
+      color: #ff7b87;
+      font-family: inherit; font-size: 11px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      border-radius: 8px; box-sizing: border-box;
+    }
+    .popup-pais .btn-ver:hover { background: rgba(155,28,46,0.35); color: #fff; }
+
+    .popup-comercio { min-width: 0px; max-width: 420px; }
+    .popup-comercio .pc-head {
+      position: relative;
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 44px 14px 18px;
+      background:
+        radial-gradient(ellipse at 0% 0%, rgba(155,28,46,0.35) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(155,28,46,0.1) 0%, transparent 100%);
+      border-bottom: 1px solid rgba(155,28,46,0.25);
+    }
+    .popup-comercio .pc-logo {
+      width: 60px; height: auto; object-fit: contain; flex-shrink: 0;
+      filter: drop-shadow(0 0 10px rgba(155,28,46,0.7));
+    }
+    .popup-comercio .pc-title {
+      display: flex; flex-direction: column; gap: 3px;
+      min-width: 0; flex: 1;
+    }
+    .popup-comercio .pc-name {
+      font-size: 15px; font-weight: 600; color: #f5e6c8;
+      letter-spacing: 0.3px;
+      text-shadow: 0 0 12px rgba(155,28,46,0.5);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .popup-comercio .pc-cat {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; color: #ff7b87;
+      text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600;
+    }
+    .popup-comercio .pc-cat::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: #27A17C; box-shadow: 0 0 8px #27A17C; flex-shrink: 0;
+    }
+    .popup-comercio .pc-body { padding: 14px 18px 16px; }
+    .popup-comercio .pc-addr {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 12px; color: #b8b0a4; line-height: 1.55;
+      margin-bottom: 12px;
+    }
+    .popup-comercio .pc-addr::before {
+      content: '📍'; font-size: 13px; flex-shrink: 0;
+      filter: grayscale(0.3);
+    }
+    .popup-comercio .pc-links {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(155,28,46,0.2);
+    }
+    .popup-comercio .pc-links a {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      font-size: 11px; letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #ff7b87; text-decoration: none;
+      background: rgba(155,28,46,0.12);
+      border: 1px solid rgba(155,28,46,0.3);
+      border-radius: 20px;
+      transition: all 0.15s ease;
+    }
+    .popup-comercio .pc-links a:hover {
+      background: rgba(155,28,46,0.4);
+      color: #fff;
+      border-color: rgba(255,123,135,0.7);
+      box-shadow: 0 4px 14px rgba(155,28,46,0.4);
+    }
+    .popup-comercio .pc-links img { width: 13px; height: 13px; object-fit: contain; }
+    .popup-comercio .pc-empty {
+      font-size: 11px; color: #6a6255; font-style: italic;
+      text-align: center; padding: 4px 0;
+    }
+
+    @media (max-width: 720px) {
+      #mapa { height: 100dvh; }
+
+      #panel {
+        top: 8px; left: 8px; right: 8px;
+        min-width: 0; padding: 10px 14px;
+        font-size: 11px; border-radius: 10px;
+      }
+      #panel h2 { font-size: 11px; margin-bottom: 8px; padding-bottom: 8px; }
+      #panel h2 img { width: 18px; height: 18px; }
+      #panel h2 small { display: none; }
+      #panel .row { font-size: 10px; padding: 4px 0; }
+      #panel .label { font-size: 8px; }
+      #panel .nav-links {
+        font-size: 10px; gap: 2px 10px;
+        margin-top: 8px; padding-top: 8px;
+      }
+
+      #top-actions {
+        top: auto; bottom: 8px;
+        right: 8px; left: 8px;
+        gap: 6px; justify-content: flex-end; flex-wrap: wrap;
+      }
+      .btn-top { padding: 8px 10px; font-size: 10px; }
+
+      #leyenda {
+        bottom: 96px; left: 8px;
+        padding: 8px 10px; font-size: 10px; border-radius: 8px;
+      }
+      #leyenda .item { gap: 6px; padding: 2px 0; }
+
+      #logo-firo {
+        bottom: 96px; right: 8px;
+        width: 24px; height: 24px;
+      }
+
+      .leaflet-control-zoom a {
+        width: 34px !important;
+        height: 34px !important;
+        line-height: 34px !important;
+        font-size: 18px !important;
+      }
+      .btn-mundo { width: 34px; height: 34px; font-size: 15px; }
+
+      #modal-backdrop, .modal-backdrop { padding: 0; }
+      #modal, .modal-box {
+        width: 100%; height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0; border: none;
+      }
+      #modal-header, .modal-header { padding: 12px 14px; }
+      #modal-header h3, .modal-header h3 { font-size: 12px; }
+      #modal-buscar { margin: 8px 14px 0; font-size: 13px; }
+      #modal-lista { padding: 10px 14px 16px; }
+
+      #modal-header { padding: 14px 16px 12px; gap: 10px; }
+      #modal-header .sparky-head { width: 40px; height: 40px; }
+      #modal-header h3 { font-size: 13px; }
+      #modal-buscar { margin: 12px 16px 0; padding: 10px 12px 10px 36px; font-size: 13px; }
+      #modal-lista { padding: 12px 16px 20px; gap: 10px; }
+
+      .comercio { padding: 12px 12px 12px 42px; }
+      .comercio .idx { left: 10px; top: 12px; width: 20px; height: 20px; font-size: 10px; }
+      .comercio .nom { font-size: 14px; }
+      .comercio .cat { font-size: 9px; }
+      .comercio .dir { font-size: 11px; }
+      .comercio .links a { padding: 3px 8px; font-size: 10px; }
+      .comercio .links img { width: 12px; height: 12px; }
+
+      .sin-resultados img { width: 70px; height: 70px; }
+      .modal-body img.sparky { max-width: 180px; }
+
+      #accept-body .badges-grid { grid-template-columns: 1fr; }
+      #community-body .socials-grid { grid-template-columns: 1fr; }
+      #suggest-form .geo-row { flex-direction: column; align-items: stretch; }
+      #suggest-form .geo-btn { width: 100%; justify-content: center; }
+
+      .popup-comercio { min-width: 220px; }
+    }
+
+    @media (max-width: 560px) {
+      #privacy-body .privacy-grid {
+        grid-template-columns: 1fr;
+        gap: 12px; text-align: center;
+      }
+      #privacy-body .privacy-side { position: static; padding-top: 0; }
+      #privacy-body .privacy-side img { max-width: 90px; }
+      #privacy-body .privacy-main > p:first-child { text-align: center; }
+      #privacy-body .privacy-section { text-align: left; }
+    }
+
+    @media (min-width: 721px) and (max-width: 1024px) {
+      #panel { font-size: 11px; min-width: 220px; }
+      #modal { max-width: 90vw; }
+    }
+
+    @media (max-height: 500px) {
+      #panel {
+        top: 6px; left: 6px;
+        padding: 8px 12px;
+        max-height: 42vh; overflow-y: auto;
+      }
+      #leyenda { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="panel">
+    <h2>
+      <img src="assets/firo.png" alt="Firo" />
+      Firo Merchants
+      <small>v1.6</small>
+    </h2>
+    <div class="row"><span class="label">Merchants</span><span class="value" id="total">—</span></div>
+    <div class="row"><span class="label">Accept Firo</span><span class="value enabled" id="enabled">—</span></div>
+    <div class="row"><span class="label">Countries</span><span class="value" id="paises">—</span></div>
+    <div class="row"><span class="label">Cities</span><span class="value" id="ciudades">—</span></div>
+    <nav class="nav-links">
+      <a href="https://carover0.github.io/pagina/firo-nodo.html">[NODO]</a>
+      <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a>
+      <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a>
+      <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+    </nav>
+  </div>
+
+  <div id="top-actions">
+    <button id="btn-privacy" class="btn-top secondary" type="button">Privacy</button>
+    <button id="btn-buy" class="btn-top" type="button">SUPPORT</button>
+    <button id="btn-community" class="btn-top secondary" type="button">Community</button>
+    <button id="btn-suggest" class="btn-top secondary" type="button">Suggest</button>
+    <button id="btn-accept" class="btn-top" type="button">Accept Firo</button>
+  </div>
+
+  <div id="leyenda">
+    <div class="item"><span class="box blanco"></span> No merchants</div>
+    <div class="item"><span class="box rojo"></span> With Firo merchants</div>
+  </div>
+
+  <img id="logo-firo" src="assets/firo.png" alt="Firo" />
+
+  <div id="mapa"></div>
+
+  <div id="accept-backdrop" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Accept Firo</h3>
+        <button id="accept-close" class="modal-close" aria-label="Close">×</button>
+      </div>
+      <div id="accept-body" class="modal-body">
+        <img class="sparky" src="assets/sparky.png" alt="Sparky" />
+        <p>Get a Firo wallet and start accepting Firo at your business today.</p>
+        <a class="btn-wallet" href="https://firo.org/get-firo/download/" target="_blank" rel="noopener">
+          <img src="assets/campfire.png" alt="" />
+          Download Firo Wallets
+        </a>
+        <div class="badges-title">Firo Accepted badges</div>
+        <div class="badges-grid">
+          <a class="badge-card" href="https://firo.org/branding/firo-accepted-badge.zip" target="_blank" rel="noopener">
+            <img src="assets/fa.png" alt="Firo Accepted badge" />
+            <span class="hint">Rectangular</span>
+          </a>
+          <a class="badge-card" href="https://firo.org/branding/firo-accepted-circle-badge.zip" target="_blank" rel="noopener">
+            <img src="assets/f2a.png" alt="Firo Accepted circle badge" />
+            <span class="hint">Circular</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="community-backdrop" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Community</h3>
+        <button id="community-close" class="modal-close" aria-label="Close">×</button>
+      </div>
+      <div id="community-body" class="modal-body">
+        <img class="sparky" src="assets/com_sparky.png" alt="Sparky" />
+        <p>Join the Firo community and stay up to date.</p>
+        <div class="socials-grid">
+          <a class="social-card" href="https://t.me/firoorg" target="_blank" rel="noopener">
+            <img src="assets/t.png" alt="Telegram" />
+            <span>Telegram</span>
+          </a>
+          <a class="social-card" href="https://discord.com/invite/TGZPRbRT3Y" target="_blank" rel="noopener">
+            <img src="assets/d.png" alt="Discord" />
+            <span>Discord</span>
+          </a>
+          <a class="social-card" href="https://twitter.com/firoorg" target="_blank" rel="noopener">
+            <img src="assets/x.png" alt="Twitter / X" />
+            <span>Twitter / X</span>
+          </a>
+          <a class="social-card" href="https://matrix.to/#/%23firo:matrix.org" target="_blank" rel="noopener">
+            <img src="assets/m.png" alt="Matrix" />
+            <span>Matrix</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="support-backdrop" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <img class="modal-head-logo" src="assets/firo.png" alt="Firo" />
+        <h3>Support the project</h3>
+        <button id="support-close" class="modal-close" aria-label="Close">×</button>
+      </div>
+      <div id="support-body" class="modal-body" style="text-align:left;">
+        <img class="sparky" src="assets/sparky_tips.png" alt="Sparky" />
+        <p style="text-align:center;">Collaborations are always welcome and help maintain the infrastructure.</p>
+        <div class="support-block">
+          <div class="support-label">
+            <img src="assets/firo.png" alt="Firo" />
+            <span>FIRO</span>
+          </div>
+          <div class="support-addr" data-copy="carover0.firo" title="Click to copy">
+            <span>carover0.firo</span>
+            <span class="copy-hint">copy</span>
+          </div>
+        </div>
+        <div class="support-block">
+          <div class="support-label">
+            <img src="assets/firo.png" alt="Firo" />
+            <span>FIRO</span>
+          </div>
+          <div class="support-addr" data-copy="mastercarol" title="Click to copy">
+            <span>mastercarol</span>
+            <span class="copy-hint">copy</span>
+          </div>
+        </div>
+        <div class="support-note">→ Click any address to copy it to the clipboard.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="privacy-backdrop" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Tu privacidad importa</h3>
+        <button id="privacy-close" class="modal-close" aria-label="Close">×</button>
+      </div>
+      <div id="privacy-body" class="modal-body">
+        <div class="privacy-grid">
+          <div class="privacy-side">
+            <img src="assets/sparky_pregunta.png" alt="Sparky" />
+          </div>
+          <div class="privacy-main">
+            <p>When you submit the form to add your business to the map, <b>only what you decide is published.</b></p>
+            <div class="privacy-section">
+              <h4>📍 About location</h4>
+              <p>You don't have to share your exact address. You can use a generic point: the center of your city, a nearby square, or any approximate reference. The map will show that point and your business will still appear in the list.</p>
+            </div>
+            <div class="privacy-section">
+              <h4>💬 About contact details</h4>
+              <p>They aren't required either. <b>You choose what to show.</b> You can use a public website, a Telegram channel, a Nostr handle, or leave the fields empty. Your business will still be listed.</p>
+            </div>
+            <div class="privacy-section">
+              <h4>🚫 What I DON'T do</h4>
+              <p>I don't publish your IP or technical data. I don't sell or share your information. I don't use the data for anything other than this map.</p>
+            </div>
+            <div class="privacy-section">
+              <h4>👤 About this project</h4>
+              <p>This is a personal project for the Firo community. If at any point you want your business edited or removed from the map, message me on Telegram at <a href="https://t.me/cvg_1995" target="_blank" rel="noopener">@cvg_1995</a> and we'll sort it out.</p>
+            </div>
+            <div class="privacy-note">Everything you submit is reviewed manually before being published.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="suggest-backdrop" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Suggest a merchant</h3>
+        <button id="suggest-close" class="modal-close" aria-label="Close">×</button>
+      </div>
+      <div id="suggest-body" class="modal-body" style="text-align:left;">
+        <p style="text-align:center;">Help us grow the Firo merchant map.<br>Fill the form and we'll review it manually.</p>
+        <div id="suggest-example">
+          <div class="ex-title">📋 Example — copy this format</div>
+          <div class="ex-row"><span>Name</span><span>Pizza Nostra</span></div>
+          <div class="ex-row"><span>Category</span><span>Restaurant</span></div>
+          <div class="ex-row"><span>Address</span><span>City center (approx.)</span></div>
+          <div class="ex-row"><span>City</span><span>Milano</span></div>
+          <div class="ex-row"><span>Country</span><span>Italy</span></div>
+          <div class="ex-row"><span>Country ISO</span><span>IT</span></div>
+          <div class="ex-row"><span>Latitude</span><span>45.4642</span></div>
+          <div class="ex-row"><span>Longitude</span><span>9.1900</span></div>
+          <div class="ex-row"><span>Website</span><span>https://pizzanostra.it</span></div>
+          <div class="ex-row"><span>Telegram</span><span>@pizzanostra</span></div>
+          <div class="ex-row"><span>WhatsApp</span><span>+39 333 1234567</span></div>
+          <div class="ex-row"><span>Signal</span><span>+39 333 1234567</span></div>
+          <div class="ex-row"><span>Vector</span><span>npub1...</span></div>
+        </div>
+        <form id="suggest-form" autocomplete="off">
+          <label>Name <span class="req">*</span></label>
+          <input name="nombre" type="text" required placeholder="e.g. Pizza Nostra" />
+          <label>Category <span class="req">*</span></label>
+          <input name="categoria" type="text" required placeholder="e.g. Restaurant, Bar, Shop" />
+          <label>Address <span style="color:#6a6255;font-weight:normal;text-transform:none;letter-spacing:0;">— optional, can be approximate</span></label>
+          <input name="direccion" type="text" placeholder="e.g. City center, nearby square, or leave empty" />
+          <label>City <span class="req">*</span></label>
+          <input name="ciudad" type="text" required placeholder="e.g. Milano" />
+          <label>Country <span class="req">*</span></label>
+          <input name="pais" type="text" required placeholder="e.g. Italy" />
+          <label>Country ISO (2 letters) <span class="req">*</span></label>
+          <input name="pais_iso" type="text" maxlength="2" required placeholder="e.g. IT" style="text-transform:uppercase;" />
+          <label>Coordinates <span class="req">*</span> <span style="color:#6a6255;font-weight:normal;text-transform:none;letter-spacing:0;">— approximate is fine. You don't need your exact address.</span></label>
+          <div class="geo-row">
+            <div class="geo-inputs">
+              <input name="lat_real" type="text" required placeholder="Latitude e.g. 45.4642" inputmode="decimal" />
+              <input name="long_real" type="text" required placeholder="Longitude e.g. 9.1900" inputmode="decimal" />
+            </div>
+            <button type="button" id="geo-find" class="geo-btn" title="Find coordinates from address">📍 Find</button>
+          </div>
+          <div id="geo-status" class="geo-status"></div>
+          <label>Website (optional)</label>
+          <input name="web" type="url" placeholder="https://example.com" />
+          <label>Telegram (optional)</label>
+          <input name="telegram" type="text" placeholder="@username" />
+          <label>WhatsApp (optional)</label>
+          <input name="whatsapp" type="text" placeholder="+39 333 1234567" />
+          <label>Signal (optional)</label>
+          <input name="signal" type="text" placeholder="+39 333 1234567" />
+          <label>Vector (Nostr, optional)</label>
+          <input name="vector" type="text" placeholder="npub1..." />
+          <input name="_gotcha" type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" />
+          <div id="suggest-msg" class="suggest-msg"></div>
+          <button type="submit" id="suggest-submit">Send suggestion</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-backdrop">
+    <div id="modal">
+      <div id="modal-header">
+        <img class="sparky-head" src="assets/sparky2.png" alt="Sparky" />
+        <div class="head-text">
+          <h3 id="modal-titulo">Merchants</h3>
+          <span class="count" id="modal-count"></span>
+        </div>
+        <button id="modal-close" aria-label="Close">×</button>
+      </div>
+      <input id="modal-buscar" type="text" placeholder="Search by name, city, category, WhatsApp, Signal, Vector..." />
+      <div id="modal-lista"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+
+    const map = L.map('mapa', {
+      zoomControl: false,
+      attributionControl: false,
+      worldCopyJump: true,
+      minZoom: 2,
+      maxZoom: 10
+    }).setView([20, 0], 2);
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    const MundoControl = L.Control.extend({
+      options: { position: 'bottomright' },
+      onAdd: function () {
+        const div = L.DomUtil.create('div', 'btn-mundo');
+        div.title = 'View world';
+        div.innerHTML = '🌍';
+        L.DomEvent.disableClickPropagation(div);
+        div.onclick = () => map.setView([20, 0], 2);
+        return div;
+      }
+    });
+    new MundoControl().addTo(map);
+
+    const iconoComercio = L.divIcon({
+      className: '',
+      html: `<div style="width:12px;height:12px;border-radius:50%;background:#9B1C2E;border:2px solid #f5e6c8;box-shadow:0 0 8px rgba(155,28,46,0.8), 0 0 14px rgba(255,123,135,0.5);"></div>`,
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+      popupAnchor: [0, -6]
+    });
+
+    const ICON_FIRO = 'assets/firo.png';
+    const ICON_TG   = 'assets/t.png';
+    const ICON_WA   = 'assets/w.png';
+    const ICON_SG   = 'assets/s.png';
+    const ICON_VEC  = 'assets/v.png';
+
+    function enlaceTelegram(tg) {
+      if (!tg) return '';
+      const v = String(tg).replace(/^@/, '').trim();
+      if (!v) return '';
+      return `<a href="https://t.me/${esc(v)}" target="_blank" rel="noopener"><img src="${ICON_TG}" alt="Telegram" /> Telegram</a>`;
+    }
+
+    function enlaceWhatsapp(wa) {
+      if (!wa) return '';
+      const v = String(wa).replace(/\D/g, '');
+      if (!v) return '';
+      return `<a href="https://wa.me/${esc(v)}" target="_blank" rel="noopener"><img src="${ICON_WA}" alt="WhatsApp" /> WhatsApp</a>`;
+    }
+
+    function enlaceSignal(sg) {
+      if (!sg) return '';
+      const raw = String(sg).trim();
+      if (!raw) return '';
+      let url;
+      if (raw.startsWith('@')) {
+        url = `https://signal.me/#p/${esc(raw)}`;
+      } else {
+        const soloDigitos = raw.replace(/\D/g, '');
+        if (!soloDigitos) return '';
+        url = `https://signal.me/#p/+${esc(soloDigitos)}`;
+      }
+      return `<a href="${url}" target="_blank" rel="noopener"><img src="${ICON_SG}" alt="Signal" /> Signal</a>`;
+    }
+
+    function enlaceVector(vec) {
+      if (!vec) return '';
+      let v = String(vec).trim();
+      if (!v) return '';
+      if (/^nostr:/i.test(v)) v = v.replace(/^nostr:/i, '').trim();
+      if (!v) return '';
+      return `<a href="https://njump.me/${esc(v)}" target="_blank" rel="noopener"><img src="${ICON_VEC}" alt="Vector" /> Vector</a>`;
+    }
+
+    function enlaceWeb(web) {
+      if (!web) return '';
+      return `<a href="${esc(web)}" target="_blank" rel="noopener">🌐 Web</a>`;
+    }
+
+    function esAfirmativo(v) {
+      if (v === null || v === undefined) return false;
+      if (v === true) return true;
+      if (typeof v === 'number') return v === 1;
+      return ['1','si','sí','true','yes','y','x'].includes(String(v).trim().toLowerCase());
+    }
+
+    function numeroDesdeTexto(v) {
+      if (v === null || v === undefined) return NaN;
+      return parseFloat(String(v).replace(',', '.').trim());
+    }
+
+    function getISO(props) {
+      const candidatos = [
+        props['ISO_A2_EH'], props['ISO_A2'],
+        props['ISO3166-1-Alpha-2'], props['iso_a2']
+      ];
+      for (const v of candidatos) {
+        const iso = String(v || '').trim().toUpperCase();
+        if (iso && iso !== '-99') return iso;
+      }
+      return '';
+    }
+
+    function puntoEtiqueta(layer) {
+      const centroBounds = layer.getBounds().getCenter();
+      const latlngs = layer.getLatLngs();
+      const anillos = [];
+      (function recorrer(arr) {
+        if (!arr.length) return;
+        if (arr[0] instanceof L.LatLng) anillos.push(arr);
+        else arr.forEach(recorrer);
+      })(latlngs);
+      if (!anillos.length) return centroBounds;
+      let mejor = anillos[0], mejorArea = 0;
+      for (const anillo of anillos) {
+        const b = L.latLngBounds(anillo);
+        const area = (b.getEast() - b.getWest()) * (b.getNorth() - b.getSouth());
+        if (area > mejorArea) { mejorArea = area; mejor = anillo; }
+      }
+      let lat = 0, lng = 0;
+      mejor.forEach(p => { lat += p.lat; lng += p.lng; });
+      const centroGrande = L.latLng(lat / mejor.length, lng / mejor.length);
+      const dLat = Math.abs(centroBounds.lat - centroGrande.lat);
+      const dLng = Math.abs(centroBounds.lng - centroGrande.lng);
+      const distancia = Math.sqrt(dLat * dLat + dLng * dLng);
+      return distancia > 8 ? centroGrande : centroBounds;
+    }
+
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalTitulo   = document.getElementById('modal-titulo');
+    const modalCount    = document.getElementById('modal-count');
+    const modalLista    = document.getElementById('modal-lista');
+    const modalBuscar   = document.getElementById('modal-buscar');
+
+    let comerciosActuales = [];
+
+    function abrirModal(nombrePais, comercios) {
+      comerciosActuales = comercios;
+      modalTitulo.textContent = nombrePais;
+      modalCount.textContent = `${comercios.length} merchant${comercios.length === 1 ? '' : 's'}`;
+      modalBuscar.value = '';
+      renderLista(comercios);
+      modalBackdrop.classList.add('open');
+    }
+
+    function cerrarModal() {
+      modalBackdrop.classList.remove('open');
+      comerciosActuales = [];
+    }
+
+    function renderLista(lista) {
+      if (!lista.length) {
+        modalLista.innerHTML = `
+          <div class="sin-resultados">
+            <img src="assets/sparky2.png" alt="Sparky" />
+            <div class="msg">No merchants found</div>
+            <div class="sub">Try another search term</div>
+          </div>`;
+        return;
+      }
+      modalLista.innerHTML = lista.map((c, i) => {
+        const links = [
+          enlaceWeb(c.web),
+          enlaceTelegram(c.telegram),
+          enlaceWhatsapp(c.whatsapp),
+          enlaceSignal(c.signal),
+          enlaceVector(c.vector)
+        ].filter(Boolean).join('');
+        const ubicacion = [c.direccion, c.ciudad, c.pais]
+          .filter(Boolean).map(esc).join(' · ');
+        return `
+          <div class="comercio">
+            <span class="idx">${i + 1}</span>
+            <div class="nom">
+              <span>${esc(c.nombre || 'Unnamed')}</span>
+              <img src="${ICON_FIRO}" alt="Firo" class="logo-nom" />
+            </div>
+            ${c.categoria ? `<div class="badges-row"><span class="cat">${esc(c.categoria)}</span></div>` : ''}
+            ${ubicacion ? `<div class="dir">${ubicacion}</div>` : ''}
+            ${links ? `<div class="links">${links}</div>` : ''}
+          </div>`;
+      }).join('');
+    }
+
+    modalBuscar.addEventListener('input', e => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) return renderLista(comerciosActuales);
+      const filtrados = comerciosActuales.filter(c =>
+        [c.nombre, c.ciudad, c.categoria, c.direccion, c.pais,
+         c.whatsapp, c.telegram, c.signal, c.vector]
+          .filter(Boolean)
+          .some(v => String(v).toLowerCase().includes(q))
+      );
+      renderLista(filtrados);
+    });
+
+    document.getElementById('modal-close').addEventListener('click', cerrarModal);
+    modalBackdrop.addEventListener('click', e => {
+      if (e.target === modalBackdrop) cerrarModal();
+    });
+
+    function wireModal(btnId, backdropId, closeId) {
+      const backdrop = document.getElementById(backdropId);
+      const btn      = document.getElementById(btnId);
+      const close    = document.getElementById(closeId);
+      if (!backdrop || !btn) return backdrop;
+      btn.addEventListener('click', () => backdrop.classList.add('open'));
+      if (close) close.addEventListener('click', () => backdrop.classList.remove('open'));
+      backdrop.addEventListener('click', e => {
+        if (e.target === backdrop) backdrop.classList.remove('open');
+      });
+      return backdrop;
+    }
+
+    const acceptBackdrop    = wireModal('btn-accept',    'accept-backdrop',    'accept-close');
+    const supportBackdrop   = wireModal('btn-buy',       'support-backdrop',   'support-close');
+    const communityBackdrop = wireModal('btn-community', 'community-backdrop', 'community-close');
+    const suggestBackdrop   = wireModal('btn-suggest',   'suggest-backdrop',   'suggest-close');
+    const privacyBackdrop   = wireModal('btn-privacy',   'privacy-backdrop',   'privacy-close');
+
+    document.querySelectorAll('.support-addr').forEach(el => {
+      el.addEventListener('click', async () => {
+        const value = el.dataset.copy;
+        if (!value) return;
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch (err) {
+          const ta = document.createElement('textarea');
+          ta.value = value;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        const hint = el.querySelector('.copy-hint');
+        const original = hint.textContent;
+        el.classList.add('copied');
+        hint.textContent = 'copied!';
+        setTimeout(() => {
+          el.classList.remove('copied');
+          hint.textContent = original;
+        }, 1400);
+      });
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      cerrarModal();
+      if (acceptBackdrop)    acceptBackdrop.classList.remove('open');
+      if (communityBackdrop) communityBackdrop.classList.remove('open');
+      if (suggestBackdrop)   suggestBackdrop.classList.remove('open');
+      if (supportBackdrop)   supportBackdrop.classList.remove('open');
+      if (privacyBackdrop)   privacyBackdrop.classList.remove('open');
+    });
+
+    const suggestForm    = document.getElementById('suggest-form');
+    const suggestMsg     = document.getElementById('suggest-msg');
+    const suggestSubmit  = document.getElementById('suggest-submit');
+    const geoBtn         = document.getElementById('geo-find');
+    const geoStatus      = document.getElementById('geo-status');
+
+    geoBtn.addEventListener('click', async () => {
+      const dir    = suggestForm.elements['direccion'].value.trim();
+      const ciudad = suggestForm.elements['ciudad'].value.trim();
+      const pais   = suggestForm.elements['pais'].value.trim();
+
+      if (!dir && !ciudad && !pais) {
+        geoStatus.className = 'geo-status err';
+        geoStatus.textContent = 'Fill at least City or Country to find coordinates.';
+        return;
+      }
+
+      const q = [dir, ciudad, pais].filter(Boolean).join(', ');
+      geoBtn.disabled = true;
+      geoStatus.className = 'geo-status';
+      geoStatus.textContent = 'Searching…';
+
+      try {
+        const url = 'https://nominatim.openstreetmap.org/search'
+                  + '?format=jsonv2&limit=1&addressdetails=1'
+                  + '&q=' + encodeURIComponent(q);
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          geoStatus.className = 'geo-status err';
+          geoStatus.textContent = 'No results. Check the address.';
+          return;
+        }
+
+        const hit = data[0];
+        const lat = parseFloat(hit.lat);
+        const lng = parseFloat(hit.lon);
+
+        if (isNaN(lat) || isNaN(lng)) {
+          geoStatus.className = 'geo-status err';
+          geoStatus.textContent = 'Invalid coordinates from Nominatim.';
+          return;
+        }
+
+        suggestForm.elements['lat_real'].value  = lat.toFixed(6);
+        suggestForm.elements['long_real'].value = lng.toFixed(6);
+
+        const addr = hit.address || {};
+        const ciudadDetectada = addr.city || addr.town || addr.village || addr.municipality || '';
+        const paisDetectado   = addr.country || '';
+        const isoDetectado    = (addr.country_code || '').toUpperCase();
+
+        if (!suggestForm.elements['ciudad'].value && ciudadDetectada) {
+          suggestForm.elements['ciudad'].value = ciudadDetectada;
+        }
+        if (!suggestForm.elements['pais'].value && paisDetectado) {
+          suggestForm.elements['pais'].value = paisDetectado;
+        }
+        if (!suggestForm.elements['pais_iso'].value && isoDetectado) {
+          suggestForm.elements['pais_iso'].value = isoDetectado;
+        }
+
+        geoStatus.className = 'geo-status ok';
+        geoStatus.textContent = `✓ ${hit.display_name || q}`;
+      } catch (err) {
+        console.error(err);
+        geoStatus.className = 'geo-status err';
+        geoStatus.textContent = 'Network error. Try again.';
+      } finally {
+        geoBtn.disabled = false;
+      }
+    });
+
+    suggestForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      suggestMsg.className = 'suggest-msg';
+      suggestMsg.textContent = '';
+
+      const fd = new FormData(suggestForm);
+      const data = Object.fromEntries(fd.entries());
+
+      if (data._gotcha) {
+        suggestMsg.className = 'suggest-msg err';
+        suggestMsg.textContent = 'Spam detected.';
+        return;
+      }
+
+      if (!data.nombre || !data.categoria ||
+          !data.ciudad || !data.pais || !data.pais_iso ||
+          !data.lat_real || !data.long_real) {
+        suggestMsg.className = 'suggest-msg err';
+        suggestMsg.textContent = 'Please fill all required fields.';
+        return;
+      }
+
+      data.acepta_firo = 'Yes';
+
+      const lat = parseFloat(String(data.lat_real).replace(',', '.'));
+      const lng = parseFloat(String(data.long_real).replace(',', '.'));
+      if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        suggestMsg.className = 'suggest-msg err';
+        suggestMsg.textContent = 'Invalid latitude or longitude.';
+        return;
+      }
+
+      suggestSubmit.disabled = true;
+      suggestSubmit.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('https://carover0.xyz/api/firo/sugerir.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const out = await res.json();
+
+        if (out.ok) {
+          suggestMsg.className = 'suggest-msg ok';
+          suggestMsg.textContent = '✅ Thanks! Your suggestion was sent for review.';
+          suggestForm.reset();
+          geoStatus.textContent = '';
+          setTimeout(() => {
+            suggestBackdrop.classList.remove('open');
+            suggestMsg.textContent = '';
+          }, 2000);
+        } else {
+          suggestMsg.className = 'suggest-msg err';
+          suggestMsg.textContent = out.error || 'Something went wrong.';
+        }
+      } catch (err) {
+        console.error(err);
+        suggestMsg.className = 'suggest-msg err';
+        suggestMsg.textContent = 'Network error. Try again later.';
+      } finally {
+        suggestSubmit.disabled = false;
+        suggestSubmit.textContent = 'Send suggestion';
+      }
+    });
+
+    Promise.all([
+      fetch('https://carover0.xyz/api/firo/comercios.php').then(r => r.json()),
+      fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson').then(r => r.json())
+    ])
+    .then(([comerciosRaw, paisesGeo]) => {
+
+      const comercios = comerciosRaw
+        .map(c => {
+          const lat = numeroDesdeTexto(c.lat);
+          const lng = numeroDesdeTexto(c.lng);
+          return { ...c, lat, lng, acepta_firo_bool: esAfirmativo(c.acepta_firo) };
+        })
+        .filter(c => !isNaN(c.lat) && !isNaN(c.lng));
+
+      const porPais = {};
+      comercios.forEach(c => {
+        const iso = String(c.pais_iso || 'XX').trim().toUpperCase();
+        (porPais[iso] = porPais[iso] || []).push(c);
+      });
+
+      window.__abrirPais = (iso, nombre) => {
+        abrirModal(nombre, porPais[iso] || []);
+      };
+
+      const marcadoresNumero = [];
+
+      L.geoJSON(paisesGeo, {
+        style: feature => {
+          const iso = getISO(feature.properties);
+          const tiene = !!porPais[iso];
+          return {
+            fillColor:   tiene ? '#9B1C2E' : '#151b22',
+            fillOpacity: tiene ? 0.85 : 0.75,
+            color:       tiene ? '#ff7b87' : '#2a333d',
+            weight:      tiene ? 0.8 : 0.4,
+            opacity:     1
+          };
+        },
+        onEachFeature: (feature, layer) => {
+          const iso = getISO(feature.properties);
+          const nombrePais = feature.properties.ADMIN || feature.properties.NAME || feature.properties.name || '—';
+          const lista = porPais[iso] || [];
+          const count = lista.length;
+
+          if (count > 0) {
+            const porCat = {};
+            lista.forEach(c => {
+              const cat = c.categoria || 'others';
+              porCat[cat] = (porCat[cat] || 0) + 1;
+            });
+            const filasCat = Object.entries(porCat)
+              .map(([cat, n]) => `
+                <div class="cat-row">
+                  <span class="cat-name">${esc(cat)}</span>
+                  <span class="cat-count">${n}</span>
+                </div>`).join('');
+
+            layer.bindPopup(`
+              <div class="popup-pais">
+                <div class="popup-pais-head">
+                  <img src="assets/sparky2.png" alt="Sparky" />
+                  <div class="popup-pais-title">
+                    <b>${esc(nombrePais)}</b>
+                    <span class="popup-pais-count">
+                      <span class="dot"></span>
+                      ${count} merchant${count === 1 ? '' : 's'}
+                    </span>
+                  </div>
+                </div>
+                <div class="popup-pais-cats">${filasCat}</div>
+                <button class="btn-ver"
+                  onclick="window.__abrirPais('${esc(iso)}', '${esc(nombrePais).replace(/'/g,"\\'")}')">
+                  View merchants (${count})
+                </button>
+              </div>
+            `, {
+              maxWidth: 320, minWidth: 260,
+              closeButton: true, autoPanPadding: [20, 20]
+            });
+
+            const bounds = layer.getBounds();
+            const area = (bounds.getEast() - bounds.getWest()) *
+                         (bounds.getNorth() - bounds.getSouth());
+
+            if (area > 15 || count >= 20) {
+              const marcador = L.marker(puntoEtiqueta(layer), {
+                icon: L.divIcon({
+                  className: 'pais-numero',
+                  html: String(count),
+                  iconSize: [40, 20],
+                  iconAnchor: [20, 10]
+                }),
+                interactive: false
+              }).addTo(map);
+              marcadoresNumero.push(marcador);
+            }
+
+            layer.on('mouseover', () => layer.setStyle({ weight: 2, color: '#ff7b87' }));
+            layer.on('mouseout',  () => layer.setStyle({ weight: 0.8, color: '#ff7b87' }));
+          } else {
+            layer.bindPopup(`
+              <div style="padding:12px 16px;">
+                <b>${esc(nombrePais)}</b><br>No merchants
+              </div>
+            `);
+            layer.on('mouseover', () => layer.setStyle({ weight: 1, color: '#4a5a6a' }));
+            layer.on('mouseout',  () => layer.setStyle({ weight: 0.4, color: '#2a333d' }));
+          }
+        }
+      }).addTo(map);
+
+      const capaMarcadores = L.layerGroup().addTo(map);
+
+      function escalarNumeros() {
+        const z = map.getZoom();
+        const base = window.innerWidth <= 720 ? 14 : 11;
+        const escala = Math.max(1, (z - 1) * 0.7);
+        marcadoresNumero.forEach(m => {
+          const el = m.getElement();
+          if (el) el.style.fontSize = (base * escala) + 'px';
+        });
+      }
+
+      map.on('zoomend', escalarNumeros);
+      escalarNumeros();
+
+      comercios.forEach(c => {
+        const m = L.marker([c.lat, c.lng], { icon: iconoComercio });
+
+        const links = [
+          enlaceWeb(c.web),
+          enlaceTelegram(c.telegram),
+          enlaceWhatsapp(c.whatsapp),
+          enlaceSignal(c.signal),
+          enlaceVector(c.vector)
+        ].filter(Boolean).join('');
+
+        const ubicacion = [c.direccion, c.ciudad, c.pais]
+          .filter(Boolean).map(esc).join('<br>');
+
+        m.bindPopup(`
+          <div class="popup-comercio">
+            <div class="pc-head">
+              <img class="pc-logo" src="assets/sparky2.png" alt="Firo" />
+              <div class="pc-title">
+                <span class="pc-name">${esc(c.nombre || 'Unnamed')}</span>
+                ${c.categoria ? `<span class="pc-cat">${esc(c.categoria)}</span>` : ''}
+              </div>
+            </div>
+            <div class="pc-body">
+              ${ubicacion
+                ? `<div class="pc-addr">${ubicacion}</div>`
+                : `<div class="pc-empty">No address provided</div>`}
+              ${
+                links
+                  ? `<div class="pc-links">${links}</div>`
+                  : `<div class="pc-empty" style="margin-top:12px;">No contact links</div>`
+              }
+            </div>
+          </div>
+        `, {
+          maxWidth: 340, minWidth: 0,
+          closeButton: true, offset: [0, -4],
+          autoPanPadding: [30, 30]
+        });
+
+        capaMarcadores.addLayer(m);
+      });
+
+      const totalPaises = Object.keys(porPais).length;
+      const totalCiudades = new Set(
+        comercios
+          .map(c => String(c.ciudad || '').toLowerCase().trim())
+          .filter(Boolean)
+      ).size;
+
+      document.getElementById('total').textContent   = comercios.length.toLocaleString();
+      document.getElementById('enabled').textContent = comercios.filter(c => c.acepta_firo_bool).length.toLocaleString();
+      document.getElementById('paises').textContent  = totalPaises;
+      document.getElementById('ciudades').textContent = totalCiudades;
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('total').textContent = 'Error';
+    });
+  </script>
+</body>
+</html>
