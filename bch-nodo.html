@@ -154,6 +154,12 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
 
+        .btn-blocks > span:not(.pulse) {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.7); }
@@ -602,10 +608,16 @@
             <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#2f4a42;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
             <div class="stat"><span class="label" data-i18n="common.label.price">PRECIO</span><span class="value bch" id="stat-price">—</span></div>
 
-            <a href="https://carover0.github.io/pagina/bch-bloques.html" target="_self" class="btn-blocks">
-                <span data-i18n="common.btn.blocks">🧱 Bloques en tiempo real</span>
+            <a href="https://carover0.github.io/pagina/firo-merchants.html" target="_self" rel="noopener noreferrer" class="btn-blocks">
+                <img src="assets/firo.png" alt="Firo" class="icon">
+                <span data-i18n="common.btn.sobre-firo">FIRO MAP</span>
+            </a>
+
+            <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
+                <span data-i18n="common.btn.blocks"><img src="assets/sparky3.png" width="12">Bloques en tiempo real</span>
                 <span class="pulse"></span>
             </a>
+
         </div>
 
         <div class="panel">
