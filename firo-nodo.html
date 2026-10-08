@@ -116,6 +116,14 @@
         .stats-bar .value { color: #f5ede4; font-weight: 600; font-size: 14px; }
         .stats-bar .value.firo { color: #ff7b87; }
 
+        .stats-bar-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 10px;
+            margin-inline-start: auto;
+        }
+
         .btn-blocks {
             display: inline-flex;
             align-items: center;
@@ -131,7 +139,7 @@
             transition: all 0.3s ease;
             text-decoration: none;
             letter-spacing: 0.3px;
-            margin-inline-start: auto;
+            white-space: nowrap;
         }
 
         .btn-blocks:hover {
@@ -147,6 +155,7 @@
             width: 14px;
             height: 14px;
             filter: drop-shadow(0 0 6px rgba(155, 28, 46, 0.4));
+            flex-shrink: 0;
         }
 
         .btn-blocks .pulse {
@@ -156,6 +165,13 @@
             background: #31db72;
             border-radius: 50%;
             animation: pulse 1.5s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .btn-blocks > span:not(.pulse) {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         @keyframes pulse {
@@ -163,12 +179,6 @@
             50% { opacity: 0.3; transform: scale(0.7); }
         }
 
-		.btn-blocks > span:not(.pulse) {
-    		display: inline-flex;
-		    align-items: center;
-		    gap: 5px;
-		}
-		
         .panel {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 14px;
@@ -369,7 +379,12 @@
         @media (max-width: 900px) {
             .stats-bar { flex-wrap: wrap; gap: 8px 20px; }
             .stats-bar .stat { flex: 0 1 auto; }
-            .btn-blocks { flex: 1 1 calc(50% - 10px); justify-content: center; margin-inline-start: 0; }
+            .stats-bar-buttons {
+                margin-inline-start: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            .btn-blocks { flex: 1 1 calc(50% - 5px); justify-content: center; }
         }
 
         @media (max-width: 768px) {
@@ -382,7 +397,8 @@
             .stats-bar { font-size: 11px; padding: 10px 14px; gap: 8px 18px; }
             .stats-bar .stat { flex: 0 1 auto; }
             .stats-bar .value { font-size: 13px; }
-            .btn-blocks { font-size: 9px; padding: 4px 12px; margin-inline-start: 0; flex: 1 1 calc(50% - 9px); justify-content: center; }
+            .stats-bar-buttons { gap: 6px; }
+            .btn-blocks { font-size: 9px; padding: 4px 12px; flex: 1 1 calc(50% - 3px); justify-content: center; }
             .panel { padding: 18px 16px; }
             .panel-title { font-size: 15px; }
             .panel-title img { width: 28px; height: 28px; }
@@ -402,7 +418,8 @@
             .stats-bar { font-size: 10px; padding: 8px 12px; gap: 6px 12px; }
             .stats-bar .stat { flex: 1 1 calc(50% - 6px); justify-content: space-between; }
             .stats-bar .value { font-size: 12px; }
-            .btn-blocks { font-size: 8px; padding: 4px 10px; gap: 4px; flex: 1 1 100%; justify-content: center; margin-inline-start: 0; }
+            .stats-bar-buttons { width: 100%; gap: 6px; }
+            .btn-blocks { font-size: 8px; padding: 4px 10px; gap: 4px; flex: 1 1 100%; justify-content: center; }
             .btn-blocks .icon,
             .btn-blocks img.icon { width: 12px; height: 12px; }
             .btn-blocks .pulse { width: 5px; height: 5px; }
@@ -529,102 +546,101 @@
         .modal-body .fila .valor.positive { color: #31db72; }
         .modal-body .fila .valor.negative { color: #ff7b87; }
 
-.modal-colabora .modal-content {
-    max-width: 480px;
-    text-align: center;
-}
+        .modal-colabora .modal-content {
+            max-width: 480px;
+            text-align: center;
+        }
 
-.modal-colabora .modal-header {
-    justify-content: center;
-    flex-direction: column;
-    gap: 8px;
-}
+        .modal-colabora .modal-header {
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-.modal-colabora .modal-header img {
-    width: 56px;
-    height: 56px;
-}
+        .modal-colabora .modal-header img {
+            width: 56px;
+            height: 56px;
+        }
 
-.modal-colabora .modal-header h2 {
-    font-size: 16px;
-    color: #f5e6c8;
-    letter-spacing: 1px;
-}
+        .modal-colabora .modal-header h2 {
+            font-size: 16px;
+            color: #f5e6c8;
+            letter-spacing: 1px;
+        }
 
-.modal-colabora .modal-body p {
-    font-size: 12px;
-    color: #8a8275;
-    margin-bottom: 18px;
-    line-height: 1.5;
-}
+        .modal-colabora .modal-body p {
+            font-size: 12px;
+            color: #8a8275;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
 
-.direccion-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(155,28,46,0.1);
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin-bottom: 10px;
-    transition: border-color 0.25s;
-}
+        .direccion-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(155,28,46,0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            transition: border-color 0.25s;
+        }
 
-.direccion-item:hover {
-    border-color: rgba(155,28,46,0.3);
-}
+        .direccion-item:hover {
+            border-color: rgba(155,28,46,0.3);
+        }
 
-.direccion-item .direccion-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-}
+        .direccion-item .direccion-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
 
-.direccion-item .direccion-info .nombre {
-    font-size: 11px;
-    color: #ff7b87;
-    letter-spacing: 0.5px;
-}
+        .direccion-item .direccion-info .nombre {
+            font-size: 11px;
+            color: #ff7b87;
+            letter-spacing: 0.5px;
+        }
 
-.direccion-item .direccion-info .address {
-    font-size: 11px;
-    color: #ece8e0;
-    font-family: 'Lucida Console', monospace;
-    word-break: break-all;
-    text-align: left;
-    direction: ltr;
-}
+        .direccion-item .direccion-info .address {
+            font-size: 11px;
+            color: #ece8e0;
+            font-family: 'Lucida Console', monospace;
+            word-break: break-all;
+            text-align: left;
+            direction: ltr;
+        }
 
-.btn-copiar {
-    background: rgba(155,28,46,0.12);
-    border: 1px solid rgba(155,28,46,0.2);
-    color: #ff7b87;
-    font-family: 'Lucida Console', monospace;
-    font-size: 10px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.25s;
-    white-space: nowrap;
-    margin-left: 12px;
-    flex-shrink: 0;
-}
+        .btn-copiar {
+            background: rgba(155,28,46,0.12);
+            border: 1px solid rgba(155,28,46,0.2);
+            color: #ff7b87;
+            font-family: 'Lucida Console', monospace;
+            font-size: 10px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s;
+            white-space: nowrap;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
 
-.btn-copiar:hover {
-    background: rgba(155,28,46,0.25);
-    border-color: rgba(155,28,46,0.45);
-    transform: translateY(-1px);
-}
+        .btn-copiar:hover {
+            background: rgba(155,28,46,0.25);
+            border-color: rgba(155,28,46,0.45);
+            transform: translateY(-1px);
+        }
 
-.btn-copiar.copiado {
-    background: rgba(49,219,114,0.15);
-    border-color: rgba(49,219,114,0.3);
-    color: #31db72;
-}
-
+        .btn-copiar.copiado {
+            background: rgba(49,219,114,0.15);
+            border-color: rgba(49,219,114,0.3);
+            color: #31db72;
+        }
     </style>
 </head>
 <body>
@@ -643,7 +659,6 @@
                 <a href="https://carover0.github.io/pagina/firo-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
                 <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
                 <a href="#" onclick="abrirModalColabora(event)" data-i18n="nodo.footer.colabora">[COLABORA]</a>
-
             </nav>
             <div class="lang-switcher" role="group" aria-label="Language">
                 <button type="button" data-lang="es" class="active">ES</button>
@@ -657,25 +672,32 @@
             <div class="stat"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
             <div class="stat"><span class="label" data-i18n="common.label.price">PRECIO</span><span class="value firo" id="stat-price">—</span></div>
-            <a href="https://buyfiro.app/" target="_blank" rel="noopener noreferrer" class="btn-blocks">
-                <img src="assets/firo.png" alt="Firo" class="icon">
-                <span data-i18n="common.btn.buy">Compra FIRO</span>
-                <span class="pulse"></span>
-            </a>
 
-            <a href="https://carover0.github.io/pagina/firo-red.html" target="_self" rel="noopener noreferrer" class="btn-blocks">
-                <img src="assets/firo.png" alt="Firo" class="icon">
-                <span data-i18n="common.btn.sobre-firo">Red FIRO</span>
-            </a>
+            <div class="stats-bar-buttons">
+                <a href="https://buyfiro.app/" target="_blank" rel="noopener noreferrer" class="btn-blocks">
+                    <img src="assets/firo.png" alt="Firo" class="icon">
+                    <span data-i18n="common.btn.buy">Compra FIRO</span>
+                    <span class="pulse"></span>
+                </a>
 
-			 <a href="https://carover0.github.io/pagina/firo-merchants.html" target="_self" rel="noopener noreferrer" class="btn-blocks">
-                <img src="assets/firo.png" alt="Firo" class="icon">FIRO MAP</a>
+                <a href="https://carover0.github.io/pagina/firo-red.html" target="_self" rel="noopener noreferrer" class="btn-blocks">
+                    <img src="assets/firo.png" alt="Firo" class="icon">
+                    <span data-i18n="common.btn.sobre-firo">Red FIRO</span>
+                </a>
 
-            <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
-                <span data-i18n="common.btn.blocks"><img src="assets/sparky3.png" width="12">Bloques en tiempo real</span>
-                <span class="pulse"></span>
-            </a>
+                <a href="https://carover0.github.io/pagina/firo-merchants.html" target="_self" rel="noopener noreferrer" class="btn-blocks">
+                    <img src="assets/firo.png" alt="Firo" class="icon">
+                    <span data-i18n="common.btn.sobre-firo">FIRO MAP</span>
+                </a>
 
+                <a href="https://carover0.github.io/pagina/firo-bloques.html" target="_self" class="btn-blocks">
+                    <span data-i18n="common.btn.blocks">
+                        <img src="assets/sparky3.png" alt="Sparky" class="icon">
+                        Bloques en tiempo real
+                    </span>
+                    <span class="pulse"></span>
+                </a>
+            </div>
         </div>
 
         <div class="panel">
@@ -715,15 +737,16 @@
                     <div class="card-item"><span class="label" data-i18n="common.label.updated">ACTUALIZADO</span><span class="value mono" id="market-updated">---</span></div>
                 </div>
 
-<div class="card" id="electrumCard" style="cursor:pointer;">
-    <div class="card-title" data-i18n="nodo.card.electrum">ElectrumX · Conectar Wallet</div>
-    <div class="card-item"><span class="label" data-i18n="common.label.server">SERVIDOR</span><span class="value mono">carover0.xyz</span></div>
-    <div class="card-item"><span class="label" data-i18n="common.label.port">PUERTO</span><span class="value mono">50002</span></div>
-    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="electrum-status" data-i18n="common.state.checking">Comprobando...</span></div>
-    <div class="card-item"><span class="label" data-i18n="common.label.tls">TLS</span><span class="value positive" data-i18n="common.state.enabled">HABILITADO</span></div>
-    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="electrum-version">---</span></div>
-    <div class="card-item"><span class="label" data-i18n="common.label.response">RESPUESTA</span><span class="value mono" id="electrum-ping">---</span></div>
-</div>
+                <div class="card" id="electrumCard" style="cursor:pointer;">
+                    <div class="card-title" data-i18n="nodo.card.electrum">ElectrumX · Conectar Wallet</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.server">SERVIDOR</span><span class="value mono">carover0.xyz</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.port">PUERTO</span><span class="value mono">50002</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="electrum-status" data-i18n="common.state.checking">Comprobando...</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.tls">TLS</span><span class="value positive" data-i18n="common.state.enabled">HABILITADO</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="electrum-version">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.response">RESPUESTA</span><span class="value mono" id="electrum-ping">---</span></div>
+                </div>
+
                 <div class="card" id="masternodeCard" style="cursor:pointer;">
                     <div class="card-title" data-i18n="nodo.card.masternode">Masternodo</div>
                     <div class="card-item"><span class="label" data-i18n="nodo.mn.status">ESTADO</span><span class="value positive" id="mn-status">—</span></div>
@@ -761,398 +784,395 @@
         </div>
     </div>
 
-
-<div id="modalColabora" class="modal-overlay modal-colabora" onclick="cerrarModalColabora(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="cerrarModalColabora()">✕</button>
-        <div class="modal-header">
-            <img src="assets/firo.png" alt="Firo">
-            <h2 data-i18n="nodo.colabora.title">COLABORA CON EL NODO</h2>
-        </div>
-        <div class="modal-body">
-            <p data-i18n="nodo.colabora.desc">Si queres apoyar el mantenimiento de este nodo y servicios, podes enviar FIRO a cualquiera de estas direcciones:</p>
-
-            <div class="direccion-item">
-                <div class="direccion-info">
-                    <span class="nombre">mastercarol</span>
-                    <span class="address" id="addr-mastercarol">mastercarol</span>
-                </div>
-                <button class="btn-copiar" onclick="copiarDireccion('addr-mastercarol', this)" data-i18n="nodo.colabora.copy">Copiar</button>
+    <div id="modalColabora" class="modal-overlay modal-colabora" onclick="cerrarModalColabora(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="cerrarModalColabora()">✕</button>
+            <div class="modal-header">
+                <img src="assets/firo.png" alt="Firo">
+                <h2 data-i18n="nodo.colabora.title">COLABORA CON EL NODO</h2>
             </div>
+            <div class="modal-body">
+                <p data-i18n="nodo.colabora.desc">Si queres apoyar el mantenimiento de este nodo y servicios, podes enviar FIRO a cualquiera de estas direcciones:</p>
 
-            <div class="direccion-item">
-                <div class="direccion-info">
-                    <span class="nombre">carover0.firo</span>
-                    <span class="address" id="addr-carover0">carover0.firo</span>
+                <div class="direccion-item">
+                    <div class="direccion-info">
+                        <span class="nombre">mastercarol</span>
+                        <span class="address" id="addr-mastercarol">mastercarol</span>
+                    </div>
+                    <button class="btn-copiar" onclick="copiarDireccion('addr-mastercarol', this)" data-i18n="nodo.colabora.copy">Copiar</button>
                 </div>
-                <button class="btn-copiar" onclick="copiarDireccion('addr-carover0', this)" data-i18n="nodo.colabora.copy">Copiar</button>
-            </div>
 
-            <p style="margin-top:16px;font-size:10px;color:#4a443a;" data-i18n="nodo.colabora.thanks">¡Gracias por tu apoyo! ❤️</p>
+                <div class="direccion-item">
+                    <div class="direccion-info">
+                        <span class="nombre">carover0.firo</span>
+                        <span class="address" id="addr-carover0">carover0.firo</span>
+                    </div>
+                    <button class="btn-copiar" onclick="copiarDireccion('addr-carover0', this)" data-i18n="nodo.colabora.copy">Copiar</button>
+                </div>
+
+                <p style="margin-top:16px;font-size:10px;color:#4a443a;" data-i18n="nodo.colabora.thanks">¡Gracias por tu apoyo! ❤️</p>
+            </div>
         </div>
     </div>
-</div>
-
 
     <div class="toast" id="toast"></div>
 
     <script src="js/i18n.js"></script>
-<script src="js/i18n.js"></script>
-<script>
-    const NODE_JSON_URL = 'https://carover0.xyz/api/firo.json';
-    const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
-    const MI_NODO = "45.67.217.147:8168";
+    <script>
+        const NODE_JSON_URL = 'https://carover0.xyz/api/firo.json';
+        const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
+        const MI_NODO = "45.67.217.147:8168";
 
-    const t = (key) => FiroI18n.t(key);
+        const t = (key) => FiroI18n.t(key);
 
-    let cachedNodeData = null;
-    let cachedPrice = null;
-    let cachedMasternode = null;
+        let cachedNodeData = null;
+        let cachedPrice = null;
+        let cachedMasternode = null;
 
-    function escapeHtml(text) {
-        if (!text) return '';
-        return String(text).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    function formatUptime(s) {
-        if (!s) return '---';
-        s = parseInt(s);
-        const d = Math.floor(s / 86400);
-        s %= 86400;
-        const h = Math.floor(s / 3600);
-        s %= 3600;
-        const m = Math.floor(s / 60);
-        let parts = [];
-        if (d > 0) parts.push(d + t('common.unit.day'));
-        if (h > 0) parts.push(h + t('common.unit.hour'));
-        if (m > 0 || parts.length === 0) parts.push(m + t('common.unit.min'));
-        return parts.join(' ');
-    }
-
-    function formatHash(h) {
-        if (!h) return '---';
-        return h.substring(0, 16) + '…' + h.substring(h.length - 4);
-    }
-
-    function showToast(msg) {
-        const el = document.getElementById('toast');
-        el.textContent = msg;
-        el.classList.add('show');
-        clearTimeout(el._timer);
-        el._timer = setTimeout(() => el.classList.remove('show'), 1800);
-    }
-
-    function updateStatsBar() {
-        const data = cachedNodeData;
-        const price = cachedPrice;
-
-        document.getElementById('stat-height').textContent = data?.blockchain?.blocks ? Number(data.blockchain.blocks).toLocaleString() : '—';
-        document.getElementById('stat-connections').textContent = data?.network?.connections ?? '—';
-        document.getElementById('stat-mempool').textContent = data?.mempool?.txcount ?? '0';
-        document.getElementById('stat-price').textContent = price ? '$' + price.toFixed(4) : '—';
-    }
-
-    function displayNodeData(d) {
-        if (!d) return;
-
-        const synced = !!d.health?.synced;
-        const time = (d.datetime || '').split(' ')[1] || '';
-
-        document.getElementById('node-version').textContent = d.network?.subversion || 'N/A';
-        const stateEl = document.getElementById('node-state');
-        stateEl.textContent = synced ? t('common.state.synced') : t('common.state.syncing');
-        stateEl.className = 'value ' + (synced ? 'positive' : 'negative');
-        document.getElementById('node-blocks').textContent = Number(d.blockchain?.blocks || 0).toLocaleString();
-        document.getElementById('node-connections').textContent =
-            `${d.network?.connections ?? 0} (${d.peers?.inbound ?? 0} ${t('common.unit.in')} · ${d.peers?.outbound ?? 0} ${t('common.unit.out')})`;
-        document.getElementById('node-mempool').textContent = `${d.mempool?.txcount ?? 0} ${t('common.unit.tx').toUpperCase()}`;
-        document.getElementById('node-uptime').textContent = formatUptime(d.node?.uptime_seconds);
-        document.getElementById('node-difficulty').textContent = Number(d.blockchain?.difficulty || 0).toFixed(2);
-        document.getElementById('node-hashrate').textContent = (Number(d.mining?.networkhashps || 0) / 1e9).toFixed(2) + ' GH/s';
-        document.getElementById('node-chain').textContent = d.blockchain?.chain || '---';
-        document.getElementById('node-bestblock').textContent = formatHash(d.blockchain?.bestblockhash);
-        document.getElementById('node-timestamp').textContent =
-            `${d.timestamp || '---'} ${time ? '(' + time + ' UTC)' : ''}`;
-    }
-
-    async function fetchNodeData() {
-        try {
-            const r = await fetch(NODE_JSON_URL);
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            const data = await r.json();
-            cachedNodeData = data;
-            displayNodeData(data);
-            updateStatsBar();
-            return data;
-        } catch (e) {
-            console.error('Error de conexión:', e);
-            document.getElementById('node-version').textContent = t('common.state.connection_error');
-            return null;
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
-    }
 
-    async function fetchMarketData() {
-        try {
-            const d = await (await fetch(COINGECKO_API)).json();
-            const m = d.market_data;
-            const p = m.current_price.usd;
-            cachedPrice = p;
-
-            document.getElementById('market-price').textContent = '$' + p.toFixed(4);
-
-            const c24 = m.price_change_percentage_24h;
-            const c7 = m.price_change_percentage_7d;
-            const el24 = document.getElementById('market-24h');
-            const el7 = document.getElementById('market-7d');
-            el24.textContent = (c24 >= 0 ? '+' : '') + c24.toFixed(2) + '%';
-            el24.className = 'value ' + (c24 >= 0 ? 'positive' : 'negative');
-            el7.textContent = (c7 >= 0 ? '+' : '') + c7.toFixed(2) + '%';
-            el7.className = 'value ' + (c7 >= 0 ? 'positive' : 'negative');
-
-            document.getElementById('market-cap').textContent = '$' + (m.market_cap.usd / 1e6).toFixed(2) + 'M';
-            document.getElementById('market-volume').textContent = '$' + (m.total_volume.usd / 1e6).toFixed(2) + 'M';
-            document.getElementById('market-updated').textContent = new Date().toLocaleTimeString();
-
-            updateStatsBar();
-            return p;
-        } catch (e) {
-            document.getElementById('market-price').textContent = '---';
-            document.getElementById('market-24h').textContent = '---';
-            document.getElementById('market-7d').textContent = '---';
-            document.getElementById('market-cap').textContent = '---';
-            document.getElementById('market-volume').textContent = '---';
-            document.getElementById('market-updated').textContent = t('common.state.error');
-            return null;
+        function formatUptime(s) {
+            if (!s) return '---';
+            s = parseInt(s);
+            const d = Math.floor(s / 86400);
+            s %= 86400;
+            const h = Math.floor(s / 3600);
+            s %= 3600;
+            const m = Math.floor(s / 60);
+            let parts = [];
+            if (d > 0) parts.push(d + t('common.unit.day'));
+            if (h > 0) parts.push(h + t('common.unit.hour'));
+            if (m > 0 || parts.length === 0) parts.push(m + t('common.unit.min'));
+            return parts.join(' ');
         }
-    }
 
-    async function fetchElectrumStatus() {
-        try {
-            const r = await fetch('https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=ping-electrum');
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            const d = await r.json();
+        function formatHash(h) {
+            if (!h) return '---';
+            return h.substring(0, 16) + '…' + h.substring(h.length - 4);
+        }
 
-            const statusEl = document.getElementById('electrum-status');
-            const versionEl = document.getElementById('electrum-version');
-            const pingEl = document.getElementById('electrum-ping');
-            const noteEl = document.getElementById('electrum-note');
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+        }
 
-            if (d.status === 'online') {
-                statusEl.textContent = t('common.state.online');
-                statusEl.className = 'value positive';
-                versionEl.textContent = Array.isArray(d.version) ? d.version[0] : d.version;
-                pingEl.textContent = new Date(d.timestamp * 1000).toLocaleTimeString();
-                noteEl.textContent = t('nodo.electrum.note_online');
-            } else {
+        function updateStatsBar() {
+            const data = cachedNodeData;
+            const price = cachedPrice;
+
+            document.getElementById('stat-height').textContent = data?.blockchain?.blocks ? Number(data.blockchain.blocks).toLocaleString() : '—';
+            document.getElementById('stat-connections').textContent = data?.network?.connections ?? '—';
+            document.getElementById('stat-mempool').textContent = data?.mempool?.txcount ?? '0';
+            document.getElementById('stat-price').textContent = price ? '$' + price.toFixed(4) : '—';
+        }
+
+        function displayNodeData(d) {
+            if (!d) return;
+
+            const synced = !!d.health?.synced;
+            const time = (d.datetime || '').split(' ')[1] || '';
+
+            document.getElementById('node-version').textContent = d.network?.subversion || 'N/A';
+            const stateEl = document.getElementById('node-state');
+            stateEl.textContent = synced ? t('common.state.synced') : t('common.state.syncing');
+            stateEl.className = 'value ' + (synced ? 'positive' : 'negative');
+            document.getElementById('node-blocks').textContent = Number(d.blockchain?.blocks || 0).toLocaleString();
+            document.getElementById('node-connections').textContent =
+                `${d.network?.connections ?? 0} (${d.peers?.inbound ?? 0} ${t('common.unit.in')} · ${d.peers?.outbound ?? 0} ${t('common.unit.out')})`;
+            document.getElementById('node-mempool').textContent = `${d.mempool?.txcount ?? 0} ${t('common.unit.tx').toUpperCase()}`;
+            document.getElementById('node-uptime').textContent = formatUptime(d.node?.uptime_seconds);
+            document.getElementById('node-difficulty').textContent = Number(d.blockchain?.difficulty || 0).toFixed(2);
+            document.getElementById('node-hashrate').textContent = (Number(d.mining?.networkhashps || 0) / 1e9).toFixed(2) + ' GH/s';
+            document.getElementById('node-chain').textContent = d.blockchain?.chain || '---';
+            document.getElementById('node-bestblock').textContent = formatHash(d.blockchain?.bestblockhash);
+            document.getElementById('node-timestamp').textContent =
+                `${d.timestamp || '---'} ${time ? '(' + time + ' UTC)' : ''}`;
+        }
+
+        async function fetchNodeData() {
+            try {
+                const r = await fetch(NODE_JSON_URL);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const data = await r.json();
+                cachedNodeData = data;
+                displayNodeData(data);
+                updateStatsBar();
+                return data;
+            } catch (e) {
+                console.error('Error de conexión:', e);
+                document.getElementById('node-version').textContent = t('common.state.connection_error');
+                return null;
+            }
+        }
+
+        async function fetchMarketData() {
+            try {
+                const d = await (await fetch(COINGECKO_API)).json();
+                const m = d.market_data;
+                const p = m.current_price.usd;
+                cachedPrice = p;
+
+                document.getElementById('market-price').textContent = '$' + p.toFixed(4);
+
+                const c24 = m.price_change_percentage_24h;
+                const c7 = m.price_change_percentage_7d;
+                const el24 = document.getElementById('market-24h');
+                const el7 = document.getElementById('market-7d');
+                el24.textContent = (c24 >= 0 ? '+' : '') + c24.toFixed(2) + '%';
+                el24.className = 'value ' + (c24 >= 0 ? 'positive' : 'negative');
+                el7.textContent = (c7 >= 0 ? '+' : '') + c7.toFixed(2) + '%';
+                el7.className = 'value ' + (c7 >= 0 ? 'positive' : 'negative');
+
+                document.getElementById('market-cap').textContent = '$' + (m.market_cap.usd / 1e6).toFixed(2) + 'M';
+                document.getElementById('market-volume').textContent = '$' + (m.total_volume.usd / 1e6).toFixed(2) + 'M';
+                document.getElementById('market-updated').textContent = new Date().toLocaleTimeString();
+
+                updateStatsBar();
+                return p;
+            } catch (e) {
+                document.getElementById('market-price').textContent = '---';
+                document.getElementById('market-24h').textContent = '---';
+                document.getElementById('market-7d').textContent = '---';
+                document.getElementById('market-cap').textContent = '---';
+                document.getElementById('market-volume').textContent = '---';
+                document.getElementById('market-updated').textContent = t('common.state.error');
+                return null;
+            }
+        }
+
+        async function fetchElectrumStatus() {
+            try {
+                const r = await fetch('https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=ping-electrum');
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const d = await r.json();
+
+                const statusEl = document.getElementById('electrum-status');
+                const versionEl = document.getElementById('electrum-version');
+                const pingEl = document.getElementById('electrum-ping');
+                const noteEl = document.getElementById('electrum-note');
+
+                if (d.status === 'online') {
+                    statusEl.textContent = t('common.state.online');
+                    statusEl.className = 'value positive';
+                    versionEl.textContent = Array.isArray(d.version) ? d.version[0] : d.version;
+                    pingEl.textContent = new Date(d.timestamp * 1000).toLocaleTimeString();
+                    noteEl.textContent = t('nodo.electrum.note_online');
+                } else {
+                    statusEl.textContent = t('common.state.offline');
+                    statusEl.className = 'value negative';
+                    versionEl.textContent = '---';
+                    pingEl.textContent = '❌ ' + (d.error || t('common.state.unknown'));
+                    noteEl.textContent = '⚠️ ' + t('nodo.electrum.note_offline');
+                }
+            } catch (e) {
+                const statusEl = document.getElementById('electrum-status');
                 statusEl.textContent = t('common.state.offline');
                 statusEl.className = 'value negative';
-                versionEl.textContent = '---';
-                pingEl.textContent = '❌ ' + (d.error || t('common.state.unknown'));
-                noteEl.textContent = '⚠️ ' + t('nodo.electrum.note_offline');
+                document.getElementById('electrum-version').textContent = '---';
+                document.getElementById('electrum-ping').textContent = '❌ ' + t('nodo.electrum.error_conn');
+                document.getElementById('electrum-note').textContent = '⚠️ ' + t('nodo.electrum.note_error');
             }
-        } catch (e) {
-            const statusEl = document.getElementById('electrum-status');
-            statusEl.textContent = t('common.state.offline');
-            statusEl.className = 'value negative';
-            document.getElementById('electrum-version').textContent = '---';
-            document.getElementById('electrum-ping').textContent = '❌ ' + t('nodo.electrum.error_conn');
-            document.getElementById('electrum-note').textContent = '⚠️ ' + t('nodo.electrum.note_error');
         }
-    }
 
-    function abrirModal(datos) {
-        const modal = document.getElementById('modal');
-        const body = document.getElementById('modalBody');
-        const title = document.getElementById('modalTitle');
-        title.textContent = datos.titulo || 'Masternodo';
-        let html = '';
-        datos.filas.forEach(f => {
-            html += `
-                <div class="fila">
-                    <span class="label">${f.label}</span>
-                    <span class="valor ${f.clase || ''}">${f.valor}</span>
-                </div>`;
+        function abrirModal(datos) {
+            const modal = document.getElementById('modal');
+            const body = document.getElementById('modalBody');
+            const title = document.getElementById('modalTitle');
+            title.textContent = datos.titulo || 'Masternodo';
+            let html = '';
+            datos.filas.forEach(f => {
+                html += `
+                    <div class="fila">
+                        <span class="label">${f.label}</span>
+                        <span class="valor ${f.clase || ''}">${f.valor}</span>
+                    </div>`;
+            });
+            body.innerHTML = html;
+            modal.classList.add('activo');
+        }
+
+        function cerrarModal(e) {
+            if (e && e.target !== e.currentTarget && e.type === 'click') return;
+            document.getElementById('modal').classList.remove('activo');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') cerrarModal();
         });
-        body.innerHTML = html;
-        modal.classList.add('activo');
-    }
 
-    function cerrarModal(e) {
-        if (e && e.target !== e.currentTarget && e.type === 'click') return;
-        document.getElementById('modal').classList.remove('activo');
-    }
+        async function fetchMasternodeData() {
+            const PROTX = '70070ca66cf05fca3ceee647233923ed290e806a5535ef45d03459df596e0830';
+            try {
+                const r = await fetch(`https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=masternode-status&protx=${PROTX}`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const s = await r.json();
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') cerrarModal();
-    });
+                if (s.error) throw new Error(s.error);
 
-async function fetchMasternodeData() {
-    const PROTX = '70070ca66cf05fca3ceee647233923ed290e806a5535ef45d03459df596e0830';
-    try {
-        const r = await fetch(`https://carover0.xyz/api/firo/rpc.php?token=firo2026&cmd=masternode-status&protx=${PROTX}`);
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const s = await r.json();
+                const st = s.state || {};
 
-        if (s.error) throw new Error(s.error);
+                const mn = {
+                    status: (st.PoSePenalty === 0 && st.PoSeBanHeight === -1) ? 'READY' : 'POSE_BANNED',
+                    service: st.service || MI_NODO,
+                    proTxHash: s.proTxHash || PROTX,
+                    payee: st.payoutAddress || '---',
+                    owner: st.ownerAddress || '---',
+                    voting: st.votingAddress || '---',
+                    operator: st.pubKeyOperator || '---',
+                    collateral: s.collateralHash
+                        ? `${s.collateralHash}:${s.collateralIndex ?? 0}`
+                        : '---',
+                    registeredHeight: st.registeredHeight || 0,
+                    lastPaidHeight: st.lastPaidHeight || 0,
+                    posePenalty: st.PoSePenalty ?? 0,
+                    poseBanHeight: st.PoSeBanHeight ?? -1,
+                    nextWinner: null
+                };
 
-        const st = s.state || {};
+                try {
+                    const rStats = await fetch('https://carover0.xyz/api/firo/masternode-live.php?limit=1');
+                    if (rStats.ok) {
+                        const stats = await rStats.json();
+                        if (stats.stats?.next_winner?.payee === mn.payee) {
+                            mn.nextWinner = stats.stats.next_winner.height;
+                        }
+                    }
+                } catch (_) {}
 
-        const mn = {
-            status: (st.PoSePenalty === 0 && st.PoSeBanHeight === -1) ? 'READY' : 'POSE_BANNED',
-            service: st.service || MI_NODO,
-            proTxHash: s.proTxHash || PROTX,
-            payee: st.payoutAddress || '---',
-            owner: st.ownerAddress || '---',
-            voting: st.votingAddress || '---',
-            operator: st.pubKeyOperator || '---',
-            collateral: s.collateralHash
-                ? `${s.collateralHash}:${s.collateralIndex ?? 0}`
-                : '---',
-            registeredHeight: st.registeredHeight || 0,
-            lastPaidHeight: st.lastPaidHeight || 0,        
-            posePenalty: st.PoSePenalty ?? 0,
-            poseBanHeight: st.PoSeBanHeight ?? -1,
-            nextWinner: null
-        };
+                cachedMasternode = mn;
+                actualizarCardMasternode(mn);
+                return mn;
+            } catch (e) {
+                console.error('Error cargando masternodo:', e);
+                document.getElementById('mn-status').textContent = '❌ Error';
+                document.getElementById('mn-status').className = 'value negative';
+                return null;
+            }
+        }
 
-        try {
-            const rStats = await fetch('https://carover0.xyz/api/firo/masternode-live.php?limit=1');
-            if (rStats.ok) {
-                const stats = await rStats.json();
-                if (stats.stats?.next_winner?.payee === mn.payee) {
-                    mn.nextWinner = stats.stats.next_winner.height;
+        function actualizarCardMasternode(mn) {
+            document.getElementById('mn-status').textContent = mn.status === 'READY' ? 'Activo' : mn.status;
+            document.getElementById('mn-status').className = 'value ' + (mn.status === 'READY' ? 'positive' : 'negative');
+            document.getElementById('mn-service').textContent = mn.service;
+            document.getElementById('mn-protx').textContent = mn.proTxHash.slice(0,10) + '…' + mn.proTxHash.slice(-6);
+            document.getElementById('mn-payee').textContent = mn.payee.slice(0,10) + '…' + mn.payee.slice(-6);
+            document.getElementById('mn-lastpaid').textContent = mn.lastPaidHeight === 0 ? t('nodo.modal.notpaid') : '#' + mn.lastPaidHeight.toLocaleString();
+            document.getElementById('mn-pose').textContent = mn.posePenalty === 0 ? t('nodo.modal.clean') : '⚠️ ' + mn.posePenalty;
+            document.getElementById('mn-pose').className = 'value ' + (mn.posePenalty === 0 ? 'positive' : 'negative');
+
+            document.getElementById('masternodeCard').onclick = () => {
+                abrirModal({
+                    titulo: t('nodo.modal.title'),
+                    filas: [
+                        { label: t('nodo.modal.status'),     valor: mn.status === 'READY' ? t('nodo.modal.ready') : mn.status, clase: mn.status === 'READY' ? 'positive' : 'negative' },
+                        { label: t('nodo.modal.service'),    valor: mn.service, clase: 'mono' },
+                        { label: t('nodo.modal.protx'),      valor: mn.proTxHash, clase: 'mono' },
+                        { label: t('nodo.modal.payee'),      valor: mn.payee, clase: 'mono firo' },
+                        { label: t('nodo.modal.owner'),      valor: mn.owner, clase: 'mono' },
+                        { label: t('nodo.modal.voting'),     valor: mn.voting, clase: 'mono' },
+                        { label: t('nodo.modal.operator'),   valor: mn.operator, clase: 'mono' },
+                        { label: t('nodo.modal.collateral'), valor: mn.collateral, clase: 'mono' },
+                        { label: t('nodo.modal.registered'), valor: '#' + mn.registeredHeight.toLocaleString() },
+                        { label: t('nodo.modal.lastpaid'),   valor: mn.lastPaidHeight === 0 ? t('nodo.modal.notpaid') : '#' + mn.lastPaidHeight.toLocaleString(), clase: mn.lastPaidHeight === 0 ? 'mono' : 'firo' },
+                        { label: t('nodo.modal.pose'),       valor: mn.posePenalty === 0 ? t('nodo.modal.clean') : '⚠️ ' + mn.posePenalty, clase: mn.posePenalty === 0 ? 'positive' : 'negative' },
+                        { label: t('nodo.modal.next'),       valor: mn.nextWinner ? '#' + mn.nextWinner.toLocaleString() : t('nodo.modal.inqueue'), clase: mn.nextWinner ? 'firo' : 'mono' }
+                    ]
+                });
+            };
+        }
+
+        window.onLangChange = function () {
+            if (cachedNodeData) displayNodeData(cachedNodeData);
+            updateStatsBar();
+            fetchElectrumStatus();
+            if (cachedMasternode) {
+                actualizarCardMasternode(cachedMasternode);
+                if (document.getElementById('modal').classList.contains('activo')) {
+                    document.getElementById('masternodeCard').click();
                 }
             }
-        } catch (_) {}
-
-        cachedMasternode = mn;
-        actualizarCardMasternode(mn);
-        return mn;
-    } catch (e) {
-        console.error('Error cargando masternodo:', e);
-        document.getElementById('mn-status').textContent = '❌ Error';
-        document.getElementById('mn-status').className = 'value negative';
-        return null;
-    }
-}
-
-    function actualizarCardMasternode(mn) {
-        document.getElementById('mn-status').textContent = mn.status === 'READY' ? 'Activo' : mn.status;
-        document.getElementById('mn-status').className = 'value ' + (mn.status === 'READY' ? 'positive' : 'negative');
-        document.getElementById('mn-service').textContent = mn.service;
-        document.getElementById('mn-protx').textContent = mn.proTxHash.slice(0,10) + '…' + mn.proTxHash.slice(-6);
-        document.getElementById('mn-payee').textContent = mn.payee.slice(0,10) + '…' + mn.payee.slice(-6);
-        document.getElementById('mn-lastpaid').textContent = mn.lastPaidHeight === 0 ? t('nodo.modal.notpaid') : '#' + mn.lastPaidHeight.toLocaleString();
-        document.getElementById('mn-pose').textContent = mn.posePenalty === 0 ? t('nodo.modal.clean') : '⚠️ ' + mn.posePenalty;
-        document.getElementById('mn-pose').className = 'value ' + (mn.posePenalty === 0 ? 'positive' : 'negative');
-
-        document.getElementById('masternodeCard').onclick = () => {
-            abrirModal({
-                titulo: t('nodo.modal.title'),
-                filas: [
-                    { label: t('nodo.modal.status'),     valor: mn.status === 'READY' ? t('nodo.modal.ready') : mn.status, clase: mn.status === 'READY' ? 'positive' : 'negative' },
-                    { label: t('nodo.modal.service'),    valor: mn.service, clase: 'mono' },
-                    { label: t('nodo.modal.protx'),      valor: mn.proTxHash, clase: 'mono' },
-                    { label: t('nodo.modal.payee'),      valor: mn.payee, clase: 'mono firo' },
-                    { label: t('nodo.modal.owner'),      valor: mn.owner, clase: 'mono' },
-                    { label: t('nodo.modal.voting'),     valor: mn.voting, clase: 'mono' },
-                    { label: t('nodo.modal.operator'),   valor: mn.operator, clase: 'mono' },
-                    { label: t('nodo.modal.collateral'), valor: mn.collateral, clase: 'mono' },
-                    { label: t('nodo.modal.registered'), valor: '#' + mn.registeredHeight.toLocaleString() },
-                    { label: t('nodo.modal.lastpaid'),   valor: mn.lastPaidHeight === 0 ? t('nodo.modal.notpaid') : '#' + mn.lastPaidHeight.toLocaleString(), clase: mn.lastPaidHeight === 0 ? 'mono' : 'firo' },
-                    { label: t('nodo.modal.pose'),       valor: mn.posePenalty === 0 ? t('nodo.modal.clean') : '⚠️ ' + mn.posePenalty, clase: mn.posePenalty === 0 ? 'positive' : 'negative' },
-                    { label: t('nodo.modal.next'),       valor: mn.nextWinner ? '#' + mn.nextWinner.toLocaleString() : t('nodo.modal.inqueue'), clase: mn.nextWinner ? 'firo' : 'mono' }
-                ]
-            });
         };
-    }
 
-    window.onLangChange = function () {
-        if (cachedNodeData) displayNodeData(cachedNodeData);
-        updateStatsBar();
-        fetchElectrumStatus();
-        if (cachedMasternode) {
-            actualizarCardMasternode(cachedMasternode);
-            if (document.getElementById('modal').classList.contains('activo')) {
-                document.getElementById('masternodeCard').click();
-            }
+        function abrirModalColabora(e) {
+            if (e) e.preventDefault();
+            document.getElementById('modalColabora').classList.add('activo');
         }
-    };
 
-function abrirModalColabora(e) {
-    if (e) e.preventDefault();
-    document.getElementById('modalColabora').classList.add('activo');
-}
+        function cerrarModalColabora(e) {
+            if (e && e.target !== e.currentTarget && e.type === 'click') return;
+            document.getElementById('modalColabora').classList.remove('activo');
+            document.querySelectorAll('#modalColabora .btn-copiar').forEach(btn => {
+                btn.classList.remove('copiado');
+                btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+            });
+        }
 
-function cerrarModalColabora(e) {
-    if (e && e.target !== e.currentTarget && e.type === 'click') return;
-    document.getElementById('modalColabora').classList.remove('activo');
-    document.querySelectorAll('#modalColabora .btn-copiar').forEach(btn => {
-        btn.classList.remove('copiado');
-        btn.textContent = t('nodo.colabora.copy') || 'Copiar';
-    });
-}
+        function copiarDireccion(id, btn) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const texto = el.textContent.trim();
+            navigator.clipboard.writeText(texto).then(() => {
+                btn.textContent = t('nodo.colabora.copied') || '¡Copiado!';
+                btn.classList.add('copiado');
+                setTimeout(() => {
+                    btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+                    btn.classList.remove('copiado');
+                }, 2000);
+            }).catch(() => {
+                const range = document.createRange();
+                range.selectNode(el);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                btn.textContent = t('nodo.colabora.copied') || '¡Copiado!';
+                btn.classList.add('copiado');
+                setTimeout(() => {
+                    btn.textContent = t('nodo.colabora.copy') || 'Copiar';
+                    btn.classList.remove('copiado');
+                }, 2000);
+            });
+        }
 
-function copiarDireccion(id, btn) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const texto = el.textContent.trim();
-    navigator.clipboard.writeText(texto).then(() => {
-        btn.textContent = t('nodo.colabora.copied') || '¡Copiado!';
-        btn.classList.add('copiado');
-        setTimeout(() => {
-            btn.textContent = t('nodo.colabora.copy') || 'Copiar';
-            btn.classList.remove('copiado');
-        }, 2000);
-    }).catch(() => {
-        const range = document.createRange();
-        range.selectNode(el);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        document.execCommand('copy');
-        window.getSelection().removeAllRanges();
-        btn.textContent = t('nodo.colabora.copied') || '¡Copiado!';
-        btn.classList.add('copiado');
-        setTimeout(() => {
-            btn.textContent = t('nodo.colabora.copy') || 'Copiar';
-            btn.classList.remove('copiado');
-        }, 2000);
-    });
-}
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                cerrarModalColabora();
+            }
+        });
 
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        cerrarModalColabora();
-    }
-});
+        async function init() {
+            await FiroI18n.init();
+            await Promise.all([
+                fetchNodeData(),
+                fetchMarketData()
+            ]);
+            fetchElectrumStatus();
+            fetchMasternodeData();
+            document.getElementById('electrumCard').onclick = () => {
+                window.open('https://www.firostatus.com/', '_blank', 'noopener,noreferrer');
+            };
+        }
 
-    async function init() {
-        await FiroI18n.init();
-        await Promise.all([
-            fetchNodeData(),
-            fetchMarketData()
-        ]);
-        fetchElectrumStatus();
-        fetchMasternodeData();
-	document.getElementById('electrumCard').onclick = () => {
-    window.open('https://www.firostatus.com/', '_blank', 'noopener,noreferrer');
-};
-    }
+        init();
 
-    init();
+        setInterval(() => {
+            fetchNodeData();
+            fetchMarketData();
+            fetchMasternodeData();
+        }, 60000);
 
-    setInterval(() => {
-        fetchNodeData();
-        fetchMarketData();
-        fetchMasternodeData();
-    }, 60000);
-
-    setInterval(fetchElectrumStatus, 60000);
-</script>
+        setInterval(fetchElectrumStatus, 60000);
+    </script>
 </body>
 </html>
