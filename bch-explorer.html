@@ -888,6 +888,11 @@ function updateUrlWithSearch(parametro) {
 
 function detectCommand(input) {
     input = input.trim();
+    
+    if (input.startsWith('HASH%3A')) {
+        input = 'HASH:' + input.substring(7);
+    }
+    
     if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
         input.startsWith('validateaddress') || input.startsWith('getblockbyheight') ||
         input.startsWith('HASH:')) {
@@ -905,7 +910,6 @@ function detectCommand(input) {
     }
     return input;
 }
-
 function getLabelForQuery(q) {
     const s = q.trim();
     if (s.startsWith('getblockbyheight ')) return t('explorer.label_block_prefix') + ' ' + s.replace('getblockbyheight ', '');
