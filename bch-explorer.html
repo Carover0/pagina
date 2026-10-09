@@ -876,7 +876,7 @@ function detectSearchFromUrl() {
     if (q) return q;
     const path = window.location.pathname;
     const match = path.match(/\/bch-explorer\/(.+)$/);
-    if (match && match[1]) return decodeURIComponent(match[1]); 
+    if (match && match[1]) return decodeURIComponent(match[1]);
     return null;
 }
 
@@ -888,11 +888,11 @@ function updateUrlWithSearch(parametro) {
 
 function detectCommand(input) {
     input = input.trim();
-    
+
     if (input.startsWith('HASH%3A')) {
         input = 'HASH:' + input.substring(7);
     }
-    
+
     if (input.startsWith('getblock') || input.startsWith('getrawtransaction') ||
         input.startsWith('validateaddress') || input.startsWith('getblockbyheight') ||
         input.startsWith('HASH:')) {
@@ -910,12 +910,14 @@ function detectCommand(input) {
     }
     return input;
 }
+
 function getLabelForQuery(q) {
     const s = q.trim();
     if (s.startsWith('getblockbyheight ')) return t('explorer.label_block_prefix') + ' ' + s.replace('getblockbyheight ', '');
     if (s.startsWith('getblock ')) return t('explorer.label_block_prefix') + ' ' + s.replace('getblock ', '').substring(0, 12) + '…';
     if (s.startsWith('getrawtransaction ')) return 'TX ' + s.replace('getrawtransaction ', '').replace(' 1', '').substring(0, 16) + '…';
     if (s.startsWith('validateaddress ')) return t('explorer.label_validate') + ' ' + s.split(' ')[1].substring(0, 12) + '…';
+    if (s.startsWith('HASH:')) return 'TX ' + s.substring(5, 21) + '…';
     if (/^\d+$/.test(s)) return t('explorer.label_block_prefix') + ' ' + s;
     if (/^[a-fA-F0-9]{64}$/.test(s)) return 'TX ' + s.substring(0, 16) + '…';
     return s.substring(0, 20) + (s.length > 20 ? '…' : '');
@@ -968,13 +970,18 @@ function renderLoading() {
 }
 
 async function executeSearch(q) {
-    const raw = q.trim();
+    let raw = q.trim();
     if (!raw) { renderPlaceholder(); return; }
+
+    // Normalización defensiva: acepta HASH%3A además de HASH:
+    if (raw.startsWith('HASH%3A')) {
+        raw = 'HASH:' + raw.substring(7);
+    }
 
     renderLoading();
 
-    if (q.startsWith('HASH:')) {
-        const hash = q.substring(5);
+    if (raw.startsWith('HASH:')) {
+        const hash = raw.substring(5);
         try {
             const blockTest = await fetch(`${API_URL}?token=${TOKEN}&cmd=getblock%20${hash}%201`);
             const blockData = await blockTest.json();
