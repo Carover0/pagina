@@ -876,7 +876,7 @@ function detectSearchFromUrl() {
     if (q) return q;
     const path = window.location.pathname;
     const match = path.match(/\/bch-explorer\/(.+)$/);
-    if (match && match[1]) return match[1];
+    if (match && match[1]) return decodeURIComponent(match[1]); 
     return null;
 }
 
