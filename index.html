@@ -795,7 +795,7 @@
         <div class="card-grid">
 
             <div class="card">
-                <div class="card-title">FULL NODOS <span class="count">· 4</span></div>
+                <div class="card-title">FULL NODOS <span class="count">· 3</span></div>
 
                 <div class="node-item">
                     <div class="coin-icon"><img src="assets/firo.png" alt="Firo"></div>
@@ -825,22 +825,6 @@
                             <span>Peers: <span class="val" id="firo2-peers">—</span></span>
                             <span>Mempool: <span class="val" id="firo2-mempool">—</span></span>
                             <span>Version: <span class="val" id="firo2-version">—</span></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="node-item">
-                    <div class="coin-icon"><img src="assets/bch.png" alt="BCH"></div>
-                    <div class="node-info">
-                        <div class="node-name">
-                            <a href="https://carover0.github.io/pagina/bch-nodo.html">BCH</a>
-                            <span class="status online" id="bch-status">ONLINE</span>
-                        </div>
-                        <div class="node-stats">
-                            <span>Height: <span class="val" id="bch-height">—</span></span>
-                            <span>Peers: <span class="val" id="bch-peers">—</span></span>
-                            <span>Mempool: <span class="val" id="bch-mempool">—</span></span>
-                            <span>Version: <span class="val" id="bch-version">—</span></span>
                         </div>
                     </div>
                 </div>
@@ -1034,7 +1018,7 @@
             <div class="modal-title"><span class="icon"><img src="assets/info.png" width="32"></span> ¿QUÉ ES ESTO?</div>
             <div class="modal-body">
                 <div class="desc">
-                    ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Bitcoin Cash, Firo y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
+                    ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Firo y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
                 </div>
 
                 <div class="desc" style="font-size:13px; color:#5a5348;">
@@ -1046,9 +1030,9 @@
                 </div>
 
                 <ul class="feature-list">
-                    <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Bitcoin Cash, Firo, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Bitcoin Cash, Firo, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Bitcoin Cash, Firo, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Firo, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Firo, PIVX)</span></li>
+                    <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Firo, PIVX)</span></li>
                     <li><span class="check">◈</span> <span class="highlight">Estadísticas</span> → Información sobre suministro, pools de valor, halvings y actualizaciones de protocolo.</li>
                     <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Firo)</span></li>
                 </ul>
@@ -1076,13 +1060,6 @@
 
                 <div class="desc" style="margin-top:12px;">
                     <span class="highlight">✧ Direcciones de donación</span>
-                </div>
-
-                <div class="donation-addr" onclick="copyAddress('bitcoincash:qqn6ruf8w809esah89qkvje9xlq4x947gv52jlhd72', 'BCH')">
-                    <span class="coin-icon"><img src="assets/bch.png" alt="BCH"></span>
-                    <span class="coin-name">BCH</span>
-                    <span class="address">bitcoincash:qqn6ruf8w809esah89qkvje9xlq4x947gv52jlhd72</span>
-                    <span class="copy-hint">[copiar]</span>
                 </div>
 
                 <div class="donation-addr" onclick="copyAddress('DGYPMgVJGcdeYG4r9kypHH35SztrZWfR5u', 'PIVX')">
@@ -1204,22 +1181,6 @@
         async function updateStatus() {
             const now = new Date();
             show('vps-update', now.toLocaleString('es-AR', { hour12: false }) + ' UTC');
-
-            try {
-                const r = await fetch('https://carover0.xyz/api/bch.json', { cache: 'no-store' });
-                const d = await r.json();
-                setNode('bch', {
-                    height: d.blockchain?.blocks,
-                    connections: d.network?.connections,
-                    mempool: d.mempool?.txcount,
-                    version: d.network?.subversion && d.network.subversion !== 'null'
-                        ? d.network.subversion
-                        : '—'
-                });
-            } catch (e) {
-                console.log('BCH error:', e);
-                offline('bch');
-            }
 
             try {
                 const r = await fetch('https://carover0.xyz/firo/status.json');
