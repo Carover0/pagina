@@ -414,6 +414,7 @@
   "masternodos.updated": "Actualizado",
   "masternodos.of_network": "de la red",
   "masternodos.block_prefix": "Bloque #",
+  "masternodos.modal.cycle": "Tiempo entre pagos",
   
   "nodo.modal.title": "Mi Masternodo",
   "nodo.modal.status": "Estado",
