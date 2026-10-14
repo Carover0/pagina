@@ -6,8 +6,10 @@
   <link rel="icon" type="image/x-icon" href="assets/firo-favicon.ico?">
   <link rel="icon" type="image/png" href="/assets/firo.png?">
 
-  <style>
+<style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body { overflow-x: hidden; }
 
     body {
       min-height: 100vh;
@@ -33,26 +35,30 @@
       padding: 16px 20px; border-radius: 14px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       font-size: 12px; min-width: 240px;
+      max-width: calc(100vw - 40px);
     }
     #panel h2 {
       font-size: 13px; font-weight: 400; letter-spacing: 0.5px;
       margin-bottom: 14px; color: #f5e6c8; text-transform: uppercase;
       display: flex; align-items: center; gap: 10px;
       border-bottom: 1px solid rgba(155,28,46,0.1); padding-bottom: 10px;
+      min-width: 0;
     }
     #panel h2 img {
       width: 24px; height: 24px; object-fit: contain;
       filter: drop-shadow(0 0 16px rgba(155,28,46,0.3));
+      flex-shrink: 0;
     }
-    #panel h2 small { font-size: 10px; color: #6a6255; margin-left: auto; }
+    #panel h2 small { font-size: 10px; color: #6a6255; margin-left: auto; flex-shrink: 0; }
     #panel .row {
       display: flex; justify-content: space-between;
       padding: 5px 0; border-bottom: 1px solid rgba(120,140,200,0.04);
-      font-size: 11px;
+      font-size: 11px; gap: 8px;
+      min-width: 0;
     }
     #panel .row:last-child { border-bottom: none; }
-    #panel .label { color: #4a443a; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
-    #panel .value { font-weight: 500; color: #f5ede4; }
+    #panel .label { color: #4a443a; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; flex-shrink: 0; }
+    #panel .value { font-weight: 500; color: #f5ede4; text-align: right; word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
     #panel .enabled { color: #27A17C; }
 
     #panel .nav-links {
@@ -60,10 +66,12 @@
       margin-top: 10px; padding-top: 10px;
       border-top: 1px solid rgba(155,28,46,0.15);
       font-size: 12px; justify-content: flex-start;
+      min-width: 0;
     }
     #panel .nav-links a {
       color: #6a6255; text-decoration: none;
       border-bottom: 2px solid transparent;
+      white-space: nowrap;
     }
     #panel .nav-links a:hover {
       color: #ff7b87; border-bottom-color: #ff7b87;
@@ -74,9 +82,10 @@
       background: rgba(255,255,255,0.02); backdrop-filter: blur(8px);
       border: 1px solid rgba(155,28,46,0.2);
       padding: 12px 16px; border-radius: 12px; font-size: 11px;
+      max-width: calc(100vw - 40px);
     }
     #leyenda .item { display: flex; align-items: center; gap: 10px; padding: 3px 0; color: #8a8275; }
-    #leyenda .box { width: 14px; height: 14px; border-radius: 3px; }
+    #leyenda .box { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
     #leyenda .box.blanco { background: #1a2028; border: 1px solid #3a4550; }
     #leyenda .box.rojo   { background: #9B1C2E; }
 
@@ -92,6 +101,7 @@
       font-family: 'Lucida Console', 'Courier New', monospace;
       padding: 0; overflow: hidden;
       min-width: 240px;
+      max-width: calc(100vw - 40px);
     }
     .leaflet-popup-content {
       margin: 0; font-size: 13px; line-height: 1.6;
@@ -160,6 +170,7 @@
       position: absolute; top: 20px; right: 20px; z-index: 1000;
       display: flex; gap: 10px; align-items: center;
       flex-wrap: wrap;
+      max-width: calc(100vw - 40px);
     }
     .btn-top {
       padding: 10px 16px; cursor: pointer;
@@ -206,23 +217,29 @@
       border-radius: 14px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.6);
       display: flex; flex-direction: column; overflow: hidden;
+      min-width: 0;
     }
     .modal-header {
       display: flex; align-items: center; gap: 12px;
       padding: 16px 20px;
       border-bottom: 1px solid rgba(155,28,46,0.2);
+      min-width: 0;
     }
     .modal-header h3 {
       font-size: 14px; color: #f5e6c8; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.5px;
+      min-width: 0;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
     .modal-close {
       margin-left: auto; background: none; border: none; cursor: pointer;
       color: #6a6255; font-size: 20px; line-height: 1;
       font-family: inherit; padding: 4px 8px; border-radius: 6px;
+      flex-shrink: 0;
     }
     .modal-close:hover { color: #ff7b87; background: rgba(155,28,46,0.1); }
-    .modal-body { padding: 24px; overflow-y: auto; flex: 1; text-align: center; }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; text-align: center; min-width: 0; }
 
     .modal-body img.sparky {
       display: block; margin: 4px auto 20px;
@@ -256,6 +273,7 @@
     #accept-body .btn-wallet img {
       width: 22px; height: 22px; object-fit: contain;
       filter: drop-shadow(0 0 6px rgba(155,28,46,0.6));
+      flex-shrink: 0;
     }
     #accept-body .badges-title {
       font-size: 10px; color: #6a6255;
@@ -272,6 +290,7 @@
       border-radius: 10px;
       background: rgba(255,255,255,0.02);
       text-decoration: none;
+      min-width: 0;
     }
     #accept-body .badge-card:hover {
       border-color: rgba(155,28,46,0.6);
@@ -303,6 +322,7 @@
       color: #ff7b87; text-decoration: none;
       font-size: 12px; letter-spacing: 0.5px;
       text-transform: uppercase;
+      min-width: 0;
     }
     #community-body .social-card:hover {
       border-color: rgba(155,28,46,0.6);
@@ -312,6 +332,7 @@
     #community-body .social-card img {
       width: 36px; height: 36px; object-fit: contain;
       filter: drop-shadow(0 0 8px rgba(155,28,46,0.5));
+      flex-shrink: 0;
     }
 
     #support-body p {
@@ -324,6 +345,7 @@
       border-radius: 10px;
       background: rgba(255,255,255,0.02);
       overflow: hidden;
+      min-width: 0;
     }
     .support-label {
       display: flex; align-items: center; gap: 8px;
@@ -337,6 +359,7 @@
     .support-label img {
       width: 14px; height: 14px; object-fit: contain;
       filter: drop-shadow(0 0 6px rgba(155,28,46,0.6));
+      flex-shrink: 0;
     }
     .support-addr {
       display: flex; align-items: center; justify-content: space-between;
@@ -344,14 +367,21 @@
       cursor: pointer;
       font-size: 13px; color: #f5e6c8;
       letter-spacing: 0.3px; user-select: none;
+      min-width: 0;
     }
     .support-addr:hover { background: rgba(155,28,46,0.1); }
+    .support-addr > span:first-child {
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      min-width: 0;
+    }
     .support-addr .copy-hint {
       font-size: 9px; color: #6a6255;
       text-transform: uppercase; letter-spacing: 0.8px;
       padding: 3px 8px;
       border: 1px solid rgba(155,28,46,0.3);
       border-radius: 20px;
+      flex-shrink: 0;
     }
     .support-addr.copied { background: rgba(39,161,124,0.15); }
     .support-addr.copied .copy-hint {
@@ -438,9 +468,17 @@
       padding: 3px 0;
       border-bottom: 1px dashed rgba(155,28,46,0.12);
       color: #8a8275;
+      min-width: 0;
     }
     #suggest-example .ex-row:last-child { border-bottom: none; }
-    #suggest-example .ex-row span:last-child { color: #f5ede4; }
+    #suggest-example .ex-row span:first-child { flex-shrink: 0; }
+    #suggest-example .ex-row span:last-child {
+      color: #f5ede4;
+      min-width: 0;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
 
     #suggest-form label {
       display: block; font-size: 10px; color: #6a6255;
@@ -455,7 +493,8 @@
       border: 1px solid rgba(155,28,46,0.2);
       border-radius: 8px;
       color: #ece8e0; font-family: inherit;
-      font-size: 12px; outline: none;
+      font-size: 16px; outline: none;
+      min-width: 0;
     }
     #suggest-form input:focus,
     #suggest-form select:focus {
@@ -464,10 +503,12 @@
     #suggest-form select { cursor: pointer; appearance: none; }
     #suggest-form .geo-row {
       display: flex; gap: 8px; align-items: flex-end;
+      min-width: 0;
     }
     #suggest-form .geo-row .geo-inputs {
       flex: 1; display: grid;
       grid-template-columns: 1fr 1fr; gap: 8px;
+      min-width: 0;
     }
     #suggest-form .geo-btn {
       padding: 8px 10px;
@@ -480,6 +521,7 @@
       white-space: nowrap;
       height: 34px; line-height: 1;
       display: inline-flex; align-items: center; gap: 4px;
+      flex-shrink: 0;
     }
     #suggest-form .geo-btn:hover:not(:disabled) {
       background: rgba(155,28,46,0.35); color: #fff;
@@ -488,6 +530,8 @@
     #suggest-form .geo-status {
       font-size: 10px; color: #8a8275;
       margin-top: 4px; min-height: 12px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
     #suggest-form .geo-status.ok  { color: #27A17C; }
     #suggest-form .geo-status.err { color: #ff7b87; }
@@ -510,6 +554,8 @@
     .suggest-msg {
       margin-top: 12px; font-size: 11px;
       text-align: center; min-height: 16px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
     .suggest-msg.ok  { color: #27A17C; }
     .suggest-msg.err { color: #ff7b87; }
@@ -529,6 +575,7 @@
       border-radius: 18px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,123,135,0.08) inset;
       display: flex; flex-direction: column; overflow: hidden;
+      min-width: 0;
     }
     #modal-header {
       position: relative;
@@ -539,6 +586,7 @@
         radial-gradient(ellipse at 0% 0%, rgba(155,28,46,0.25) 0%, transparent 60%),
         linear-gradient(180deg, rgba(155,28,46,0.08) 0%, transparent 100%);
       overflow: hidden;
+      min-width: 0;
     }
     #modal-header .sparky-head {
       width: 52px; height: 52px; object-fit: contain;
@@ -546,22 +594,26 @@
       filter: drop-shadow(0 0 18px rgba(155,28,46,0.7));
     }
     #modal-header .head-text {
-      display: flex; flex-direction: column; gap: 3px; min-width: 0;
+      display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1;
     }
     #modal-header h3 {
       font-size: 15px; color: #f5e6c8; font-weight: 600;
       text-transform: uppercase; letter-spacing: 1px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       text-shadow: 0 0 20px rgba(155,28,46,0.5);
+      min-width: 0;
     }
     #modal-header .count {
       font-size: 10px; color: #ff7b87;
       text-transform: uppercase; letter-spacing: 1px;
       display: inline-flex; align-items: center; gap: 6px;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     #modal-header .count::before {
       content: ''; width: 6px; height: 6px; border-radius: 50%;
       background: #27A17C; box-shadow: 0 0 8px #27A17C;
+      flex-shrink: 0;
     }
     #modal-close {
       margin-left: auto;
@@ -586,8 +638,9 @@
         no-repeat 12px center;
       border: 1px solid rgba(155,28,46,0.25);
       border-radius: 10px;
-      color: #ece8e0; font-family: inherit; font-size: 12px;
+      color: #ece8e0; font-family: inherit; font-size: 16px;
       outline: none;
+      min-width: 0;
     }
     #modal-buscar:focus {
       border-color: rgba(255,123,135,0.7);
@@ -599,6 +652,7 @@
       padding: 16px 24px 24px;
       overflow-y: auto; flex: 1;
       display: flex; flex-direction: column; gap: 12px;
+      min-width: 0;
     }
     #modal-lista::-webkit-scrollbar { width: 8px; }
     #modal-lista::-webkit-scrollbar-track { background: transparent; }
@@ -615,6 +669,7 @@
       border: 1px solid rgba(155,28,46,0.2);
       border-radius: 12px;
       background: linear-gradient(135deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.005) 100%);
+      min-width: 0;
     }
     .comercio::before {
       content: '';
@@ -637,12 +692,16 @@
       border: 1px solid rgba(255,123,135,0.4);
       color: #ff7b87; font-size: 10px; font-weight: 600;
       display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
     .comercio .nom {
       display: flex; align-items: center; gap: 8px;
       font-size: 15px; color: #f5e6c8; font-weight: 600;
       margin-bottom: 6px;
       text-shadow: 0 0 12px rgba(155,28,46,0.3);
+      min-width: 0;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
     .comercio .nom .logo-nom {
       width: 17px; height: 17px; object-fit: contain;
@@ -663,6 +722,9 @@
       font-size: 12px; color: #8a8275; line-height: 1.5;
       margin-bottom: 8px;
       display: flex; align-items: flex-start; gap: 6px;
+      min-width: 0;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
     .comercio .dir::before {
       content: '📍'; font-size: 11px; flex-shrink: 0;
@@ -673,6 +735,7 @@
       font-size: 12px; margin-top: 8px;
       flex-wrap: wrap; padding-top: 8px;
       border-top: 1px dashed rgba(155,28,46,0.15);
+      min-width: 0;
     }
     .comercio .links a {
       display: inline-flex; align-items: center; gap: 5px;
@@ -692,6 +755,7 @@
     .comercio .links img {
       width: 13px; height: 13px; object-fit: contain;
       vertical-align: middle;
+      flex-shrink: 0;
     }
 
     .sin-resultados {
@@ -707,11 +771,12 @@
     .sin-resultados .msg { color: #f5e6c8; font-size: 13px; letter-spacing: 0.5px; }
     .sin-resultados .sub { color: #6a6255; font-size: 11px; }
 
-    .popup-pais { min-width: 260px; max-width: 300px; padding: 2px 4px; }
+    .popup-pais { min-width: 240px; max-width: 300px; padding: 2px 4px; }
     .popup-pais-head {
       display: flex; align-items: center; gap: 12px;
       padding-bottom: 12px; margin-bottom: 12px;
       border-bottom: 1px solid rgba(155,28,46,0.2);
+      min-width: 0;
     }
     .popup-pais-head img {
       width: 64px; height: 64px; object-fit: contain; flex-shrink: 0;
@@ -726,11 +791,13 @@
       letter-spacing: 0.5px; text-transform: uppercase;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       text-shadow: 0 0 12px rgba(155,28,46,0.4);
+      min-width: 0;
     }
     .popup-pais-count {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: 11px; color: #ff7b87;
       text-transform: uppercase; letter-spacing: 0.8px;
+      white-space: nowrap;
     }
     .popup-pais-count .dot {
       width: 6px; height: 6px; border-radius: 50%;
@@ -746,11 +813,13 @@
       background: rgba(155,28,46,0.08);
       border: 1px solid rgba(155,28,46,0.18);
       border-radius: 6px;
+      min-width: 0;
     }
     .popup-pais-cats .cat-row .cat-name {
       color: #b8b0a4; font-size: 11px;
       text-transform: uppercase; letter-spacing: 0.5px;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      min-width: 0;
     }
     .popup-pais-cats .cat-row .cat-count {
       color: #ff7b87; font-size: 12px; font-weight: 700;
@@ -777,6 +846,7 @@
         radial-gradient(ellipse at 0% 0%, rgba(155,28,46,0.35) 0%, transparent 70%),
         linear-gradient(180deg, rgba(155,28,46,0.1) 0%, transparent 100%);
       border-bottom: 1px solid rgba(155,28,46,0.25);
+      min-width: 0;
     }
     .popup-comercio .pc-logo {
       width: 60px; height: auto; object-fit: contain; flex-shrink: 0;
@@ -791,11 +861,16 @@
       letter-spacing: 0.3px;
       text-shadow: 0 0 12px rgba(155,28,46,0.5);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      min-width: 0;
     }
     .popup-comercio .pc-cat {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: 10px; color: #ff7b87;
       text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .popup-comercio .pc-cat::before {
       content: ''; width: 6px; height: 6px; border-radius: 50%;
@@ -806,6 +881,9 @@
       display: flex; align-items: flex-start; gap: 8px;
       font-size: 12px; color: #b8b0a4; line-height: 1.55;
       margin-bottom: 12px;
+      min-width: 0;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
     .popup-comercio .pc-addr::before {
       content: '📍'; font-size: 13px; flex-shrink: 0;
@@ -815,6 +893,7 @@
       display: flex; flex-wrap: wrap; gap: 6px;
       padding-top: 12px;
       border-top: 1px dashed rgba(155,28,46,0.2);
+      min-width: 0;
     }
     .popup-comercio .pc-links a {
       display: inline-flex; align-items: center; gap: 6px;
@@ -833,7 +912,7 @@
       border-color: rgba(255,123,135,0.7);
       box-shadow: 0 4px 14px rgba(155,28,46,0.4);
     }
-    .popup-comercio .pc-links img { width: 13px; height: 13px; object-fit: contain; }
+    .popup-comercio .pc-links img { width: 13px; height: 13px; object-fit: contain; flex-shrink: 0; }
     .popup-comercio .pc-empty {
       font-size: 11px; color: #6a6255; font-style: italic;
       text-align: center; padding: 4px 0;
@@ -846,6 +925,8 @@
         top: 8px; left: 8px; right: 8px;
         min-width: 0; padding: 10px 14px;
         font-size: 11px; border-radius: 10px;
+        max-height: 40vh;
+        overflow-y: auto;
       }
       #panel h2 { font-size: 11px; margin-bottom: 8px; padding-bottom: 8px; }
       #panel h2 img { width: 18px; height: 18px; }
@@ -860,18 +941,36 @@
       #top-actions {
         top: auto; bottom: 8px;
         right: 8px; left: 8px;
-        gap: 6px; justify-content: flex-end; flex-wrap: wrap;
+        gap: 4px;
+        justify-content: center;
+        flex-wrap: wrap;
+        max-height: 32vh;
+        overflow-y: auto;
       }
-      .btn-top { padding: 8px 10px; font-size: 10px; }
+      .btn-top {
+        padding: 6px 8px;
+        font-size: 9px;
+        flex: 1 1 calc(50% - 4px);
+        justify-content: center;
+      }
 
       #leyenda {
-        bottom: 96px; left: 8px;
-        padding: 8px 10px; font-size: 10px; border-radius: 8px;
+        top: 50%;
+        bottom: auto;
+        transform: translateY(-50%);
+        left: 8px;
+        padding: 6px 8px;
+        font-size: 9px;
+        border-radius: 8px;
       }
       #leyenda .item { gap: 6px; padding: 2px 0; }
+      #leyenda .box { width: 12px; height: 12px; }
 
       #logo-firo {
-        bottom: 96px; right: 8px;
+        top: 50%;
+        bottom: auto;
+        transform: translateY(-50%);
+        right: 8px;
         width: 24px; height: 24px;
       }
 
@@ -891,13 +990,13 @@
       }
       #modal-header, .modal-header { padding: 12px 14px; }
       #modal-header h3, .modal-header h3 { font-size: 12px; }
-      #modal-buscar { margin: 8px 14px 0; font-size: 13px; }
+      #modal-buscar { margin: 8px 14px 0; font-size: 16px; }
       #modal-lista { padding: 10px 14px 16px; }
 
       #modal-header { padding: 14px 16px 12px; gap: 10px; }
       #modal-header .sparky-head { width: 40px; height: 40px; }
       #modal-header h3 { font-size: 13px; }
-      #modal-buscar { margin: 12px 16px 0; padding: 10px 12px 10px 36px; font-size: 13px; }
+      #modal-buscar { margin: 12px 16px 0; padding: 10px 12px 10px 36px; font-size: 16px; }
       #modal-lista { padding: 12px 16px 20px; gap: 10px; }
 
       .comercio { padding: 12px 12px 12px 42px; }
@@ -917,6 +1016,7 @@
       #suggest-form .geo-btn { width: 100%; justify-content: center; }
 
       .popup-comercio { min-width: 220px; }
+      .popup-pais { min-width: 220px; }
     }
 
     @media (max-width: 560px) {
@@ -943,7 +1043,7 @@
       }
       #leyenda { display: none; }
     }
-  </style>
+</style>
 </head>
 <body>
 
