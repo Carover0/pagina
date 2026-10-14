@@ -250,6 +250,13 @@
             font-size: 10px;
         }
 
+        .piv-icon {
+            width: 16px;
+            height: 16px;
+            vertical-align: -3px;
+            margin-right: 5px;
+        }
+
         .utxo-section {
             margin-top: 16px;
             padding: 16px 20px;
@@ -541,6 +548,8 @@
 
             .footer { font-size: 10px; }
             .footer .api-link { font-size: 10px; }
+
+            .piv-icon { width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px; }
         }
 
         @media (max-width: 360px) {
@@ -629,6 +638,13 @@
 
     <script>
         const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
+        const PIV_ICON = "/assets/pivx.png";
+
+        function formatPiv(value, decimals = 2) {
+            const num = typeof value === 'number' ? value : parseFloat(value);
+            if (isNaN(num)) return '---';
+            return `<img src="${PIV_ICON}" class="piv-icon" alt="">${num.toFixed(decimals)}`;
+        }
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -674,7 +690,7 @@
                 const utxosList = utxos.list || [];
 
                 document.getElementById('cs-utxos').textContent = utxos.count || 0;
-                document.getElementById('cs-total').textContent = (utxos.total_amount || 0).toFixed(2) + ' PIV';
+                document.getElementById('cs-total').innerHTML = formatPiv(utxos.total_amount || 0, 2);
 
                 if (utxosList.length > 0) {
                     const confirmaciones = utxosList.map(u => u.confirmations);
@@ -708,8 +724,8 @@
                     statusEl.className = 'value negative';
                 }
 
-                document.getElementById('cs-local-balance').textContent = (balances.total_wallet_balance || 0).toFixed(4) +
-                    ' PIV';
+                document.getElementById('cs-local-balance').innerHTML =
+                    formatPiv(balances.total_wallet_balance || 0, 4);
             } else {
                 document.getElementById('cs-staking-status').textContent = '---';
                 document.getElementById('cs-local-balance').textContent = '---';
@@ -731,7 +747,7 @@
                     html += `
                         <div class="utxo-item">
                             <span class="idx">#${index + 1}</span>
-                            <span class="amount">${utxo.amount.toFixed(2)} PIV</span>
+                            <span class="amount">${formatPiv(utxo.amount, 2)}</span>
                             <span class="conf">conf: ${utxo.confirmations}</span>
                             <span>whitelisted: ${isWhitelisted ? '<span class="whitelist-yes">sí</span>' : '<span class="whitelist-no">no</span>'}</span>
                             <span class="owner">owner: ${escapeHtml(utxo['coin-owner'])}</span>
