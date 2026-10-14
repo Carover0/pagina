@@ -9,6 +9,8 @@
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html, body { overflow-x: hidden; }
+
     body {
         min-height: 100vh;
         background: #0a080c;
@@ -18,7 +20,7 @@
             linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
         font-family: 'Lucida Console', 'Courier New', monospace;
         color: #ece8e0;
-        padding: 20px;
+        padding: clamp(10px, 3vw, 20px);
         display: flex;
         justify-content: center;
     }
@@ -36,32 +38,37 @@
         border: 1px solid rgba(155, 28, 46, 0.2);
         backdrop-filter: blur(8px);
         margin-bottom: 24px;
+        min-width: 0;
     }
-    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
     .brand img {
         width: 38px; height: 38px;
         filter: drop-shadow(0 0 16px rgba(155, 28, 46, 0.3));
         transition: filter 0.3s;
+        flex-shrink: 0;
     }
     .brand img:hover { filter: drop-shadow(0 0 24px rgba(155, 28, 46, 0.5)); }
-    .brand h1 { font-size: 21px; font-weight: 400; color: #f5e6c8; }
+    .brand h1 { font-size: 21px; font-weight: 400; color: #f5e6c8; min-width: 0; }
     .brand h1 small { font-size: 12px; color: #6a6255; }
 
     .nav-links {
         display: flex; flex-wrap: wrap; gap: 4px 18px;
         font-size: 13px; letter-spacing: 0.3px;
         justify-content: center; flex: 1;
+        min-width: 0;
     }
     .nav-links a {
         color: #6a6255; text-decoration: none;
         transition: all 0.25s; padding: 4px 0;
         border-bottom: 2px solid transparent;
+        white-space: nowrap;
     }
     .nav-links a:hover { color: #ff7b87; border-bottom-color: #ff7b87; }
 
     .lang-switcher {
         display: inline-flex; align-items: center;
         gap: 4px; margin-inline-start: auto;
+        flex-shrink: 0;
     }
     .lang-switcher button {
         background: transparent;
@@ -90,16 +97,24 @@
         border-radius: 14px;
         border: 1px solid rgba(155, 28, 46, 0.08);
         margin-bottom: 24px;
+        min-width: 0;
     }
+    .stat-item { min-width: 0; }
     .stat-item .label {
         font-size: 10px; text-transform: uppercase;
         color: #4a443a;
     }
     .stat-item .value {
         font-size: 15px; font-weight: 500; color: #f5ede4;
+        word-break: break-word;
+        overflow-wrap: anywhere;
     }
     .stat-item .value.firo { color: #ff7b87; }
-    .stat-item .sub { font-size: 12px; color: #5a5348; }
+    .stat-item .sub {
+        font-size: 12px; color: #5a5348;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
 
     .section-title {
         font-size: 13px; letter-spacing: 1px;
@@ -130,6 +145,7 @@
         text-decoration: none;
         color: inherit;
         display: block;
+        min-width: 0;
     }
     .block-card:hover {
         border-color: rgba(155, 28, 46, 0.3);
@@ -150,27 +166,42 @@
 
     .block-top {
         display: flex; justify-content: space-between; align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px 8px;
         border-bottom: 1px solid rgba(155, 28, 46, 0.06);
         padding-bottom: 8px; margin-bottom: 10px;
+        min-width: 0;
     }
-    .block-height { font-size: 18px; font-weight: 600; color: #f5ede4; }
+    .block-height { font-size: 18px; font-weight: 600; color: #f5ede4; min-width: 0; }
     .block-time {
         font-size: 11px; color: #6a6255;
         background: rgba(255,255,255,0.03);
         padding: 2px 12px; border-radius: 20px;
         border: 1px solid rgba(155, 28, 46, 0.06);
+        flex-shrink: 0;
     }
     .block-row {
-        display: flex; justify-content: space-between; align-items: center;
+        display: flex; justify-content: space-between; align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px 12px;
         padding: 4px 0; font-size: 12px;
+        min-width: 0;
     }
     .block-row .label {
         color: #4a443a; font-size: 11px; text-transform: uppercase;
+        flex-shrink: 0;
     }
-    .block-row .value { color: #ece8e0; font-weight: 500; }
+    .block-row .value {
+        color: #ece8e0; font-weight: 500;
+        min-width: 0;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        text-align: right;
+    }
     .block-row .value.firo { color: #ff7b87; }
     .block-row .value.mono {
         font-size: 10px; color: #8a8275; word-break: break-all;
+        overflow-wrap: anywhere;
         text-align: right; max-width: 65%;
     }
     .block-footer {
@@ -178,8 +209,13 @@
         border-top: 1px solid rgba(155, 28, 46, 0.06);
         display: flex; flex-wrap: wrap; justify-content: space-between;
         align-items: center; gap: 6px;
+        min-width: 0;
     }
-    .block-hint { font-size: 9px; color: #4a443a; }
+    .block-hint {
+        font-size: 9px; color: #4a443a;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
     .block-hint.firo { color: #ff7b87; }
 
     .error-msg {
@@ -187,6 +223,8 @@
         background: rgba(255,0,0,0.05); border-radius: 12px;
         border: 1px solid rgba(255,0,0,0.1);
         grid-column: 1 / -1;
+        word-break: break-word;
+        overflow-wrap: anywhere;
     }
 
     .coin {
@@ -234,6 +272,7 @@
         position: relative;
         box-shadow: 0 20px 60px rgba(0,0,0,0.6);
         animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+        min-width: 0;
     }
     @keyframes modalIn {
         0% { transform: scale(0.95); opacity: 0; }
@@ -246,6 +285,7 @@
         color: #ff7b87; font-size: 16px;
         width: 32px; height: 32px; border-radius: 50%;
         cursor: pointer; transition: all 0.2s;
+        flex-shrink: 0;
     }
     .modal-close:hover { background: rgba(155,28,46,0.2); }
 
@@ -253,20 +293,26 @@
         display: flex; align-items: center; gap: 16px;
         padding-bottom: 16px; margin-bottom: 18px;
         border-bottom: 1px solid rgba(155,28,46,0.15);
+        min-width: 0;
     }
     .modal-logo {
         width: 64px; height: 64px;
         filter: drop-shadow(0 0 20px rgba(155,28,46,0.4));
+        flex-shrink: 0;
     }
     .modal-header h2 {
         font-size: 18px; font-weight: 400; color: #f5e6c8;
+        min-width: 0;
+        word-break: break-word;
+        overflow-wrap: anywhere;
     }
 
     .modal-body .fila {
         display: flex; justify-content: space-between;
-        align-items: flex-start; gap: 12px;
+        align-items: flex-start; gap: 8px 12px;
         padding: 8px 0; font-size: 12px;
         border-bottom: 1px solid rgba(155,28,46,0.06);
+        min-width: 0;
     }
     .modal-body .fila:last-child { border-bottom: none; }
     .modal-body .fila .label {
@@ -277,6 +323,9 @@
     .modal-body .fila .valor {
         color: #ece8e0; font-weight: 500;
         text-align: right; word-break: break-all;
+        overflow-wrap: anywhere;
+        min-width: 0;
+        max-width: 100%;
     }
     .modal-body .fila .valor.firo { color: #ff7b87; }
     .modal-body .fila .valor.mono {
@@ -295,16 +344,33 @@
         .header { flex-direction: column; align-items: stretch; gap: 10px; }
         .cards-grid { grid-template-columns: 1fr; }
         .stats-panel { grid-template-columns: 1fr 1fr; }
-        .nav-links { font-size: 11px; gap: 2px 14px; justify-content: center; }
+        .nav-links { font-size: 11px; gap: 2px 14px; justify-content: center; flex: 0 0 auto; }
         .lang-switcher { margin-inline-start: 0; justify-content: center; }
     }
-    @media (max-width: 450px) {
+
+    @media (max-width: 520px) {
         .stats-panel { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 450px) {
         .block-top { flex-direction: column; align-items: flex-start; gap: 6px; }
         .block-time { align-self: flex-start; }
+        .block-row .value.mono {
+            max-width: 100%;
+            text-align: left;
+        }
+        .block-footer { flex-direction: column; align-items: flex-start; gap: 4px; }
+        .section-title.past { margin-top: 18px; }
         .modal-content { padding: 20px 18px; }
         .modal-header { gap: 12px; }
         .modal-logo { width: 48px; height: 48px; }
+        .modal-body .fila {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .modal-body .fila .label { min-width: 0; }
+        .modal-body .fila .valor { text-align: left; }
     }
 </style>
 </head>
