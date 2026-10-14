@@ -13,6 +13,8 @@
             box-sizing: border-box;
         }
 
+        html, body { overflow-x: hidden; }
+
         :root {
             --violet: #4f46e5;
             --violet-soft: #818cf8;
@@ -37,8 +39,9 @@
             padding: 0;
             margin: 0;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
+            overflow-x: hidden;
         }
 
         .app {
@@ -68,6 +71,7 @@
             display: flex;
             align-items: center;
             gap: 14px;
+            min-width: 0; 
         }
 
         .brand .logo-text {
@@ -92,6 +96,7 @@
             gap: 4px 18px;
             font-size: 13px;
             letter-spacing: 0.3px;
+            min-width: 0; 
         }
 
         .nav-links a {
@@ -101,6 +106,7 @@
             padding: 4px 0;
             border-bottom: 2px solid transparent;
             cursor: pointer;
+            white-space: nowrap; 
         }
 
         .nav-links a:hover {
@@ -243,6 +249,7 @@
             margin: 4px 0;
             cursor: pointer;
             transition: all 0.2s;
+            min-width: 0; 
         }
 
         .donation-addr:hover {
@@ -275,8 +282,11 @@
         .donation-addr .address {
             color: var(--violet-soft);
             font-size: 13px;
-            word-break: break-all;
-            flex: 1;
+            flex: 1 1 100%;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .donation-addr .copy-hint {
@@ -312,6 +322,7 @@
             padding: 24px 28px;
             backdrop-filter: blur(8px);
             transition: border-color 0.3s, transform 0.2s;
+            min-width: 0; 
         }
 
         .card:hover {
@@ -329,6 +340,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap; 
         }
 
         .card-title .count {
@@ -344,6 +356,7 @@
             gap: 12px;
             padding: 7px 0;
             border-bottom: 1px solid rgba(79, 70, 229, 0.03);
+            min-width: 0;
         }
 
         .node-item:last-child {
@@ -415,6 +428,7 @@
             font-size: 12px;
             color: #5a5348;
             margin-top: 2px;
+            min-width: 0; 
         }
 
         .node-item .node-stats span {
@@ -430,6 +444,7 @@
             align-items: center;
             gap: 12px;
             padding: 5px 0;
+            min-width: 0; 
         }
 
         .vps-item .label {
@@ -507,6 +522,7 @@
             border-radius: 10px;
             padding: 16px 18px;
             border: 1px solid rgba(79, 70, 229, 0.04);
+            min-width: 0; 
         }
 
         .reactor-item:hover {
@@ -520,6 +536,8 @@
             color: var(--violet-soft);
             font-size: 14px;
             margin-bottom: 10px;
+            min-width: 0; 
+            flex-wrap: wrap; 
         }
 
         .reactor-title .status {
@@ -550,6 +568,7 @@
             display: flex;
             align-items: center;
             gap: 9px;
+            min-width: 0; 
         }
 
         .bar-line .bar {
@@ -561,11 +580,13 @@
 
         .bar-line .bar i {
             display: block;
-            width: 11px;
+            flex: 1 1 0;
+            min-width: 4px;
             height: 13px;
             border: 1px solid rgba(79, 70, 229, 0.15);
             background: rgba(79, 70, 229, 0.05);
             border-radius: 2px;
+	    max-width: 21px;
         }
 
         .bar-line .bar i.on {
@@ -665,6 +686,8 @@
             z-index: 1000;
             letter-spacing: 0.3px;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            max-width: calc(100vw - 40px); 
+            text-align: center;
         }
 
         .toast.show {
@@ -700,21 +723,34 @@
         .firo-modal-stats .stat-item {
             display: flex;
             justify-content: space-between;
+            align-items: baseline; 
+            gap: 8px; 
             padding: 4px 0;
             border-bottom: 1px solid rgba(79, 70, 229, 0.04);
             font-size: 13px;
+            min-width: 0; 
         }
 
         .firo-modal-stats .stat-item .label {
             color: #6a6255;
+            flex-shrink: 0; 
         }
 
         .firo-modal-stats .stat-item .value {
             color: #f5ede4;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: right;
         }
 
         .firo-modal-stats .stat-item .value.green {
             color: var(--green);
+        }
+
+        @media (max-width: 1100px) {
+            .firo-modal-stats { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 1024px) {
@@ -735,10 +771,8 @@
             .donation-addr .coin-icon { width: 24px; height: 24px; }
             .donation-addr .address { font-size: 12px; }
             .reactor-item { padding: 12px 14px; }
-            .bar-line .bar i { width: 9px; height: 11px; }
             .node-item .node-name a { font-size: 14px; }
             .node-item .node-stats { font-size: 11px; }
-            .firo-modal-stats { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
@@ -765,7 +799,7 @@
             .donation-addr .copy-hint { font-size: 10px; }
             .reactor-item { padding: 10px 12px; }
             .reactor-title { font-size: 13px; }
-            .bar-line .bar i { width: 8px; height: 10px; }
+            .bar-line .bar i { height: 10px; } 
             .bar-line .percent { font-size: 11px; min-width: 30px; }
             .reactor-info { font-size: 11px; }
             .reactor-footer { font-size: 11px; }
@@ -785,7 +819,7 @@
 
         <header class="header">
             <div class="brand">
-                <img src="assets/index.png" width="64">
+                <img src="assets/index.png" alt="logo" style="width:clamp(40px,10vw,64px);height:auto;">
                 <span class="logo-text">cΔrovΣr0 <small>nodos</small></span>
             </div>
             <nav class="nav-links">
