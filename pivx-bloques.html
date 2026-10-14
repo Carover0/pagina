@@ -1,10 +1,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>PIVX · Bloques en Vivo</title>
-<link rel="icon" type="image/x-icon" href="assets/pivx-favicon.ico?">
-<link rel="icon" type="image/png" href="/assets/pivx.png?">
+    <link rel="icon" type="image/x-icon" href="assets/pivx-favicon.ico?">
+    <link rel="icon" type="image/png" href="/assets/pivx.png?">
 
     <style>
         * {
@@ -12,6 +12,8 @@
             padding: 0;
             box-sizing: border-box;
         }
+
+        html, body { overflow-x: hidden; }
 
         body {
             min-height: 100vh;
@@ -21,16 +23,16 @@
                 radial-gradient(ellipse at 70% 80%, rgba(160, 68, 255, 0.05) 0%, transparent 50%),
                 linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
             font-family: 'Lucida Console', 'Courier New', monospace;
-            padding: 20px;
+            padding: clamp(10px, 3vw, 20px);
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            min-height: 100vh;
         }
 
         .app {
             width: 100%;
             max-width: 1200px;
+            min-width: 0;
         }
 
         .header {
@@ -38,18 +40,21 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
+            gap: 10px 20px;
             padding: 16px 24px;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 14px;
             border: 1px solid rgba(160, 68, 255, 0.2);
             backdrop-filter: blur(8px);
             margin-bottom: 16px;
+            min-width: 0;
         }
 
         .brand {
             display: flex;
             align-items: center;
             gap: 14px;
+            min-width: 0;
         }
 
         .brand img {
@@ -57,6 +62,7 @@
             height: 38px;
             filter: drop-shadow(0 0 16px rgba(160, 68, 255, 0.3));
             transition: filter 0.3s;
+            flex-shrink: 0;
         }
 
         .brand img:hover {
@@ -69,6 +75,7 @@
             color: #f5e6c8;
             letter-spacing: 1.5px;
             text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
+            min-width: 0;
         }
 
         .brand h1 small {
@@ -85,6 +92,7 @@
             gap: 4px 18px;
             font-size: 12px;
             letter-spacing: 0.3px;
+            min-width: 0;
         }
 
         .nav-links a {
@@ -93,6 +101,7 @@
             transition: all 0.25s;
             padding: 4px 0;
             border-bottom: 2px solid transparent;
+            white-space: nowrap;
         }
 
         .nav-links a:hover {
@@ -100,7 +109,6 @@
             border-bottom-color: #c597ff;
         }
 
-        /* ===== CONNECTION STATUS ===== */
         .connection-status {
             display: flex;
             align-items: center;
@@ -114,6 +122,7 @@
             border: 1px solid rgba(160, 68, 255, 0.04);
             margin-bottom: 16px;
             flex-wrap: wrap;
+            min-width: 0;
         }
 
         .connection-status .dot {
@@ -147,16 +156,19 @@
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
+            min-width: 0;
         }
 
         .connection-status .route .flag {
             font-size: 16px;
             line-height: 1;
+            flex-shrink: 0;
         }
 
         .connection-status .route .arrow {
             color: #3d3830;
             font-size: 13px;
+            flex-shrink: 0;
         }
 
         .connection-status .route .node-name {
@@ -172,6 +184,7 @@
             font-size: 13px;
             color: #8a8275;
             min-width: 100px;
+            flex-shrink: 0;
         }
 
         @keyframes pulse-dot {
@@ -179,7 +192,6 @@
             50% { opacity: 0.5; transform: scale(0.8); }
         }
 
-        /* ===== STATS PANEL ===== */
         .stats-panel {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -189,7 +201,10 @@
             border-radius: 14px;
             border: 1px solid rgba(160, 68, 255, 0.08);
             margin-bottom: 24px;
+            min-width: 0;
         }
+
+        .stat-item { min-width: 0; }
 
         .stat-item .label {
             font-size: 8px;
@@ -202,6 +217,8 @@
             font-size: 15px;
             font-weight: 500;
             color: #f5ede4;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .stat-item .value.purple {
@@ -212,14 +229,16 @@
             font-size: 11px;
             color: #8a8275;
             word-break: break-all;
+            overflow-wrap: anywhere;
         }
 
         .stat-item .sub {
             font-size: 10px;
             color: #5a5348;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
-        /* ===== BLOCKS GRID ===== */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -236,6 +255,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             cursor: pointer;
+            min-width: 0;
         }
 
         .block-card:hover {
@@ -249,15 +269,19 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            flex-wrap: wrap;
+            gap: 4px 8px;
             border-bottom: 1px solid rgba(160, 68, 255, 0.05);
             padding-bottom: 6px;
             margin-bottom: 8px;
+            min-width: 0;
         }
 
         .block-height {
             font-size: 17px;
             font-weight: 600;
             color: #f5ede4;
+            min-width: 0;
         }
 
         .block-height small {
@@ -285,14 +309,18 @@
             padding: 2px 10px;
             border-radius: 20px;
             border: 1px solid rgba(160, 68, 255, 0.04);
+            flex-shrink: 0;
         }
 
         .block-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 4px 10px;
             padding: 3px 0;
             font-size: 11px;
+            min-width: 0;
         }
 
         .block-row .label {
@@ -300,17 +328,31 @@
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.6px;
+            flex-shrink: 0;
         }
 
         .block-row .value {
             color: #ece8e0;
             font-weight: 500;
             font-size: 11px;
+            min-width: 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            text-align: right;
         }
 
         .block-row .value.purple {
             color: #c597ff;
             font-size: 10px;
+        }
+
+        .block-row .value.staker {
+            color: #c597ff;
+            font-size: 10px;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            max-width: min(180px, 100%);
+            text-align: right;
         }
 
         .block-row .value.mono {
@@ -327,6 +369,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 4px;
+            min-width: 0;
         }
 
         .staker-tag {
@@ -337,13 +380,15 @@
             color: #c597ff;
             border: 1px solid rgba(160, 68, 255, 0.04);
             word-break: break-all;
-            max-width: 160px;
+            overflow-wrap: anywhere;
+            max-width: min(160px, 100%);
             font-family: 'Lucida Console', monospace;
         }
 
         .tx-count {
             font-size: 9px;
             color: #5a5348;
+            flex-shrink: 0;
         }
 
         .tx-count span {
@@ -360,6 +405,7 @@
             border-top: 1px solid rgba(160, 68, 255, 0.06);
             font-size: 10px;
             color: #4a443a;
+            min-width: 0;
         }
 
         .footer a {
@@ -378,6 +424,7 @@
         .footer-links {
             display: flex;
             gap: 16px;
+            flex-wrap: wrap;
         }
 
         .error-msg {
@@ -387,6 +434,8 @@
             background: rgba(255, 0, 0, 0.05);
             border-radius: 12px;
             border: 1px solid rgba(255, 0, 0, 0.1);
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .error-msg .details {
@@ -394,6 +443,12 @@
             color: #8a8275;
             margin-top: 8px;
             word-break: break-all;
+            overflow-wrap: anywhere;
+        }
+
+        .error-msg code {
+            word-break: break-all;
+            overflow-wrap: anywhere;
         }
 
         .loading {
@@ -429,6 +484,10 @@
             .brand h1 {
                 font-size: 17px;
             }
+            .brand img {
+                width: 30px;
+                height: 30px;
+            }
             .block-card {
                 padding: 12px 14px 10px;
             }
@@ -458,9 +517,6 @@
             .cards-grid {
                 grid-template-columns: 1fr;
             }
-            body {
-                padding: 10px;
-            }
             .stats-panel {
                 grid-template-columns: 1fr 1fr;
                 padding: 12px 14px;
@@ -474,8 +530,16 @@
             .block-card {
                 padding: 10px 12px 8px;
             }
-            .block-row .value.purple {
+            .block-row .value.purple,
+            .block-row .value.staker {
                 font-size: 9px;
+            }
+            .block-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .staker-tag {
+                max-width: 100%;
             }
             .footer {
                 flex-direction: column;
@@ -499,6 +563,18 @@
             .connection-status .route .flag {
                 font-size: 14px;
             }
+        }
+
+        @media (max-width: 360px) {
+            .stats-panel {
+                grid-template-columns: 1fr;
+            }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
+            .block-height { font-size: 13px; }
+            .nav-links { font-size: 9px; gap: 2px 8px; }
+            .connection-status .route { font-size: 11px; }
         }
     </style>
 </head>
@@ -554,14 +630,12 @@
             </div>
         </div>
 
-        <!-- ===== BLOCKS ===== -->
         <div class="cards-grid" id="blockContainer">
             <div class="loading">
                 <span class="spinner">⧫</span> Cargando bloques...
             </div>
         </div>
 
-        <!-- ===== FOOTER ===== -->
         <footer class="footer">
             <div class="footer-links">
                 <a href="#" onclick="refreshData(); return false;">↻ Actualizar</a>
@@ -643,7 +717,7 @@
                     </div>
                     <div class="block-row">
                         <span class="label">${stakingEmoji} Validador</span>
-                        <span class="value purple" style="word-break:break-all;max-width:180px;text-align:right;" title="${stakerFull}">${stakerDisplay}</span>
+                        <span class="value staker" title="${stakerFull}">${stakerDisplay}</span>
                     </div>
                     <div class="block-row">
                         <span class="label">Tipo</span>
