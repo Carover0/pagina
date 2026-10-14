@@ -823,7 +823,11 @@
         const API_URL = "https://carover0.xyz/api/pivx/pivx.php";
         const TOKEN = "pivx2026";
         const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
-        const PIV_ICON = "/assets/pivx.png";
+        const PIV_ICON = (function() {
+            const path = window.location.pathname;
+            if (path.includes('/pagina/')) return '/pagina/assets/pivx.png';
+                return '/assets/pivx.png';
+            })();
 
         let historyStack = [];
         let currentIndex = -1;
