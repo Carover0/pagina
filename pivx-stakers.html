@@ -638,7 +638,7 @@
 
     <script>
         const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
-        const PIV_ICON = "/assets/pivx.png";
+        const PIV_ICON = new URL("assets/pivx.png", document.baseURI).href;
 
         function formatPiv(value, decimals = 2) {
             const num = typeof value === 'number' ? value : parseFloat(value);
