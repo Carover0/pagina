@@ -615,6 +615,12 @@
         background: rgba(255, 170, 68, 0.08);
     }
 
+.piv-icon {
+    width: 18px;
+    height: 18px;
+    vertical-align: -4px;
+    margin-right: 6px;
+}
     @media (max-width: 768px) {
         .app {
             padding: max(12px, env(safe-area-inset-top))
@@ -817,10 +823,16 @@
         const API_URL = "https://carover0.xyz/api/pivx/pivx.php";
         const TOKEN = "pivx2026";
         const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
+        const PIV_ICON = "/assets/pivx.png";
 
         let historyStack = [];
         let currentIndex = -1;
 
+function formatPiv(value, extra = '') {
+    const num = typeof value === 'number' ? value : parseFloat(value);
+    if (isNaN(num)) return '';
+    return `<img src="${PIV_ICON}" class="piv-icon" alt="">${num.toFixed(6)}${extra}`;
+}
         function pushHistory(query, label) {
             historyStack = historyStack.slice(0, currentIndex + 1);
             historyStack.push({ query: query, label: label || query });
@@ -967,7 +979,6 @@
             window.history.replaceState({}, '', newUrl);
         }
 
-        // ─── DETECTAR TIPO ──────────────────────────
         function getTxType(tx) {
             if (!tx) return 'unknown';
 
@@ -980,25 +991,22 @@
             const isOnlyZeroOutput = tx.vout && tx.vout.length === 1 && tx.vout[0].value === 0;
             const isCoinStake = !hasCoinbase && hasTransparentIn && hasVoutZero && tx.vout && tx.vout.length >= 2;
 
-            // Transacción privada 
             if (hasShieldedSpend || hasShieldedOutput) {
                 if (hasTransparentIn && !hasTransparentOut && hasShieldedOutput && !hasShieldedSpend) {
-                    return 'shielding'; // transparente → privada
+                    return 'shielding';
                 }
                 if (hasShieldedSpend && !hasShieldedOutput && hasTransparentOut && !hasTransparentIn) {
-                    return 'deshielding'; // privada → transparente
+                    return 'deshielding';
                 }
-                return 'private'; // completamente privada
+                return 'private';
             }
 
-            // Coinbase / Coinstake
             if (hasCoinbase) {
                 if (isOnlyZeroOutput) return 'coinstake_dummy';
                 return 'coinbase';
             }
             if (isCoinStake) return 'coinstake';
 
-            // Transparente normal
             if (hasTransparentIn || hasTransparentOut) {
                 return 'transparent';
             }
@@ -1146,7 +1154,6 @@
                     return;
                 }
 
-                // ── BLOQUE ──
                 if (cmd.includes('getblock') && result.hash) {
                     const b = result;
                     let res = `<div class="cmd-line"><span class="tag">⧫ BLOQUE</span> #${b.height}</div>`;
@@ -1198,7 +1205,6 @@
                     return;
                 }
 
-                // ── TRANSACCIÓN ──
                 if (cmd.includes('getrawtransaction') && result.txid) {
                     const t = result;
                     const txType = getTxType(t);
@@ -1281,7 +1287,6 @@
 
                     res += `<div class="divider"></div>`;
 
-                    // ── ENTRADAS ──
                     if (t.vin && t.vin.length > 0) {
                         res += `<div class="row"><span class="key">▶ ENTRADAS</span><span class="val violet">${t.vin.length}</span></div>`;
                         t.vin.forEach((vin, i) => {
@@ -1295,7 +1300,7 @@
                                 const valorInput = inputValues[i] !== undefined ? inputValues[i] : null;
                                 let valorStr = '';
                                 if (valorInput) {
-                                    valorStr = ` ${valorInput.toFixed(6)} PIV`;
+                                    valorStr = formatPiv(valorInput);
                                     if (isCoinStake) valorStr += ` (stake activo)`;
                                     else if (isColdStaking) valorStr += ` (fondos a delegar)`;
                                     else if (isShielding) valorStr += ` (a blindar)`;
@@ -1304,11 +1309,10 @@
                             }
                         });
                         if (totalIn > 0) {
-                            res += `<div class="row" style="margin-top:2px;"><span class="key">total entrada</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="margin-top:2px;"><span class="key">total entrada</span><span class="val violet">${formatPiv(totalIn)}</span></div>`;
                         }
                     }
 
-                    // ── SALIDAS ──
                     if (t.vout && t.vout.length > 0) {
                         res += `<div class="divider"></div>`;
                         res += `<div class="row"><span class="key">◀ SALIDAS</span><span class="val violet">${t.vout.length}</span></div>`;
@@ -1373,21 +1377,20 @@
                                 addrDisplay = ` → ${makeLink(addr)}`;
                             }
 
-                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val violet">${vout.value.toFixed(6)} PIV</span>${addrDisplay}${tipo}${extraInfo}</div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:24px;">#${i}</span><span class="val violet">${formatPiv(vout.value)}</span>${addrDisplay}${tipo}${extraInfo}</div>`;
                         });
 
                         if (totalOut > 0) {
                             if (isColdStaking && !isCoinStake) {
-                                res += `<div class="row" style="margin-top:2px;"><span class="key">total delegado</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
+                                res += `<div class="row" style="margin-top:2px;"><span class="key">total delegado</span><span class="val violet">${formatPiv(totalOut)}</span></div>`;
                             } else if (isCoinStake) {
-                                res += `<div class="row" style="margin-top:2px;"><span class="key">total generado</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
+                                res += `<div class="row" style="margin-top:2px;"><span class="key">total generado</span><span class="val violet">${formatPiv(totalOut)}</span></div>`;
                             } else {
-                                res += `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
+                                res += `<div class="row" style="margin-top:2px;"><span class="key">total salida</span><span class="val violet">${formatPiv(totalOut)}</span></div>`;
                             }
                         }
                     }
 
-                    // ── SHIELDED (PRIVADA) ──
                     if (hasShieldedSpend || hasShieldedOutput) {
                         res += `<div class="divider"></div>`;
                         res += `<div class="row"><span class="key">🛡 TRANSACCIÓN PRIVADA (SHIELDED)</span></div>`;
@@ -1403,7 +1406,7 @@
                         }
                         if (t.valueBalance !== undefined) {
                             const balancePiv = parseFloat(t.valueBalance);
-                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">valueBalance</span><span class="val violet">${balancePiv.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">valueBalance</span><span class="val violet">${formatPiv(balancePiv)}</span></div>`;
                         }
                         if (t.bindingSig) {
                             res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">bindingSig</span><span class="val mono">${t.bindingSig.substring(0, 64)}…</span></div>`;
@@ -1411,7 +1414,6 @@
                         res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">🔒 privacidad</span><span class="val">montos ocultos</span></div>`;
                     }
 
-                    // ── RESUMEN ──
                     res += `<div class="divider"></div>`;
                     res += `<div class="row"><span class="key">RESUMEN</span></div>`;
                     res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">entradas transparentes</span><span class="val">${t.vin?.length || 0}</span></div>`;
@@ -1432,11 +1434,11 @@
                             const recompensaDistribuida = t.vout.slice(2).reduce((sum, v) => sum + (v.value || 0), 0);
                             const recompensaTotal = totalOut - totalIn;
                             const recompensaReinvertida = stakeFinal - totalIn;
-                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">stake activo previo</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
-                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">stake final</span><span class="val violet">${stakeFinal.toFixed(6)} PIV</span></div>`;
-                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">recompensa total</span><span class="val violet">+${recompensaTotal.toFixed(6)} PIV</span></div>`;
-                            res += `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">reinvertida</span><span class="val violet">+${recompensaReinvertida.toFixed(6)} PIV</span></div>`;
-                            res += `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">distribuida</span><span class="val violet">${recompensaDistribuida.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">stake activo previo</span><span class="val violet">${formatPiv(totalIn)}</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">stake final</span><span class="val violet">${formatPiv(stakeFinal)}</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:60px;">recompensa total</span><span class="val violet">+${formatPiv(recompensaTotal)}</span></div>`;
+                            res += `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">reinvertida</span><span class="val violet">+${formatPiv(recompensaReinvertida)}</span></div>`;
+                            res += `<div class="row" style="padding-left:28px;font-size:12px;color:#5a5348;"><span class="key" style="min-width:40px;">distribuida</span><span class="val violet">${formatPiv(recompensaDistribuida)}</span></div>`;
                         }
                         res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fee</span><span class="val">0 PIV (generación de bloques)</span></div>`;
                     } else if (isShielded) {
@@ -1444,17 +1446,17 @@
                         res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">privacidad</span><span class="val">🔒 total (datos ocultos)</span></div>`;
                         if (t.valueBalance) {
                             const fee = Math.abs(parseFloat(t.valueBalance));
-                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fee</span><span class="val violet">${fee.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fee</span><span class="val violet">${formatPiv(fee)}</span></div>`;
                         }
                     } else if (isShielding) {
                         res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">shielding (transparente → privada)</span></div>`;
                         if (totalIn > 0) {
-                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos blindados</span><span class="val violet">${totalIn.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos blindados</span><span class="val violet">${formatPiv(totalIn)}</span></div>`;
                         }
                     } else if (isDeshielding) {
                         res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">deshielding (privada → transparente)</span></div>`;
                         if (totalOut > 0) {
-                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos visibles</span><span class="val violet">${totalOut.toFixed(6)} PIV</span></div>`;
+                            res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">fondos visibles</span><span class="val violet">${formatPiv(totalOut)}</span></div>`;
                         }
                     } else if (isColdStaking && !isCoinStake) {
                         res += `<div class="row" style="padding-left:14px;font-size:12px;color:#6a6255;"><span class="key" style="min-width:60px;">tipo</span><span class="val violet">delegación a cold staking</span></div>`;
@@ -1471,7 +1473,6 @@
                     return;
                 }
 
-                // ── VALIDAR DIRECCION ──
                 if (cmd.includes('validateaddress') && result) {
                     const v = result;
                     const direccion = v.address || cmd.split(' ')[1] || 'desconocida';
