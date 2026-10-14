@@ -4,7 +4,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>PIVX · Monitor de Cold Staking</title>
     <link rel="icon" type="image/png" href="assets/pivx.png">
     <style>
@@ -13,6 +13,8 @@
             padding: 0;
             box-sizing: border-box;
         }
+
+        html, body { overflow-x: hidden; }
 
         body {
             min-height: 100vh;
@@ -25,9 +27,8 @@
             color: #ece8e0;
             padding: 0;
             margin: 0;
-            min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
         }
 
@@ -39,6 +40,7 @@
             flex-direction: column;
             gap: 18px;
             padding: 20px 28px;
+            min-width: 0;
         }
 
         .header {
@@ -52,12 +54,14 @@
             border-radius: 14px;
             border: 1px solid rgba(160, 68, 255, 0.2);
             backdrop-filter: blur(8px);
+            min-width: 0;
         }
 
         .brand {
             display: flex;
             align-items: center;
             gap: 14px;
+            min-width: 0;
         }
 
         .brand img {
@@ -65,6 +69,7 @@
             height: 38px;
             filter: drop-shadow(0 0 16px rgba(160, 68, 255, 0.3));
             transition: filter 0.3s;
+            flex-shrink: 0;
         }
 
         .brand img:hover {
@@ -77,6 +82,7 @@
             letter-spacing: 1.5px;
             color: #f5e6c8;
             text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
+            min-width: 0;
         }
 
         .brand h1 small {
@@ -92,6 +98,7 @@
             gap: 4px 18px;
             font-size: 12px;
             letter-spacing: 0.3px;
+            min-width: 0;
         }
 
         .nav-links a {
@@ -100,6 +107,7 @@
             transition: all 0.25s;
             padding: 4px 0;
             border-bottom: 2px solid transparent;
+            white-space: nowrap;
         }
 
         .nav-links a:hover {
@@ -117,6 +125,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            min-width: 0;
         }
 
         .panel:hover {
@@ -133,12 +142,20 @@
             margin-bottom: 18px;
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(160, 68, 255, 0.06);
+            min-width: 0;
         }
 
         .panel-title img {
             width: 32px;
             height: 32px;
             filter: drop-shadow(0 0 12px rgba(160, 68, 255, 0.25));
+            flex-shrink: 0;
+        }
+
+        .panel-title span {
+            min-width: 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .info-bar {
@@ -150,11 +167,14 @@
             padding: 10px 0 14px 0;
             border-bottom: 1px solid rgba(160, 68, 255, 0.06);
             margin-bottom: 16px;
+            min-width: 0;
         }
 
         .info-bar .timestamp {
             color: #5a5348;
             font-size: 11px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .cards {
@@ -169,6 +189,7 @@
             padding: 16px 20px;
             border: 1px solid rgba(160, 68, 255, 0.04);
             transition: all 0.25s;
+            min-width: 0;
         }
 
         .card:hover {
@@ -190,8 +211,11 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            flex-wrap: wrap;
+            gap: 4px 10px;
             padding: 5px 0;
             border-bottom: 1px solid rgba(160, 68, 255, 0.02);
+            min-width: 0;
         }
 
         .card-item:last-child {
@@ -202,6 +226,7 @@
             color: #6a6255;
             font-size: 11px;
             letter-spacing: 0.3px;
+            flex-shrink: 0;
         }
 
         .card-item .value {
@@ -209,41 +234,29 @@
             font-size: 12px;
             text-align: right;
             word-break: break-all;
+            overflow-wrap: anywhere;
+            min-width: 0;
+            max-width: 100%;
         }
 
-        .card-item .value.positive {
-            color: #31db72;
-        }
-
-        .card-item .value.negative {
-            color: #ff756f;
-        }
-
-        .card-item .value.violet {
-            color: #c597ff;
-        }
-
-        .card-item .value.warning {
-            color: #dd9d34;
-        }
-
-        .card-item .value.mono {
-            font-size: 11px;
-            color: #8a8275;
-        }
+        .card-item .value.positive { color: #31db72; }
+        .card-item .value.negative { color: #ff756f; }
+        .card-item .value.violet { color: #c597ff; }
+        .card-item .value.warning { color: #dd9d34; }
+        .card-item .value.mono { font-size: 11px; color: #8a8275; }
 
         .card-item .value .small-note {
             color: #4a443a;
             font-size: 10px;
         }
 
-        /* ── UTXO LIST ── */
         .utxo-section {
             margin-top: 16px;
             padding: 16px 20px;
             background: rgba(255, 255, 255, 0.02);
             border-radius: 12px;
             border: 1px solid rgba(160, 68, 255, 0.04);
+            min-width: 0;
         }
 
         .utxo-section-title {
@@ -265,6 +278,9 @@
             flex-wrap: wrap;
             gap: 4px 12px;
             align-items: baseline;
+            min-width: 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .utxo-item:last-child {
@@ -274,6 +290,7 @@
         .utxo-item .idx {
             color: #4a443a;
             min-width: 24px;
+            flex-shrink: 0;
         }
 
         .utxo-item .amount {
@@ -296,18 +313,33 @@
             color: #5a5348;
             font-size: 11px;
             word-break: break-all;
+            overflow-wrap: anywhere;
+            min-width: 0;
         }
 
         .utxo-item .cold-staker {
             color: #5a5348;
             font-size: 11px;
             word-break: break-all;
+            overflow-wrap: anywhere;
+            min-width: 0;
+        }
+
+        .utxo-item.footer-note {
+            color: #4a443a;
+            font-size: 11px;
+            border-top: 1px solid rgba(160, 68, 255, 0.04);
+            padding-top: 8px;
+            margin-top: 4px;
+            border-bottom: none;
         }
 
         .utxo-info-text {
             color: #4a443a;
             font-size: 12px;
             padding: 8px 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .address-box {
@@ -316,6 +348,7 @@
             background: rgba(255, 255, 255, 0.02);
             border-radius: 12px;
             border: 1px solid rgba(160, 68, 255, 0.04);
+            min-width: 0;
         }
 
         .address-box .address-label {
@@ -330,7 +363,9 @@
             color: #c597ff;
             font-size: 13px;
             word-break: break-all;
+            overflow-wrap: anywhere;
             font-family: 'Lucida Console', monospace;
+            max-width: 100%;
         }
 
         .footer {
@@ -344,6 +379,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 10px;
+            min-width: 0;
         }
 
         .footer a {
@@ -360,6 +396,9 @@
             font-size: 11px;
             color: #5a5348;
             word-break: break-all;
+            overflow-wrap: anywhere;
+            max-width: 100%;
+            display: inline-block;
         }
 
         .footer .api-link:hover {
@@ -374,7 +413,7 @@
             background: rgba(160, 68, 255, 0.08);
             backdrop-filter: blur(12px);
             color: #f5ede4;
-            padding: 10px 32px;
+            padding: 10px 20px;
             border-radius: 40px;
             border: 1px solid rgba(160, 68, 255, 0.12);
             font-family: 'Lucida Console', monospace;
@@ -385,6 +424,8 @@
             z-index: 999;
             letter-spacing: 0.3px;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            max-width: calc(100vw - 40px);
+            text-align: center;
         }
 
         .toast.show {
@@ -392,10 +433,12 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
             .app {
-                padding: 12px 14px;
+                padding: max(12px, env(safe-area-inset-top))
+                         max(14px, env(safe-area-inset-right))
+                         max(12px, env(safe-area-inset-bottom))
+                         max(14px, env(safe-area-inset-left));
                 gap: 12px;
             }
 
@@ -406,32 +449,14 @@
                 padding: 14px 18px;
             }
 
-            .brand h1 {
-                font-size: 17px;
-            }
+            .brand h1 { font-size: 17px; }
+            .brand img { width: 30px; height: 30px; }
 
-            .brand img {
-                width: 30px;
-                height: 30px;
-            }
+            .nav-links { font-size: 11px; gap: 2px 14px; }
 
-            .nav-links {
-                font-size: 11px;
-                gap: 2px 14px;
-            }
-
-            .panel {
-                padding: 18px 16px;
-            }
-
-            .panel-title {
-                font-size: 16px;
-            }
-
-            .panel-title img {
-                width: 28px;
-                height: 28px;
-            }
+            .panel { padding: 18px 16px; }
+            .panel-title { font-size: 16px; }
+            .panel-title img { width: 28px; height: 28px; }
 
             .info-bar {
                 flex-direction: column;
@@ -444,30 +469,14 @@
                 gap: 12px;
             }
 
-            .card {
-                padding: 14px 16px;
-            }
+            .card { padding: 14px 16px; }
+            .card-item .value { font-size: 11px; }
 
-            .card-item .value {
-                font-size: 11px;
-            }
+            .utxo-section { padding: 14px 16px; }
+            .utxo-item { font-size: 11px; gap: 2px 8px; }
 
-            .utxo-section {
-                padding: 14px 16px;
-            }
-
-            .utxo-item {
-                font-size: 11px;
-                gap: 2px 8px;
-            }
-
-            .address-box {
-                padding: 12px 14px;
-            }
-
-            .address-box .address-value {
-                font-size: 12px;
-            }
+            .address-box { padding: 12px 14px; }
+            .address-box .address-value { font-size: 12px; }
 
             .footer {
                 flex-direction: column;
@@ -477,27 +486,11 @@
         }
 
         @media (max-width: 480px) {
-            .app {
-                padding: 8px 10px;
-                gap: 10px;
-            }
-
-            .header {
-                padding: 10px 14px;
-            }
-
-            .brand h1 {
-                font-size: 15px;
-            }
-
-            .brand h1 small {
-                font-size: 10px;
-            }
-
-            .brand img {
-                width: 26px;
-                height: 26px;
-            }
+            .app { gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
 
             .panel {
                 padding: 14px 12px;
@@ -511,77 +504,50 @@
                 padding-bottom: 10px;
             }
 
-            .panel-title img {
-                width: 24px;
-                height: 24px;
-            }
+            .panel-title img { width: 24px; height: 24px; }
 
-            .info-bar .timestamp {
-                font-size: 10px;
-            }
+            .info-bar .timestamp { font-size: 10px; }
 
-            .card {
-                padding: 12px 14px;
-            }
-
-            .card-title {
-                font-size: 9px;
-            }
+            .card { padding: 12px 14px; }
+            .card-title { font-size: 9px; }
 
             .card-item {
-                padding: 4px 0;
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 2px;
             }
 
-            .card-item .label {
-                font-size: 10px;
-                min-width: 80px;
-            }
+            .card-item .label { font-size: 9px; }
+            .card-item .value { font-size: 11px; text-align: left; width: 100%; }
 
-            .card-item .value {
-                font-size: 10px;
-                text-align: left;
-                flex: 1;
-            }
-
-            .utxo-section {
-                padding: 12px 14px;
-            }
-
-            .utxo-section-title {
-                font-size: 9px;
-            }
+            .utxo-section { padding: 12px 14px; }
+            .utxo-section-title { font-size: 9px; }
 
             .utxo-item {
                 font-size: 10px;
-                flex-wrap: wrap;
                 gap: 1px 6px;
             }
 
-            .utxo-item .idx {
-                min-width: 18px;
+            .utxo-item .idx { min-width: 18px; }
+
+            .utxo-item .owner,
+            .utxo-item .cold-staker {
+                flex: 1 1 100%;
             }
 
-            .address-box {
-                padding: 10px 12px;
-            }
+            .address-box { padding: 10px 12px; }
+            .address-box .address-label { font-size: 9px; }
+            .address-box .address-value { font-size: 11px; }
 
-            .address-box .address-label {
-                font-size: 9px;
-            }
+            .footer { font-size: 10px; }
+            .footer .api-link { font-size: 10px; }
+        }
 
-            .address-box .address-value {
-                font-size: 11px;
-            }
-
-            .footer {
-                font-size: 10px;
-            }
-
-            .footer .api-link {
-                font-size: 10px;
-            }
+        @media (max-width: 360px) {
+            .nav-links { font-size: 9px; gap: 2px 10px; }
+            .brand h1 { font-size: 14px; }
+            .brand h1 small { font-size: 9px; }
+            .brand img { width: 22px; height: 22px; }
         }
 
         @media (min-width: 1920px) {
@@ -590,13 +556,8 @@
                 padding: 24px 40px;
             }
 
-            .card-item .value {
-                font-size: 13px;
-            }
-
-            .utxo-item {
-                font-size: 13px;
-            }
+            .card-item .value { font-size: 13px; }
+            .utxo-item { font-size: 13px; }
         }
     </style>
 </head>
@@ -616,6 +577,14 @@
                 <a href="https://carover0.github.io/pagina/">[INICIO]</a>
             </nav>
         </header>
+
+        <div class="panel">
+
+            <div class="panel-title">
+                <img src="assets/pivx.png" alt="PIVX">
+                <span>MONITOR DE COLD STAKING</span>
+            </div>
+
             <div class="info-bar">
                 <div class="timestamp" id="timestamp">Cargando datos...</div>
             </div>
@@ -651,6 +620,7 @@
                 <a href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/cacaX/pivx_status_X.json</a>
                 <span>actualizado cada 30s</span>
             </footer>
+
         </div>
 
     </div>
@@ -699,7 +669,6 @@
             const status = stakingInfo?.status;
             const lastAttempt = stakingInfo?.last_attempt;
 
-            // Resumen
             if (csInfo && csInfo.utxos) {
                 const utxos = csInfo.utxos;
                 const utxosList = utxos.list || [];
@@ -711,7 +680,7 @@
                     const confirmaciones = utxosList.map(u => u.confirmations);
                     const minConf = Math.min(...confirmaciones);
                     document.getElementById('cs-confirms').innerHTML =
-                        `${minConf} <span style="color:#4a443a;font-size:10px;">(mín)</span>`;
+                        `${minConf} <span class="small-note">(mín)</span>`;
 
                     const whitelistedCount = utxosList.filter(u => u.whitelisted === "true").length;
                     document.getElementById('cs-whitelist').textContent = `${whitelistedCount}/${utxosList.length}`;
@@ -726,7 +695,6 @@
                 document.getElementById('cs-whitelist').textContent = '---';
             }
 
-            // Estado stake
             if (status && balances) {
                 const statusEl = document.getElementById('cs-staking-status');
                 if (status.staking_status === true && balances.stakeable_coins > 0) {
@@ -747,7 +715,6 @@
                 document.getElementById('cs-local-balance').textContent = '---';
             }
 
-            // Último intento
             if (lastAttempt) {
                 const ageText = formatTimestamp(lastAttempt.age_seconds);
                 document.getElementById('cs-last-attempt').textContent =
@@ -756,7 +723,6 @@
                 document.getElementById('cs-last-attempt').textContent = '---';
             }
 
-            // UTXOs
             const utxosContainer = document.getElementById('utxos-list');
             if (csInfo && csInfo.utxos && csInfo.utxos.list && csInfo.utxos.list.length > 0) {
                 let html = `<div class="utxo-info-text">Mostrando ${csInfo.utxos.list.length} UTXOs delegados:</div>`;
@@ -773,10 +739,7 @@
                     `;
                 });
                 if (csInfo.utxos.list[0]) {
-                    html +=
-                        `<div class="utxo-item" style="color:#4a443a;font-size:11px;border-top:1px solid rgba(160,68,255,0.04);padding-top:8px;margin-top:4px;">
-                            cold-staker: ${escapeHtml(csInfo.utxos.list[0]['cold-staker'])}
-                        </div>`;
+                    html += `<div class="utxo-item footer-note">cold-staker: ${escapeHtml(csInfo.utxos.list[0]['cold-staker'])}</div>`;
                 }
                 utxosContainer.innerHTML = html;
             } else {
