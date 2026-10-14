@@ -2,209 +2,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>404 · cΔrovΣr0</title>
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    <title>404 · block_not_found · cΔrovΣr0</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html, body { overflow-x: hidden; }
+        html, body { overflow-x: hidden; }
 
-    body {
-        min-height: 100vh;
-        background: #0a080c;
-        background-image:
-            radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.10) 0%, transparent 60%),
-            radial-gradient(ellipse at 70% 80%, rgba(79, 70, 229, 0.06) 0%, transparent 50%),
-            linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
-        font-family: 'Lucida Console', 'Courier New', monospace;
-        color: #ece8e0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: clamp(12px, 3vw, 20px);
-    }
-
-    .container {
-        max-width: 700px;
-        width: 100%;
-        text-align: center;
-        padding: clamp(24px, 5vw, 40px) clamp(18px, 4vw, 28px);
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(79, 70, 229, 0.15);
-        border-radius: 18px;
-        backdrop-filter: blur(8px);
-        position: relative;
-        animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        min-width: 0;
-    }
-
-    @keyframes fadeIn {
-        0% { transform: translateY(20px); opacity: 0; }
-        100% { transform: translateY(0); opacity: 1; }
-    }
-
-    .glitch {
-        font-size: clamp(56px, 18vw, 120px);
-        font-weight: 700;
-        color: #818cf8;
-        letter-spacing: 8px;
-        line-height: 1;
-        margin-bottom: 8px;
-        text-shadow:
-            0 0 40px rgba(79, 70, 229, 0.5),
-            0 0 80px rgba(79, 70, 229, 0.3);
-        position: relative;
-        display: inline-block;
-        animation: glitch 3s infinite;
-    }
-
-    @keyframes glitch {
-        0%, 90%, 100% { transform: translate(0); }
-        92% { transform: translate(-3px, 2px); }
-        94% { transform: translate(3px, -2px); }
-        96% { transform: translate(-2px, -2px); }
-        98% { transform: translate(2px, 2px); }
-    }
-
-    .subtitle {
-        color: #6a6255;
-        font-size: 12px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-bottom: 30px;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-    }
-
-    .message {
-        color: #d2c8b7;
-        font-size: 15px;
-        line-height: 1.7;
-        margin-bottom: 14px;
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-    }
-
-    .message .highlight {
-        color: #818cf8;
-    }
-
-    .emoji-row {
-        font-size: 28px;
-        letter-spacing: 12px;
-        margin: 24px 0 30px 0;
-        opacity: 0.85;
-    }
-
-    .btn-home {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(79, 70, 229, 0.12);
-        color: #818cf8;
-        border: 1px solid rgba(79, 70, 229, 0.3);
-        padding: 14px 32px;
-        border-radius: 30px;
-        font-family: 'Lucida Console', monospace;
-        font-size: 14px;
-        text-decoration: none;
-        letter-spacing: 1px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        margin-bottom: 20px;
-        white-space: nowrap;
-        max-width: 100%;
-    }
-
-    .btn-home:hover {
-        background: rgba(79, 70, 229, 0.25);
-        border-color: #818cf8;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 40px rgba(79, 70, 229, 0.3);
-    }
-
-    .btn-home .arrow {
-        transition: transform 0.3s ease;
-        flex-shrink: 0;
-    }
-
-    .btn-home:hover .arrow {
-        transform: translateX(4px);
-    }
-
-    .counter {
-        font-size: 11px;
-        color: #3d3830;
-        margin-top: 30px;
-        letter-spacing: 1px;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-    }
-
-    .counter .val {
-        color: #818cf8;
-    }
-
-    .stars {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        overflow: hidden;
-        z-index: -1;
-    }
-
-    .star {
-        position: absolute;
-        width: 2px;
-        height: 2px;
-        background: #818cf8;
-        border-radius: 50%;
-        box-shadow: 0 0 6px rgba(129, 140, 248, 0.6);
-        animation: twinkle 3s infinite ease-in-out;
-    }
-
-    @keyframes twinkle {
-        0%, 100% { opacity: 0.2; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.5); }
-    }
-
-    @media (max-width: 600px) {
-        .glitch { letter-spacing: 4px; }
-        .subtitle { font-size: 10px; letter-spacing: 2px; }
-        .message { font-size: 13px; }
-        .emoji-row { font-size: 22px; letter-spacing: 8px; }
-        .btn-home { font-size: 12px; padding: 12px 24px; }
-    }
-
-    @media (max-width: 400px) {
-        .glitch { letter-spacing: 2px; }
-        .btn-home {
-            font-size: 11px;
-            padding: 10px 18px;
-            gap: 8px;
+        :root {
+            --violet: #818cf8;
+            --green: #31db72;
+            --red: #ff756f;
+            --line: rgba(129, 140, 248, 0.15);
+            --text: #ece8e0;
+            --text-dim: #6a6255;
+            --text-mute: #4a443a;
         }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-        .glitch,
-        .star,
-        .container {
-            animation: none;
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
+                linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(12px, 3vw, 24px);
         }
-        .btn-home {
-            transition: none;
+
+        .card {
+            width: 100%;
+            max-width: 560px;
+            min-width: 0;
+            background: rgba(15, 12, 22, 0.7);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: clamp(24px, 5vw, 36px);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease;
         }
-        .btn-home:hover {
-            transform: none;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-    }
-</style>
+
+        .head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 20px;
+            min-width: 0;
+        }
+
+        .head img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .head .name {
+            font-size: 13px;
+            color: var(--text-dim);
+            letter-spacing: 0.5px;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .head .status {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: var(--red);
+            letter-spacing: 0.8px;
+            flex-shrink: 0;
+        }
+
+        .head .status .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--red);
+            box-shadow: 0 0 6px var(--red);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .code {
+            font-size: clamp(48px, 12vw, 72px);
+            font-weight: 700;
+            color: var(--violet);
+            letter-spacing: 2px;
+            line-height: 1;
+            text-shadow: 0 0 30px rgba(79, 70, 229, 0.35);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .message {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #b8b0a4;
+            margin-bottom: 24px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .chain {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px dashed var(--line);
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 10px;
+            color: var(--text-mute);
+            letter-spacing: 0.5px;
+            min-width: 0;
+        }
+
+        .node {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: rgba(79, 70, 229, 0.08);
+            border: 1px solid var(--line);
+            color: #a5b4fc;
+            white-space: nowrap;
+        }
+
+        .node .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--green);
+            flex-shrink: 0;
+        }
+
+        .node.bad {
+            background: rgba(255, 117, 111, 0.08);
+            border-color: rgba(255, 117, 111, 0.25);
+            color: var(--red);
+        }
+
+        .node.bad .dot {
+            background: var(--red);
+        }
+
+        .chain .arrow {
+            color: var(--text-mute);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 11px 20px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(129, 140, 248, 0.3);
+            background: rgba(79, 70, 229, 0.14);
+            color: #c4b5fd;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: rgba(79, 70, 229, 0.24);
+            border-color: var(--violet);
+            color: #fff;
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: var(--line);
+            color: var(--text-dim);
+        }
+
+        .btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        .footer {
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+            font-size: 10px;
+            color: var(--text-mute);
+            letter-spacing: 0.5px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 4px 12px;
+        }
+
+        .footer .ok { color: var(--green); }
+        .footer .err { color: var(--red); }
+
+        @media (max-width: 480px) {
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card,
+            .head .status .dot {
+                animation: none;
+            }
+        }
+    </style>
+
     <script>
         (function () {
             const path = window.location.pathname;
-
             const explorers = [
                 { name: 'zec-explorer',    pattern: /\/zec-explorer\/(.+)$/ },
                 { name: 'pivx-explorer',   pattern: /\/pivx-explorer\/(.+)$/ },
@@ -213,7 +265,6 @@
                 { name: 'firo-explorer',   pattern: /\/firo-explorer\/(.+)$/ },
                 { name: 'bch-explorer',    pattern: /\/bch-explorer\/(.+)$/ }
             ];
-
             for (const exp of explorers) {
                 const match = path.match(exp.pattern);
                 if (match && match[1]) {
@@ -226,48 +277,40 @@
 </head>
 <body>
 
-    <div class="stars" id="stars"></div>
+    <div class="card">
 
-    <div class="container">
-        <div class="glitch">404</div>
-        <div class="subtitle">PÁGINA NO ENCONTRADA</div>
+        <div class="head">
+            <img src="assets/index.png" alt="cΔrovΣr0" onerror="this.style.display='none'">
+            <span class="name">cΔrovΣr0</span>
+            <span class="status"><span class="dot"></span>OFFLINE</span>
+        </div>
 
-        <div class="emoji-row">🛸 💫 🧭</div>
+        <div class="code">404</div>
+        <div class="subtitle">page_not_found</div>
 
         <p class="message">
-            Parece que te perdiste en el <span class="highlight">hiperespacio</span>.
+            El recurso solicitado no existe en esta red. La página que buscas
+            no existe.
         </p>
 
-        <p class="message" style="font-size: 13px; color: #6a6255;">
-            La página que buscás no existe, o alguien movió el archivo sin avisarnos.
-        </p>
-
-        <a href="https://carover0.github.io/pagina/" class="btn-home">
-            <span>← Volver al inicio</span>
+        <div class="chain">
+            <span class="node"><span class="dot"></span>nodo</span>
             <span class="arrow">→</span>
-        </a>
-
-        <div class="counter">
-            Error reportado a la <span class="val">central</span> · cΔrovΣr0
+            <span class="node"><span class="dot"></span>vps</span>
+            <span class="arrow">→</span>
+            <span class="node bad"><span class="dot"></span>404</span>
         </div>
+
+        <div class="actions">
+            <a href="https://carover0.github.io/pagina/" class="btn">← Volver al inicio</a>
+        </div>
+
+        <div class="footer">
+            <span>net: <span class="ok">mainnet</span></span>
+            <span>rpc: <span class="err">offline</span></span>
+        </div>
+
     </div>
-
-    <script>
-        (function generateStars() {
-            const container = document.getElementById('stars');
-            const numStars = 40;
-
-            for (let i = 0; i < numStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = (Math.random() * 3) + 's';
-                star.style.animationDuration = (2 + Math.random() * 3) + 's';
-                container.appendChild(star);
-            }
-        })();
-    </script>
 
 </body>
 </html>
