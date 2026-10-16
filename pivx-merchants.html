@@ -21,7 +21,8 @@
     }
 
     #mapa {
-      height: 100vh; width: 100%;
+      height: 100dvh;
+      height: 100vh;
       background: radial-gradient(ellipse at 50% 50%, #101820 0%, #0a080c 80%);
     }
 
@@ -896,8 +897,6 @@
     }
 
     @media (max-width: 720px) {
-      #mapa { height: 100dvh; }
-
       #panel {
         top: max(8px, env(safe-area-inset-top));
         left: max(8px, env(safe-area-inset-left));
@@ -915,27 +914,27 @@
       #panel .nav-links { font-size: 10px; gap: 2px 10px; margin-top: 8px; padding-top: 8px; }
       #panel .nav-links a { padding: 6px 8px; display: inline-block; }
 
-#top-actions {
-  top: auto;
-  bottom: max(8px, env(safe-area-inset-bottom));
-  right: 8px; left: 8px;
-  gap: 4px;
-  justify-content: center;
-  flex-wrap: nowrap;
-  z-index: 1100;
-}
-.btn-top {
-  padding: 8px 6px;
-  font-size: 9px;
-  letter-spacing: 0;
-  min-height: 34px;
-  flex: 1 1 0;
-  min-width: 0;
-  justify-content: center;
-  text-align: center;
-}
+      #top-actions {
+        top: auto;
+        bottom: max(8px, env(safe-area-inset-bottom));
+        right: 8px; left: 8px;
+        gap: 4px;
+        justify-content: center;
+        flex-wrap: nowrap;
+        z-index: 1100;
+      }
+      .btn-top {
+        padding: 8px 6px;
+        font-size: 9px;
+        letter-spacing: 0;
+        min-height: 34px;
+        flex: 1 1 0;
+        min-width: 0;
+        justify-content: center;
+        text-align: center;
+      }
 
-.leaflet-control-zoom { display: none !important; }
+      .leaflet-control-zoom { display: none !important; }
 
       #leyenda {
         bottom: calc(max(8px, env(safe-area-inset-bottom)) + 148px);
@@ -949,16 +948,6 @@
         right: 8px; width: 24px; height: 24px;
       }
 
-      .leaflet-control-zoom {
-        margin-bottom: max(8px, env(safe-area-inset-bottom)) !important;
-        margin-right: 8px !important;
-      }
-      .leaflet-control-zoom a {
-        width: 34px !important;
-        height: 34px !important;
-        line-height: 34px !important;
-        font-size: 18px !important;
-      }
       .btn-mundo {
         width: 34px; height: 34px; font-size: 15px;
         margin-bottom: max(8px, env(safe-area-inset-bottom)) !important;
@@ -967,9 +956,14 @@
       #modal-backdrop, .modal-backdrop { padding: 0; }
 
       #modal, .modal-box {
-        width: 100%; height: 100dvh;
-        max-height: 100dvh;
-        border-radius: 0; border: none;
+        position: fixed;
+        inset: 0;
+        width: auto;
+        height: auto;
+        max-width: none;
+        max-height: none;
+        border-radius: 0;
+        border: none;
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
       }
@@ -1158,7 +1152,7 @@
         <div id="community-body" class="modal-body">
           <p>Join the PIVX community and stay up to date.</p>
           <div class="socials-grid">
-            <a class="social-card" href="https://t.me/pivxchat_es" target="_blank" rel="noopener">
+            <a class="social-card" href="https://t.me/PIVXcom" target="_blank" rel="noopener">
               <img src="assets/t.png" alt="Telegram" />
               <span>Telegram</span>
             </a>
@@ -1166,7 +1160,7 @@
               <img src="assets/d.png" alt="Discord" />
               <span>Discord</span>
             </a>
-            <a class="social-card" href="https://x.com/_PIVX/" target="_blank" rel="noopener">
+            <a class="social-card" href="https://twitter.com/PIVX" target="_blank" rel="noopener">
               <img src="assets/x.png" alt="Twitter / X" />
               <span>Twitter / X</span>
             </a>
@@ -1360,6 +1354,11 @@
     });
     new MundoControl().addTo(map);
 
+    window.addEventListener('resize', () => map.invalidateSize());
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => map.invalidateSize(), 200);
+    });
+
     const iconoComercio = L.divIcon({
       className: '',
       html: `<div style="width:12px;height:12px;border-radius:50%;background:#A044FF;border:2px solid #f5e6c8;box-shadow:0 0 8px rgba(160,68,255,0.8), 0 0 14px rgba(197,151,255,0.5);"></div>`,
@@ -1478,12 +1477,16 @@
       modalBuscar.value = '';
       renderLista(comercios);
       modalBackdrop.classList.add('open');
+      setTimeout(() => map.invalidateSize(), 250);
     }
     function cerrarModal() {
       modalBackdrop.classList.remove('open');
       comerciosActuales = [];
+
       map.setView([20, 0], 2, { animate: true });
+      setTimeout(() => map.invalidateSize(), 250);
     }
+
     function renderLista(lista) {
       if (!lista.length) {
         modalLista.innerHTML = `
@@ -1804,15 +1807,13 @@
                 </div>
               </div>
             `, {
-     maxWidth: 540,
-  minWidth: 0,
-  closeButton: false,
-  offset: [0, -4],
-  autoPan: true,
-  autoPanPaddingTopLeft: window.innerWidth <= 720 ? [20, 220] : [380, 20],
-
-  autoPanPaddingBottomRight: window.innerWidth <= 720 ? [20, 20] : [30, 60]
-
+              maxWidth: 540,
+              minWidth: 0,
+              closeButton: false,
+              offset: [0, -4],
+              autoPan: true,
+              autoPanPaddingTopLeft: window.innerWidth <= 720 ? [20, 60] : [320, 20],
+              autoPanPaddingBottomRight: window.innerWidth <= 720 ? [20, 20] : [30, 60]
             });
 
             const bounds = layer.getBounds();
@@ -1876,7 +1877,7 @@
 
         m.bindPopup(`
           <div class="popup-comercio">
-            <button class="btn-cerrar" onclick="cerrarPopupYCentrar()" aria-label="Close">×</button>
+	    <button class="btn-cerrar" onclick="cerrarPopupYCentrar()" aria-label="Close">×</button>	
             <div class="pc-head">
               <img class="pc-logo" src="assets/piv7.png" alt="PIVX" />
               <div class="pc-title">
@@ -1898,6 +1899,7 @@
         `, {
           maxWidth: 340, minWidth: 0,
           closeButton: false, offset: [0, -4],
+          autoPan: true,
           autoPanPadding: [30, 30]
         });
 
@@ -1919,14 +1921,17 @@
       console.error(err);
       document.getElementById('total').textContent = 'Error';
     });
-    map.on('popupopen', () => {
+
+map.on('popupopen', () => {
   const panel = document.getElementById('panel');
   if (panel) panel.style.display = 'none';
+  setTimeout(() => map.invalidateSize(), 100);
 });
 
 map.on('popupclose', () => {
   const panel = document.getElementById('panel');
   if (panel) panel.style.display = '';
+  setTimeout(() => map.invalidateSize(), 100);
 });
 
   </script>
