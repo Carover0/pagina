@@ -1482,6 +1482,7 @@
     function cerrarModal() {
       modalBackdrop.classList.remove('open');
       comerciosActuales = [];
+      map.setView([20, 0], 2, { animate: true });
     }
     function renderLista(lista) {
       if (!lista.length) {
