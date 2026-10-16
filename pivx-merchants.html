@@ -1918,6 +1918,16 @@
       console.error(err);
       document.getElementById('total').textContent = 'Error';
     });
+    map.on('popupopen', () => {
+  const panel = document.getElementById('panel');
+  if (panel) panel.style.display = 'none';
+});
+
+map.on('popupclose', () => {
+  const panel = document.getElementById('panel');
+  if (panel) panel.style.display = '';
+});
+
   </script>
 </body>
 </html>
