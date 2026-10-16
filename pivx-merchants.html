@@ -1,10 +1,10 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>PIVX · Merchants accepting PIVX</title>
   <link rel="icon" type="image/png" href="assets/pivx.png">
-
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -65,22 +65,6 @@
     }
     #panel .nav-links a:hover { color: #c597ff; border-bottom-color: #c597ff; }
 
-    #leyenda {
-      position: absolute; bottom: 30px; left: 20px; z-index: 1000;
-      background: rgba(255,255,255,0.02); backdrop-filter: blur(8px);
-      border: 1px solid rgba(160,68,255,0.2);
-      padding: 12px 16px; border-radius: 12px; font-size: 11px;
-    }
-    #leyenda .item { display: flex; align-items: center; gap: 10px; padding: 3px 0; color: #8a8275; }
-    #leyenda .box { width: 14px; height: 14px; border-radius: 3px; }
-    #leyenda .box.blanco { background: #1a2028; border: 1px solid #3a4550; }
-    #leyenda .box.rojo   { background: #A044FF; }
-
-    #logo-pivx {
-      position: absolute; bottom: 30px; right: 80px; z-index: 1000;
-      width: 32px; height: 32px; object-fit: contain; opacity: 0.85;
-      filter: drop-shadow(0 0 16px rgba(160,68,255,0.3));
-    }
 
     .btn-cerrar {
       position: absolute;
@@ -931,33 +915,54 @@
       #panel .nav-links { font-size: 10px; gap: 2px 10px; margin-top: 8px; padding-top: 8px; }
       #panel .nav-links a { padding: 6px 8px; display: inline-block; }
 
-      #top-actions {
-        top: auto;
-        bottom: max(8px, env(safe-area-inset-bottom));
-        right: 8px; left: 8px;
-        gap: 6px; justify-content: flex-end; flex-wrap: wrap;
-      }
-      .btn-top { padding: 10px 12px; font-size: 11px; min-height: 38px; }
+#top-actions {
+  top: auto;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  right: 8px; left: 8px;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  z-index: 1100;
+}
+.btn-top {
+  padding: 8px 6px;
+  font-size: 9px;
+  letter-spacing: 0;
+  min-height: 34px;
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: center;
+  text-align: center;
+}
+
+.leaflet-control-zoom { display: none !important; }
 
       #leyenda {
-        bottom: max(96px, calc(env(safe-area-inset-bottom) + 88px));
+        bottom: calc(max(8px, env(safe-area-inset-bottom)) + 148px);
         left: 8px;
         padding: 8px 10px; font-size: 10px; border-radius: 8px;
       }
       #leyenda .item { gap: 6px; padding: 2px 0; }
 
       #logo-pivx {
-        bottom: max(96px, calc(env(safe-area-inset-bottom) + 88px));
+        bottom: calc(max(8px, env(safe-area-inset-bottom)) + 148px);
         right: 8px; width: 24px; height: 24px;
       }
 
+      .leaflet-control-zoom {
+        margin-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+        margin-right: 8px !important;
+      }
       .leaflet-control-zoom a {
         width: 34px !important;
         height: 34px !important;
         line-height: 34px !important;
         font-size: 18px !important;
       }
-      .btn-mundo { width: 34px; height: 34px; font-size: 15px; }
+      .btn-mundo {
+        width: 34px; height: 34px; font-size: 15px;
+        margin-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+      }
 
       #modal-backdrop, .modal-backdrop { padding: 0; }
 
@@ -1102,12 +1107,7 @@
     <button id="btn-accept" class="btn-top" type="button">Accept PIVX</button>
   </div>
 
-  <div id="leyenda">
-    <div class="item"><span class="box blanco"></span> No merchants</div>
-    <div class="item"><span class="box rojo"></span> With PIVX merchants</div>
-  </div>
 
-  <img id="logo-pivx" src="assets/pivx.png" alt="PIVX" />
 
   <div id="mapa"></div>
 
@@ -1170,11 +1170,10 @@
               <img src="assets/x.png" alt="Twitter / X" />
               <span>Twitter / X</span>
             </a>
-            <a class="social-card" https://www.instagram.com/pivxcrypto/ target="_blank" rel="noopener">
+            <a class="social-card" href="https://www.instagram.com/pivxcrypto/" target="_blank" rel="noopener">
               <img src="assets/i.png" alt="Instagram" />
               <span>Instagram</span>
             </a>
-
           </div>
         </div>
       </div>
@@ -1338,11 +1337,6 @@
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
     }[ch]));
 
-    window.cerrarPopupYCentrar = function () {
-      map.closePopup();
-      map.setView([20, 0], 2);
-    };
-
     const map = L.map('mapa', {
       zoomControl: false,
       attributionControl: false,
@@ -1463,6 +1457,11 @@
       const distancia = Math.sqrt(dLat * dLat + dLng * dLng);
       return distancia > 8 ? centroGrande : centroBounds;
     }
+
+    window.cerrarPopupYCentrar = function () {
+      map.closePopup();
+      map.setView([20, 0], 2);
+    };
 
     const modalBackdrop = document.getElementById('modal-backdrop');
     const modalTitulo   = document.getElementById('modal-titulo');
@@ -1782,36 +1781,36 @@
                   <span class="cat-count">${n}</span>
                 </div>`).join('');
 
-layer.bindPopup(`
-  <div class="popup-pais">
-    <div class="popup-pais-side">
-      <img src="assets/piv1.png" alt="Sparky" />
-    </div>
-    <div class="popup-pais-main">
-      <button class="btn-cerrar" onclick="cerrarPopupYCentrar()" aria-label="Close">×</button>
-      <div class="popup-pais-title">
-        <b>${esc(nombrePais)}</b>
-        <span class="popup-pais-count">
-          <span class="dot"></span>
-          ${count} merchant${count === 1 ? '' : 's'}
-        </span>
-      </div>
-      <div class="popup-pais-cats">${filasCat}</div>
-      <button class="btn-ver"
-        onclick="window.__abrirPais('${esc(iso)}', '${esc(nombrePais).replace(/'/g,"\\'")}')">
-        View merchants (${count})
-      </button>
-    </div>
-  </div>
-`, {
-  maxWidth: 540,
+            layer.bindPopup(`
+              <div class="popup-pais">
+                <div class="popup-pais-side">
+                  <img src="assets/piv1.png" alt="Sparky" />
+                </div>
+                <div class="popup-pais-main">
+                  <button class="btn-cerrar" onclick="cerrarPopupYCentrar()" aria-label="Close">×</button>
+                  <div class="popup-pais-title">
+                    <b>${esc(nombrePais)}</b>
+                    <span class="popup-pais-count">
+                      <span class="dot"></span>
+                      ${count} merchant${count === 1 ? '' : 's'}
+                    </span>
+                  </div>
+                  <div class="popup-pais-cats">${filasCat}</div>
+                  <button class="btn-ver"
+                    onclick="window.__abrirPais('${esc(iso)}', '${esc(nombrePais).replace(/'/g,"\\'")}')">
+                    View merchants (${count})
+                  </button>
+                </div>
+              </div>
+            `, {
+     maxWidth: 540,
   minWidth: 0,
   closeButton: false,
   offset: [0, -4],
   autoPan: true,
-  autoPanPaddingTopLeft: [380, 20],
-  autoPanPaddingBottomRight: [30, 30]
-});
+  autoPanPaddingTopLeft: window.innerWidth <= 720 ? [20, 220] : [280, 20],
+  autoPanPaddingBottomRight: window.innerWidth <= 720 ? [20, 20] : [30, 30]
+            });
 
             const bounds = layer.getBounds();
             const area = (bounds.getEast() - bounds.getWest()) *
