@@ -1808,8 +1808,10 @@
   closeButton: false,
   offset: [0, -4],
   autoPan: true,
-  autoPanPaddingTopLeft: window.innerWidth <= 720 ? [20, 220] : [280, 20],
-  autoPanPaddingBottomRight: window.innerWidth <= 720 ? [20, 20] : [30, 30]
+  autoPanPaddingTopLeft: window.innerWidth <= 720 ? [20, 220] : [380, 20],
+
+  autoPanPaddingBottomRight: window.innerWidth <= 720 ? [20, 20] : [30, 60]
+
             });
 
             const bounds = layer.getBounds();
