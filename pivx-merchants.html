@@ -1339,6 +1339,11 @@
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
     }[ch]));
 
+    window.cerrarPopupYCentrar = function () {
+      map.closePopup();
+      map.setView([20, 0], 2);
+    };
+
     const map = L.map('mapa', {
       zoomControl: false,
       attributionControl: false,
@@ -1778,32 +1783,36 @@
                   <span class="cat-count">${n}</span>
                 </div>`).join('');
 
-            layer.bindPopup(`
-              <div class="popup-pais">
-                <div class="popup-pais-side">
-                  <img src="assets/piv1.png" alt="Sparky" />
-                </div>
-                <div class="popup-pais-main">
-                  <button class="btn-cerrar" onclick="map.closePopup()" aria-label="Close">×</button>
-                  <div class="popup-pais-title">
-                    <b>${esc(nombrePais)}</b>
-                    <span class="popup-pais-count">
-                      <span class="dot"></span>
-                      ${count} merchant${count === 1 ? '' : 's'}
-                    </span>
-                  </div>
-                  <div class="popup-pais-cats">${filasCat}</div>
-                  <button class="btn-ver"
-                    onclick="window.__abrirPais('${esc(iso)}', '${esc(nombrePais).replace(/'/g,"\\'")}')">
-                    View merchants (${count})
-                  </button>
-                </div>
-              </div>
-            `, {
-              maxWidth: 540, minWidth: 480,
-              closeButton: false,
-              autoPanPadding: [20, 20]
-            });
+layer.bindPopup(`
+  <div class="popup-pais">
+    <div class="popup-pais-side">
+      <img src="assets/piv1.png" alt="Sparky" />
+    </div>
+    <div class="popup-pais-main">
+      <button class="btn-cerrar" onclick="cerrarPopupYCentrar()" aria-label="Close">×</button>
+      <div class="popup-pais-title">
+        <b>${esc(nombrePais)}</b>
+        <span class="popup-pais-count">
+          <span class="dot"></span>
+          ${count} merchant${count === 1 ? '' : 's'}
+        </span>
+      </div>
+      <div class="popup-pais-cats">${filasCat}</div>
+      <button class="btn-ver"
+        onclick="window.__abrirPais('${esc(iso)}', '${esc(nombrePais).replace(/'/g,"\\'")}')">
+        View merchants (${count})
+      </button>
+    </div>
+  </div>
+`, {
+  maxWidth: 540,
+  minWidth: 0,
+  closeButton: false,
+  offset: [0, -4],
+  autoPan: true,
+  autoPanPaddingTopLeft: [380, 20],
+  autoPanPaddingBottomRight: [30, 30]
+});
 
             const bounds = layer.getBounds();
             const area = (bounds.getEast() - bounds.getWest()) *
