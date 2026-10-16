@@ -4,11 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FIRO · Merchants accepting Firo</title>
-
-  <link rel="icon" type="image/x-icon" href="assets/firo-favicon.ico?">
-  <link rel="icon" type="image/png" href="/assets/firo.png?">
-  
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="icon" type="image/x-icon" href="assets/firo-favicon.ico?">
+    <link rel="icon" type="image/png" href="/assets/firo.png?">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -132,7 +130,7 @@
     .pais-numero::before { display: none; }
 
     #logo-firo {
-      position: absolute; bottom: 30px; right: 80px; z-index: 1000;
+      position: absolute; bottom: 30px; right: 30px; z-index: 1000;
       width: 32px; height: 32px; object-fit: contain; opacity: 0.85;
       filter: drop-shadow(0 0 16px rgba(155,28,46,0.3));
     }
@@ -148,28 +146,18 @@
     }
     .btn-ver:hover { background: rgba(155,28,46,0.3); color: #fff; }
 
-    .btn-mundo {
-      display: flex; align-items: center; justify-content: center;
-      width: 34px; height: 34px; cursor: pointer;
-      background: rgba(22,17,20,0.95);
-      border: 1px solid rgba(155,28,46,0.35);
-      border-radius: 8px; color: #ff7b87;
-      font-size: 16px; line-height: 1;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-    .btn-mundo:hover { background: rgba(155,28,46,0.25); color: #fff; }
-
-    #top-actions {
-      position: absolute; top: 20px; right: 20px; z-index: 1000;
-      display: flex; gap: 10px; align-items: center;
-      flex-wrap: wrap;
-    }
+#top-actions {
+  position: absolute; top: 20px; right: 20px; z-index: 1000;
+  display: flex; gap: 8px; align-items: center;
+  flex-wrap: nowrap;
+  max-width: calc(100vw - 40px);
+}
     .btn-top {
-      padding: 10px 16px; cursor: pointer;
+      padding: 9px 14px; cursor: pointer;
       background: #9B1C2E; color: #fff;
       border: 1px solid #ff7b87;
       border-radius: 10px;
-      font-family: inherit; font-size: 12px;
+      font-family: inherit; font-size: 11px;
       letter-spacing: 0.5px; text-transform: uppercase;
       font-weight: 600;
       box-shadow: 0 4px 20px rgba(155,28,46,0.5);
@@ -842,6 +830,25 @@
       text-align: center; padding: 4px 0;
     }
 
+    body.popup-abierto #panel,
+    body.popup-abierto #leyenda,
+    body.popup-abierto #logo-firo {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #panel, #top-actions, #leyenda, #logo-firo {
+      transition: opacity 0.2s ease;
+    }
+
+    @media (max-width: 1024px) {
+      #top-actions {
+        top: 230px;
+        gap: 6px;
+      }
+      .btn-top { padding: 8px 10px; font-size: 10px; }
+    }
+
     @media (max-width: 720px) {
       #mapa { height: 100dvh; }
 
@@ -863,28 +870,31 @@
       #top-actions {
         top: auto; bottom: 8px;
         right: 8px; left: 8px;
-        gap: 6px; justify-content: flex-end; flex-wrap: wrap;
+        gap: 4px;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        max-width: none;
       }
-      .btn-top { padding: 8px 10px; font-size: 10px; }
+      .btn-top {
+        padding: 6px 6px;
+        font-size: 9px;
+        flex: 1 1 0;
+        min-width: 0;
+        justify-content: center;
+        text-align: center;
+        letter-spacing: 0;
+      }
 
       #leyenda {
-        bottom: 96px; left: 8px;
+        bottom: 56px; left: 8px;
         padding: 8px 10px; font-size: 10px; border-radius: 8px;
       }
       #leyenda .item { gap: 6px; padding: 2px 0; }
 
       #logo-firo {
-        bottom: 96px; right: 8px;
+        bottom: 56px; right: 8px;
         width: 24px; height: 24px;
       }
-
-      .leaflet-control-zoom a {
-        width: 34px !important;
-        height: 34px !important;
-        line-height: 34px !important;
-        font-size: 18px !important;
-      }
-      .btn-mundo { width: 34px; height: 34px; font-size: 15px; }
 
       #modal-backdrop, .modal-backdrop { padding: 0; }
       #modal, .modal-box {
@@ -933,6 +943,10 @@
       #privacy-body .privacy-section { text-align: left; }
     }
 
+    @media (max-width: 380px) {
+      .btn-top { padding: 6px 4px; font-size: 8px; }
+    }
+
     @media (min-width: 721px) and (max-width: 1024px) {
       #panel { font-size: 11px; min-width: 220px; }
       #modal { max-width: 90vw; }
@@ -954,7 +968,7 @@
     <h2>
       <img src="assets/firo.png" alt="Firo" />
       Firo Merchants
-      <small>v1.6</small>
+      <small>v1.8</small>
     </h2>
     <div class="row"><span class="label">Merchants</span><span class="value" id="total">—</span></div>
     <div class="row"><span class="label">Accept Firo</span><span class="value enabled" id="enabled">—</span></div>
@@ -1208,21 +1222,6 @@
       maxZoom: 10
     }).setView([20, 0], 2);
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-    const MundoControl = L.Control.extend({
-      options: { position: 'bottomright' },
-      onAdd: function () {
-        const div = L.DomUtil.create('div', 'btn-mundo');
-        div.title = 'View world';
-        div.innerHTML = '🌍';
-        L.DomEvent.disableClickPropagation(div);
-        div.onclick = () => map.setView([20, 0], 2);
-        return div;
-      }
-    });
-    new MundoControl().addTo(map);
-
     const iconoComercio = L.divIcon({
       className: '',
       html: `<div style="width:12px;height:12px;border-radius:50%;background:#9B1C2E;border:2px solid #f5e6c8;box-shadow:0 0 8px rgba(155,28,46,0.8), 0 0 14px rgba(255,123,135,0.5);"></div>`,
@@ -1336,6 +1335,7 @@
     const modalBuscar   = document.getElementById('modal-buscar');
 
     let comerciosActuales = [];
+    let suprimirRecentrado = false;
 
     function abrirModal(nombrePais, comercios) {
       comerciosActuales = comercios;
@@ -1349,6 +1349,7 @@
     function cerrarModal() {
       modalBackdrop.classList.remove('open');
       comerciosActuales = [];
+      map.setView([20, 0], 2, { animate: true });
     }
 
     function renderLista(lista) {
@@ -1450,7 +1451,9 @@
 
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
-      cerrarModal();
+      if (modalBackdrop.classList.contains('open')) {
+        cerrarModal();
+      }
       if (acceptBackdrop)    acceptBackdrop.classList.remove('open');
       if (communityBackdrop) communityBackdrop.classList.remove('open');
       if (suggestBackdrop)   suggestBackdrop.classList.remove('open');
@@ -1619,6 +1622,8 @@
       });
 
       window.__abrirPais = (iso, nombre) => {
+        suprimirRecentrado = true;
+        map.closePopup();
         abrirModal(nombre, porPais[iso] || []);
       };
 
@@ -1674,8 +1679,13 @@
                 </button>
               </div>
             `, {
-              maxWidth: 320, minWidth: 260,
-              closeButton: true, autoPanPadding: [20, 20]
+              maxWidth: 540,
+              minWidth: 0,
+              closeButton: false,
+              offset: [0, -4],
+              autoPan: true,
+              autoPanPaddingTopLeft: [30, 30],
+              autoPanPaddingBottomRight: [30, 30]
             });
 
             const bounds = layer.getBounds();
@@ -1760,7 +1770,8 @@
           </div>
         `, {
           maxWidth: 340, minWidth: 0,
-          closeButton: true, offset: [0, -4],
+          closeButton: true,
+          autoPan: true,
           autoPanPadding: [30, 30]
         });
 
@@ -1782,6 +1793,19 @@
     .catch(err => {
       console.error(err);
       document.getElementById('total').textContent = 'Error';
+    });
+
+    map.on('popupopen', () => {
+      document.body.classList.add('popup-abierto');
+    });
+
+    map.on('popupclose', () => {
+      document.body.classList.remove('popup-abierto');
+      if (suprimirRecentrado) {
+        suprimirRecentrado = false;
+        return;
+      }
+      map.setView([20, 0], 2, { animate: true });
     });
   </script>
 </body>
