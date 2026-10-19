@@ -1,7 +1,7 @@
 const TRANSLATIONS = {
     es: {
-        "explorer.prefork_notice": "Bloque heredado de Bitcoin",
-        "explorer.prefork_notice_tx": "Transacción heredada de Bitcoin",
+        "explorer.prefork_notice": "Bloque heredado de Dash",
+        "explorer.prefork_notice_tx": "Transacción heredada de Dash",
         "common.nav.node":              "[NODO]",
         "common.nav.explorer":          "[EXPLORADOR]",
         "common.nav.console":           "[CONSOLA]",
@@ -63,7 +63,7 @@ const TRANSLATIONS = {
 
         "common.footer.realtime":       "actualizado en tiempo real",
         "common.footer.api":            "API ·",
-        "common.footer.mainnet":        "BCH mainnet",
+        "common.footer.mainnet":        "PIVX mainnet",
         "common.footer.updated_at":     "actualizado",
         "common.footer.loading":        "cargando",
 
@@ -72,32 +72,32 @@ const TRANSLATIONS = {
         "common.error.no_result":       "sin resultado",
         "common.error.connection_prefix": "⚠️ Error de conexión:",
 
-        "bch.title_short":              "bloques en vivo",
-        "bch.stats.difficulty":         "⛏️ Dificultad",
-        "bch.stats.mempool":            "📦 Mempool",
-        "bch.stats.last_block":         "🔗 Último bloque",
-        "bch.block_prefix":             "Bloque #",
-        "bch.update_ago":               "actualizado",
-        "bch.loading":                  "⏳ Cargando bloques desde el nodo BCH...",
-        "bch.miner":                    "Minero",
-        "bch.tx_count":                 "Transacciones",
-        "bch.size":                     "Tamaño",
-        "bch.difficulty":               "Dificultad",
-        "bch.view_explorer":            "🔗 ver en explorador",
-        "bch.miner_unknown":            "Desconocido",
-        "bch.mempool.empty":            "vacío",
-        "bch.mempool.low":              "bajo",
-        "bch.mempool.normal":           "normal",
-        "bch.mempool.high":             "alto",
-        "bch.mempool.congested":        "congestionado",
-        "bch.mempool.loading":          "cargando",
-        "bch.mempool.error":            "error",
-        "bch.mempool.error_conn":       "error de conexión",
-        "bch.mempool.data":             "en datos",
-        "bch.mempool.ram":              "RAM",
-        "bch.mempool.vacio":            "vacío",
-        "bch.no_blocks":                "⚠️ No se encontraron bloques",
-        "bch.updated_at":               "actualizado",
+        "pivx.title_short":              "bloques en vivo",
+        "pivx.stats.difficulty":         "⛏️ Dificultad",
+        "pivx.stats.mempool":            "📦 Mempool",
+        "pivx.stats.last_block":         "🔗 Último bloque",
+        "pivx.block_prefix":             "Bloque #",
+        "pivx.update_ago":               "actualizado",
+        "pivx.loading":                  "⏳ Cargando bloques desde el nodo PIVX...",
+        "pivx.miner":                    "Validador",
+        "pivx.tx_count":                 "Transacciones",
+        "pivx.size":                     "Tamaño",
+        "pivx.difficulty":               "Dificultad",
+        "pivx.view_explorer":            "🔗 ver en explorador",
+        "pivx.miner_unknown":            "Desconocido",
+        "pivx.mempool.empty":            "vacío",
+        "pivx.mempool.low":              "bajo",
+        "pivx.mempool.normal":           "normal",
+        "pivx.mempool.high":             "alto",
+        "pivx.mempool.congested":        "congestionado",
+        "pivx.mempool.loading":          "cargando",
+        "pivx.mempool.error":            "error",
+        "pivx.mempool.error_conn":       "error de conexión",
+        "pivx.mempool.data":             "en datos",
+        "pivx.mempool.ram":              "RAM",
+        "pivx.mempool.vacio":            "vacío",
+        "pivx.no_blocks":                "⚠️ No se encontraron bloques",
+        "pivx.updated_at":               "actualizado",
 
         "consola.title_short":          "consola RPC",
         "consola.help.simple_title":    "COMANDOS BÁSICOS (sin parámetros)",
@@ -120,7 +120,7 @@ const TRANSLATIONS = {
         "explorer.title_short":         "explorador",
         "explorer.back":                "← volver",
         "explorer.search_placeholder":  "bloque · hash · txid · dirección",
-        "explorer.placeholder_title":   "explorador de bloques BCH",
+        "explorer.placeholder_title":   "explorador de bloques PIVX",
         "explorer.placeholder_sub":     "bloque · transacción · dirección",
         "explorer.loading":             "consultando red…",
         "explorer.cmd_error":           "error",
@@ -174,10 +174,10 @@ const TRANSLATIONS = {
         "explorer.shortcut_clear_label":"limpiar",
 
         "nodo.title_short":             "monitor",
-        "nodo.panel_title":             "MONITOR DE NODO BCH",
+        "nodo.panel_title":             "MONITOR DE NODO PIVX",
         "nodo.card.node_state":         "Nodo · Estado",
         "nodo.card.network":            "Nodo · Red",
-        "nodo.card.market":             "BCH · Mercado",
+        "nodo.card.market":             "PIVX · Mercado",
         "nodo.card.cert":               "Certificado SSL",
         "nodo.cert.issuer":             "EMISOR",
         "nodo.cert.subject":            "DOMINIO",
@@ -187,20 +187,20 @@ const TRANSLATIONS = {
         "nodo.label.24h":               "24h %",
         "nodo.label.7d":                "7d %",
         "nodo.label.vol_24h":           "VOLUMEN 24h",
-        "nodo.note_default":            "Este nodo BCH está sincronizando la blockchain. Los datos se actualizan cada 5 minutos.",
+        "nodo.note_default":            "Este nodo PIVX está sincronizando la blockchain. Los datos se actualizan cada 5 minutos.",
         "nodo.note_syncing":            "El nodo está sincronizando la blockchain. Bloques pendientes:",
         "nodo.note_ok":                 "El nodo está totalmente sincronizado. Datos actualizados cada 5 minutos.",
         "nodo.footer.colabora":         "[COLABORA]",
         "nodo.colabora.title":          "COLABORA CON EL NODO",
-        "nodo.colabora.desc":           "Si queres apoyar el mantenimiento de este nodo y servicios, podes enviar BCH a cualquiera de estas direcciones:",
+        "nodo.colabora.desc":           "Si queres apoyar el mantenimiento de este nodo y servicios, podes enviar PIVX a cualquiera de estas direcciones:",
         "nodo.colabora.copy":           "Copiar",
         "nodo.colabora.copied":         "¡Copiado!",
         "nodo.colabora.thanks":         "¡Gracias por tu apoyo! ❤️"
     },
 
     en: {
-    	"explorer.prefork_notice": "Legacy Bitcoin block",
-	    "explorer.prefork_notice_tx": "Legacy Bitcoin transaction",
+        "explorer.prefork_notice": "Legacy Dash block",
+        "explorer.prefork_notice_tx": "Legacy Dash transaction",
         "common.nav.node":              "[NODE]",
         "common.nav.explorer":          "[EXPLORER]",
         "common.nav.console":           "[CONSOLE]",
@@ -262,7 +262,7 @@ const TRANSLATIONS = {
 
         "common.footer.realtime":       "updated in real time",
         "common.footer.api":            "API ·",
-        "common.footer.mainnet":        "BCH mainnet",
+        "common.footer.mainnet":        "PIVX mainnet",
         "common.footer.updated_at":     "updated",
         "common.footer.loading":        "loading",
 
@@ -271,32 +271,32 @@ const TRANSLATIONS = {
         "common.error.no_result":       "no result",
         "common.error.connection_prefix": "⚠️ Connection error:",
 
-        "bch.title_short":              "live blocks",
-        "bch.stats.difficulty":         "⛏️ Difficulty",
-        "bch.stats.mempool":            "📦 Mempool",
-        "bch.stats.last_block":         "🔗 Latest block",
-        "bch.block_prefix":             "Block #",
-        "bch.update_ago":               "updated",
-        "bch.loading":                  "⏳ Loading blocks from BCH node...",
-        "bch.miner":                    "Miner",
-        "bch.tx_count":                 "Transactions",
-        "bch.size":                     "Size",
-        "bch.difficulty":               "Difficulty",
-        "bch.view_explorer":            "🔗 view in explorer",
-        "bch.miner_unknown":            "Unknown",
-        "bch.mempool.empty":            "empty",
-        "bch.mempool.low":              "low",
-        "bch.mempool.normal":           "normal",
-        "bch.mempool.high":             "high",
-        "bch.mempool.congested":        "congested",
-        "bch.mempool.loading":          "loading",
-        "bch.mempool.error":            "error",
-        "bch.mempool.error_conn":       "connection error",
-        "bch.mempool.data":             "of data",
-        "bch.mempool.ram":              "RAM",
-        "bch.mempool.vacio":            "empty",
-        "bch.no_blocks":                "⚠️ No blocks found",
-        "bch.updated_at":               "updated",
+        "pivx.title_short":              "live blocks",
+        "pivx.stats.difficulty":         "⛏️ Difficulty",
+        "pivx.stats.mempool":            "📦 Mempool",
+        "pivx.stats.last_block":         "🔗 Latest block",
+        "pivx.block_prefix":             "Block #",
+        "pivx.update_ago":               "updated",
+        "pivx.loading":                  "⏳ Loading blocks from PIVX node...",
+        "pivx.miner":                    "Validator",
+        "pivx.tx_count":                 "Transactions",
+        "pivx.size":                     "Size",
+        "pivx.difficulty":               "Difficulty",
+        "pivx.view_explorer":            "🔗 view in explorer",
+        "pivx.miner_unknown":            "Unknown",
+        "pivx.mempool.empty":            "empty",
+        "pivx.mempool.low":              "low",
+        "pivx.mempool.normal":           "normal",
+        "pivx.mempool.high":             "high",
+        "pivx.mempool.congested":        "congested",
+        "pivx.mempool.loading":          "loading",
+        "pivx.mempool.error":            "error",
+        "pivx.mempool.error_conn":       "connection error",
+        "pivx.mempool.data":             "of data",
+        "pivx.mempool.ram":              "RAM",
+        "pivx.mempool.vacio":            "empty",
+        "pivx.no_blocks":                "⚠️ No blocks found",
+        "pivx.updated_at":               "updated",
 
         "consola.title_short":          "RPC console",
         "consola.help.simple_title":    "BASIC COMMANDS (no params)",
@@ -319,7 +319,7 @@ const TRANSLATIONS = {
         "explorer.title_short":         "explorer",
         "explorer.back":                "← back",
         "explorer.search_placeholder":  "block · hash · txid · address",
-        "explorer.placeholder_title":   "BCH block explorer",
+        "explorer.placeholder_title":   "PIVX block explorer",
         "explorer.placeholder_sub":     "block · transaction · address",
         "explorer.loading":             "querying network…",
         "explorer.cmd_error":           "error",
@@ -373,10 +373,10 @@ const TRANSLATIONS = {
         "explorer.shortcut_clear_label":"clear",
 
         "nodo.title_short":             "monitor",
-        "nodo.panel_title":             "BCH NODE MONITOR",
+        "nodo.panel_title":             "PIVX NODE MONITOR",
         "nodo.card.node_state":         "Node · Status",
         "nodo.card.network":            "Node · Network",
-        "nodo.card.market":             "BCH · Market",
+        "nodo.card.market":             "PIVX · Market",
         "nodo.card.cert":               "SSL Certificate",
         "nodo.cert.issuer":             "ISSUER",
         "nodo.cert.subject":            "DOMAIN",
@@ -386,19 +386,48 @@ const TRANSLATIONS = {
         "nodo.label.24h":               "24h %",
         "nodo.label.7d":                "7d %",
         "nodo.label.vol_24h":           "24h VOLUME",
-        "nodo.note_default":            "This BCH node is syncing the blockchain. Data refreshes every 5 minutes.",
+        "nodo.note_default":            "This PIVX node is syncing the blockchain. Data refreshes every 5 minutes.",
         "nodo.note_syncing":            "Node is syncing the blockchain. Blocks behind:",
         "nodo.note_ok":                 "Node is fully synced. Data refreshes every 5 minutes.",
         "nodo.footer.colabora":         "[CONTRIBUTE]",
         "nodo.colabora.title":          "CONTRIBUTE TO THE NODE",
-        "nodo.colabora.desc":           "If you want to support the maintenance of this node and services, you can send BCH to any of these addresses:",
+        "nodo.colabora.desc":           "If you want to support the maintenance of this node and services, you can send PIVX to any of these addresses:",
         "nodo.colabora.copy":           "Copy",
         "nodo.colabora.copied":         "Copied!",
         "nodo.colabora.thanks":         "Thanks for your support! ❤️"
     }
 };
 
-const BchI18n = (function() {
+const BCH_KEY_ALIASES = {
+    "bch.title_short":              "pivx.title_short",
+    "bch.stats.difficulty":         "pivx.stats.difficulty",
+    "bch.stats.mempool":            "pivx.stats.mempool",
+    "bch.stats.last_block":         "pivx.stats.last_block",
+    "bch.block_prefix":             "pivx.block_prefix",
+    "bch.update_ago":               "pivx.update_ago",
+    "bch.loading":                  "pivx.loading",
+    "bch.miner":                    "pivx.miner",
+    "bch.tx_count":                 "pivx.tx_count",
+    "bch.size":                     "pivx.size",
+    "bch.difficulty":               "pivx.difficulty",
+    "bch.view_explorer":            "pivx.view_explorer",
+    "bch.miner_unknown":            "pivx.miner_unknown",
+    "bch.mempool.empty":            "pivx.mempool.empty",
+    "bch.mempool.low":              "pivx.mempool.low",
+    "bch.mempool.normal":           "pivx.mempool.normal",
+    "bch.mempool.high":             "pivx.mempool.high",
+    "bch.mempool.congested":        "pivx.mempool.congested",
+    "bch.mempool.loading":          "pivx.mempool.loading",
+    "bch.mempool.error":            "pivx.mempool.error",
+    "bch.mempool.error_conn":       "pivx.mempool.error_conn",
+    "bch.mempool.data":             "pivx.mempool.data",
+    "bch.mempool.ram":              "pivx.mempool.ram",
+    "bch.mempool.vacio":            "pivx.mempool.vacio",
+    "bch.no_blocks":                "pivx.no_blocks",
+    "bch.updated_at":               "pivx.updated_at"
+};
+
+const PivxI18n = (function() {
     let currentLang = 'es';
 
     function detectLang() {
@@ -406,7 +435,7 @@ const BchI18n = (function() {
         const urlLang = urlParams.get('lang');
         if (urlLang && TRANSLATIONS[urlLang]) return urlLang;
 
-        const saved = localStorage.getItem('bch_lang');
+        const saved = localStorage.getItem('pivx_lang') || localStorage.getItem('bch_lang');
         if (saved && TRANSLATIONS[saved]) return saved;
 
         const nav = (navigator.language || 'es').substring(0, 2).toLowerCase();
@@ -415,8 +444,16 @@ const BchI18n = (function() {
         return 'es';
     }
 
+    function resolveKey(key) {
+        if (BCH_KEY_ALIASES[key]) return BCH_KEY_ALIASES[key];
+        return key;
+    }
+
     function t(key) {
-        return TRANSLATIONS[currentLang]?.[key]
+        const resolved = resolveKey(key);
+        return TRANSLATIONS[currentLang]?.[resolved]
+            ?? TRANSLATIONS['es']?.[resolved]
+            ?? TRANSLATIONS[currentLang]?.[key]
             ?? TRANSLATIONS['es']?.[key]
             ?? key;
     }
@@ -455,6 +492,7 @@ const BchI18n = (function() {
     function setLang(lang) {
         if (!TRANSLATIONS[lang]) return;
         currentLang = lang;
+        localStorage.setItem('pivx_lang', lang);
         localStorage.setItem('bch_lang', lang);
         apply();
     }
@@ -478,4 +516,6 @@ const BchI18n = (function() {
     };
 })();
 
-window.FiroI18n = BchI18n;
+window.PivxI18n = PivxI18n;
+window.FiroI18n = PivxI18n;
+window.BchI18n = PivxI18n;
