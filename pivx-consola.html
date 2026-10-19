@@ -132,9 +132,7 @@
         }
 
         .lang-switcher button + button { border-left: 1px solid rgba(160, 68, 255, 0.15); }
-
         .lang-switcher button:hover { color: #c597ff; background: rgba(160, 68, 255, 0.06); }
-
         .lang-switcher button.active { color: #0a080c; background: #c597ff; font-weight: 700; }
 
         .panel {
@@ -317,7 +315,41 @@
 
         #output .copy-btn:hover { background: rgba(160, 68, 255, 0.1); border-color: #c597ff; }
 
-        #output .placeholder { color: #4a443a; }
+        #output .placeholder {
+            color: #4a443a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            gap: 16px;
+            text-align: center;
+        }
+
+        #output .placeholder .placeholder-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 100%;
+            margin-bottom: 4px;
+        }
+
+        #output .placeholder .placeholder-logo img {
+            display: block;
+            width: auto;
+            height: auto;
+            max-width: 200px;
+            max-height: 350px;
+            object-fit: contain;
+            opacity: 0.35;
+            filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.15));
+            transition: opacity 0.3s, filter 0.3s;
+        }
+
+        #output .placeholder .placeholder-logo img:hover {
+            opacity: 0.6;
+            filter: drop-shadow(0 0 32px rgba(160, 68, 255, 0.3));
+        }
 
         .footer {
             margin-top: 18px;
@@ -411,6 +443,8 @@
             .input-line input { font-size: 16px; padding: 11px 4px; }
             .output-wrapper { padding: 14px 16px; min-height: 200px; }
             #output { font-size: 11px; }
+            #output .placeholder { min-height: 200px; }
+            #output .placeholder .placeholder-logo img { max-width: 140px; max-height: 180px; }
             .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
             .footer .shortcuts { gap: 8px; flex-wrap: wrap; }
         }
@@ -436,6 +470,8 @@
             .input-line input { font-size: 16px; padding: 9px 4px; }
             .output-wrapper { padding: 12px 14px; min-height: 220px; }
             #output { font-size: 10px; line-height: 1.5; }
+            #output .placeholder { min-height: 180px; gap: 10px; }
+            #output .placeholder .placeholder-logo img { max-width: 100px; max-height: 140px; }
             #output .copy-btn { font-size: 10px; padding: 4px 16px; }
             .footer { font-size: 10px; }
             .footer .shortcuts { font-size: 9px; gap: 6px; flex-wrap: wrap; }
@@ -450,6 +486,7 @@
             .help-box .simple,
             .help-box .params { font-size: 9px; }
             #output { font-size: 9px; }
+            #output .placeholder .placeholder-logo img { max-width: 80px; max-height: 120px; }
         }
 
         @media (min-width: 1920px) {
@@ -512,7 +549,12 @@
 
             <div class="output-wrapper">
                 <div id="output">
-                    <div class="placeholder" data-i18n="consola.placeholder">Listo para ejecutar comandos...</div>
+                    <div class="placeholder">
+                        <div class="placeholder-logo">
+                            <img src="assets/piv4.png" alt="PIVX">
+                        </div>
+                        <div data-i18n="consola.placeholder">Listo para ejecutar comandos...</div>
+                    </div>
                 </div>
             </div>
 
@@ -594,6 +636,18 @@
             outputDiv.innerHTML = output;
         }
 
+        function renderPlaceholder() {
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = `
+                <div class="placeholder">
+                    <div class="placeholder-logo">
+                        <img src="assets/piv4.png" alt="PIVX">
+                    </div>
+                    <div>${t('consola.placeholder', 'Listo para ejecutar comandos...')}</div>
+                </div>
+            `;
+        }
+
         async function sendCommand() {
             const input = document.getElementById('cmdInput');
             const cmd = input.value.trim();
@@ -664,7 +718,7 @@
             if (e.key === 'F9') {
                 e.preventDefault();
                 document.getElementById('cmdInput').value = '';
-                document.getElementById('output').innerHTML = `<div class="placeholder">${t('consola.placeholder', 'Listo para ejecutar comandos...')}</div>`;
+                renderPlaceholder();
                 lastCommand = null;
                 lastResult = null;
                 const prompt = document.querySelector('.prompt');
@@ -687,11 +741,7 @@
             if (lastCommand && lastResult) {
                 renderOutput(lastCommand, lastResult.text, lastResult.isError);
             } else {
-                const outputDiv = document.getElementById('output');
-                const placeholder = outputDiv.querySelector('.placeholder');
-                if (placeholder) {
-                    placeholder.textContent = t('consola.placeholder', 'Listo para ejecutar comandos...');
-                }
+                renderPlaceholder();
             }
         };
 
