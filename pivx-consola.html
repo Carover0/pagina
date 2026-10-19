@@ -1,494 +1,464 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIVX · Consola RPC</title>
     <link rel="icon" type="image/png" href="assets/pivx.png">
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html, body { overflow-x: hidden; }
+        html, body { overflow-x: hidden; }
 
-    body {
-        min-height: 100vh;
-        background: #0a080c;
-        background-image:
-            radial-gradient(ellipse at 30% 40%, rgba(160, 68, 255, 0.08) 0%, transparent 60%),
-            radial-gradient(ellipse at 70% 80%, rgba(160, 68, 255, 0.05) 0%, transparent 50%),
-            linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
-        font-family: 'Lucida Console', 'Courier New', monospace;
-        color: #ece8e0;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-    }
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(160, 68, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(160, 68, 255, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
 
-    .app {
-        width: 100%;
-        max-width: 1400px;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-        padding: 20px 28px;
-        min-width: 0;
-    }
-
-    .header {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px 20px;
-        padding: 16px 24px;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 14px;
-        border: 1px solid rgba(160, 68, 255, 0.2);
-        backdrop-filter: blur(8px);
-        min-width: 0;
-    }
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        min-width: 0;
-    }
-
-    .brand img {
-        width: 38px;
-        height: 38px;
-        filter: drop-shadow(0 0 16px rgba(160, 68, 255, 0.3));
-        transition: filter 0.3s;
-        flex-shrink: 0;
-    }
-
-    .brand img:hover {
-        filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.5));
-    }
-
-    .brand h1 {
-        font-size: 21px;
-        font-weight: 400;
-        letter-spacing: 1.5px;
-        color: #f5e6c8;
-        text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
-        min-width: 0;
-    }
-
-    .brand h1 small {
-        font-size: 12px;
-        color: #6a6255;
-        letter-spacing: 2px;
-        font-weight: 300;
-    }
-
-    .nav-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px 18px;
-        font-size: 12px;
-        letter-spacing: 0.3px;
-        min-width: 0;
-    }
-
-    .nav-links a {
-        color: #6a6255;
-        text-decoration: none;
-        transition: all 0.25s;
-        padding: 4px 0;
-        border-bottom: 2px solid transparent;
-        white-space: nowrap;
-    }
-
-    .nav-links a:hover {
-        color: #c597ff;
-        border-bottom-color: #c597ff;
-    }
-
-    .panel {
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 14px;
-        border: 1px solid rgba(160, 68, 255, 0.06);
-        padding: 24px 28px;
-        backdrop-filter: blur(8px);
-        transition: border-color 0.3s;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-    }
-
-    .panel:hover {
-        border-color: rgba(160, 68, 255, 0.12);
-    }
-
-    .panel-title {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        color: #c597ff;
-        font-size: 18px;
-        letter-spacing: 1px;
-        margin-bottom: 18px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid rgba(160, 68, 255, 0.06);
-        min-width: 0;
-    }
-
-    .panel-title img {
-        width: 32px;
-        height: 32px;
-        filter: drop-shadow(0 0 12px rgba(160, 68, 255, 0.25));
-        flex-shrink: 0;
-    }
-
-    .panel-title span {
-        min-width: 0;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-    }
-
-    .help-box {
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin-bottom: 16px;
-        border: 1px solid rgba(160, 68, 255, 0.06);
-        min-width: 0;
-    }
-
-    .help-box .title {
-        color: #8a8275;
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-top: 8px;
-    }
-
-    .help-box .title:first-child {
-        margin-top: 0;
-    }
-
-    .help-box .simple,
-    .help-box .params {
-        color: #b0a897;
-        font-size: 12px;
-        line-height: 1.6;
-        padding: 4px 0 8px 0;
-        word-break: normal;
-        overflow-wrap: anywhere;
-    }
-
-    .help-box .simple .cmd,
-    .help-box .params .cmd {
-        color: #c597ff;
-        cursor: pointer;
-        transition: color 0.2s;
-        border-bottom: 1px solid transparent;
-    }
-
-    .help-box .simple .cmd:hover,
-    .help-box .params .cmd:hover {
-        color: #dbb8ff;
-        border-bottom-color: rgba(160, 68, 255, 0.2);
-    }
-
-    .input-line {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 12px;
-        padding: 2px 2px 2px 18px;
-        border: 1px solid rgba(160, 68, 255, 0.12);
-        transition: all 0.3s ease;
-        margin-bottom: 16px;
-        min-width: 0;
-        flex-shrink: 0;
-    }
-
-    .input-line:focus-within {
-        border-color: rgba(160, 68, 255, 0.4);
-        box-shadow: 0 0 0 4px rgba(160, 68, 255, 0.06);
-        background: rgba(255, 255, 255, 0.04);
-    }
-
-    .input-line .prompt {
-        color: #c597ff;
-        font-size: 13px;
-        user-select: none;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-
-    .input-line input {
-        flex: 1;
-        background: transparent;
-        border: none;
-        padding: 13px 8px 13px 4px;
-        font-family: 'Lucida Console', 'Courier New', monospace;
-        font-size: 16px;
-        color: #f5ede4;
-        outline: none;
-        min-width: 0;
-    }
-
-    .input-line input::placeholder {
-        color: #3d3830;
-        letter-spacing: 0.3px;
-    }
-
-    .output-wrapper {
-        background: rgba(0, 0, 0, 0.25);
-        border-radius: 10px;
-        padding: 16px 20px;
-        border: 1px solid rgba(160, 68, 255, 0.04);
-        flex: 1;
-        min-height: 100px;
-        overflow-y: auto;
-        min-width: 0;
-    }
-
-    .output-wrapper::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .output-wrapper::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .output-wrapper::-webkit-scrollbar-thumb {
-        background: rgba(160, 68, 255, 0.2);
-        border-radius: 10px;
-    }
-
-    #output {
-        font-family: 'Lucida Console', 'Courier New', monospace;
-        font-size: 12px;
-        line-height: 1.7;
-        color: #e0d8cc;
-        min-width: 0;
-    }
-
-    #output .cmd-line {
-        color: #c597ff;
-        margin-bottom: 8px;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-    }
-
-    #output .cmd-line .prompt-icon {
-        color: #c597ff;
-    }
-
-    #output .result {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        overflow-wrap: anywhere;
-        color: #e0d8cc;
-    }
-
-    #output .result .error {
-        color: #ff756f;
-    }
-
-    #output .result .gold {
-        color: #c597ff;
-    }
-
-    #output .result .green {
-        color: #31db72;
-    }
-
-    #output .copy-btn {
-        margin-top: 12px;
-        background: rgba(160, 68, 255, 0.06);
-        border: 1px solid rgba(160, 68, 255, 0.12);
-        color: #c597ff;
-        font-family: 'Lucida Console', monospace;
-        font-size: 11px;
-        padding: 5px 20px;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.25s;
-    }
-
-    #output .copy-btn:hover {
-        background: rgba(160, 68, 255, 0.1);
-        border-color: #c597ff;
-    }
-
-    #output .placeholder {
-        color: #4a443a;
-    }
-
-    .footer {
-        margin-top: 18px;
-        padding-top: 14px;
-        border-top: 1px solid rgba(160, 68, 255, 0.06);
-        font-size: 11px;
-        color: #4a443a;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-    }
-
-    .footer a {
-        color: #6a6255;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-
-    .footer a:hover {
-        color: #c597ff;
-    }
-
-    .footer .api-link {
-        font-size: 11px;
-        color: #5a5348;
-        word-break: break-all;
-        overflow-wrap: anywhere;
-    }
-
-    .footer .api-link:hover {
-        color: #c597ff;
-    }
-
-    .footer .shortcuts {
-        display: flex;
-        gap: 12px;
-        font-size: 10px;
-        color: #3d3830;
-    }
-
-    .footer .shortcuts kbd {
-        background: rgba(255, 255, 255, 0.04);
-        padding: 2px 10px;
-        border-radius: 4px;
-        color: #5a5348;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        font-family: 'Lucida Console', monospace;
-        font-size: 9px;
-    }
-
-    .toast {
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
-        background: rgba(160, 68, 255, 0.08);
-        backdrop-filter: blur(12px);
-        color: #f5ede4;
-        padding: 10px 20px;
-        border-radius: 40px;
-        border: 1px solid rgba(160, 68, 255, 0.12);
-        font-family: 'Lucida Console', monospace;
-        font-size: 12px;
-        opacity: 0;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        pointer-events: none;
-        z-index: 999;
-        letter-spacing: 0.3px;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-        max-width: calc(100vw - 40px);
-        text-align: center;
-    }
-
-    .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-
-    @media (max-width: 768px) {
         .app {
-            padding: max(12px, env(safe-area-inset-top))
-                     max(14px, env(safe-area-inset-right))
-                     max(12px, env(safe-area-inset-bottom))
-                     max(14px, env(safe-area-inset-left));
-            gap: 12px;
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+            min-width: 0;
         }
 
         .header {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 10px;
-            padding: 14px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(160, 68, 255, 0.2);
+            backdrop-filter: blur(8px);
+            min-width: 0;
         }
 
-        .brand h1 { font-size: 17px; }
-        .brand img { width: 30px; height: 30px; }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(160, 68, 255, 0.3));
+            transition: filter 0.3s;
+            flex-shrink: 0;
+        }
+
+        .brand img:hover { filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.5)); }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
+            white-space: nowrap;
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
 
         .nav-links {
-            font-size: 11px;
-            gap: 2px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+            min-width: 0;
         }
 
-        .panel { padding: 18px 16px; }
-        .panel-title { font-size: 16px; }
-        .panel-title img { width: 28px; height: 28px; }
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
 
-        .help-box { padding: 12px 14px; }
+        .nav-links a:hover { color: #c597ff; border-bottom-color: #c597ff; }
+
+        .lang-switcher {
+            display: inline-flex;
+            border: 1px solid rgba(160, 68, 255, 0.25);
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            flex-shrink: 0;
+        }
+
+        .lang-switcher button {
+            background: transparent;
+            border: none;
+            color: #6a6255;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lang-switcher button + button { border-left: 1px solid rgba(160, 68, 255, 0.15); }
+
+        .lang-switcher button:hover { color: #c597ff; background: rgba(160, 68, 255, 0.06); }
+
+        .lang-switcher button.active { color: #0a080c; background: #c597ff; font-weight: 700; }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(160, 68, 255, 0.06);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .panel:hover { border-color: rgba(160, 68, 255, 0.12); }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #c597ff;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.06);
+            min-width: 0;
+        }
+
+        .panel-title img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 12px rgba(160, 68, 255, 0.25));
+            flex-shrink: 0;
+        }
+
+        .panel-title span { min-width: 0; word-break: break-word; overflow-wrap: anywhere; }
+
+        .help-box {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(160, 68, 255, 0.06);
+            min-width: 0;
+        }
+
+        .help-box .title {
+            color: #8a8275;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 8px;
+        }
+
+        .help-box .title:first-child { margin-top: 0; }
+
         .help-box .simple,
-        .help-box .params { font-size: 11px; }
+        .help-box .params {
+            color: #b0a897;
+            font-size: 12px;
+            line-height: 1.6;
+            padding: 4px 0 8px 0;
+            word-break: normal;
+            overflow-wrap: anywhere;
+        }
 
-        .input-line { padding: 2px 2px 2px 14px; }
-        .input-line input { font-size: 16px; padding: 11px 4px; }
+        .help-box .simple .cmd,
+        .help-box .params .cmd {
+            color: #c597ff;
+            cursor: pointer;
+            transition: color 0.2s;
+            border-bottom: 1px solid transparent;
+        }
 
-        .output-wrapper { padding: 14px 16px; min-height: 200px; }
-        #output { font-size: 11px; }
+        .help-box .simple .cmd:hover,
+        .help-box .params .cmd:hover {
+            color: #dbb8ff;
+            border-bottom-color: rgba(160, 68, 255, 0.2);
+        }
 
-        .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
-        .footer .shortcuts { gap: 8px; flex-wrap: wrap; }
-    }
+        .input-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 2px 2px 2px 18px;
+            border: 1px solid rgba(160, 68, 255, 0.12);
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+            min-width: 0;
+            flex-shrink: 0;
+        }
 
-    @media (max-width: 480px) {
-        .app { gap: 10px; }
-        .header { padding: 10px 14px; }
-        .brand h1 { font-size: 15px; }
-        .brand h1 small { font-size: 10px; }
-        .brand img { width: 26px; height: 26px; }
+        .input-line:focus-within {
+            border-color: rgba(160, 68, 255, 0.4);
+            box-shadow: 0 0 0 4px rgba(160, 68, 255, 0.06);
+            background: rgba(255, 255, 255, 0.04);
+        }
 
-        .panel { padding: 14px 12px; border-radius: 10px; }
-        .panel-title { font-size: 14px; gap: 10px; margin-bottom: 14px; padding-bottom: 10px; }
-        .panel-title img { width: 24px; height: 24px; }
+        .input-line .prompt {
+            color: #c597ff;
+            font-size: 13px;
+            user-select: none;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
 
-        .help-box { padding: 10px 12px; }
-        .help-box .title { font-size: 9px; }
-        .help-box .simple,
-        .help-box .params { font-size: 10px; }
+        .input-line input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 13px 8px 13px 4px;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 16px;
+            color: #f5ede4;
+            outline: none;
+            min-width: 0;
+        }
 
-        .input-line { padding: 2px 2px 2px 12px; }
-        .input-line .prompt { font-size: 12px; }
-        .input-line input { font-size: 16px; padding: 9px 4px; }
+        .input-line input::placeholder { color: #3d3830; letter-spacing: 0.3px; }
 
-        .output-wrapper { padding: 12px 14px; min-height: 220px; }
-        #output { font-size: 10px; line-height: 1.5; }
+        .output-wrapper {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            padding: 16px 20px;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+            flex: 1;
+            min-height: 100px;
+            overflow-y: auto;
+            min-width: 0;
+        }
 
-        #output .copy-btn { font-size: 10px; padding: 4px 16px; }
+        .output-wrapper::-webkit-scrollbar { width: 4px; }
+        .output-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .output-wrapper::-webkit-scrollbar-thumb { background: rgba(160, 68, 255, 0.2); border-radius: 10px; }
 
-        .footer { font-size: 10px; }
-        .footer .shortcuts { font-size: 9px; gap: 6px; flex-wrap: wrap; }
-        .footer .shortcuts kbd { font-size: 8px; padding: 1px 8px; }
-        .footer .api-link { font-size: 10px; }
-    }
+        #output {
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            color: #e0d8cc;
+            min-width: 0;
+        }
 
-    @media (min-width: 1920px) {
-        .app { max-width: 1600px; padding: 24px 40px; }
-        #output { font-size: 13px; }
-        .help-box .simple,
-        .help-box .params { font-size: 13px; }
-    }
-</style>
+        #output .cmd-line {
+            color: #c597ff;
+            margin-bottom: 8px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        #output .cmd-line .prompt-icon { color: #c597ff; }
+
+        #output .result {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+            color: #e0d8cc;
+        }
+
+        #output .result .error { color: #ff756f; }
+        #output .result .gold { color: #c597ff; }
+        #output .result .green { color: #31db72; }
+
+        #output .copy-btn {
+            margin-top: 12px;
+            background: rgba(160, 68, 255, 0.06);
+            border: 1px solid rgba(160, 68, 255, 0.12);
+            color: #c597ff;
+            font-family: 'Lucida Console', monospace;
+            font-size: 11px;
+            padding: 5px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        #output .copy-btn:hover { background: rgba(160, 68, 255, 0.1); border-color: #c597ff; }
+
+        #output .placeholder { color: #4a443a; }
+
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(160, 68, 255, 0.06);
+            font-size: 11px;
+            color: #4a443a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .footer a { color: #6a6255; text-decoration: none; transition: color 0.2s; }
+        .footer a:hover { color: #c597ff; }
+
+        .footer .api-link {
+            font-size: 11px;
+            color: #5a5348;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+        }
+
+        .footer .api-link:hover { color: #c597ff; }
+
+        .footer .shortcuts {
+            display: flex;
+            gap: 12px;
+            font-size: 10px;
+            color: #3d3830;
+            flex-wrap: wrap;
+        }
+
+        .footer .shortcuts kbd {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: #5a5348;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-family: 'Lucida Console', monospace;
+            font-size: 9px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(160, 68, 255, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 20px;
+            border-radius: 40px;
+            border: 1px solid rgba(160, 68, 255, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            max-width: calc(100vw - 40px);
+            text-align: center;
+        }
+
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 768px) {
+            .app {
+                padding: max(12px, env(safe-area-inset-top))
+                         max(14px, env(safe-area-inset-right))
+                         max(12px, env(safe-area-inset-bottom))
+                         max(14px, env(safe-area-inset-left));
+                gap: 12px;
+            }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+            .brand h1 { font-size: 17px; }
+            .brand img { width: 30px; height: 30px; }
+            .header-right { justify-content: space-between; width: 100%; }
+            .nav-links { font-size: 11px; gap: 2px 14px; }
+            .panel { padding: 18px 16px; }
+            .panel-title { font-size: 16px; }
+            .panel-title img { width: 28px; height: 28px; }
+            .help-box { padding: 12px 14px; }
+            .help-box .simple,
+            .help-box .params { font-size: 11px; }
+            .input-line { padding: 2px 2px 2px 14px; }
+            .input-line input { font-size: 16px; padding: 11px 4px; }
+            .output-wrapper { padding: 14px 16px; min-height: 200px; }
+            #output { font-size: 11px; }
+            .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .footer .shortcuts { gap: 8px; flex-wrap: wrap; }
+        }
+
+        @media (max-width: 480px) {
+            .app { gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
+            .header-right { flex-direction: column; align-items: stretch; gap: 10px; }
+            .nav-links { justify-content: center; font-size: 10px; gap: 4px 10px; }
+            .lang-switcher { align-self: center; }
+            .panel { padding: 14px 12px; border-radius: 10px; }
+            .panel-title { font-size: 14px; gap: 10px; margin-bottom: 14px; padding-bottom: 10px; }
+            .panel-title img { width: 24px; height: 24px; }
+            .help-box { padding: 10px 12px; }
+            .help-box .title { font-size: 9px; }
+            .help-box .simple,
+            .help-box .params { font-size: 10px; }
+            .input-line { padding: 2px 2px 2px 12px; }
+            .input-line .prompt { font-size: 12px; }
+            .input-line input { font-size: 16px; padding: 9px 4px; }
+            .output-wrapper { padding: 12px 14px; min-height: 220px; }
+            #output { font-size: 10px; line-height: 1.5; }
+            #output .copy-btn { font-size: 10px; padding: 4px 16px; }
+            .footer { font-size: 10px; }
+            .footer .shortcuts { font-size: 9px; gap: 6px; flex-wrap: wrap; }
+            .footer .shortcuts kbd { font-size: 8px; padding: 1px 8px; }
+            .footer .api-link { font-size: 10px; }
+        }
+
+        @media (max-width: 360px) {
+            .brand h1 { font-size: 13px; }
+            .brand h1 small { font-size: 9px; letter-spacing: 1px; }
+            .nav-links { font-size: 9px; gap: 3px 8px; }
+            .help-box .simple,
+            .help-box .params { font-size: 9px; }
+            #output { font-size: 9px; }
+        }
+
+        @media (min-width: 1920px) {
+            .app { max-width: 1600px; padding: 24px 40px; }
+            #output { font-size: 13px; }
+            .help-box .simple,
+            .help-box .params { font-size: 13px; }
+        }
+    </style>
 </head>
 <body>
 
@@ -497,19 +467,25 @@
         <header class="header">
             <div class="brand">
                 <img src="assets/pivx.png" alt="PIVX">
-                <h1>PIVX <small>consola RPC</small></h1>
+                <h1>PIVX <small data-i18n="consola.title_short">consola RPC</small></h1>
             </div>
-            <nav class="nav-links">
-                <a href="https://carover0.github.io/pagina/pivx-nodo.html">[NODO]</a>
-                <a href="https://carover0.github.io/pagina/pivx-explorer.html">[EXPLORADOR]</a>
-                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
-            </nav>
+            <div class="header-right">
+                <nav class="nav-links">
+                    <a href="https://carover0.github.io/pagina/pivx-nodo.html" data-i18n="common.nav.node">[NODO]</a>
+                    <a href="https://carover0.github.io/pagina/pivx-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+                    <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
+                </nav>
+                <div class="lang-switcher" role="group" aria-label="Language">
+                    <button type="button" data-lang="es" class="active">ES</button>
+                    <button type="button" data-lang="en">EN</button>
+                </div>
+            </div>
         </header>
 
         <div class="panel">
 
             <div class="help-box">
-                <div class="title">COMANDOS BÁSICOS (sin parámetros)</div>
+                <div class="title" data-i18n="consola.help.simple_title">COMANDOS BÁSICOS (sin parámetros)</div>
                 <div class="simple">
                     <span class="cmd" onclick="fillCommand('getblockchaininfo')">getblockchaininfo</span> ·
                     <span class="cmd" onclick="fillCommand('getblockcount')">getblockcount</span> ·
@@ -520,32 +496,32 @@
                     <span class="cmd" onclick="fillCommand('getrawmempool')">getrawmempool</span> ·
                     <span class="cmd" onclick="fillCommand('getnetworkinfo')">getnetworkinfo</span>
                 </div>
-                <div class="title">COMANDOS CON PARÁMETROS</div>
+                <div class="title" data-i18n="consola.help.params_title">COMANDOS CON PARÁMETROS</div>
                 <div class="params">
-                    <span class="cmd" onclick="fillCommand('getblockhash ')" style="color:#c597ff;">getblockhash</span> &lt;altura&gt; ·
-                    <span class="cmd" onclick="fillCommand('getblock ')" style="color:#c597ff;">getblock</span> &lt;hash&gt; [verbose 0|1] ·
-                    <span class="cmd" onclick="fillCommand('getrawtransaction ')" style="color:#c597ff;">getrawtransaction</span> &lt;txid&gt; [verbose 0|1] ·
-                    <span class="cmd" onclick="fillCommand('validateaddress ')" style="color:#c597ff;">validateaddress</span> &lt;dirección D...&gt;
+                    <span class="cmd" onclick="fillCommand('getblockhash ')" style="color:#c597ff;">getblockhash</span> <span data-i18n="consola.help.param_height">&lt;altura&gt;</span> ·
+                    <span class="cmd" onclick="fillCommand('getblock ')" style="color:#c597ff;">getblock</span> <span data-i18n="consola.help.param_hash">&lt;hash&gt;</span> [verbose 0|1] ·
+                    <span class="cmd" onclick="fillCommand('getrawtransaction ')" style="color:#c597ff;">getrawtransaction</span> <span data-i18n="consola.help.param_txid">&lt;txid&gt;</span> [verbose 0|1] ·
+                    <span class="cmd" onclick="fillCommand('validateaddress ')" style="color:#c597ff;">validateaddress</span> <span data-i18n="consola.help.param_address">&lt;dirección D...&gt;</span>
                 </div>
             </div>
 
             <div class="input-line">
-                <span class="prompt">pivx></span>
-                <input type="text" id="cmdInput" placeholder="getblockchaininfo" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <span class="prompt">pivx&gt;</span>
+                <input type="text" id="cmdInput" data-i18n-placeholder="consola.placeholder" placeholder="Listo para ejecutar comandos..." autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
             </div>
 
             <div class="output-wrapper">
                 <div id="output">
-                    <div class="placeholder">Listo para ejecutar comandos...</div>
+                    <div class="placeholder" data-i18n="consola.placeholder">Listo para ejecutar comandos...</div>
                 </div>
             </div>
 
             <footer class="footer">
                 <a href="https://carover0.xyz/api/pivx/pivx.php?token=pivx2026" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/api/pivx/pivx.php?token=pivx2026</a>
                 <div class="shortcuts">
-                    <kbd>Enter</kbd> ejecutar
-                    <kbd>F8</kbd> copiar
-                    <kbd>F9</kbd> limpiar
+                    <kbd data-i18n="consola.shortcut_run">Enter</kbd> <span data-i18n="consola.shortcut_run_label">ejecutar</span>
+                    <kbd data-i18n="consola.shortcut_copy">F8</kbd> <span data-i18n="consola.shortcut_copy_label">copiar</span>
+                    <kbd data-i18n="consola.shortcut_clear">F9</kbd> <span data-i18n="consola.shortcut_clear_label">limpiar</span>
                 </div>
             </footer>
 
@@ -555,9 +531,27 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="js/i18n-bch.js" defer></script>
     <script>
         const API_URL = "https://carover0.xyz/api/pivx/pivx.php";
         const TOKEN = "pivx2026";
+
+        let I18n = null;
+        let lastCommand = null;
+        let lastResult = null;
+
+        function getI18n() {
+            return window.FiroI18n || window.PivxI18n || window.BchI18n || null;
+        }
+
+        function t(key, fallback) {
+            const i = getI18n();
+            if (i && typeof i.t === 'function') {
+                const v = i.t(key);
+                if (v && v !== key) return v;
+            }
+            return fallback || key;
+        }
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -586,6 +580,20 @@
             }
         }
 
+        function renderOutput(cmd, resultText, isError) {
+            const outputDiv = document.getElementById('output');
+            let output = `<div class="cmd-line"><span class="prompt-icon">pivx&gt;</span> ${escapeHtml(cmd)}</div>`;
+            output += `<div class="result">`;
+            if (isError) {
+                output += `<span class="error">${t('explorer.cmd_error', 'Error')}:</span> ${escapeHtml(resultText)}`;
+            } else {
+                output += escapeHtml(resultText);
+            }
+            output += `</div>`;
+            output += `<button class="copy-btn" onclick="copyResult()">${t('consola.copy_btn', '[F8] copiar resultado')}</button>`;
+            outputDiv.innerHTML = output;
+        }
+
         async function sendCommand() {
             const input = document.getElementById('cmdInput');
             const cmd = input.value.trim();
@@ -593,32 +601,34 @@
 
             if (!cmd) return;
 
-            outputDiv.innerHTML = `<div class="result" style="color:#5a5348;">ejecutando: ${escapeHtml(cmd)}...</div>`;
+            outputDiv.innerHTML = `<div class="result" style="color:#5a5348;">${t('consola.executing', 'ejecutando')}: ${escapeHtml(cmd)}...</div>`;
 
             try {
                 const response = await fetch(`${API_URL}?token=${TOKEN}&cmd=${encodeURIComponent(cmd)}`);
                 const data = await response.json();
 
-                let output = `<div class="cmd-line"><span class="prompt-icon">pivx></span> ${escapeHtml(cmd)}</div>`;
-                output += `<div class="result">`;
+                let resultText;
+                let isError = false;
 
                 if (data.error) {
-                    output += `<span class="error">Error:</span> ${escapeHtml(JSON.stringify(data.error, null, 2))}`;
+                    isError = true;
+                    resultText = JSON.stringify(data.error, null, 2);
                 } else {
-                    const jsonStr = JSON.stringify(data.result || data, null, 2);
-                    output += escapeHtml(jsonStr);
+                    resultText = JSON.stringify(data.result || data, null, 2);
                 }
 
-                output += `</div>`;
-                output += `<button class="copy-btn" onclick="copyResult()">[F8] copiar resultado</button>`;
-                outputDiv.innerHTML = output;
+                lastCommand = cmd;
+                lastResult = { text: resultText, isError: isError };
+
+                renderOutput(cmd, resultText, isError);
 
                 const wrapper = outputDiv.parentElement;
                 wrapper.scrollTop = 0;
 
             } catch (error) {
-                outputDiv.innerHTML =
-                    `<div class="result"><span class="error">Error:</span> ${escapeHtml(error.message)}</div>`;
+                lastCommand = cmd;
+                lastResult = { text: error.message, isError: true };
+                renderOutput(cmd, error.message, true);
             }
 
             input.value = '';
@@ -631,26 +641,32 @@
             if (resultEl) {
                 const text = resultEl.textContent;
                 navigator.clipboard.writeText(text).then(() => {
-                    showToast('✓ copiado');
+                    showToast(t('common.copy.ok', '✓ copiado'));
                 }).catch(() => {
                     const ta = document.createElement('textarea');
                     ta.value = text;
                     document.body.appendChild(ta);
                     ta.select();
-                    try { document.execCommand('copy');
-                        showToast('✓ copiado'); } catch (_) {}
+                    try {
+                        document.execCommand('copy');
+                        showToast(t('common.copy.ok', '✓ copiado'));
+                    } catch (_) {}
                     document.body.removeChild(ta);
                 });
             }
         };
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'F8') { e.preventDefault();
-                window.copyResult(); }
+            if (e.key === 'F8') {
+                e.preventDefault();
+                window.copyResult();
+            }
             if (e.key === 'F9') {
                 e.preventDefault();
                 document.getElementById('cmdInput').value = '';
-                document.getElementById('output').innerHTML = '<div class="placeholder">Listo para ejecutar comandos...</div>';
+                document.getElementById('output').innerHTML = `<div class="placeholder">${t('consola.placeholder', 'Listo para ejecutar comandos...')}</div>`;
+                lastCommand = null;
+                lastResult = null;
                 const prompt = document.querySelector('.prompt');
                 if (prompt) {
                     prompt.textContent = '♥';
@@ -667,7 +683,35 @@
             }
         });
 
-        window.addEventListener('load', () => {
+        window.onLangChange = function() {
+            if (lastCommand && lastResult) {
+                renderOutput(lastCommand, lastResult.text, lastResult.isError);
+            } else {
+                const outputDiv = document.getElementById('output');
+                const placeholder = outputDiv.querySelector('.placeholder');
+                if (placeholder) {
+                    placeholder.textContent = t('consola.placeholder', 'Listo para ejecutar comandos...');
+                }
+            }
+        };
+
+        function initI18n() {
+            I18n = getI18n();
+            if (!I18n) {
+                console.error('❌ i18n no cargó. Revisa que js/i18n-bch.js termine con: window.FiroI18n = BchI18n;');
+                return false;
+            }
+            if (typeof I18n.init !== 'function') {
+                console.error('❌ I18n existe pero no tiene init()');
+                return false;
+            }
+            I18n.init();
+            console.log('✅ i18n listo. Idioma:', I18n.getLang ? I18n.getLang() : '?');
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initI18n();
             document.getElementById('cmdInput').focus();
         });
 
