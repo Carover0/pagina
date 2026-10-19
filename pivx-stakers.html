@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -8,11 +9,7 @@
     <title>PIVX · Monitor de Cold Staking</title>
     <link rel="icon" type="image/png" href="assets/pivx.png">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html, body { overflow-x: hidden; }
 
@@ -25,8 +22,6 @@
                 linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
             font-family: 'Lucida Console', 'Courier New', monospace;
             color: #ece8e0;
-            padding: 0;
-            margin: 0;
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -72,9 +67,7 @@
             flex-shrink: 0;
         }
 
-        .brand img:hover {
-            filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.5));
-        }
+        .brand img:hover { filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.5)); }
 
         .brand h1 {
             font-size: 21px;
@@ -82,7 +75,7 @@
             letter-spacing: 1.5px;
             color: #f5e6c8;
             text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
-            min-width: 0;
+            white-space: nowrap;
         }
 
         .brand h1 small {
@@ -90,6 +83,14 @@
             color: #6a6255;
             letter-spacing: 2px;
             font-weight: 300;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            min-width: 0;
         }
 
         .nav-links {
@@ -110,10 +111,32 @@
             white-space: nowrap;
         }
 
-        .nav-links a:hover {
-            color: #c597ff;
-            border-bottom-color: #c597ff;
+        .nav-links a:hover { color: #c597ff; border-bottom-color: #c597ff; }
+
+        .lang-switcher {
+            display: inline-flex;
+            border: 1px solid rgba(160, 68, 255, 0.25);
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            flex-shrink: 0;
         }
+
+        .lang-switcher button {
+            background: transparent;
+            border: none;
+            color: #6a6255;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lang-switcher button + button { border-left: 1px solid rgba(160, 68, 255, 0.15); }
+        .lang-switcher button:hover { color: #c597ff; background: rgba(160, 68, 255, 0.06); }
+        .lang-switcher button.active { color: #0a080c; background: #c597ff; font-weight: 700; }
 
         .panel {
             background: rgba(255, 255, 255, 0.02);
@@ -128,9 +151,7 @@
             min-width: 0;
         }
 
-        .panel:hover {
-            border-color: rgba(160, 68, 255, 0.12);
-        }
+        .panel:hover { border-color: rgba(160, 68, 255, 0.12); }
 
         .panel-title {
             display: flex;
@@ -152,11 +173,7 @@
             flex-shrink: 0;
         }
 
-        .panel-title span {
-            min-width: 0;
-            word-break: break-word;
-            overflow-wrap: anywhere;
-        }
+        .panel-title span { min-width: 0; word-break: break-word; overflow-wrap: anywhere; }
 
         .info-bar {
             display: flex;
@@ -181,6 +198,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 16px;
+            min-width: 0;
         }
 
         .card {
@@ -195,6 +213,43 @@
         .card:hover {
             border-color: rgba(160, 68, 255, 0.12);
             background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-with-image {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: stretch;
+            gap: 20px;
+        }
+
+        .card-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-image-box {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 180px;
+        }
+
+        .card-image-box img {
+            width: 100%;
+            height: auto;
+            max-height: 290px;
+            object-fit: contain;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 20px rgba(160, 68, 255, 0.2));
+            transition: opacity 0.3s, filter 0.3s;
+        }
+
+        .card-image-box img:hover {
+            opacity: 1;
+            filter: drop-shadow(0 0 30px rgba(160, 68, 255, 0.4));
         }
 
         .card-title {
@@ -218,9 +273,7 @@
             min-width: 0;
         }
 
-        .card-item:last-child {
-            border-bottom: none;
-        }
+        .card-item:last-child { border-bottom: none; }
 
         .card-item .label {
             color: #6a6255;
@@ -245,10 +298,7 @@
         .card-item .value.warning { color: #dd9d34; }
         .card-item .value.mono { font-size: 11px; color: #8a8275; }
 
-        .card-item .value .small-note {
-            color: #4a443a;
-            font-size: 10px;
-        }
+        .card-item .value .small-note { color: #4a443a; font-size: 10px; }
 
         .piv-icon {
             width: 16px;
@@ -290,47 +340,15 @@
             overflow-wrap: anywhere;
         }
 
-        .utxo-item:last-child {
-            border-bottom: none;
-        }
+        .utxo-item:last-child { border-bottom: none; }
 
-        .utxo-item .idx {
-            color: #4a443a;
-            min-width: 24px;
-            flex-shrink: 0;
-        }
-
-        .utxo-item .amount {
-            color: #c597ff;
-        }
-
-        .utxo-item .conf {
-            color: #6a6255;
-        }
-
-        .utxo-item .whitelist-yes {
-            color: #31db72;
-        }
-
-        .utxo-item .whitelist-no {
-            color: #ff756f;
-        }
-
-        .utxo-item .owner {
-            color: #5a5348;
-            font-size: 11px;
-            word-break: break-all;
-            overflow-wrap: anywhere;
-            min-width: 0;
-        }
-
-        .utxo-item .cold-staker {
-            color: #5a5348;
-            font-size: 11px;
-            word-break: break-all;
-            overflow-wrap: anywhere;
-            min-width: 0;
-        }
+        .utxo-item .idx { color: #4a443a; min-width: 24px; flex-shrink: 0; }
+        .utxo-item .amount { color: #c597ff; }
+        .utxo-item .conf { color: #6a6255; }
+        .utxo-item .whitelist-yes { color: #31db72; }
+        .utxo-item .whitelist-no { color: #ff756f; }
+        .utxo-item .owner { color: #5a5348; font-size: 11px; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
+        .utxo-item .cold-staker { color: #5a5348; font-size: 11px; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
 
         .utxo-item.footer-note {
             color: #4a443a;
@@ -389,15 +407,8 @@
             min-width: 0;
         }
 
-        .footer a {
-            color: #6a6255;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .footer a:hover {
-            color: #c597ff;
-        }
+        .footer a { color: #6a6255; text-decoration: none; transition: color 0.2s; }
+        .footer a:hover { color: #c597ff; }
 
         .footer .api-link {
             font-size: 11px;
@@ -408,9 +419,7 @@
             display: inline-block;
         }
 
-        .footer .api-link:hover {
-            color: #c597ff;
-        }
+        .footer .api-link:hover { color: #c597ff; }
 
         .toast {
             position: fixed;
@@ -435,10 +444,7 @@
             text-align: center;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
         @media (max-width: 768px) {
             .app {
@@ -448,48 +454,38 @@
                          max(14px, env(safe-area-inset-left));
                 gap: 12px;
             }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                padding: 14px 18px;
-            }
-
+            .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
             .brand h1 { font-size: 17px; }
             .brand img { width: 30px; height: 30px; }
-
+            .header-right { justify-content: space-between; width: 100%; }
             .nav-links { font-size: 11px; gap: 2px 14px; }
-
             .panel { padding: 18px 16px; }
             .panel-title { font-size: 16px; }
             .panel-title img { width: 28px; height: 28px; }
-
-            .info-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
+            .info-bar { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .cards { grid-template-columns: 1fr; gap: 12px; }
             .card { padding: 14px 16px; }
-            .card-item .value { font-size: 11px; }
+            
+            .card-with-image {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+            .card-image-box {
+                width: 100%;
+                margin-top: 16px;
+                justify-content: center;
+            }
+            .card-image-box img {
+                max-height: 180px;
+                width: auto;
+            }
 
+            .card-item .value { font-size: 11px; }
             .utxo-section { padding: 14px 16px; }
             .utxo-item { font-size: 11px; gap: 2px 8px; }
-
             .address-box { padding: 12px 14px; }
             .address-box .address-value { font-size: 12px; }
-
-            .footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-            }
+            .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
         }
 
         @media (max-width: 480px) {
@@ -498,73 +494,42 @@
             .brand h1 { font-size: 15px; }
             .brand h1 small { font-size: 10px; }
             .brand img { width: 26px; height: 26px; }
-
-            .panel {
-                padding: 14px 12px;
-                border-radius: 10px;
-            }
-
-            .panel-title {
-                font-size: 14px;
-                gap: 10px;
-                margin-bottom: 14px;
-                padding-bottom: 10px;
-            }
-
+            .header-right { flex-direction: column; align-items: stretch; gap: 10px; }
+            .nav-links { justify-content: center; font-size: 10px; gap: 4px 10px; }
+            .lang-switcher { align-self: center; }
+            .panel { padding: 14px 12px; border-radius: 10px; }
+            .panel-title { font-size: 14px; gap: 10px; margin-bottom: 14px; padding-bottom: 10px; }
             .panel-title img { width: 24px; height: 24px; }
-
             .info-bar .timestamp { font-size: 10px; }
-
             .card { padding: 12px 14px; }
             .card-title { font-size: 9px; }
-
-            .card-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 2px;
-            }
-
+            .card-item { flex-direction: column; align-items: flex-start; gap: 2px; }
             .card-item .label { font-size: 9px; }
             .card-item .value { font-size: 11px; text-align: left; width: 100%; }
-
+            .card-image-box img { max-height: 140px; }
             .utxo-section { padding: 12px 14px; }
             .utxo-section-title { font-size: 9px; }
-
-            .utxo-item {
-                font-size: 10px;
-                gap: 1px 6px;
-            }
-
+            .utxo-item { font-size: 10px; gap: 1px 6px; }
             .utxo-item .idx { min-width: 18px; }
-
             .utxo-item .owner,
-            .utxo-item .cold-staker {
-                flex: 1 1 100%;
-            }
-
+            .utxo-item .cold-staker { flex: 1 1 100%; }
             .address-box { padding: 10px 12px; }
             .address-box .address-label { font-size: 9px; }
             .address-box .address-value { font-size: 11px; }
-
             .footer { font-size: 10px; }
             .footer .api-link { font-size: 10px; }
-
             .piv-icon { width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px; }
         }
 
         @media (max-width: 360px) {
-            .nav-links { font-size: 9px; gap: 2px 10px; }
             .brand h1 { font-size: 14px; }
             .brand h1 small { font-size: 9px; }
             .brand img { width: 22px; height: 22px; }
+            .nav-links { font-size: 9px; gap: 2px 10px; }
         }
 
         @media (min-width: 1920px) {
-            .app {
-                max-width: 1600px;
-                padding: 24px 40px;
-            }
-
+            .app { max-width: 1600px; padding: 24px 40px; }
             .card-item .value { font-size: 13px; }
             .utxo-item { font-size: 13px; }
         }
@@ -577,57 +542,68 @@
         <header class="header">
             <div class="brand">
                 <img src="assets/pivx.png" alt="PIVX">
-                <h1>PIVX <small>cold staking</small></h1>
+                <h1>PIVX <small data-i18n="stakers.title_short">cold staking</small></h1>
             </div>
-            <nav class="nav-links">
-                <a href="https://carover0.github.io/pagina/pivx-explorer.html">[EXPLORADOR]</a>
-                <a href="https://carover0.github.io/pagina/pivx-consola.html">[CONSOLA]</a>
-                <a href="https://carover0.github.io/pagina/pivx-nodo.html">[NODO]</a>
-                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
-            </nav>
+            <div class="header-right">
+                <nav class="nav-links">
+                    <a href="https://carover0.github.io/pagina/pivx-explorer.html" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+                    <a href="https://carover0.github.io/pagina/pivx-consola.html" data-i18n="common.nav.console">[CONSOLA]</a>
+                    <a href="https://carover0.github.io/pagina/pivx-nodo.html" data-i18n="common.nav.node">[NODO]</a>
+                    <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
+                </nav>
+                <div class="lang-switcher" role="group" aria-label="Language">
+                    <button type="button" data-lang="es" class="active">ES</button>
+                    <button type="button" data-lang="en">EN</button>
+                </div>
+            </div>
         </header>
 
         <div class="panel">
 
             <div class="panel-title">
                 <img src="assets/pivx.png" alt="PIVX">
-                <span>MONITOR DE COLD STAKING</span>
+                <span data-i18n="stakers.panel_title">MONITOR DE COLD STAKING</span>
             </div>
 
             <div class="info-bar">
-                <div class="timestamp" id="timestamp">Cargando datos...</div>
+                <div class="timestamp" id="timestamp" data-i18n="common.footer.loading">Cargando datos...</div>
             </div>
 
             <div class="cards">
 
-                <div class="card">
-                    <div class="card-title">Cold Staking · Resumen</div>
-                    <div class="card-item"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
-                    <div class="card-item"><span class="label">TOTAL DELEGADO</span><span class="value violet" id="cs-total">---</span></div>
-                    <div class="card-item"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
-                    <div class="card-item"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
-                    <div class="card-item"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
-                    <div class="card-item"><span class="label">BALANCE LOCAL</span><span class="value violet" id="cs-local-balance">---</span></div>
-                    <div class="card-item"><span class="label">ÚLTIMO INTENTO</span><span class="value mono" id="cs-last-attempt">---</span></div>
+                <div class="card card-with-image">
+                    <div class="card-content">
+                        <div class="card-title" data-i18n="stakers.card.summary">Cold Staking · Resumen</div>
+                        <div class="card-item"><span class="label" data-i18n="stakers.label.utxos">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="stakers.label.total">TOTAL DELEGADO</span><span class="value violet" id="cs-total">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="stakers.label.confirms">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="stakers.label.whitelist">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="stakers.label.status">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="stakers.label.balance">BALANCE LOCAL</span><span class="value violet" id="cs-local-balance">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="stakers.label.last_attempt">ÚLTIMO INTENTO</span><span class="value mono" id="cs-last-attempt">---</span></div>
+                    </div>
+                    <div class="card-image-box">
+                        <img src="assets/piv3.png" alt="PIVX">
+                    </div>
                 </div>
 
             </div>
 
             <div class="utxo-section">
-                <div class="utxo-section-title">UTXOS DELEGADOS (DETALLE)</div>
+                <div class="utxo-section-title" data-i18n="stakers.utxos.title">UTXOS DELEGADOS (DETALLE)</div>
                 <div id="utxos-list">
-                    <div class="utxo-info-text">Cargando lista de UTXOs...</div>
+                    <div class="utxo-info-text" data-i18n="common.footer.loading">Cargando lista de UTXOs...</div>
                 </div>
             </div>
 
             <div class="address-box">
-                <div class="address-label">► Dirección de cold staking</div>
+                <div class="address-label" data-i18n="nodo.label.cs_address">► Dirección de cold staking</div>
                 <div class="address-value">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</div>
             </div>
 
             <footer class="footer">
                 <a href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank" rel="noopener" class="api-link">https://carover0.xyz/cacaX/pivx_status_X.json</a>
-                <span>actualizado cada 30s</span>
+                <span data-i18n="stakers.footer.updated">actualizado cada 30s</span>
             </footer>
 
         </div>
@@ -636,9 +612,26 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="js/i18n-bch.js" defer></script>
     <script>
         const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
-        const PIV_ICON = new URL("assets/pivx.png", document.baseURI).href;
+        const PIV_ICON = "/assets/pivx.png";
+
+        let I18n = null;
+        let lastData = null;
+
+        function getI18n() {
+            return window.FiroI18n || window.PivxI18n || window.BchI18n || null;
+        }
+
+        function t(key, fallback) {
+            const i = getI18n();
+            if (i && typeof i.t === 'function') {
+                const v = i.t(key);
+                if (v && v !== key) return v;
+            }
+            return fallback || key;
+        }
 
         function formatPiv(value, decimals = 2) {
             const num = typeof value === 'number' ? value : parseFloat(value);
@@ -658,9 +651,9 @@
 
         function formatTimestamp(seconds) {
             if (!seconds && seconds !== 0) return '---';
-            if (seconds < 60) return `${seconds} segundos`;
-            if (seconds < 3600) return `${Math.floor(seconds / 60)} minutos`;
-            return `${(seconds / 3600).toFixed(1)} horas`;
+            if (seconds < 60) return `${seconds} ${t('common.unit.secs', 'seg')}`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)} ${t('common.unit.min_short', 'min')}`;
+            return `${(seconds / 3600).toFixed(1)} ${t('common.unit.hour', 'h')}`;
         }
 
         function showToast(msg) {
@@ -673,7 +666,7 @@
 
         function updateTimestamp() {
             const ahora = new Date();
-            document.getElementById('timestamp').textContent = `última actualización: ${ahora.toLocaleString()}`;
+            document.getElementById('timestamp').textContent = `${t('common.footer.updated_at', 'última actualización')}: ${ahora.toLocaleString()}`;
         }
 
         function renderData(data) {
@@ -714,13 +707,13 @@
             if (status && balances) {
                 const statusEl = document.getElementById('cs-staking-status');
                 if (status.staking_status === true && balances.stakeable_coins > 0) {
-                    statusEl.textContent = 'ACTIVO';
+                    statusEl.textContent = t('nodo.state.active', 'ACTIVO');
                     statusEl.className = 'value positive';
                 } else if (status.staking_status === true && balances.stakeable_coins === 0) {
-                    statusEl.textContent = 'ESPERANDO';
+                    statusEl.textContent = t('nodo.state.waiting', 'ESPERANDO');
                     statusEl.className = 'value warning';
                 } else {
-                    statusEl.textContent = 'INACTIVO';
+                    statusEl.textContent = t('nodo.state.inactive', 'INACTIVO');
                     statusEl.className = 'value negative';
                 }
 
@@ -734,14 +727,14 @@
             if (lastAttempt) {
                 const ageText = formatTimestamp(lastAttempt.age_seconds);
                 document.getElementById('cs-last-attempt').textContent =
-                    `hace ${ageText} · ${lastAttempt.tries} intentos (depth: ${lastAttempt.depth})`;
+                    `${t('stakers.label.attempt', 'hace')} ${ageText} · ${lastAttempt.tries} ${t('stakers.label.tries', 'intentos')} (depth: ${lastAttempt.depth})`;
             } else {
                 document.getElementById('cs-last-attempt').textContent = '---';
             }
 
             const utxosContainer = document.getElementById('utxos-list');
             if (csInfo && csInfo.utxos && csInfo.utxos.list && csInfo.utxos.list.length > 0) {
-                let html = `<div class="utxo-info-text">Mostrando ${csInfo.utxos.list.length} UTXOs delegados:</div>`;
+                let html = `<div class="utxo-info-text">${t('stakers.utxos.showing', 'Mostrando')} ${csInfo.utxos.list.length} ${t('stakers.utxos.delegated', 'UTXOs delegados')}:</div>`;
                 csInfo.utxos.list.forEach((utxo, index) => {
                     const isWhitelisted = utxo.whitelisted === "true";
                     html += `
@@ -749,7 +742,7 @@
                             <span class="idx">#${index + 1}</span>
                             <span class="amount">${formatPiv(utxo.amount, 2)}</span>
                             <span class="conf">conf: ${utxo.confirmations}</span>
-                            <span>whitelisted: ${isWhitelisted ? '<span class="whitelist-yes">sí</span>' : '<span class="whitelist-no">no</span>'}</span>
+                            <span>whitelisted: ${isWhitelisted ? '<span class="whitelist-yes">' + t('explorer.ok_validate', 'sí') + '</span>' : '<span class="whitelist-no">' + t('explorer.error_validate', 'no') + '</span>'}</span>
                             <span class="owner">owner: ${escapeHtml(utxo['coin-owner'])}</span>
                         </div>
                     `;
@@ -759,7 +752,7 @@
                 }
                 utxosContainer.innerHTML = html;
             } else {
-                utxosContainer.innerHTML = '<div class="utxo-info-text">No se encontraron UTXOs delegados.</div>';
+                utxosContainer.innerHTML = `<div class="utxo-info-text">${t('stakers.utxos.none', 'No se encontraron UTXOs delegados.')}</div>`;
             }
         }
 
@@ -770,20 +763,46 @@
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
 
+                lastData = data;
                 updateTimestamp();
                 renderData(data);
 
             } catch (error) {
                 console.error('Error cargando datos:', error);
                 document.getElementById('timestamp').innerHTML =
-                    '<span style="color:#ff756f;">ERROR: No se pudo cargar el estado</span>';
+                    `<span style="color:#ff756f;">${t('common.state.error', 'ERROR')}: ${t('stakers.error.load', 'No se pudo cargar el estado')}</span>`;
                 document.getElementById('utxos-list').innerHTML =
-                    '<div class="utxo-info-text" style="color:#ff756f;">Error al conectar con la fuente de datos.</div>';
+                    `<div class="utxo-info-text" style="color:#ff756f;">${t('common.error.connection', 'Error al conectar con la fuente de datos.')}</div>`;
             }
         }
 
-        cargarDatos();
-        setInterval(cargarDatos, 30000);
+        window.onLangChange = function() {
+            if (lastData) {
+                updateTimestamp();
+                renderData(lastData);
+            }
+        };
+
+        function initI18n() {
+            I18n = getI18n();
+            if (!I18n) {
+                console.error('❌ i18n no cargó. Revisa que js/i18n-bch.js termine con: window.FiroI18n = BchI18n;');
+                return false;
+            }
+            if (typeof I18n.init !== 'function') {
+                console.error('❌ I18n existe pero no tiene init()');
+                return false;
+            }
+            I18n.init();
+            console.log('✅ i18n listo. Idioma:', I18n.getLang ? I18n.getLang() : '?');
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initI18n();
+            cargarDatos();
+            setInterval(cargarDatos, 30000);
+        });
     </script>
 
 </body>
