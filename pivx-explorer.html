@@ -754,11 +754,17 @@
         const API_URL = "https://carover0.xyz/api/pivx/pivx.php";
         const TOKEN = "pivx2026";
         const STATUS_URL = "https://carover0.xyz/cacaX/pivx_status_X.json";
-        const PIV_ICON = (function() {
-            const path = window.location.pathname;
-            if (path.includes('/pagina/')) return '/pagina/assets/pivx.png';
-            return '/assets/pivx.png';
-        })();
+const PIV_ICON = (function() {
+    const path = window.location.pathname;
+    if (path.includes('/pagina/')) return '/pagina/assets/pivx.png';
+    return '/assets/pivx.png';
+})();
+
+const PLACEHOLDER_IMG = (function() {
+    const path = window.location.pathname;
+    if (path.includes('/pagina/')) return '/pagina/assets/pivx.png';
+    return '/assets/piv7.png';
+})();
 
         let I18n = null;
         let historyStack = [];
@@ -1058,7 +1064,6 @@ function renderPlaceholder() {
     </div>
   `);
 }
-
         function renderLoading() {
             renderOutput(`
             <div class="loading">
