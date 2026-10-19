@@ -1,520 +1,442 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIVX · Monitor de Nodo</title>
     <link rel="icon" type="image/png" href="assets/pivx.png">
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html, body { overflow-x: hidden; }
+        html, body { overflow-x: hidden; }
 
-    body {
-        min-height: 100vh;
-        background: #0a080c;
-        background-image:
-            radial-gradient(ellipse at 30% 40%, rgba(160, 68, 255, 0.08) 0%, transparent 60%),
-            radial-gradient(ellipse at 70% 80%, rgba(160, 68, 255, 0.05) 0%, transparent 50%),
-            linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
-        font-family: 'Lucida Console', 'Courier New', monospace;
-        color: #ece8e0;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-    }
+        body {
+            min-height: 100vh;
+            background: #0a080c;
+            background-image:
+                radial-gradient(ellipse at 30% 40%, rgba(160, 68, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(160, 68, 255, 0.05) 0%, transparent 50%),
+                linear-gradient(160deg, #0a080c 0%, #161114 50%, #0d0b10 100%);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            color: #ece8e0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
 
-    .app {
-        width: 100%;
-        max-width: 1400px;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-        padding: 20px 28px;
-        min-width: 0;
-    }
-
-    .header {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px 20px;
-        padding: 16px 24px;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 14px;
-        border: 1px solid rgba(160, 68, 255, 0.2);
-        backdrop-filter: blur(8px);
-        min-width: 0;
-    }
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        min-width: 0;
-    }
-
-    .brand img {
-        width: 38px;
-        height: 38px;
-        filter: drop-shadow(0 0 16px rgba(160, 68, 255, 0.3));
-        transition: filter 0.3s;
-        flex-shrink: 0;
-    }
-
-    .brand img:hover {
-        filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.5));
-    }
-
-    .brand h1 {
-        font-size: 21px;
-        font-weight: 400;
-        letter-spacing: 1.5px;
-        color: #f5e6c8;
-        text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
-        min-width: 0;
-    }
-
-    .brand h1 small {
-        font-size: 12px;
-        color: #6a6255;
-        letter-spacing: 2px;
-        font-weight: 300;
-    }
-
-    .nav-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px 18px;
-        font-size: 12px;
-        letter-spacing: 0.3px;
-        min-width: 0;
-    }
-
-    .nav-links a {
-        color: #6a6255;
-        text-decoration: none;
-        transition: all 0.25s;
-        padding: 4px 0;
-        border-bottom: 2px solid transparent;
-        white-space: nowrap;
-    }
-
-    .nav-links a:hover {
-        color: #c597ff;
-        border-bottom-color: #c597ff;
-    }
-
-    .stats-bar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 6px 32px;
-        padding: 12px 24px;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 12px;
-        border: 1px solid rgba(160, 68, 255, 0.1);
-        font-size: 13px;
-        min-width: 0;
-    }
-
-    .stats-bar .stat {
-        display: flex;
-        align-items: baseline;
-        gap: 6px;
-        min-width: 0;
-    }
-
-    .stats-bar .label {
-        color: #4a443a;
-        font-size: 9px;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        flex-shrink: 0;
-    }
-
-    .stats-bar .value {
-        color: #f5ede4;
-        font-weight: 600;
-        font-size: 14px;
-        min-width: 0;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-    }
-
-    .stats-bar .btn-blocks {
-        margin-left: auto;
-        color: #c597ff;
-        background: rgba(160, 68, 255, 0.08);
-        border: 1px solid rgba(160, 68, 255, 0.15);
-        padding: 4px 16px;
-        border-radius: 20px;
-        font-size: 11px;
-        transition: all 0.25s;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-family: 'Lucida Console', 'Courier New', monospace;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-
-    .stats-bar .btn-blocks:hover {
-        background: rgba(160, 68, 255, 0.15);
-        border-color: rgba(160, 68, 255, 0.3);
-        color: #dbb8ff;
-    }
-
-    .panel {
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 14px;
-        border: 1px solid rgba(160, 68, 255, 0.08);
-        padding: 24px 28px;
-        backdrop-filter: blur(8px);
-        transition: border-color 0.3s;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-    }
-
-    .panel:hover {
-        border-color: rgba(160, 68, 255, 0.15);
-    }
-
-    .panel-title {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        color: #c597ff;
-        font-size: 18px;
-        letter-spacing: 1px;
-        margin-bottom: 18px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid rgba(160, 68, 255, 0.06);
-        min-width: 0;
-    }
-
-    .panel-title img {
-        width: 32px;
-        height: 32px;
-        filter: drop-shadow(0 0 12px rgba(160, 68, 255, 0.25));
-        flex-shrink: 0;
-    }
-
-    .panel-title span {
-        min-width: 0;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-    }
-
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 18px;
-    }
-
-    .card {
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 12px;
-        padding: 16px 20px;
-        border: 1px solid rgba(160, 68, 255, 0.04);
-        transition: all 0.25s;
-        min-width: 0;
-    }
-
-    .card:hover {
-        border-color: rgba(160, 68, 255, 0.12);
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .card-title {
-        color: #4a443a;
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(160, 68, 255, 0.04);
-    }
-
-    .card-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        flex-wrap: wrap;
-        gap: 4px 10px;
-        padding: 5px 0;
-        border-bottom: 1px solid rgba(160, 68, 255, 0.02);
-        min-width: 0;
-    }
-
-    .card-item:last-child {
-        border-bottom: none;
-    }
-
-    .card-item .label {
-        color: #6a6255;
-        font-size: 11px;
-        letter-spacing: 0.3px;
-        flex-shrink: 0;
-    }
-
-    .card-item .value {
-        color: #f5ede4;
-        font-size: 12px;
-        text-align: right;
-        word-break: break-all;
-        overflow-wrap: anywhere;
-        min-width: 0;
-        max-width: 100%;
-    }
-
-    .card-item .value.positive { color: #31db72; }
-    .card-item .value.negative { color: #ff756f; }
-    .card-item .value.violet { color: #c597ff; }
-    .card-item .value.mono { font-size: 11px; color: #8a8275; }
-    .card-item .value.warning { color: #ffb530; }
-
-    .card-item .value .address {
-        font-size: 12px;
-        color: #c597ff;
-        word-break: break-all;
-        overflow-wrap: anywhere;
-    }
-
-    .cold-staking-info {
-        margin-top: 14px;
-        padding: 12px 16px;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 8px;
-        border: 1px solid rgba(160, 68, 255, 0.04);
-        min-width: 0;
-    }
-
-    .cold-staking-info .cs-label {
-        color: #4a443a;
-        font-size: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 6px;
-    }
-
-    .cold-staking-info .cs-address {
-        font-size: 12px;
-        color: #c597ff;
-        word-break: break-all;
-        overflow-wrap: anywhere;
-        font-family: 'Lucida Console', monospace;
-    }
-
-    .footer {
-        margin-top: 18px;
-        padding-top: 14px;
-        border-top: 1px solid rgba(160, 68, 255, 0.06);
-        font-size: 11px;
-        color: #4a443a;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-    }
-
-    .footer a {
-        color: #6a6255;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-
-    .footer a:hover {
-        color: #c597ff;
-    }
-
-    .footer-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px 18px;
-    }
-
-    .footer-links a {
-        font-size: 11px;
-        color: #5a5348;
-        border-bottom: 1px solid transparent;
-        transition: all 0.2s;
-        white-space: nowrap;
-    }
-
-    .footer-links a:hover {
-        color: #c597ff;
-        border-bottom-color: rgba(160, 68, 255, 0.15);
-    }
-
-    .toast {
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
-        background: rgba(160, 68, 255, 0.08);
-        backdrop-filter: blur(12px);
-        color: #f5ede4;
-        padding: 10px 20px;
-        border-radius: 40px;
-        border: 1px solid rgba(160, 68, 255, 0.12);
-        font-family: 'Lucida Console', monospace;
-        font-size: 12px;
-        opacity: 0;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        pointer-events: none;
-        z-index: 999;
-        letter-spacing: 0.3px;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-        max-width: calc(100vw - 40px);
-        text-align: center;
-    }
-
-    .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-
-    @media (max-width: 768px) {
         .app {
-            padding: max(12px, env(safe-area-inset-top))
-                     max(14px, env(safe-area-inset-right))
-                     max(12px, env(safe-area-inset-bottom))
-                     max(14px, env(safe-area-inset-left));
-            gap: 12px;
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+            min-width: 0;
         }
 
         .header {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 10px;
-            padding: 14px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(160, 68, 255, 0.2);
+            backdrop-filter: blur(8px);
+            min-width: 0;
         }
 
-        .brand h1 { font-size: 17px; }
-        .brand img { width: 30px; height: 30px; }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .brand img {
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 0 16px rgba(160, 68, 255, 0.3));
+            transition: filter 0.3s;
+            flex-shrink: 0;
+        }
+
+        .brand img:hover { filter: drop-shadow(0 0 24px rgba(160, 68, 255, 0.5)); }
+
+        .brand h1 {
+            font-size: 21px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            color: #f5e6c8;
+            text-shadow: 0 0 30px rgba(160, 68, 255, 0.15);
+            white-space: nowrap;
+        }
+
+        .brand h1 small {
+            font-size: 12px;
+            color: #6a6255;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
 
         .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+            min-width: 0;
+        }
+
+        .nav-links a {
+            color: #6a6255;
+            text-decoration: none;
+            transition: all 0.25s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover { color: #c597ff; border-bottom-color: #c597ff; }
+
+        .lang-switcher {
+            display: inline-flex;
+            border: 1px solid rgba(160, 68, 255, 0.25);
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            flex-shrink: 0;
+        }
+
+        .lang-switcher button {
+            background: transparent;
+            border: none;
+            color: #6a6255;
+            font-family: 'Lucida Console', 'Courier New', monospace;
             font-size: 11px;
-            gap: 2px 14px;
-        }
-
-        .stats-bar {
-            font-size: 11px;
-            padding: 8px 14px;
-            gap: 4px 16px;
-        }
-
-        .stats-bar .btn-blocks {
-            font-size: 10px;
-            padding: 3px 12px;
-            margin-left: 0;
-        }
-
-        .panel { padding: 18px 16px; }
-        .panel-title { font-size: 15px; }
-        .panel-title img { width: 28px; height: 28px; }
-
-        .cards {
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        .card { padding: 14px 16px; }
-        .card-item .value { font-size: 11px; }
-
-        .footer {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 6px;
-        }
-
-        .footer-links { gap: 4px 12px; }
-    }
-
-    @media (max-width: 480px) {
-        .app { gap: 10px; }
-        .header { padding: 10px 14px; }
-        .brand h1 { font-size: 15px; }
-        .brand h1 small { font-size: 10px; }
-        .brand img { width: 26px; height: 26px; }
-
-        .stats-bar {
-            font-size: 10px;
+            letter-spacing: 1px;
             padding: 6px 12px;
-            gap: 3px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .stats-bar .value { font-size: 12px; }
+        .lang-switcher button + button { border-left: 1px solid rgba(160, 68, 255, 0.15); }
+        .lang-switcher button:hover { color: #c597ff; background: rgba(160, 68, 255, 0.06); }
+        .lang-switcher button.active { color: #0a080c; background: #c597ff; font-weight: 700; }
+
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 32px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(160, 68, 255, 0.1);
+            font-size: 13px;
+            min-width: 0;
+        }
+
+        .stats-bar .stat {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .stats-bar .label {
+            color: #4a443a;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            flex-shrink: 0;
+        }
+
+        .stats-bar .value {
+            color: #f5ede4;
+            font-weight: 600;
+            font-size: 14px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
 
         .stats-bar .btn-blocks {
-            font-size: 9px;
-            padding: 2px 10px;
+            margin-left: auto;
+            color: #c597ff;
+            background: rgba(160, 68, 255, 0.08);
+            border: 1px solid rgba(160, 68, 255, 0.15);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            transition: all 0.25s;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            white-space: nowrap;
+        }
+
+        .stats-bar .btn-blocks:hover {
+            background: rgba(160, 68, 255, 0.15);
+            border-color: rgba(160, 68, 255, 0.3);
+            color: #dbb8ff;
         }
 
         .panel {
-            padding: 14px 12px;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(160, 68, 255, 0.08);
+            padding: 24px 28px;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
         }
+
+        .panel:hover { border-color: rgba(160, 68, 255, 0.15); }
 
         .panel-title {
-            font-size: 13px;
-            gap: 10px;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #c597ff;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.06);
+            min-width: 0;
         }
 
-        .panel-title img { width: 24px; height: 24px; }
+        .panel-title img {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 12px rgba(160, 68, 255, 0.25));
+            flex-shrink: 0;
+        }
 
-        .card { padding: 12px 14px; }
-        .card-title { font-size: 9px; }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            min-width: 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+            transition: all 0.25s;
+            min-width: 0;
+        }
+
+        .card:hover {
+            border-color: rgba(160, 68, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-title {
+            color: #4a443a;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.04);
+        }
 
         .card-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(160, 68, 255, 0.02);
+            min-width: 0;
+            gap: 8px;
         }
 
-        .card-item .label { font-size: 9px; }
-        .card-item .value { font-size: 11px; text-align: left; width: 100%; }
+        .card-item:last-child { border-bottom: none; }
 
-        .cold-staking-info { padding: 10px 12px; }
-        .cold-staking-info .cs-address { font-size: 11px; }
-
-        .footer { font-size: 10px; }
-        .footer-links a { font-size: 10px; }
-    }
-
-    @media (max-width: 360px) {
-        .stats-bar .stat { flex: 1 1 100%; }
-        .nav-links { font-size: 9px; gap: 2px 10px; }
-        .brand h1 { font-size: 14px; }
-        .brand h1 small { font-size: 9px; }
-        .brand img { width: 22px; height: 22px; }
-    }
-
-    @media (min-width: 1920px) {
-        .app {
-            max-width: 1600px;
-            padding: 24px 40px;
+        .card-item .label {
+            color: #6a6255;
+            font-size: 11px;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
         }
 
-        .card-item .value { font-size: 13px; }
-    }
-</style>
+        .card-item .value {
+            color: #f5ede4;
+            font-size: 12px;
+            text-align: right;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            min-width: 0;
+        }
+
+        .card-item .value.positive { color: #31db72; }
+        .card-item .value.negative { color: #ff756f; }
+        .card-item .value.violet { color: #c597ff; }
+        .card-item .value.mono { font-size: 11px; color: #8a8275; }
+        .card-item .value.warning { color: #ffb530; }
+
+        .cs-address-box {
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(160, 68, 255, 0.04);
+            min-width: 0;
+        }
+
+        .cs-address-box .cs-title {
+            color: #4a443a;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .cs-address-box .cs-value {
+            font-size: 12px;
+            color: #c597ff;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            font-family: 'Lucida Console', monospace;
+        }
+
+        .footer {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(160, 68, 255, 0.06);
+            font-size: 11px;
+            color: #4a443a;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .footer a { color: #6a6255; text-decoration: none; transition: color 0.2s; }
+        .footer a:hover { color: #c597ff; }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 18px;
+        }
+
+        .footer-links a {
+            font-size: 11px;
+            color: #5a5348;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #c597ff;
+            border-bottom-color: rgba(160, 68, 255, 0.15);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(160, 68, 255, 0.08);
+            backdrop-filter: blur(12px);
+            color: #f5ede4;
+            padding: 10px 32px;
+            border-radius: 40px;
+            border: 1px solid rgba(160, 68, 255, 0.12);
+            font-family: 'Lucida Console', monospace;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 999;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            max-width: calc(100vw - 40px);
+            text-align: center;
+        }
+
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 768px) {
+            .app { padding: 12px 14px; gap: 12px; }
+            .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
+            .brand h1 { font-size: 17px; }
+            .brand img { width: 30px; height: 30px; }
+            .header-right { justify-content: space-between; width: 100%; }
+            .nav-links { font-size: 11px; gap: 2px 14px; }
+            .stats-bar { font-size: 11px; padding: 8px 14px; gap: 4px 16px; }
+            .stats-bar .btn-blocks { font-size: 10px; padding: 3px 12px; margin-left: 0; }
+            .panel { padding: 18px 16px; }
+            .panel-title { font-size: 15px; }
+            .panel-title img { width: 28px; height: 28px; }
+            .cards { grid-template-columns: 1fr; gap: 12px; }
+            .card { padding: 14px 16px; }
+            .card-item .value { font-size: 11px; }
+            .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .footer-links { gap: 4px 12px; }
+        }
+
+        @media (max-width: 480px) {
+            .app { padding: 8px 10px; gap: 10px; }
+            .header { padding: 10px 14px; }
+            .brand h1 { font-size: 15px; }
+            .brand h1 small { font-size: 10px; }
+            .brand img { width: 26px; height: 26px; }
+            .header-right { flex-direction: column; align-items: stretch; gap: 10px; }
+            .nav-links { justify-content: center; font-size: 10px; gap: 4px 10px; }
+            .lang-switcher { align-self: center; }
+            .stats-bar { font-size: 10px; padding: 6px 12px; gap: 3px 12px; }
+            .stats-bar .value { font-size: 12px; }
+            .stats-bar .btn-blocks { font-size: 9px; padding: 4px 10px; width: 100%; justify-content: center; margin-top: 4px; }
+            .panel { padding: 14px 12px; border-radius: 10px; }
+            .panel-title { font-size: 13px; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; }
+            .panel-title img { width: 24px; height: 24px; }
+            .card { padding: 12px 14px; }
+            .card-title { font-size: 9px; }
+            .card-item { padding: 4px 0; flex-wrap: wrap; gap: 2px; }
+            .card-item .label { font-size: 10px; min-width: 80px; }
+            .card-item .value { font-size: 10px; text-align: left; flex: 1; }
+            .cs-address-box .cs-value { font-size: 11px; }
+            .footer { font-size: 10px; }
+            .footer-links a { font-size: 10px; }
+        }
+
+        @media (max-width: 360px) {
+            .brand h1 { font-size: 13px; }
+            .brand h1 small { font-size: 9px; letter-spacing: 1px; }
+            .nav-links { font-size: 9px; gap: 3px 8px; }
+            .card-item .label { font-size: 9px; }
+            .card-item .value { font-size: 9px; }
+        }
+
+        @media (min-width: 1920px) {
+            .app { max-width: 1600px; padding: 24px 40px; }
+            .card-item .value { font-size: 13px; }
+        }
+    </style>
 </head>
 <body>
 
@@ -523,78 +445,84 @@
         <header class="header">
             <div class="brand">
                 <img src="assets/pivx.png" alt="PIVX">
-                <h1>PIVX <small>monitor</small></h1>
+                <h1>PIVX <small data-i18n="nodo.title_short">monitor</small></h1>
             </div>
-            <nav class="nav-links">
-                <a href="https://carover0.github.io/pagina/pivx-explorer">[EXPLORADOR]</a>
-                <a href="https://carover0.github.io/pagina/pivx-consola">[CONSOLA]</a>
-                <a href="https://carover0.github.io/pagina/pivx-stakers.html">[COLD STAKING]</a>
-                <a href="https://carover0.github.io/pagina/">[INICIO]</a>
-            </nav>
+            <div class="header-right">
+                <nav class="nav-links">
+                    <a href="https://carover0.github.io/pagina/pivx-explorer" data-i18n="common.nav.explorer">[EXPLORADOR]</a>
+                    <a href="https://carover0.github.io/pagina/pivx-consola" data-i18n="common.nav.console">[CONSOLA]</a>
+                    <a href="https://carover0.github.io/pagina/pivx-stakers.html" data-i18n="common.nav.stakers">[COLD STAKING]</a>
+                    <a href="https://carover0.github.io/pagina/" data-i18n="common.nav.home">[INICIO]</a>
+                </nav>
+                <div class="lang-switcher" role="group" aria-label="Language">
+                    <button type="button" data-lang="es" class="active">ES</button>
+                    <button type="button" data-lang="en">EN</button>
+                </div>
+            </div>
         </header>
 
         <div class="stats-bar">
-            <div class="stat"><span class="label">ALTURA</span><span class="value" id="stat-height">—</span></div>
-            <div class="stat"><span class="label">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
-            <div class="stat"><span class="label">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;">tx</span></div>
-            <div class="stat"><span class="label">PRECIO</span><span class="value" id="stat-price">—</span></div>
-            <a href="https://carover0.github.io/pagina/pivx-merchants.html" class="btn-blocks" target="_self">📍 PIVX comercios</a>
-            <a href="https://carover0.github.io/pagina/pivx-bloques.html" class="btn-blocks" target="_self">🧱 Bloques en tiempo real</a>
+            <div class="stat"><span class="label" data-i18n="common.label.height">ALTURA</span><span class="value" id="stat-height">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
+            <div class="stat"><span class="label" data-i18n="common.label.price">PRECIO</span><span class="value" id="stat-price">—</span></div>
+            <a href="https://carover0.github.io/pagina/pivx-bloques.html" class="btn-blocks" target="_self" data-i18n="common.btn.blocks">⧫ Bloques en tiempo real</a>
         </div>
 
         <div class="panel">
             <div class="panel-title">
                 <img src="assets/pivx.png" alt="PIVX">
-                MONITOR DE NODO PIVX
+                <span data-i18n="nodo.panel_title">MONITOR DE NODO PIVX</span>
             </div>
 
             <div class="cards">
 
                 <div class="card">
-                    <div class="card-title">Nodo · Estado</div>
-                    <div class="card-item"><span class="label">VERSIÓN</span><span class="value" id="node-version">---</span></div>
-                    <div class="card-item"><span class="label">ESTADO</span><span class="value" id="node-state">---</span></div>
-                    <div class="card-item"><span class="label">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
-                    <div class="card-item"><span class="label">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
-                    <div class="card-item"><span class="label">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
+                    <div class="card-title" data-i18n="nodo.card.node_state">Nodo · Estado</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="node-version">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="node-state">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.blocks">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-title">Nodo · Red</div>
-                    <div class="card-item"><span class="label">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
-                    <div class="card-item"><span class="label">STAKE PROMEDIO</span><span class="value violet" id="node-stake">---</span></div>
-                    <div class="card-item"><span class="label">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
-                    <div class="card-item"><span class="label">ÚLTIMO BLOQUE</span><span class="value mono" id="node-bestblock">---</span></div>
+                    <div class="card-title" data-i18n="nodo.card.network">Nodo · Red</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.difficulty">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.stake_avg">STAKE PROMEDIO</span><span class="value violet" id="node-stake">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.protocol">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.bestblock">ÚLTIMO BLOQUE</span><span class="value mono" id="node-bestblock">---</span></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-title">PIVX · Mercado</div>
-                    <div class="card-item"><span class="label">PRECIO USD</span><span class="value violet" id="price-usd">---</span></div>
-                    <div class="card-item"><span class="label">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
-                    <div class="card-item"><span class="label">ACTUALIZADO</span><span class="value mono" id="price-time">---</span></div>
+                    <div class="card-title" data-i18n="nodo.card.market">PIVX · Mercado</div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.price_usd">PRECIO USD</span><span class="value violet" id="price-usd">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.volume">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="common.label.updated">ACTUALIZADO</span><span class="value mono" id="price-time">---</span></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-title">Cold Staking · Resumen</div>
-                    <div class="card-item"><span class="label">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
-                    <div class="card-item"><span class="label">TOTAL DELEGADO</span><span class="value violet" id="cs-total">---</span></div>
-                    <div class="card-item"><span class="label">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
-                    <div class="card-item"><span class="label">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
-                    <div class="card-item"><span class="label">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
-                    <div class="card-item"><span class="label">BALANCE LOCAL</span><span class="value violet" id="cs-local-balance">---</span></div>
+                    <div class="card-title" data-i18n="nodo.card.cold_staking">Cold Staking · Resumen</div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_utxos">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_total">TOTAL DELEGADO</span><span class="value violet" id="cs-total">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_confirms">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_whitelist">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_status">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
+                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_balance">BALANCE LOCAL</span><span class="value violet" id="cs-local-balance">---</span></div>
                 </div>
 
             </div>
 
-            <div class="cold-staking-info">
-                    <div class="cs-label">► Dirección de cold staking</div>
-                    <div class="cs-address">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</div>
+            <div class="cs-address-box">
+                <div class="cs-title" data-i18n="nodo.label.cs_address">► Dirección de cold staking</div>
+                <div class="cs-value">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</div>
             </div>
+
             <footer class="footer">
-                <span>actualizado en tiempo real</span>
+                <span data-i18n="common.footer.realtime">actualizado en tiempo real</span>
                 <div class="footer-links">
-                    <a href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank">API</a>
-                    <a href="https://carover0.xyz/api/pivx/pivx.php?token=pivx2026" target="_blank">RPC</a>
+                    <a href="https://carover0.xyz/cacaX/pivx_status_X.json" target="_blank" data-i18n="common.footer.api">API</a>
+                    <a href="https://carover0.xyz/api/pivx/pivx.php?token=pivx2026" target="_blank" data-i18n="common.footer.rpc">RPC</a>
                 </div>
             </footer>
         </div>
@@ -603,14 +531,30 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="js/i18n-bch.js" defer></script>
     <script>
         const RPC_URL = 'https://carover0.xyz/api/pivx/pivx.php';
         const TOKEN = 'pivx2026';
         const STATUS_URL = 'https://carover0.xyz/cacaX/pivx_status_X.json';
         const PRICE_API_URL = 'https://carover0.xyz/getprice-pivx.php?token=pivx2026';
 
+        let I18n = null;
         let stakeCache = { value: 4, timestamp: 0 };
         let precioCache = { usd: null, volumen: null, timestamp: 0 };
+        let lastStatus = null;
+
+        function getI18n() {
+            return window.FiroI18n || window.PivxI18n || window.BchI18n || null;
+        }
+
+        function t(key, fallback) {
+            const i = getI18n();
+            if (i && typeof i.t === 'function') {
+                const v = i.t(key);
+                if (v && v !== key) return v;
+            }
+            return fallback || key;
+        }
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -645,7 +589,6 @@
             el._timer = setTimeout(() => el.classList.remove('show'), 1800);
         }
 
-        // ─── API ─────────────────────────────────────────────────────────
         async function callRPC(method, params = []) {
             try {
                 const cmd = method + (params.length ? ' ' + params.join(' ') : '');
@@ -683,11 +626,8 @@
                     const list = utxos.list || [];
                     document.getElementById('cs-utxos').textContent = utxos.count || 0;
                     document.getElementById('cs-total').textContent = Number(utxos.total_amount || 0).toFixed(2) + ' PIV';
-                    document.getElementById('cs-confirms').textContent = list.length ? Math.min(...list.map(u => u
-                        .confirmations)) : '---';
-                    document.getElementById('cs-whitelist').textContent = list.length ?
-                        `${list.filter(u => u.whitelisted === 'true').length}/${list.length}` :
-                        '---';
+                    document.getElementById('cs-confirms').textContent = list.length ? Math.min(...list.map(u => u.confirmations)) : '---';
+                    document.getElementById('cs-whitelist').textContent = list.length ? `${list.filter(u => u.whitelisted === 'true').length}/${list.length}` : '---';
                 }
 
                 const balances = staking?.balances;
@@ -695,18 +635,17 @@
 
                 const statusEl = document.getElementById('cs-staking-status');
                 if (active && balances?.stakeable_coins > 0) {
-                    statusEl.textContent = 'ACTIVO';
+                    statusEl.textContent = t('nodo.state.active', 'ACTIVO');
                     statusEl.className = 'value positive';
                 } else if (active) {
-                    statusEl.textContent = 'ESPERANDO';
+                    statusEl.textContent = t('nodo.state.waiting', 'ESPERANDO');
                     statusEl.className = 'value warning';
                 } else {
-                    statusEl.textContent = 'INACTIVO';
+                    statusEl.textContent = t('nodo.state.inactive', 'INACTIVO');
                     statusEl.className = 'value negative';
                 }
 
-                document.getElementById('cs-local-balance').textContent = (balances?.total_wallet_balance || 0).toFixed(4) +
-                    ' PIV';
+                document.getElementById('cs-local-balance').textContent = (balances?.total_wallet_balance || 0).toFixed(4) + ' PIV';
             } catch (e) {
                 console.error('Cold staking:', e);
             }
@@ -722,32 +661,29 @@
                     callRPC('getpeerinfo')
                 ]);
 
+                lastStatus = status;
                 await fetchColdStakingSummary(status);
 
                 const blocks = status.height || chain?.blocks || 0;
                 const synced = chain?.blocks >= chain?.headers;
                 const stake = await calcularStakePromedio();
 
-                const version = (status.software_subversion || status.subversion || network?.subversion || '---').replace(
-                    /[\/"]/g, '');
+                const version = (status.software_subversion || status.subversion || network?.subversion || '---').replace(/[\/"]/g, '');
                 document.getElementById('node-version').textContent = version;
 
                 const stateEl = document.getElementById('node-state');
-                stateEl.textContent = synced ? 'SINCRONIZADO' : 'SINCRONIZANDO';
+                stateEl.textContent = synced ? t('common.state.synced', 'SINCRONIZADO') : t('common.state.syncing', 'SINCRONIZANDO');
                 stateEl.className = 'value ' + (synced ? 'positive' : 'negative');
 
                 document.getElementById('node-blocks').textContent = formatNumber(blocks);
                 document.getElementById('node-connections').textContent = status.connections || peers?.length || 0;
                 document.getElementById('node-mempool').textContent = (mempool?.length || status.mempool || 0) + ' TX';
 
-                document.getElementById('node-difficulty').textContent = formatDifficulty(status.difficulty || chain
-                    ?.difficulty);
+                document.getElementById('node-difficulty').textContent = formatDifficulty(status.difficulty || chain?.difficulty);
                 document.getElementById('node-stake').textContent = Number(stake).toFixed(2) + ' PIV (por bloque)';
-                document.getElementById('node-protocol').textContent = status.protocolversion || network?.protocolversion ||
-                    '---';
+                document.getElementById('node-protocol').textContent = status.protocolversion || network?.protocolversion || '---';
                 document.getElementById('node-bestblock').textContent = formatHash(chain?.bestblockhash);
 
-                // Update stats bar
                 const price = precioCache.usd;
                 updateStatsBar(status, price, mempool);
 
@@ -776,8 +712,7 @@
                     document.getElementById('price-usd').textContent = '$' + Number(precioCache.usd).toFixed(4);
                 }
                 if (precioCache.volumen) {
-                    document.getElementById('price-volume').textContent = '$' + Math.round(precioCache.volumen)
-                        .toLocaleString();
+                    document.getElementById('price-volume').textContent = '$' + Math.round(precioCache.volumen).toLocaleString();
                 }
             } catch (e) {
                 console.error('Precio:', e);
@@ -786,16 +721,39 @@
             document.getElementById('price-time').textContent = new Date().toLocaleTimeString();
         }
 
-        async function init() {
-            await fetchPrice();
-            await fetchNodeData();
+        window.onLangChange = function() {
+            if (lastStatus) {
+                fetchColdStakingSummary(lastStatus);
+                fetchNodeData();
+            }
+        };
+
+        function initI18n() {
+            I18n = getI18n();
+            if (!I18n) {
+                console.error('❌ i18n no cargó. Revisa que js/i18n-bch.js termine con: window.FiroI18n = BchI18n;');
+                return false;
+            }
+            if (typeof I18n.init !== 'function') {
+                console.error('❌ I18n existe pero no tiene init()');
+                return false;
+            }
+            I18n.init();
+            console.log('✅ i18n listo. Idioma:', I18n.getLang ? I18n.getLang() : '?');
+            return true;
         }
 
-        init();
-        setInterval(() => {
-            fetchPrice();
-            fetchNodeData();
-        }, 30000);
+        async function init() {
+            initI18n();
+            await fetchPrice();
+            await fetchNodeData();
+            setInterval(() => {
+                fetchPrice();
+                fetchNodeData();
+            }, 30000);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 
 </body>
