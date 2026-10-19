@@ -1051,13 +1051,14 @@ function renderPlaceholder() {
     renderOutput(`
     <div class="placeholder">
       <div class="placeholder-logo">
-        <img src="assets/piv7.png" alt="PIVX">
+        <img src="${PLACEHOLDER_IMG}" alt="PIVX">
       </div>
       <div>${t('explorer.placeholder_title', 'explorador de bloques PIVX')}</div>
       <div class="sub">${t('explorer.placeholder_sub', 'bloque · transacción · dirección')}</div>
     </div>
   `);
 }
+
         function renderLoading() {
             renderOutput(`
             <div class="loading">
