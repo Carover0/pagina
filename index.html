@@ -4,27 +4,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="assets/index-favicon.ico?">
     <link rel="icon" type="image/png" href="/assets/index.png?">
-	<link rel="me" href="https://Mask.ID/i/ddkxut2r">
     <title>cΔrovΣr0 · Nodos</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { overflow-x: hidden; }
 
         :root {
             --violet: #4f46e5;
             --violet-soft: #818cf8;
-            --violet-neon: #4338ca;
             --green: #31db72;
             --red: #ff756f;
             --gold: #ffb530;
-            --line: rgba(160, 68, 255, .48);
-            --panel: rgba(6, 2, 13, .91);
-            --ui-scale: .9;
         }
 
         body {
@@ -36,12 +26,9 @@
                 linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
             font-family: 'Lucida Console', 'Courier New', monospace;
             color: #ece8e0;
-            padding: 0;
-            margin: 0;
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            overflow-x: hidden;
         }
 
         .app {
@@ -67,52 +54,13 @@
             backdrop-filter: blur(8px);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            min-width: 0; 
-        }
+        .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .brand .logo-text { color: var(--violet-soft); font-size: 23px; letter-spacing: 2px; text-shadow: 0 0 30px rgba(79, 70, 229, 0.15); }
+        .brand .logo-text small { font-size: 13px; color: #6a6255; font-weight: 300; }
 
-        .brand .logo-text {
-            color: var(--violet-soft);
-            font-size: 23px;
-            font-weight: 400;
-            letter-spacing: 2px;
-            text-shadow: 0 0 30px rgba(79, 70, 229, 0.15);
-        }
-
-        .brand .logo-text small {
-            font-size: 13px;
-            color: #6a6255;
-            letter-spacing: 2px;
-            font-weight: 300;
-        }
-
-        .nav-links {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 4px 18px;
-            font-size: 13px;
-            letter-spacing: 0.3px;
-            min-width: 0; 
-        }
-
-        .nav-links a {
-            color: #6a6255;
-            text-decoration: none;
-            transition: all 0.25s;
-            padding: 4px 0;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            white-space: nowrap; 
-        }
-
-        .nav-links a:hover {
-            color: var(--violet-soft);
-            border-bottom-color: var(--violet-soft);
-        }
+        .nav-links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; font-size: 13px; min-width: 0; }
+        .nav-links a { color: #6a6255; text-decoration: none; transition: all 0.25s; padding: 4px 0; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+        .nav-links a:hover { color: var(--violet-soft); border-bottom-color: var(--violet-soft); }
 
         .modal-overlay {
             display: none;
@@ -126,16 +74,14 @@
             padding: 20px;
         }
 
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
 
         .modal {
             background: #0d0b14;
             border-radius: 16px;
             border: 1px solid rgba(79, 70, 229, 0.15);
             padding: 32px 36px;
-            max-width: 700px;
+            max-width: 800px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -143,18 +89,8 @@
             box-shadow: 0 0 60px rgba(79, 70, 229, 0.05);
         }
 
-        .modal::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .modal::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .modal::-webkit-scrollbar-thumb {
-            background: rgba(79, 70, 229, 0.2);
-            border-radius: 10px;
-        }
+        .modal::-webkit-scrollbar { width: 4px; }
+        .modal::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.2); border-radius: 10px; }
 
         .modal-close {
             position: absolute;
@@ -167,11 +103,9 @@
             background: none;
             border: none;
             font-family: 'Lucida Console', monospace;
+            z-index: 10;
         }
-
-        .modal-close:hover {
-            color: var(--violet-soft);
-        }
+        .modal-close:hover { color: var(--violet-soft); }
 
         .modal-title {
             color: var(--violet-soft);
@@ -185,573 +119,117 @@
             gap: 12px;
         }
 
-        .modal-title .icon {
-            font-size: 24px;
-        }
+        .modal-body { color: #d2c8b7; font-size: 14px; line-height: 1.7; }
+        .modal-body .highlight { color: var(--violet-soft); }
+        .modal-body .desc { margin: 8px 0; }
 
-        .modal-body {
-            color: #d2c8b7;
-            font-size: 14px;
-            line-height: 1.7;
-        }
+        .modal-body .feature-list { list-style: none; padding: 0; margin: 8px 0; }
+        .modal-body .feature-list li { color: #b0a897; font-size: 13px; line-height: 1.6; padding: 4px 0; border-bottom: 1px solid rgba(79, 70, 229, 0.04); }
+        .modal-body .feature-list li:last-child { border-bottom: none; }
+        .modal-body .feature-list .check { color: var(--violet-soft); margin-right: 6px; }
+        .modal-body .feature-list .chain { color: #5a5348; font-size: 12px; }
 
-        .modal-body .highlight {
-            color: var(--violet-soft);
-        }
+        .modal-body .divider { border-top: 1px solid rgba(79, 70, 229, 0.06); margin: 12px 0; padding-top: 12px; }
 
-        .modal-body .desc {
-            margin: 8px 0;
-        }
+        .layout-with-image { display: flex; flex-direction: row; gap: 24px; align-items: flex-start; }
+        .layout-text { flex: 1; min-width: 0; }
+        .layout-image { flex-shrink: 0; width: 200px; display: flex; justify-content: center; }
+        .layout-image img { width: 100%; height: auto; max-height: 500px; object-fit: contain; opacity: 0.9; filter: drop-shadow(0 0 15px rgba(79, 70, 229, 0.3)); transition: transform 0.3s ease; }
+        .layout-image img:hover { transform: scale(1.02); }
 
-        .modal-body .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 8px 0;
-        }
-
-        .modal-body .feature-list li {
-            color: #b0a897;
-            font-size: 13px;
-            line-height: 1.6;
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(79, 70, 229, 0.04);
-        }
-
-        .modal-body .feature-list li:last-child {
-            border-bottom: none;
-        }
-
-        .modal-body .feature-list .check {
-            color: var(--violet-soft);
-            margin-right: 6px;
-        }
-
-        .modal-body .feature-list .chain {
-            color: #5a5348;
-            font-size: 12px;
-        }
-
-        .modal-body .divider {
-            border-top: 1px solid rgba(79, 70, 229, 0.06);
-            margin: 12px 0;
-            padding-top: 12px;
-        }
+        .donate-layout { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; margin-top: 10px; }
+        .donate-addresses { flex: 1; min-width: 0; }
+        .donate-image-side { flex-shrink: 0; width: 140px; display: flex; justify-content: center; }
+        .donate-image-side img { width: 100%; height: auto; max-height: 280px; object-fit: contain; opacity: 0.9; filter: drop-shadow(0 0 15px rgba(79, 70, 229, 0.3)); transition: transform 0.3s ease; }
+        .donate-image-side img:hover { transform: scale(1.05); }
 
         .donation-addr {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 6px 12px;
-            padding: 7px 12px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 8px;
-            border: 1px solid rgba(79, 70, 229, 0.04);
-            margin: 4px 0;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-width: 0; 
-        }
-
-        .donation-addr:hover {
-            background: rgba(79, 70, 229, 0.04);
-            border-color: rgba(79, 70, 229, 0.1);
-        }
-
-        .donation-addr .coin-icon {
-            width: 28px;
-            height: 28px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .donation-addr .coin-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 6px rgba(79, 70, 229, 0.1));
-        }
-
-        .donation-addr .coin-name {
-            color: #6a6255;
-            font-size: 12px;
-            min-width: 60px;
-        }
-
-        .donation-addr .address {
-            color: var(--violet-soft);
-            font-size: 13px;
-            flex: 1 1 100%;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .donation-addr .copy-hint {
-            color: #3d3830;
-            font-size: 11px;
-        }
-
-        .donation-note {
-            color: #5a5348;
-            font-size: 12px;
-            margin-top: 10px;
-            padding: 10px 12px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 8px;
-            border: 1px solid rgba(79, 70, 229, 0.04);
-            text-align: center;
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .card-full {
-            grid-column: 1 / -1;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 14px;
-            border: 1px solid rgba(79, 70, 229, 0.08);
-            padding: 24px 28px;
-            backdrop-filter: blur(8px);
-            transition: border-color 0.3s, transform 0.2s;
-            min-width: 0; 
-        }
-
-        .card:hover {
-            border-color: rgba(79, 70, 229, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .card-title {
-            color: var(--violet-soft);
-            font-size: 18px;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(79, 70, 229, 0.06);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap; 
-        }
-
-        .card-title .count {
-            color: #4a443a;
-            font-size: 13px;
-            font-weight: 300;
-            margin-left: auto;
-        }
-
-        .node-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 7px 0;
-            border-bottom: 1px solid rgba(79, 70, 229, 0.03);
-            min-width: 0;
-        }
-
-        .node-item:last-child {
-            border-bottom: none;
-        }
-
-        .node-item .coin-icon {
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .node-item .coin-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.1));
-        }
-
-        .node-item .node-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .node-item .node-name {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .node-item .node-name a {
-            color: #f5ede4;
-            text-decoration: none;
-            font-size: 15px;
-            transition: color 0.2s;
-        }
-
-        .node-item .node-name a:hover {
-            color: var(--violet-soft);
-        }
-
-        .node-item .status {
-            font-size: 11px;
-            padding: 2px 12px;
-            border-radius: 12px;
-            border: 1px solid transparent;
-        }
-
-        .node-item .status.online {
-            color: var(--green);
-            border-color: rgba(49, 219, 114, 0.15);
-            background: rgba(49, 219, 114, 0.05);
-        }
-
-        .node-item .status.offline {
-            color: var(--red);
-            border-color: rgba(255, 117, 111, 0.15);
-            background: rgba(255, 117, 111, 0.05);
-        }
-
-        .node-item .node-stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 18px;
-            font-size: 12px;
-            color: #5a5348;
-            margin-top: 2px;
-            min-width: 0; 
-        }
-
-        .node-item .node-stats span {
-            color: #8a8275;
-        }
-
-        .node-item .node-stats .val {
-            color: #f5ede4;
-        }
-
-        .vps-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 5px 0;
-            min-width: 0; 
-        }
-
-        .vps-item .label {
-            color: #6a6255;
-            font-size: 13px;
-            min-width: 60px;
-        }
-
-        .vps-item .bar-track {
-            flex: 1;
-            height: 7px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-            min-width: 60px;
-        }
-
-        .vps-item .bar-fill {
-            height: 100%;
-            border-radius: 10px;
-            transition: width 1s ease;
-            background: linear-gradient(90deg, var(--violet), var(--violet-soft));
-        }
-
-        .vps-item .bar-fill.orange {
-            background: linear-gradient(90deg, var(--gold), #ffd170);
-        }
-
-        .vps-item .bar-fill.green {
-            background: linear-gradient(90deg, var(--green), #5ae89a);
-        }
-
-        .vps-item .bar-fill.red {
-            background: linear-gradient(90deg, var(--red), #ff9a94);
-        }
-
-        .vps-item .percent {
-            color: #8a8275;
-            font-size: 13px;
-            min-width: 40px;
-            text-align: right;
-        }
-
-        .vps-info {
-            font-size: 13px;
-            color: #5a5348;
-            padding: 3px 0;
-        }
-
-        .vps-info .val {
-            color: #b0a897;
-        }
-
-        .vps-status-text {
-            font-size: 13px;
-            padding: 3px 0;
-        }
-
-        .vps-status-text.online {
-            color: var(--green);
-        }
-
-        .vps-status-text.offline {
-            color: var(--red);
-        }
-
-        .reactor-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .reactor-item {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 10px;
-            padding: 16px 18px;
-            border: 1px solid rgba(79, 70, 229, 0.04);
-            min-width: 0; 
-        }
-
-        .reactor-item:hover {
-            border-color: rgba(79, 70, 229, 0.1);
-        }
-
-        .reactor-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--violet-soft);
-            font-size: 14px;
-            margin-bottom: 10px;
-            min-width: 0; 
-            flex-wrap: wrap; 
-        }
-
-        .reactor-title .status {
-            margin-left: auto;
-            font-size: 12px;
-        }
-
-        .reactor-title .status.online {
-            color: var(--green);
-        }
-
-        .reactor-title .status.offline {
-            color: var(--red);
-        }
-
-        .reactor-title .status.waiting {
-            color: var(--gold);
-        }
-
-        .metric-name {
-            display: block;
-            color: #6a6255;
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
-
-        .bar-line {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            min-width: 0; 
-        }
-
-        .bar-line .bar {
-            display: flex;
-            flex: 1;
-            gap: 3px;
-            min-width: 60px;
-        }
-
-        .bar-line .bar i {
-            display: block;
-            flex: 1 1 0;
-            min-width: 4px;
-            height: 13px;
-            border: 1px solid rgba(79, 70, 229, 0.15);
-            background: rgba(79, 70, 229, 0.05);
-            border-radius: 2px;
-	    max-width: 21px;
-        }
-
-        .bar-line .bar i.on {
-            background: var(--violet);
-            box-shadow: 0 0 8px rgba(79, 70, 229, 0.3);
-            border-color: var(--violet);
-        }
-
-        .bar-line .bar i.on.bw {
-            background: var(--violet-soft);
-            box-shadow: 0 0 8px rgba(129, 140, 248, 0.3);
-            border-color: var(--violet-soft);
-        }
-
-        .bar-line .percent {
-            min-width: 38px;
-            font-size: 12px;
-            color: #8a8275;
-        }
-
-        .reactor-info {
-            font-size: 12px;
-            color: #8a8275;
-            margin-top: 3px;
-        }
-
-        .reactor-detail {
-            font-size: 11px;
-            color: #5a5348;
-            margin-top: 2px;
-        }
-
-        .reactor-footer {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(79, 70, 229, 0.04);
-            font-size: 12px;
-            color: #5a5348;
-        }
-
-        .reactor-footer .val {
-            color: var(--violet-soft);
-        }
-
-        .reactor-footer .status-text {
-            color: var(--green);
-        }
-
-        .footer {
-            padding-top: 14px;
-            border-top: 1px solid rgba(79, 70, 229, 0.06);
-            font-size: 12px;
-            color: #4a443a;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .footer a {
-            color: #6a6255;
-            text-decoration: none;
-            transition: color 0.2s;
-            cursor: pointer;
-        }
-
-        .footer a:hover {
-            color: var(--violet-soft);
-        }
-
-        .footer .heart {
-            color: var(--violet-soft);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: rgba(79, 70, 229, 0.08);
-            backdrop-filter: blur(12px);
-            color: #f5ede4;
-            padding: 10px 32px;
-            border-radius: 40px;
-            border: 1px solid rgba(79, 70, 229, 0.12);
-            font-family: 'Lucida Console', monospace;
-            font-size: 13px;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
-            z-index: 1000;
-            letter-spacing: 0.3px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-            max-width: calc(100vw - 40px); 
-            text-align: center;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .firo-argentina-badge {
-            color: var(--gold);
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255, 181, 48, 0.25);
-            background: rgba(255, 181, 48, 0.05);
-            padding: 1px 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .firo-argentina-badge:hover {
-            background: rgba(255, 181, 48, 0.12);
-            border-color: rgba(255, 181, 48, 0.4);
-        }
-
-        .firo-modal-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 24px;
-            margin: 12px 0;
-        }
-
-        .firo-modal-stats .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline; 
-            gap: 8px; 
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(79, 70, 229, 0.04);
-            font-size: 13px;
-            min-width: 0; 
-        }
-
-        .firo-modal-stats .stat-item .label {
-            color: #6a6255;
-            flex-shrink: 0; 
-        }
-
-        .firo-modal-stats .stat-item .value {
-            color: #f5ede4;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            text-align: right;
-        }
-
-        .firo-modal-stats .stat-item .value.green {
-            color: var(--green);
-        }
-
-        @media (max-width: 1100px) {
-            .firo-modal-stats { grid-template-columns: 1fr; }
-        }
+            display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 7px 12px;
+            background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid rgba(79, 70, 229, 0.04);
+            margin: 4px 0; cursor: pointer; transition: all 0.2s; min-width: 0;
+        }
+        .donation-addr:hover { background: rgba(79, 70, 229, 0.04); border-color: rgba(79, 70, 229, 0.1); }
+        .donation-addr .coin-icon { width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .donation-addr .coin-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .donation-addr .coin-name { color: #6a6255; font-size: 12px; min-width: 60px; }
+        .donation-addr .address { color: var(--violet-soft); font-size: 13px; flex: 1 1 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .donation-addr .copy-hint { color: #3d3830; font-size: 11px; }
+
+        .donation-note { color: #5a5348; font-size: 12px; margin-top: 10px; padding: 10px 12px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid rgba(79, 70, 229, 0.04); text-align: center; }
+
+        .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .card-full { grid-column: 1 / -1; }
+        .card { background: rgba(255, 255, 255, 0.02); border-radius: 14px; border: 1px solid rgba(79, 70, 229, 0.08); padding: 24px 28px; backdrop-filter: blur(8px); transition: border-color 0.3s, transform 0.2s; min-width: 0; }
+        .card:hover { border-color: rgba(79, 70, 229, 0.15); transform: translateY(-2px); }
+
+        .card-title { color: var(--violet-soft); font-size: 18px; letter-spacing: 1px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(79, 70, 229, 0.06); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .card-title .count { color: #4a443a; font-size: 13px; font-weight: 300; margin-left: auto; }
+
+        .node-item { display: flex; align-items: center; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(79, 70, 229, 0.03); min-width: 0; }
+        .node-item:last-child { border-bottom: none; }
+        .node-item .coin-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .node-item .coin-icon img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.1)); }
+        .node-item .node-info { flex: 1; min-width: 0; }
+        .node-item .node-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .node-item .node-name a { color: #f5ede4; text-decoration: none; font-size: 15px; transition: color 0.2s; }
+        .node-item .node-name a:hover { color: var(--violet-soft); }
+        .node-item .status { font-size: 11px; padding: 2px 12px; border-radius: 12px; border: 1px solid transparent; }
+        .node-item .status.online { color: var(--green); border-color: rgba(49, 219, 114, 0.15); background: rgba(49, 219, 114, 0.05); }
+        .node-item .status.offline { color: var(--red); border-color: rgba(255, 117, 111, 0.15); background: rgba(255, 117, 111, 0.05); }
+        .node-item .node-stats { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 12px; color: #5a5348; margin-top: 2px; min-width: 0; }
+        .node-item .node-stats span { color: #8a8275; }
+        .node-item .node-stats .val { color: #f5ede4; }
+
+        .vps-item { display: flex; align-items: center; gap: 12px; padding: 5px 0; min-width: 0; }
+        .vps-item .label { color: #6a6255; font-size: 13px; min-width: 60px; }
+        .vps-item .bar-track { flex: 1; height: 7px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; min-width: 60px; }
+        .vps-item .bar-fill { height: 100%; border-radius: 10px; transition: width 1s ease; background: linear-gradient(90deg, var(--violet), var(--violet-soft)); }
+        .vps-item .bar-fill.orange { background: linear-gradient(90deg, var(--gold), #ffd170); }
+        .vps-item .bar-fill.green { background: linear-gradient(90deg, var(--green), #5ae89a); }
+        .vps-item .bar-fill.red { background: linear-gradient(90deg, var(--red), #ff9a94); }
+        .vps-item .percent { color: #8a8275; font-size: 13px; min-width: 40px; text-align: right; }
+        .vps-info { font-size: 13px; color: #5a5348; padding: 3px 0; }
+        .vps-info .val { color: #b0a897; }
+        .vps-status-text { font-size: 13px; padding: 3px 0; }
+        .vps-status-text.online { color: var(--green); }
+        .vps-status-text.offline { color: var(--red); }
+
+        .reactor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .reactor-item { background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 16px 18px; border: 1px solid rgba(79, 70, 229, 0.04); min-width: 0; }
+        .reactor-item:hover { border-color: rgba(79, 70, 229, 0.1); }
+        .reactor-title { display: flex; align-items: center; gap: 10px; color: var(--violet-soft); font-size: 14px; margin-bottom: 10px; min-width: 0; flex-wrap: wrap; }
+        .reactor-title .status { margin-left: auto; font-size: 12px; }
+        .reactor-title .status.online { color: var(--green); }
+        .reactor-title .status.offline { color: var(--red); }
+        .reactor-title .status.waiting { color: var(--gold); }
+
+        .metric-name { display: block; color: #6a6255; font-size: 12px; margin-bottom: 4px; }
+        .bar-line { display: flex; align-items: center; gap: 9px; min-width: 0; }
+        .bar-line .bar { display: flex; flex: 1; gap: 3px; min-width: 60px; }
+        .bar-line .bar i { display: block; flex: 1 1 0; min-width: 4px; height: 13px; border: 1px solid rgba(79, 70, 229, 0.15); background: rgba(79, 70, 229, 0.05); border-radius: 2px; max-width: 21px; }
+        .bar-line .bar i.on { background: var(--violet); box-shadow: 0 0 8px rgba(79, 70, 229, 0.3); border-color: var(--violet); }
+        .bar-line .bar i.on.bw { background: var(--violet-soft); box-shadow: 0 0 8px rgba(129, 140, 248, 0.3); border-color: var(--violet-soft); }
+        .bar-line .percent { min-width: 38px; font-size: 12px; color: #8a8275; }
+        .reactor-info { font-size: 12px; color: #8a8275; margin-top: 3px; }
+        .reactor-detail { font-size: 11px; color: #5a5348; margin-top: 2px; }
+
+        .reactor-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(79, 70, 229, 0.04); font-size: 12px; color: #5a5348; }
+        .reactor-footer .val { color: var(--violet-soft); }
+        .reactor-footer .status-text { color: var(--green); }
+
+        .footer { padding-top: 14px; border-top: 1px solid rgba(79, 70, 229, 0.06); font-size: 12px; color: #4a443a; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+        .footer a { color: #6a6255; text-decoration: none; transition: color 0.2s; cursor: pointer; }
+        .footer a:hover { color: var(--violet-soft); }
+        .footer .heart { color: var(--violet-soft); }
+
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: rgba(79, 70, 229, 0.08); backdrop-filter: blur(12px); color: #f5ede4; padding: 10px 32px; border-radius: 40px; border: 1px solid rgba(79, 70, 229, 0.12); font-family: 'Lucida Console', monospace; font-size: 13px; opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; z-index: 1000; letter-spacing: 0.3px; box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3); max-width: calc(100vw - 40px); text-align: center; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .firo-modal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin: 12px 0; }
+        .firo-modal-stats .stat-item { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px solid rgba(79, 70, 229, 0.04); font-size: 13px; min-width: 0; }
+        .firo-modal-stats .stat-item .label { color: #6a6255; flex-shrink: 0; }
+        .firo-modal-stats .stat-item .value { color: #f5ede4; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+        .firo-modal-stats .stat-item .value.green { color: var(--green); }
 
         @media (max-width: 1024px) {
             .card-grid { grid-template-columns: 1fr; }
@@ -773,6 +251,13 @@
             .reactor-item { padding: 12px 14px; }
             .node-item .node-name a { font-size: 14px; }
             .node-item .node-stats { font-size: 11px; }
+            .layout-with-image { flex-direction: column-reverse; align-items: center; }
+            .layout-image { width: 100%; margin-top: 10px; }
+            .layout-image img { max-height: 250px; }
+            .donate-layout { flex-direction: column-reverse; align-items: center; }
+            .donate-addresses { width: 100%; }
+            .donate-image-side { width: 100%; margin-top: 10px; justify-content: center; }
+            .donate-image-side img { max-width: 120px; max-height: 180px; }
         }
 
         @media (max-width: 480px) {
@@ -799,12 +284,12 @@
             .donation-addr .copy-hint { font-size: 10px; }
             .reactor-item { padding: 10px 12px; }
             .reactor-title { font-size: 13px; }
-            .bar-line .bar i { height: 10px; } 
+            .bar-line .bar i { height: 10px; }
             .bar-line .percent { font-size: 11px; min-width: 30px; }
             .reactor-info { font-size: 11px; }
             .reactor-footer { font-size: 11px; }
             .footer { font-size: 11px; flex-direction: column; text-align: center; }
-            .firo-argentina-badge { font-size: 10px; padding: 0px 8px; }
+            .firo-modal-stats { grid-template-columns: 1fr; }
         }
 
         @media (min-width: 1920px) {
@@ -823,8 +308,7 @@
                 <span class="logo-text">cΔrovΣr0 <small>nodos</small></span>
             </div>
             <nav class="nav-links">
-                <a href="https://carover0.github.io/pagina/pivx-merchants.html">[PIVX MAP]</a>
-				<a href="https://carover0.github.io/pagina/firo-merchants.html">[FIRO MAP]</a>
+                <a href="https://carover0.github.io/pagina/firo-merchants.html">[FIRO MAP]</a>
                 <a href="https://carover0.github.io/pagina/usdt-block.html">[USDT-BLOCK]</a>
                 <a onclick="openModal('info')">[ACERCA]</a>
                 <a onclick="openModal('donate')">[APOYAR]</a>
@@ -1046,7 +530,6 @@
                 <div class="desc" style="font-size:12px; color:#5a5348; margin-top:10px;">
                     Datos obtenidos desde <span class="highlight">carover0.xyz/cacaX/firo_status_X.json</span>
                 </div>
-
             </div>
         </div>
     </div>
@@ -1056,33 +539,42 @@
             <button class="modal-close" onclick="closeModal('info')">✕</button>
             <div class="modal-title"><span class="icon"><img src="assets/info.png" width="32"></span> ¿QUÉ ES ESTO?</div>
             <div class="modal-body">
-                <div class="desc">
-                    ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Firo y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
-                </div>
+                <div class="layout-with-image">
+                    
+                    <div class="layout-image" id="info-random-image-container">
+                        <img id="info-random-image" src="" alt="Info">
+                    </div>
 
-                <div class="desc" style="font-size:13px; color:#5a5348;">
-                    Toda la información se procesa a nivel de servidor. El navegador únicamente muestra los datos obtenidos, sin ejecutar scripts de terceros ni depender de servicios externos para el procesamiento.
-                </div>
+                    <div class="layout-text">
+                        <div class="desc">
+                            ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Firo y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
+                        </div>
 
-                <div class="desc" style="margin-top:12px;">
-                    <span class="highlight">▸ ¿QUÉ OFRECE?</span>
-                </div>
+                        <div class="desc" style="font-size:13px; color:#5a5348;">
+                            Toda la información se procesa a nivel de servidor. El navegador únicamente muestra los datos obtenidos, sin ejecutar scripts de terceros ni depender de servicios externos para el procesamiento.
+                        </div>
 
-                <ul class="feature-list">
-                    <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Firo, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Firo, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Firo, PIVX)</span></li>
-                    <li><span class="check">◈</span> <span class="highlight">Estadísticas</span> → Información sobre suministro, pools de valor, halvings y actualizaciones de protocolo.</li>
-                    <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Firo)</span></li>
-                </ul>
+                        <div class="desc" style="margin-top:12px;">
+                            <span class="highlight">▸ ¿QUÉ OFRECE?</span>
+                        </div>
 
-                <div class="desc" style="margin-top:10px;">
-                    <span class="highlight">▸ ¿POR QUÉ?</span><br>
-                    Porque la información de una red pública debe ser accesible sin depender de plataformas centralizadas. Toda la infraestructura que alimenta esta página es operada por mí, con el objetivo de ofrecer datos transparentes, verificables y sin filtros.
-                </div>
+                        <ul class="feature-list">
+                            <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Firo, PIVX)</span></li>
+                            <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Firo, PIVX)</span></li>
+                            <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Firo, PIVX)</span></li>
+                            <li><span class="check">◈</span> <span class="highlight">Estadísticas</span> → Información sobre suministro, pools de valor, halvings y actualizaciones de protocolo.</li>
+                            <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Firo)</span></li>
+                        </ul>
 
-                <div class="divider">
-                    <span style="color:#3d3830;font-size:12px;"><span class="highlight">♥</span> Hecho con ♥ desde Argentina · <span class="highlight">cΔrovΣr0</span></span>
+                        <div class="desc" style="margin-top:10px;">
+                            <span class="highlight">▸ ¿POR QUÉ?</span><br>
+                            Porque la información de una red pública debe ser accesible sin depender de plataformas centralizadas. Toda la infraestructura que alimenta esta página es operada por mí, con el objetivo de ofrecer datos transparentes, verificables y sin filtros.
+                        </div>
+
+                        <div class="divider">
+                            <span style="color:#3d3830;font-size:12px;"><span class="highlight">♥</span> Hecho con ♥ desde Argentina · <span class="highlight">cΔrovΣr0</span></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1091,32 +583,40 @@
     <div class="modal-overlay" id="modal-donate">
         <div class="modal">
             <button class="modal-close" onclick="closeModal('donate')">✕</button>
-            <div class="modal-title"><span class="icon">🛟</span> APOYA EL PROYECTO</div>
+            <div class="modal-title"><span class="icon">🫶🏽</span> APOYA EL PROYECTO</div>
             <div class="modal-body">
                 <div class="desc">
                     Las colaboraciones siempre son bienvenidas y ayudan a mantener la infraestructura.
                 </div>
 
                 <div class="desc" style="margin-top:12px;">
-                    <span class="highlight">✧ Direcciones de donación</span>
+                    <span class="highlight">Direcciones de donación</span>
                 </div>
 
-                <div class="donation-addr" onclick="copyAddress('DGYPMgVJGcdeYG4r9kypHH35SztrZWfR5u', 'PIVX')">
-                    <span class="coin-icon"><img src="assets/pivx.png" alt="PIVX"></span>
-                    <span class="coin-name">PIVX</span>
-                    <span class="address">DGYPMgVJGcdeYG4r9kypHH35SztrZWfR5u</span>
-                    <span class="copy-hint">[copiar]</span>
-                </div>
+                <div class="donate-layout">
+                    <div class="donate-image-side" id="donate-random-image-container">
+                        <img id="donate-random-image" src="" alt="Apoyo">
+                    </div>
 
-                <div class="donation-addr" onclick="copyAddress('carover0.firo', 'FIRO')">
-                    <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
-                    <span class="coin-name">FIRO</span>
-                    <span class="address">carover0.firo</span>
-                    <span class="copy-hint">[copiar]</span>
-                </div>
+                    <div class="donate-addresses">
+                        <div class="donation-addr" onclick="copyAddress('DGYPMgVJGcdeYG4r9kypHH35SztrZWfR5u', 'PIVX')">
+                            <span class="coin-icon"><img src="assets/pivx.png" alt="PIVX"></span>
+                            <span class="coin-name">PIVX</span>
+                            <span class="address">DGYPMgVJGcdeYG4r9kypHH35SztrZWfR5u</span>
+                            <span class="copy-hint">[copiar]</span>
+                        </div>
 
-                <div class="donation-note">
-                    → Hace clic en cualquier dirección para copiarla al portapapeles.
+                        <div class="donation-addr" onclick="copyAddress('carover0.firo', 'FIRO')">
+                            <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
+                            <span class="coin-name">FIRO</span>
+                            <span class="address">carover0.firo</span>
+                            <span class="copy-hint">[copiar]</span>
+                        </div>
+
+                        <div class="donation-note">
+                            → Hace clic en cualquier dirección para copiarla.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1125,8 +625,24 @@
     <script>
         function openModal(type) {
             const modal = document.getElementById('modal-' + type);
-            if (modal) modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                if (type === 'donate') {
+                    const images = ['assets/firo2.png', 'assets/piv2.png'];
+                    const randomImage = images[Math.floor(Math.random() * images.length)];
+                    const imgElement = document.getElementById('donate-random-image');
+                    if (imgElement) imgElement.src = randomImage;
+                }
+
+                if (type === 'info') {
+                    const images = ['assets/firo7.png', 'assets/piv7.png'];
+                    const randomImage = images[Math.floor(Math.random() * images.length)];
+                    const imgElement = document.getElementById('info-random-image');
+                    if (imgElement) imgElement.src = randomImage;
+                }
+            }
         }
 
         function closeModal(type) {
