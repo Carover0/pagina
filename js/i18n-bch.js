@@ -30,6 +30,7 @@ const TRANSLATIONS = {
         "stakers.error.load":           "No se pudo cargar el estado",
 
         "common.btn.blocks":            "🧱 Bloques en tiempo real",
+        "common.btn.map":               "📍 PIVX comercios",
         "common.btn.update":            "↻ Actualizar",
         "common.btn.updating":          "↻ Actualizando...",
         "common.btn.copy":              "copiar",
@@ -263,6 +264,7 @@ const TRANSLATIONS = {
                     "stakers.error.load":           "Could not load status",
 
         "common.btn.blocks":            "🧱 Live blocks",
+        "common.btn.map":               "📍 PIVX merchants",
         "common.btn.update":            "↻ Refresh",
         "common.btn.updating":          "↻ Refreshing...",
         "common.btn.copy":              "copy",
