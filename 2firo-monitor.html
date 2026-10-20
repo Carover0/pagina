@@ -3,6 +3,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firo · Monitor de Nodo</title>
+    <link rel="icon" type="image/x-icon" href="assets/firo-favicon.ico?">
+    <link rel="icon" type="image/png" href="/assets/firo.png?">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -628,7 +631,6 @@
             <div class="stat"><span class="label" data-i18n="common.label.height">ALTURA</span><span class="value" id="stat-height">—</span></div>
             <div class="stat"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
-            <div class="stat"><span class="label" data-i18n="common.label.price">PRECIO</span><span class="value firo" id="stat-price">—</span></div>
 
             <div class="stats-bar-buttons">
                 <a href="https://buyfiro.app/" target="_blank" rel="noopener noreferrer" class="btn-blocks">
@@ -690,16 +692,6 @@
                         <div class="card-item"><span class="label" data-i18n="common.label.time">HORA</span><span class="value mono" id="node-timestamp">---</span></div>
                     </div>
 
-                    <div class="card">
-                        <div class="card-title" data-i18n="nodo.card.market">Firo · Mercado</div>
-                        <div class="card-item"><span class="label" data-i18n="common.label.price_usd">PRECIO USD</span><span class="value gold" id="market-price">---</span></div>
-                        <div class="card-item"><span class="label" data-i18n="nodo.label.24h">24h %</span><span class="value" id="market-24h">---</span></div>
-                        <div class="card-item"><span class="label" data-i18n="nodo.label.7d">7d %</span><span class="value" id="market-7d">---</span></div>
-                        <div class="card-item"><span class="label" data-i18n="common.label.marketcap">MARKET CAP</span><span class="value" id="market-cap">---</span></div>
-                        <div class="card-item"><span class="label" data-i18n="nodo.label.vol_24h">VOLUMEN 24h</span><span class="value" id="market-volume">---</span></div>
-                        <div class="card-item"><span class="label" data-i18n="common.label.updated">ACTUALIZADO</span><span class="value mono" id="market-updated">---</span></div>
-                    </div>
-
                     <div class="card" id="electrumCard" style="cursor:pointer;">
                         <div class="card-title" data-i18n="nodo.card.electrum">ElectrumX · Conectar Wallet</div>
                         <div class="card-item"><span class="label" data-i18n="common.label.server">SERVIDOR</span><span class="value mono">carover0.xyz</span></div>
@@ -753,13 +745,11 @@
     <script src="js/i18n.js"></script>
     <script>
         const NODE_JSON_URL = 'https://carover0.xyz/api/firo.json';
-        const COINGECKO_API = 'https://api.coingecko.com/api/v3/coins/zcoin?localization=false&market_data=true';
         const MI_NODO = "45.67.217.147:8168";
 
         const t = (key) => FiroI18n.t(key);
 
         let cachedNodeData = null;
-        let cachedPrice = null;
         let cachedMasternode = null;
 
         function escapeHtml(text) {
@@ -802,12 +792,9 @@
 
         function updateStatsBar() {
             const data = cachedNodeData;
-            const price = cachedPrice;
-
             document.getElementById('stat-height').textContent = data?.blockchain?.blocks ? Number(data.blockchain.blocks).toLocaleString() : '—';
             document.getElementById('stat-connections').textContent = data?.network?.connections ?? '—';
             document.getElementById('stat-mempool').textContent = data?.mempool?.txcount ?? '0';
-            document.getElementById('stat-price').textContent = price ? '$' + price.toFixed(4) : '—';
         }
 
         function displayNodeData(d) {
@@ -845,41 +832,6 @@
             } catch (e) {
                 console.error('Error de conexión:', e);
                 document.getElementById('node-version').textContent = t('common.state.connection_error');
-                return null;
-            }
-        }
-
-        async function fetchMarketData() {
-            try {
-                const d = await (await fetch(COINGECKO_API)).json();
-                const m = d.market_data;
-                const p = m.current_price.usd;
-                cachedPrice = p;
-
-                document.getElementById('market-price').textContent = '$' + p.toFixed(4);
-
-                const c24 = m.price_change_percentage_24h;
-                const c7 = m.price_change_percentage_7d;
-                const el24 = document.getElementById('market-24h');
-                const el7 = document.getElementById('market-7d');
-                el24.textContent = (c24 >= 0 ? '+' : '') + c24.toFixed(2) + '%';
-                el24.className = 'value ' + (c24 >= 0 ? 'positive' : 'negative');
-                el7.textContent = (c7 >= 0 ? '+' : '') + c7.toFixed(2) + '%';
-                el7.className = 'value ' + (c7 >= 0 ? 'positive' : 'negative');
-
-                document.getElementById('market-cap').textContent = '$' + (m.market_cap.usd / 1e6).toFixed(2) + 'M';
-                document.getElementById('market-volume').textContent = '$' + (m.total_volume.usd / 1e6).toFixed(2) + 'M';
-                document.getElementById('market-updated').textContent = new Date().toLocaleTimeString();
-
-                updateStatsBar();
-                return p;
-            } catch (e) {
-                document.getElementById('market-price').textContent = '---';
-                document.getElementById('market-24h').textContent = '---';
-                document.getElementById('market-7d').textContent = '---';
-                document.getElementById('market-cap').textContent = '---';
-                document.getElementById('market-volume').textContent = '---';
-                document.getElementById('market-updated').textContent = t('common.state.error');
                 return null;
             }
         }
@@ -1039,10 +991,7 @@
 
         async function init() {
             await FiroI18n.init();
-            await Promise.all([
-                fetchNodeData(),
-                fetchMarketData()
-            ]);
+            await fetchNodeData();
             fetchElectrumStatus();
             fetchMasternodeData();
             document.getElementById('electrumCard').onclick = () => {
@@ -1054,7 +1003,6 @@
 
         setInterval(() => {
             fetchNodeData();
-            fetchMarketData();
             fetchMasternodeData();
         }, 60000);
 
