@@ -230,12 +230,46 @@
             flex-shrink: 0;
         }
 
+        /* NUEVO LAYOUT PARA SEPARAR IMAGEN Y TARJETAS */
+        .content-layout {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .left-image-col {
+            flex-shrink: 0;
+            width: 250px;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+        }
+
+        .left-image-col img {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: contain;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 30px rgba(160, 68, 255, 0.2));
+            transition: opacity 0.3s, filter 0.3s;
+        }
+
+        .left-image-col img:hover {
+            opacity: 1;
+            filter: drop-shadow(0 0 40px rgba(160, 68, 255, 0.4));
+        }
+
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 18px;
             min-width: 0;
+            flex: 1;
         }
+        /* FIN DEL NUEVO LAYOUT */
 
         .card {
             background: rgba(255, 255, 255, 0.03);
@@ -380,6 +414,26 @@
 
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+        @media (max-width: 1024px) {
+            /* En tablets y celulares, apilamos la imagen arriba y las tarjetas abajo */
+            .content-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+            .left-image-col {
+                width: 100%;
+                padding-top: 0;
+                margin-bottom: 10px;
+            }
+            .left-image-col img {
+                max-height: 180px;
+                width: auto;
+            }
+            .cards {
+                width: 100%;
+            }
+        }
+
         @media (max-width: 768px) {
             .app { padding: 12px 14px; gap: 12px; }
             .header { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 18px; }
@@ -422,6 +476,7 @@
             .cs-address-box .cs-value { font-size: 11px; }
             .footer { font-size: 10px; }
             .footer-links a { font-size: 10px; }
+            .left-image-col img { max-height: 140px; }
         }
 
         @media (max-width: 360px) {
@@ -435,6 +490,7 @@
         @media (min-width: 1920px) {
             .app { max-width: 1600px; padding: 24px 40px; }
             .card-item .value { font-size: 13px; }
+            .left-image-col { width: 220px; }
         }
     </style>
 </head>
@@ -466,7 +522,10 @@
             <div class="stat"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="stat-connections">—</span></div>
             <div class="stat"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="stat-mempool">0</span><span style="color:#3d3830;font-size:11px;" data-i18n="common.unit.tx">tx</span></div>
             <div class="stat"><span class="label" data-i18n="common.label.price">PRECIO</span><span class="value" id="stat-price">—</span></div>
+
             <a href="https://carover0.github.io/pagina/pivx-merchants.html" class="btn-blocks" target="_self" data-i18n="common.btn.map">📍 PIVX comercios</a>
+        
+
             <a href="https://carover0.github.io/pagina/pivx-bloques.html" class="btn-blocks" target="_self" data-i18n="common.btn.blocks">⧫ Bloques en tiempo real</a>
         </div>
 
@@ -476,42 +535,52 @@
                 <span data-i18n="nodo.panel_title">MONITOR DE NODO PIVX</span>
             </div>
 
-            <div class="cards">
-
-                <div class="card">
-                    <div class="card-title" data-i18n="nodo.card.node_state">Nodo · Estado</div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="node-version">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="node-state">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.blocks">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
+            <!-- NUEVO CONTENEDOR FLEX -->
+            <div class="content-layout">
+                
+                <!-- COLUMNA IZQUIERDA (IMAGEN) -->
+                <div class="left-image-col">
+                    <img src="assets/piv11.png" alt="PIVX">
                 </div>
 
-                <div class="card">
-                    <div class="card-title" data-i18n="nodo.card.network">Nodo · Red</div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.difficulty">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="nodo.label.stake_avg">STAKE PROMEDIO</span><span class="value violet" id="node-stake">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="nodo.label.protocol">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.bestblock">ÚLTIMO BLOQUE</span><span class="value mono" id="node-bestblock">---</span></div>
-                </div>
+                <!-- COLUMNA DERECHA (TARJETAS) -->
+                <div class="cards">
 
-                <div class="card">
-                    <div class="card-title" data-i18n="nodo.card.market">PIVX · Mercado</div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.price_usd">PRECIO USD</span><span class="value violet" id="price-usd">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.volume">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="common.label.updated">ACTUALIZADO</span><span class="value mono" id="price-time">---</span></div>
-                </div>
+                    <div class="card">
+                        <div class="card-title" data-i18n="nodo.card.node_state">Nodo · Estado</div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.version">VERSIÓN</span><span class="value" id="node-version">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.status">ESTADO</span><span class="value" id="node-state">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.blocks">BLOQUES</span><span class="value" id="node-blocks">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.connections">CONEXIONES</span><span class="value" id="node-connections">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.mempool">MEMPOOL</span><span class="value" id="node-mempool">---</span></div>
+                    </div>
 
-                <div class="card">
-                    <div class="card-title" data-i18n="nodo.card.cold_staking">Cold Staking · Resumen</div>
-                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_utxos">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_total">TOTAL DELEGADO</span><span class="value violet" id="cs-total">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_confirms">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_whitelist">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_status">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
-                    <div class="card-item"><span class="label" data-i18n="nodo.label.cs_balance">BALANCE LOCAL</span><span class="value violet" id="cs-local-balance">---</span></div>
-                </div>
+                    <div class="card">
+                        <div class="card-title" data-i18n="nodo.card.network">Nodo · Red</div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.difficulty">DIFICULTAD</span><span class="value" id="node-difficulty">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="nodo.label.stake_avg">STAKE PROMEDIO</span><span class="value violet" id="node-stake">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="nodo.label.protocol">PROTOCOLO</span><span class="value" id="node-protocol">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.bestblock">ÚLTIMO BLOQUE</span><span class="value mono" id="node-bestblock">---</span></div>
+                    </div>
 
+                    <div class="card">
+                        <div class="card-title" data-i18n="nodo.card.market">PIVX · Mercado</div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.price_usd">PRECIO USD</span><span class="value violet" id="price-usd">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.volume">VOLUMEN 24H</span><span class="value" id="price-volume">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="common.label.updated">ACTUALIZADO</span><span class="value mono" id="price-time">---</span></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title" data-i18n="nodo.card.cold_staking">Cold Staking · Resumen</div>
+                        <div class="card-item"><span class="label" data-i18n="nodo.label.cs_utxos">UTXOS FRÍOS</span><span class="value" id="cs-utxos">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="nodo.label.cs_total">TOTAL DELEGADO</span><span class="value violet" id="cs-total">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="nodo.label.cs_confirms">CONFIRMACIONES</span><span class="value" id="cs-confirms">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="nodo.label.cs_whitelist">WHITELISTED</span><span class="value" id="cs-whitelist">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="nodo.label.cs_status">ESTADO STAKE</span><span class="value" id="cs-staking-status">---</span></div>
+                        <div class="card-item"><span class="label" data-i18n="nodo.label.cs_balance">BALANCE LOCAL</span><span class="value violet" id="cs-local-balance">---</span></div>
+                    </div>
+
+                </div>
             </div>
 
             <div class="cs-address-box">
