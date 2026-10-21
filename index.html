@@ -137,12 +137,37 @@
         .layout-image img { width: 100%; height: auto; max-height: 500px; object-fit: contain; opacity: 0.9; filter: drop-shadow(0 0 15px rgba(79, 70, 229, 0.3)); transition: transform 0.3s ease; }
         .layout-image img:hover { transform: scale(1.02); }
 
-        .donate-layout { display: flex; flex-direction: row; gap: 20px; align-items: flex-start; margin-top: 10px; }
-        .donate-addresses { flex: 1; min-width: 0; }
-        .donate-image-side { flex-shrink: 0; width: 140px; display: flex; justify-content: center; }
-        .donate-image-side img { width: 100%; height: auto; max-height: 280px; object-fit: contain; opacity: 0.9; filter: drop-shadow(0 0 15px rgba(79, 70, 229, 0.3)); transition: transform 0.3s ease; }
-        .donate-image-side img:hover { transform: scale(1.05); }
-
+.donate-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 28px;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+.donate-addresses {
+    flex: 1;
+    min-width: 0;
+    order: 2;
+}
+.donate-image-side {
+    flex-shrink: 0;
+    width: 260px;
+    display: flex;
+    justify-content: center;
+    order: 1;
+}
+.donate-image-side img {
+    width: 100%;
+    height: auto;
+    max-height: 420px;
+    object-fit: contain;
+    opacity: 0.95;
+    filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.35));
+    transition: transform 0.3s ease;
+}
+.donate-image-side img:hover {
+    transform: scale(1.03);
+}
         .donation-addr {
             display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 7px 12px;
             background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid rgba(79, 70, 229, 0.04);
@@ -254,10 +279,11 @@
             .layout-with-image { flex-direction: column-reverse; align-items: center; }
             .layout-image { width: 100%; margin-top: 10px; }
             .layout-image img { max-height: 250px; }
-            .donate-layout { flex-direction: column-reverse; align-items: center; }
-            .donate-addresses { width: 100%; }
-            .donate-image-side { width: 100%; margin-top: 10px; justify-content: center; }
-            .donate-image-side img { max-width: 120px; max-height: 180px; }
+ .donate-layout { flex-direction: column-reverse; align-items: center; }
+.donate-addresses { width: 100%; order: 1; }
+.donate-image-side { width: 100%; margin-top: 10px; justify-content: center; order: 2; }
+.donate-image-side img { max-width: 200px; max-height: 300px; }
+
         }
 
         @media (max-width: 480px) {
@@ -594,31 +620,38 @@
                     <span class="highlight">Direcciones de donación</span>
                 </div>
 
-                <div class="donate-layout">
-                    <div class="donate-image-side" id="donate-random-image-container">
-                        <img id="donate-random-image" src="" alt="Apoyo">
-                    </div>
+<div class="donate-layout">
+    <div class="donate-image-side" id="donate-random-image-container">
+        <img id="donate-random-image" src="" alt="Apoyo">
+    </div>
 
-                    <div class="donate-addresses">
-                        <div class="donation-addr" onclick="copyAddress('DGYPMgVJGcdeYG4r9kypHH35SztrZWfR5u', 'PIVX')">
-                            <span class="coin-icon"><img src="assets/pivx.png" alt="PIVX"></span>
-                            <span class="coin-name">PIVX</span>
-                            <span class="address">DGYPMgVJGcdeYG4r9kypHH35SztrZWfR5u</span>
-                            <span class="copy-hint">[copiar]</span>
-                        </div>
+    <div class="donate-addresses">
+        <div class="donation-addr" onclick="copyAddress('ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f', 'PIVX')">
+            <span class="coin-icon"><img src="assets/pivx.png" alt="PIVX"></span>
+            <span class="coin-name">PIVX</span>
+            <span class="address">ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f</span>
+            <span class="copy-hint">[copiar]</span>
+        </div>
 
-                        <div class="donation-addr" onclick="copyAddress('carover0.firo', 'FIRO')">
-                            <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
-                            <span class="coin-name">FIRO</span>
-                            <span class="address">carover0.firo</span>
-                            <span class="copy-hint">[copiar]</span>
-                        </div>
+        <div class="donation-addr" onclick="copyAddress('carover0.firo', 'FIRO')">
+            <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
+            <span class="coin-name">FIRO</span>
+            <span class="address">carover0.firo</span>
+            <span class="copy-hint">[copiar]</span>
+        </div>
 
-                        <div class="donation-note">
-                            → Hace clic en cualquier dirección para copiarla.
-                        </div>
-                    </div>
-                </div>
+        <div class="donation-addr" onclick="copyAddress('mastercarol', 'FIRO')">
+            <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
+            <span class="coin-name">FIRO</span>
+            <span class="address">mastercarol</span>
+            <span class="copy-hint">[copiar]</span>
+        </div>
+
+        <div class="donation-note">
+            → Hace clic en cualquier dirección para copiarla.
+        </div>
+    </div>
+</div>
             </div>
         </div>
     </div>
