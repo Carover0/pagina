@@ -2,17 +2,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>404 · block_not_found · cΔrovΣr0</title>
+    <title>404 · cΔrovΣr0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         html, body { overflow-x: hidden; }
 
         :root {
-            --violet: #818cf8;
+            --violet: #4f46e5;
+            --violet-soft: #818cf8;
             --green: #31db72;
             --red: #ff756f;
-            --line: rgba(129, 140, 248, 0.15);
             --text: #ece8e0;
             --text-dim: #6a6255;
             --text-mute: #4a443a;
@@ -23,6 +22,7 @@
             background: #0a080c;
             background-image:
                 radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
                 linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
             font-family: 'Lucida Console', 'Courier New', monospace;
             color: var(--text);
@@ -34,19 +34,19 @@
 
         .card {
             width: 100%;
-            max-width: 560px;
+            max-width: 520px;
             min-width: 0;
-            background: rgba(15, 12, 22, 0.7);
-            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(79, 70, 229, 0.2);
             border-radius: 14px;
-            padding: clamp(24px, 5vw, 36px);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+            padding: clamp(24px, 5vw, 40px);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
             animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -55,61 +55,35 @@
             align-items: center;
             gap: 12px;
             padding-bottom: 16px;
-            border-bottom: 1px solid var(--line);
-            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(79, 70, 229, 0.06);
+            margin-bottom: 24px;
             min-width: 0;
         }
 
         .head img {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             object-fit: contain;
             flex-shrink: 0;
         }
 
         .head .name {
-            font-size: 13px;
-            color: var(--text-dim);
-            letter-spacing: 0.5px;
+            font-size: 18px;
+            color: var(--violet-soft);
+            letter-spacing: 1.5px;
             min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .head .status {
-            margin-left: auto;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 10px;
-            color: var(--red);
-            letter-spacing: 0.8px;
-            flex-shrink: 0;
-        }
-
-        .head .status .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--red);
-            box-shadow: 0 0 6px var(--red);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
         .code {
-            font-size: clamp(48px, 12vw, 72px);
+            font-size: clamp(52px, 14vw, 80px);
             font-weight: 700;
-            color: var(--violet);
+            color: var(--violet-soft);
             letter-spacing: 2px;
             line-height: 1;
-            text-shadow: 0 0 30px rgba(79, 70, 229, 0.35);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .subtitle {
@@ -117,118 +91,51 @@
             color: var(--text-dim);
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             word-break: break-word;
             overflow-wrap: anywhere;
         }
 
         .message {
-            font-size: 13px;
-            line-height: 1.7;
-            color: #b8b0a4;
-            margin-bottom: 24px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #b0a897;
+            margin-bottom: 26px;
             word-break: break-word;
             overflow-wrap: anywhere;
         }
 
-        .chain {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-            padding: 10px 12px;
-            background: rgba(255, 255, 255, 0.015);
-            border: 1px dashed var(--line);
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 10px;
-            color: var(--text-mute);
-            letter-spacing: 0.5px;
-            min-width: 0;
-        }
-
-        .node {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 9px;
-            border-radius: 20px;
-            background: rgba(79, 70, 229, 0.08);
-            border: 1px solid var(--line);
-            color: #a5b4fc;
-            white-space: nowrap;
-        }
-
-        .node .dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--green);
-            flex-shrink: 0;
-        }
-
-        .node.bad {
-            background: rgba(255, 117, 111, 0.08);
-            border-color: rgba(255, 117, 111, 0.25);
-            color: var(--red);
-        }
-
-        .node.bad .dot {
-            background: var(--red);
-        }
-
-        .chain .arrow {
-            color: var(--text-mute);
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            min-width: 0;
-        }
+        .message .highlight { color: var(--violet-soft); }
 
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 11px 20px;
+            padding: 11px 22px;
             border-radius: 8px;
             font-family: inherit;
-            font-size: 12px;
+            font-size: 13px;
             letter-spacing: 0.5px;
             text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(129, 140, 248, 0.3);
-            background: rgba(79, 70, 229, 0.14);
             color: #c4b5fd;
+            background: rgba(79, 70, 229, 0.12);
+            border: 1px solid rgba(79, 70, 229, 0.25);
+            transition: all 0.2s ease;
             white-space: nowrap;
         }
 
         .btn:hover {
-            background: rgba(79, 70, 229, 0.24);
-            border-color: var(--violet);
+            background: rgba(79, 70, 229, 0.22);
+            border-color: var(--violet-soft);
             color: #fff;
         }
 
-        .btn.secondary {
-            background: rgba(255, 255, 255, 0.02);
-            border-color: var(--line);
-            color: var(--text-dim);
-        }
-
-        .btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
-        }
-
         .footer {
-            margin-top: 20px;
+            margin-top: 26px;
             padding-top: 14px;
-            border-top: 1px solid var(--line);
-            font-size: 10px;
+            border-top: 1px solid rgba(79, 70, 229, 0.06);
+            font-size: 11px;
             color: var(--text-mute);
             letter-spacing: 0.5px;
             display: flex;
@@ -237,20 +144,14 @@
             gap: 4px 12px;
         }
 
-        .footer .ok { color: var(--green); }
-        .footer .err { color: var(--red); }
+        .footer .heart { color: var(--violet-soft); }
 
         @media (max-width: 480px) {
-            .btn {
-                width: 100%;
-            }
+            .btn { width: 100%; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .card,
-            .head .status .dot {
-                animation: none;
-            }
+            .card { animation: none; }
         }
     </style>
 
@@ -282,32 +183,21 @@
         <div class="head">
             <img src="assets/index.png" alt="cΔrovΣr0" onerror="this.style.display='none'">
             <span class="name">cΔrovΣr0</span>
-            <span class="status"><span class="dot"></span>OFFLINE</span>
         </div>
 
         <div class="code">404</div>
-        <div class="subtitle">page_not_found</div>
+        <div class="subtitle">página no encontrada</div>
 
         <p class="message">
-            El recurso solicitado no existe en esta red. La página que buscas
-            no existe.
+            La página que buscás no existe o fue movida.
+            Podés volver al <span class="highlight">inicio</span> y seguir explorando desde ahí.
         </p>
 
-        <div class="chain">
-            <span class="node"><span class="dot"></span>nodo</span>
-            <span class="arrow">→</span>
-            <span class="node"><span class="dot"></span>vps</span>
-            <span class="arrow">→</span>
-            <span class="node bad"><span class="dot"></span>404</span>
-        </div>
-
-        <div class="actions">
-            <a href="https://carover0.github.io/pagina/" class="btn">← Volver al inicio</a>
-        </div>
+        <a href="https://carover0.github.io/pagina/" class="btn">← Volver al inicio</a>
 
         <div class="footer">
-            <span>net: <span class="ok">mainnet</span></span>
-            <span>rpc: <span class="err">offline</span></span>
+            <span>cΔrovΣr0 · <span class="heart">♥</span> desde Argentina</span>
+            <span>404</span>
         </div>
 
     </div>
