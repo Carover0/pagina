@@ -256,6 +256,69 @@
         .firo-modal-stats .stat-item .value { color: #f5ede4; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
         .firo-modal-stats .stat-item .value.green { color: var(--green); }
 
+        .service-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            border: 1px solid rgba(79, 70, 229, 0.04);
+            padding: 12px 14px;
+            margin: 8px 0;
+            min-width: 0;
+        }
+        .service-item:hover { border-color: rgba(79, 70, 229, 0.1); }
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+        .service-icon {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.15));
+        }
+        .service-name {
+            color: #f5ede4;
+            font-size: 14px;
+            flex: 1;
+            min-width: 0;
+            word-break: break-all;
+        }
+        .service-status {
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .service-status.ok {
+            color: var(--green);
+            border-color: rgba(49, 219, 114, 0.15);
+            background: rgba(49, 219, 114, 0.05);
+        }
+        .service-status.offline {
+            color: var(--red);
+            border-color: rgba(255, 117, 111, 0.15);
+            background: rgba(255, 117, 111, 0.05);
+        }
+        .service-status.waiting {
+            color: var(--gold);
+            border-color: rgba(255, 181, 48, 0.15);
+            background: rgba(255, 181, 48, 0.05);
+        }
+        .service-detail {
+            font-size: 12px;
+            color: #5a5348;
+            margin-top: 6px;
+            line-height: 1.5;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .service-detail .val { color: #8a8275; }
+
         @media (max-width: 1024px) {
             .card-grid { grid-template-columns: 1fr; }
             .reactor-grid { grid-template-columns: 1fr; }
@@ -316,6 +379,8 @@
             .reactor-footer { font-size: 11px; }
             .footer { font-size: 11px; flex-direction: column; text-align: center; }
             .firo-modal-stats { grid-template-columns: 1fr; }
+            .service-name { font-size: 12px; }
+            .service-detail { font-size: 11px; }
         }
 
         @media (min-width: 1920px) {
@@ -334,6 +399,7 @@
                 <span class="logo-text">cΔrovΣr0 <small>nodos</small></span>
             </div>
             <nav class="nav-links">
+                <a onclick="openModal('services')">[SERVICIOS]</a>
                 <a href="https://carover0.github.io/pagina/pivx-merchants.html">[PIVX MAP]</a>
                 <a href="https://carover0.github.io/pagina/firo-merchants.html">[FIRO MAP]</a>
                 <a href="https://carover0.github.io/pagina/usdt-block.html">[USDT-BLOCK]</a>
@@ -607,6 +673,55 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="modal-services">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('services')">✕</button>
+            <div class="modal-title"><span class="icon">🛠️</span> SERVICIOS</div>
+            <div class="modal-body">
+                <div class="layout-with-image">
+
+                    <div class="layout-image" id="services-random-image-container">
+                        <img id="services-random-image" src="" alt="Servicios">
+                    </div>
+
+                    <div class="layout-text">
+                        <div class="desc">
+                            ▸ Estado de los servicios que dependen de la infraestructura operada.
+                        </div>
+
+                        <div class="desc" style="margin-top:12px;">
+                            <span class="highlight">▸ SERVICIOS MONITOREADOS</span>
+                        </div>
+
+                        <div class="service-item">
+                            <div class="service-header">
+                                <img src="assets/pivx.png" alt="PIVX" class="service-icon">
+                                <span class="service-name">PIVX Cold Staking</span>
+                                <span class="service-badge">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span>
+                                <span class="service-status waiting" id="svc-pivx-coldstake-status">VERIFICANDO...</span>
+                            </div>
+                            <div class="service-detail" id="svc-pivx-coldstake-detail">—</div>
+                        </div>
+
+                        <div class="service-item">
+                            <div class="service-header">
+                                <img src="assets/firo.png" alt="Firo" class="service-icon">
+                                <span class="service-name">FIRO Lightwallet</span>
+                                <span class="service-badge">carover0.xyz:50002</span>
+                                <span class="service-status waiting" id="svc-firo-lightwallet-status">VERIFICANDO...</span>
+                            </div>
+                            <div class="service-detail" id="svc-firo-lightwallet-detail">—</div>
+                        </div>
+
+                        <div class="divider">
+                            <span style="color:#3d3830;font-size:12px;">Los estados se actualizan cada 30s junto con el resto del panel.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="modal-donate">
         <div class="modal">
             <button class="modal-close" onclick="closeModal('donate')">✕</button>
@@ -674,6 +789,13 @@
                     const images = ['assets/firo7.png', 'assets/piv7.png'];
                     const randomImage = images[Math.floor(Math.random() * images.length)];
                     const imgElement = document.getElementById('info-random-image');
+                    if (imgElement) imgElement.src = randomImage;
+                }
+
+                if (type === 'services') {
+                    const images = ['assets/firo7.png', 'assets/piv7.png'];
+                    const randomImage = images[Math.floor(Math.random() * images.length)];
+                    const imgElement = document.getElementById('services-random-image');
                     if (imgElement) imgElement.src = randomImage;
                 }
             }
@@ -764,6 +886,62 @@
                 el.className = 'bar-fill orange';
             } else {
                 el.className = 'bar-fill green';
+            }
+        }
+
+        function setServiceStatus(id, state, detailText) {
+            const statusEl = $(id + '-status');
+            const detailEl = $(id + '-detail');
+            if (statusEl) {
+                if (state === 'ok') {
+                    statusEl.textContent = '✅ OK';
+                    statusEl.className = 'service-status ok';
+                } else if (state === 'offline') {
+                    statusEl.textContent = '⚠️ FUERA DE LÍNEA';
+                    statusEl.className = 'service-status offline';
+                } else {
+                    statusEl.textContent = '⏳ VERIFICANDO...';
+                    statusEl.className = 'service-status waiting';
+                }
+            }
+            if (detailEl) detailEl.innerHTML = detailText || '—';
+        }
+
+        async function updateServices() {
+            // PIVX Cold Staking: usa el nodo PIVX como indicador
+            try {
+                const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json');
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const d = await r.json();
+                const ok = d.networkactive !== false && d.height > 0;
+                setServiceStatus(
+                    'svc-pivx-coldstake',
+                    ok ? 'ok' : 'offline',
+                    ok
+                        ? `Altura: <span class="val">${format(d.height)}</span> · Peers: <span class="val">${d.connections ?? '—'}</span>`
+                        : 'El nodo PIVX no está respondiendo correctamente.'
+                );
+            } catch (e) {
+                console.log('PIVX cold staking error:', e);
+                setServiceStatus('svc-pivx-coldstake', 'offline', 'Sin respuesta del nodo PIVX.');
+            }
+
+            // FIRO Lightwallet: usa el nodo FIRO del VPS como indicador
+            try {
+                const r = await fetch('https://carover0.xyz/firo/status.json');
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const d = await r.json();
+                const ok = d.networkactive !== false && d.height > 0;
+                setServiceStatus(
+                    'svc-firo-lightwallet',
+                    ok ? 'ok' : 'offline',
+                    ok
+                        ? `Altura: <span class="val">${format(d.height)}</span> · Peers: <span class="val">${d.connections ?? '—'}</span> · Mempool: <span class="val">${d.mempool ?? '—'}</span>`
+                        : 'El nodo FIRO del VPS no está respondiendo correctamente.'
+                );
+            } catch (e) {
+                console.log('FIRO lightwallet error:', e);
+                setServiceStatus('svc-firo-lightwallet', 'offline', 'Sin respuesta del nodo FIRO del VPS.');
             }
         }
 
@@ -1082,10 +1260,13 @@
         window.closeModal = closeModal;
         window.copyAddress = copyAddress;
         window.openFiroModal = openFiroModal;
+        window.updateServices = updateServices;
 
         updateStatus();
         setInterval(updateStatus, 30000);
         initReactors();
+        updateServices();
+        setInterval(updateServices, 30000);
     </script>
 
 </body>
