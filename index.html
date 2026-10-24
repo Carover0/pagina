@@ -910,13 +910,13 @@
             const detailEl = $(id + '-detail');
             if (statusEl) {
                 if (state === 'ok') {
-                    statusEl.textContent = '✅ OK';
+                    statusEl.textContent = 'OK';
                     statusEl.className = 'service-status ok';
                 } else if (state === 'offline') {
-                    statusEl.textContent = '⚠️ FUERA DE LÍNEA';
+                    statusEl.textContent = 'FUERA DE LÍNEA';
                     statusEl.className = 'service-status offline';
                 } else {
-                    statusEl.textContent = '⏳ VERIFICANDO...';
+                    statusEl.textContent = 'VERIFICANDO...';
                     statusEl.className = 'service-status waiting';
                 }
             }
