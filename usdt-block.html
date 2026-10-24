@@ -1,4 +1,4 @@
-<html lang="es"> 
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -424,6 +424,146 @@
     font-family: 'Lucida Console', 'Monaco', monospace; margin: 0; min-width: 0;
   }
 
+  .json-decoded {
+    padding: 10px 14px;
+    background: rgba(39, 161, 124, 0.06);
+    border-top: 1px solid rgba(39, 161, 124, 0.2);
+    font-size: 11.5px;
+    color: #5dd4a8;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .json-decoded strong { color: #5dd4a8; }
+
+  .json-note {
+    padding: 8px 14px;
+    background: rgba(250, 204, 21, 0.06);
+    border-top: 1px solid rgba(250, 204, 21, 0.2);
+    font-size: 11px;
+    color: #facc15;
+    line-height: 1.5;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .json-note code {
+    background: rgba(13, 11, 31, 0.6);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #facc15;
+    font-size: 10.5px;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+
+  .match-line {
+    padding: 10px 14px;
+    font-size: 11.5px;
+    border-top: 1px solid rgba(129, 140, 248, 0.15);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .match-line.ok   { background: rgba(39, 161, 124, 0.06); color: #5dd4a8; }
+  .match-line.bad  { background: rgba(255, 117, 111, 0.06); color: var(--red); }
+  .match-line code {
+    background: rgba(13, 11, 31, 0.6);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #c4b5fd;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    display: inline-block;
+    max-width: 100%;
+  }
+
+  .result-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .result-toolbar[hidden] { display: none; }
+  .result-toolbar span {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .result-toggle {
+    display: inline-flex;
+    border: 1px solid rgba(129, 140, 248, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(13, 11, 31, 0.5);
+  }
+  .result-toggle button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    font-size: 10.5px;
+    padding: 6px 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: background 0.15s, color 0.15s;
+  }
+  .result-toggle button.active {
+    background: rgba(79, 70, 229, 0.35);
+    color: #c4b5fd;
+  }
+  .result-toggle button:hover:not(.active) {
+    background: rgba(79, 70, 229, 0.15);
+    color: var(--violet-soft);
+  }
+
+  .report-block {
+    background: rgba(13, 11, 31, 0.55);
+    border: 1px solid rgba(129, 140, 248, 0.15);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+  .report-block .r-k {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .report-block .r-v {
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .report-block .r-v.ok   { color: #5dd4a8; }
+  .report-block .r-v.bad  { color: var(--red); }
+  .report-block .r-v.mid  { color: #facc15; }
+  .report-block .r-v code {
+    background: rgba(13, 11, 31, 0.6);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #c4b5fd;
+    font-size: 12px;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    display: inline-block;
+    max-width: 100%;
+  }
+  .report-footer-note {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(129, 140, 248, 0.2);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
   @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -512,6 +652,14 @@
           <span>ejemplo:</span>
           <code>0x99ebaf3661065dc1e44feff4b80365678bdff6ce</code>
           <a onclick="useExampleEth()">[usar]</a>
+        </div>
+
+        <div class="result-toolbar" id="resultToolbar" hidden>
+          <span>vista</span>
+          <div class="result-toggle" role="group" aria-label="Vista del resultado">
+            <button type="button" id="viewReport">Reporte</button>
+            <button type="button" id="viewRaw">Raw</button>
+          </div>
         </div>
 
         <div id="result" class="result hidden"></div>
@@ -691,6 +839,89 @@
       }
     });
 
+    const resultToolbar = document.getElementById('resultToolbar');
+    const viewReport = document.getElementById('viewReport');
+    const viewRaw = document.getElementById('viewRaw');
+
+    let currentPayload = null;
+
+    function getResultView() {
+      let v = null;
+      try { v = localStorage.getItem('usdtResultView'); } catch (e) {}
+      return v === 'raw' ? 'raw' : 'report';
+    }
+
+    function syncToggleUI(v) {
+      viewReport.classList.toggle('active', v === 'report');
+      viewRaw.classList.toggle('active', v === 'raw');
+    }
+
+    function setResultView(v) {
+      try { localStorage.setItem('usdtResultView', v); } catch (e) {}
+      syncToggleUI(v);
+      if (currentPayload) renderPayload();
+    }
+
+    viewReport.addEventListener('click', () => setResultView('report'));
+    viewRaw.addEventListener('click', () => setResultView('raw'));
+
+    function renderPayload() {
+      const v = getResultView();
+      result.className = `result ${currentPayload.type}`;
+      result.innerHTML = v === 'raw' ? currentPayload.rawHtml : currentPayload.reportHtml;
+      result.classList.remove('hidden');
+    }
+
+    function showResult(type, rawHtml, reportHtml) {
+      if (rawHtml && reportHtml) {
+        currentPayload = { type, rawHtml, reportHtml };
+        resultToolbar.hidden = false;
+        renderPayload();
+      } else {
+        currentPayload = null;
+        resultToolbar.hidden = true;
+        result.className = `result ${type}`;
+        result.innerHTML = rawHtml || '';
+        result.classList.remove('hidden');
+      }
+    }
+
+    function buildReport(address, chainName, isBlacklisted, balance) {
+      const statusCls = isBlacklisted ? 'bad' : 'ok';
+      const statusTxt = isBlacklisted ? 'BLOQUEADA' : 'NO BLOQUEADA';
+      const balTxt = (balance !== undefined && balance !== null && balance !== '—')
+        ? `${balance} USDT`
+        : '—';
+      const headline = isBlacklisted
+        ? `🚨 Dirección bloqueada por Tether en USDT (${chainName})`
+        : `✅ Dirección no bloqueada por Tether en USDT (${chainName})`;
+      const source = chainName === 'TRON' ? 'TronGrid' : 'nodo público de Ethereum';
+      return `
+        <strong>${headline}</strong>
+        <div class="report-block">
+          <div class="r-k">Dirección consultada</div>
+          <div class="r-v"><code>${address}</code></div>
+        </div>
+        <div class="report-block">
+          <div class="r-k">Red</div>
+          <div class="r-v">${chainName}</div>
+        </div>
+        <div class="report-block">
+          <div class="r-k">Blacklist de USDT</div>
+          <div class="r-v ${statusCls}">${statusTxt}</div>
+        </div>
+        <div class="report-block">
+          <div class="r-k">Saldo de USDT</div>
+          <div class="r-v">${balTxt}</div>
+        </div>
+        <div class="report-footer-note">
+          Consulta directa al contrato de USDT · Datos on-chain obtenidos mediante ${source}
+        </div>
+      `;
+    }
+
+    syncToggleUI(getResultView());
+
     const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
     function base58ToBytes(str) {
       const bytes = [0];
@@ -787,7 +1018,7 @@
         console.warn('No se pudo obtener saldo:', e);
       }
 
-      return { blocked, raw: data, request: requestBody, balance, balanceRaw, balanceRequest };
+      return { blocked, raw: data, request: requestBody, balance, balanceRaw, balanceRequest, hex20 };
     }
 
     async function checkEvm(address, chainKey) {
@@ -838,26 +1069,24 @@
         console.warn('No se pudo obtener saldo:', e);
       }
 
-      return { blocked, raw: json, request: { to: chain.usdt, data, selector: chain.selector }, balance, balanceRaw, balanceRequest };
-    }
-
-    function showResult(type, html) {
-      result.className = `result ${type}`;
-      result.innerHTML = html;
-      result.classList.remove('hidden');
+      return { blocked, raw: json, request: { to: chain.usdt, data, selector: chain.selector }, balance, balanceRaw, balanceRequest, hex20: cleanAddr };
     }
 
     function renderChainCard(chainName, status, detail, balance) {
       const cls = status === 'blocked' ? 'blocked' : status === 'clear' ? 'clear' : 'error';
       const icon = status === 'blocked' ? '🚨' : status === 'clear' ? '✅' : '⚠️';
-      const label = status === 'blocked' ? 'BLOQUEADA' : status === 'clear' ? 'LIMPIA' : 'NO VERIFICABLE';
+      const label = status === 'blocked'
+        ? 'DIRECCIÓN BLOQUEADA'
+        : status === 'clear'
+          ? 'DIRECCIÓN NO BLOQUEADA'
+          : 'NO VERIFICABLE';
       const balanceLine = (balance !== undefined && balance !== null)
         ? `<div class="balance-line"><strong>Saldo:</strong> ${balance} USDT</div>`
         : '';
       return `
         <div class="chain-card ${cls}">
           <div class="chain-name">
-            <span>${chainName}</span>
+            <span>USDT en ${chainName}:</span>
             <span class="chain-status">${icon} ${label}</span>
           </div>
           ${balanceLine}
@@ -866,16 +1095,41 @@
       `;
     }
 
-    function renderJsonBlock(title, obj) {
+    function renderJsonBlock(title, obj, opts) {
+      opts = opts || {};
       const json = JSON.stringify(obj, null, 2);
       const escaped = json
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+      let extra = '';
+      if (opts.decoded) {
+        extra += `<div class="json-decoded"><strong>Decodificado:</strong> ${opts.decoded}</div>`;
+      }
+      if (opts.note) {
+        extra += `<div class="json-note">${opts.note}</div>`;
+      }
       return `
         <div class="json-block">
           <div class="json-block-header">${title}</div>
           <pre>${escaped}</pre>
+          ${extra}
+        </div>
+      `;
+    }
+
+    function renderAddressMatch(consulted, encodedHex20) {
+      if (!encodedHex20) return '';
+      const expectedHex20 = tronAddressToHex20(consulted);
+      const ok = expectedHex20 === encodedHex20;
+      const label = ok ? '✅ Coincide' : '⚠️ NO coincide';
+      const cls = ok ? 'ok' : 'bad';
+      return `
+        <div class="match-line ${cls}">
+          <strong>Dirección Base58 consultada vs. parameter:</strong> ${label}<br>
+          Base58: <code>${consulted}</code><br>
+          Base58 → hex20: <code>0x${expectedHex20}</code><br>
+          parameter: <code>0x${encodedHex20}</code>
         </div>
       `;
     }
@@ -897,16 +1151,31 @@
           return;
         }
 
-        const { blocked: isBlacklisted, raw, request, balance, balanceRaw, balanceRequest } = response;
-        showResult(isBlacklisted ? 'danger' : 'safe', `
+        const { blocked: isBlacklisted, raw, request, balance, balanceRaw, balanceRequest, hex20 } = response;
+
+        const decodedBlacklist = isBlacklisted ? 'true (bloqueada)' : 'false (no bloqueada)';
+        const decodedBalance = balance !== '—' ? `${balance} USDT` : '—';
+
+        const rawHtml = `
           <strong>${isBlacklisted ? '🚨 Dirección en BLACKLIST' : '✅ Dirección NO bloqueada'}</strong>
-          <p>La dirección <code>${address}</code> ${isBlacklisted ? 'está bloqueada por Tether en Tron.' : 'no está en la blacklist de Tether en Tron.'}</p>
+          <p>La dirección <code>${address}</code> ${isBlacklisted ? 'está bloqueada por Tether en el contrato USDT de Tron.' : 'no está en la blacklist del contrato USDT de Tether en Tron.'}</p>
           ${renderChainCard('Tron', isBlacklisted ? 'blocked' : 'clear', '', balance)}
-          ${renderJsonBlock('Request → TronGrid (blacklist)', request)}
-          ${renderJsonBlock('Response ← TronGrid (blacklist)', raw)}
-          ${balanceRequest ? renderJsonBlock('Request → TronGrid (balanceOf)', balanceRequest) : ''}
-          ${balanceRaw ? renderJsonBlock('Response ← TronGrid (balanceOf)', balanceRaw) : ''}
-        `);
+          ${renderJsonBlock('Request → TronGrid (getBlackListStatus)', request, { decoded: decodedBlacklist })}
+          ${renderJsonBlock('Response ← TronGrid (getBlackListStatus)', raw, {
+            decoded: decodedBlacklist,
+            note: '<code>result.result: true</code> indica que la consulta se procesó correctamente; el valor de bloqueo proviene de <code>constant_result</code>. <code>constant_result</code> es el retorno de una función de solo lectura, no una transacción ejecutada en la blockchain; el <code>txID</code> de la respuesta no debe interpretarse como una transacción confirmada.'
+          })}
+          ${balanceRequest ? renderJsonBlock('Request → TronGrid (balanceOf)', balanceRequest, { decoded: decodedBalance }) : ''}
+          ${balanceRaw ? renderJsonBlock('Response ← TronGrid (balanceOf)', balanceRaw, {
+            decoded: decodedBalance,
+            note: 'Misma observación: <code>constant_result</code> de una llamada de solo lectura, no una transacción on-chain. Un saldo alto no implica que los fondos sean legítimos, ilícitos ni recuperables.'
+          }) : ''}
+          ${renderAddressMatch(address, hex20)}
+        `;
+
+        const reportHtml = buildReport(address, 'TRON', isBlacklisted, balance);
+
+        showResult(isBlacklisted ? 'danger' : 'safe', rawHtml, reportHtml);
         return;
       }
 
@@ -925,15 +1194,23 @@
         }
 
         const { blocked: isBlacklisted, raw, request, balance, balanceRaw, balanceRequest } = response;
-        showResult(isBlacklisted ? 'danger' : 'safe', `
+
+        const decodedBlacklist = isBlacklisted ? 'true (bloqueada)' : 'false (no bloqueada)';
+        const decodedBalance = balance !== '—' ? `${balance} USDT` : '—';
+
+        const rawHtml = `
           <strong>${isBlacklisted ? '🚨 Dirección en BLACKLIST' : '✅ Dirección NO bloqueada'}</strong>
-          <p>La dirección <code>${address}</code> ${isBlacklisted ? 'está bloqueada por Tether en Ethereum.' : 'no está en la blacklist de Tether en Ethereum.'}</p>
+          <p>La dirección <code>${address}</code> ${isBlacklisted ? 'está bloqueada por Tether en el contrato USDT de Ethereum.' : 'no está en la blacklist del contrato USDT de Tether en Ethereum.'}</p>
           ${renderChainCard('Ethereum', isBlacklisted ? 'blocked' : 'clear', '', balance)}
-          ${renderJsonBlock('Request → Nodo Ethereum (blacklist)', request)}
-          ${renderJsonBlock('Response ← Nodo Ethereum (blacklist)', raw)}
-          ${balanceRequest ? renderJsonBlock('Request → Nodo Ethereum (balanceOf)', balanceRequest) : ''}
-          ${balanceRaw ? renderJsonBlock('Response ← Nodo Ethereum (balanceOf)', balanceRaw) : ''}
-        `);
+          ${renderJsonBlock('Request → Nodo Ethereum (getBlackListStatus)', request, { decoded: decodedBlacklist })}
+          ${renderJsonBlock('Response ← Nodo Ethereum (getBlackListStatus)', raw, { decoded: decodedBlacklist })}
+          ${balanceRequest ? renderJsonBlock('Request → Nodo Ethereum (balanceOf)', balanceRequest, { decoded: decodedBalance }) : ''}
+          ${balanceRaw ? renderJsonBlock('Response ← Nodo Ethereum (balanceOf)', balanceRaw, { decoded: decodedBalance }) : ''}
+        `;
+
+        const reportHtml = buildReport(address, 'Ethereum', isBlacklisted, balance);
+
+        showResult(isBlacklisted ? 'danger' : 'safe', rawHtml, reportHtml);
         return;
       }
 
