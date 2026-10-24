@@ -137,57 +137,55 @@
         .layout-image img { width: 100%; height: auto; max-height: 500px; object-fit: contain; opacity: 0.9; filter: drop-shadow(0 0 15px rgba(79, 70, 229, 0.3)); transition: transform 0.3s ease; }
         .layout-image img:hover { transform: scale(1.02); }
 
-.donate-layout {
-    display: flex;
-    flex-direction: row;
-    gap: 28px;
-    align-items: flex-start;
-    margin-top: 10px;
-}
-.donate-addresses {
-    flex: 1;
-    min-width: 0;
-    order: 2;
-}
-.donate-image-side {
-    flex-shrink: 0;
-    width: 260px;
-    display: flex;
-    justify-content: center;
-    order: 1;
-}
-.donate-image-side img {
-    width: 100%;
-    height: auto;
-    max-height: 420px;
-    object-fit: contain;
-    opacity: 0.95;
-    filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.35));
-    transition: transform 0.3s ease;
-}
-.donate-image-side img:hover {
-    transform: scale(1.03);
-}
+        .donate-layout {
+            display: flex;
+            flex-direction: row;
+            gap: 28px;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        .donate-addresses { flex: 1; min-width: 0; order: 2; }
+        .donate-image-side { flex-shrink: 0; width: 260px; display: flex; justify-content: center; order: 1; }
+        .donate-image-side img {
+            width: 100%;
+            height: auto;
+            max-height: 420px;
+            object-fit: contain;
+            opacity: 0.95;
+            filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.35));
+            transition: transform 0.3s ease;
+        }
+        .donate-image-side img:hover { transform: scale(1.03); }
 
-.service-badge {
-    font-size: 11px;
-    padding: 2px 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(79, 70, 229, 0.2);
-    background: rgba(79, 70, 229, 0.08);
-    color: var(--violet-soft);
-    font-family: 'Lucida Console', 'Courier New', monospace;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.service-badge { font-size: 10px; padding: 1px 8px; }        
+        .service-badge {
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            background: rgba(79, 70, 229, 0.08);
+            color: var(--violet-soft);
+            font-family: 'Lucida Console', 'Courier New', monospace;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s;
+        }
+
         .donation-addr {
-            display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 7px 12px;
-            background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid rgba(79, 70, 229, 0.04);
-            margin: 4px 0; cursor: pointer; transition: all 0.2s; min-width: 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 12px;
+            padding: 7px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(79, 70, 229, 0.04);
+            margin: 4px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 0;
         }
         .donation-addr:hover { background: rgba(79, 70, 229, 0.04); border-color: rgba(79, 70, 229, 0.1); }
         .donation-addr .coin-icon { width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -220,6 +218,10 @@
         .node-item .node-stats { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 12px; color: #5a5348; margin-top: 2px; min-width: 0; }
         .node-item .node-stats span { color: #8a8275; }
         .node-item .node-stats .val { color: #f5ede4; }
+	.node-item .service-badge {
+	    font-size: 10px;
+	    padding: 1px 8px;
+	}
 
         .vps-item { display: flex; align-items: center; gap: 12px; padding: 5px 0; min-width: 0; }
         .vps-item .label { color: #6a6255; font-size: 13px; min-width: 60px; }
@@ -272,69 +274,6 @@
         .firo-modal-stats .stat-item .value { color: #f5ede4; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
         .firo-modal-stats .stat-item .value.green { color: var(--green); }
 
-        .service-item {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 10px;
-            border: 1px solid rgba(79, 70, 229, 0.04);
-            padding: 12px 14px;
-            margin: 8px 0;
-            min-width: 0;
-        }
-        .service-item:hover { border-color: rgba(79, 70, 229, 0.1); }
-        .service-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            min-width: 0;
-        }
-        .service-icon {
-            width: 26px;
-            height: 26px;
-            object-fit: contain;
-            flex-shrink: 0;
-            filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.15));
-        }
-        .service-name {
-            color: #f5ede4;
-            font-size: 14px;
-            flex: 1;
-            min-width: 0;
-            word-break: break-all;
-        }
-        .service-status {
-            font-size: 11px;
-            padding: 2px 12px;
-            border-radius: 12px;
-            border: 1px solid transparent;
-            white-space: nowrap;
-        }
-        .service-status.ok {
-            color: var(--green);
-            border-color: rgba(49, 219, 114, 0.15);
-            background: rgba(49, 219, 114, 0.05);
-        }
-        .service-status.offline {
-            color: var(--red);
-            border-color: rgba(255, 117, 111, 0.15);
-            background: rgba(255, 117, 111, 0.05);
-        }
-        .service-status.waiting {
-            color: var(--gold);
-            border-color: rgba(255, 181, 48, 0.15);
-            background: rgba(255, 181, 48, 0.05);
-        }
-        .service-detail {
-            font-size: 12px;
-            color: #5a5348;
-            margin-top: 6px;
-            line-height: 1.5;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .service-detail .val { color: #8a8275; }
-
         @media (max-width: 1024px) {
             .card-grid { grid-template-columns: 1fr; }
             .reactor-grid { grid-template-columns: 1fr; }
@@ -355,14 +294,14 @@
             .reactor-item { padding: 12px 14px; }
             .node-item .node-name a { font-size: 14px; }
             .node-item .node-stats { font-size: 11px; }
+            .service-badge { font-size: 10px; padding: 1px 8px; }
             .layout-with-image { flex-direction: column-reverse; align-items: center; }
             .layout-image { width: 100%; margin-top: 10px; }
             .layout-image img { max-height: 250px; }
- .donate-layout { flex-direction: column-reverse; align-items: center; }
-.donate-addresses { width: 100%; order: 1; }
-.donate-image-side { width: 100%; margin-top: 10px; justify-content: center; order: 2; }
-.donate-image-side img { max-width: 200px; max-height: 300px; }
-
+            .donate-layout { flex-direction: column-reverse; align-items: center; }
+            .donate-addresses { width: 100%; order: 1; }
+            .donate-image-side { width: 100%; margin-top: 10px; justify-content: center; order: 2; }
+            .donate-image-side img { max-width: 200px; max-height: 300px; }
         }
 
         @media (max-width: 480px) {
@@ -395,8 +334,6 @@
             .reactor-footer { font-size: 11px; }
             .footer { font-size: 11px; flex-direction: column; text-align: center; }
             .firo-modal-stats { grid-template-columns: 1fr; }
-            .service-name { font-size: 12px; }
-            .service-detail { font-size: 11px; }
         }
 
         @media (min-width: 1920px) {
@@ -415,7 +352,6 @@
                 <span class="logo-text">cΔrovΣr0 <small>nodos</small></span>
             </div>
             <nav class="nav-links">
-                <a onclick="openModal('services')">[SERVICIOS]</a>
                 <a href="https://carover0.github.io/pagina/pivx-merchants.html">[PIVX MAP]</a>
                 <a href="https://carover0.github.io/pagina/firo-merchants.html">[FIRO MAP]</a>
                 <a href="https://carover0.github.io/pagina/usdt-block.html">[USDT-BLOCK]</a>
@@ -435,6 +371,7 @@
                         <div class="node-name">
                             <a href="https://carover0.github.io/pagina/firo-nodo.html">FIRO</a>
                             <span class="status online" id="firo-status">ONLINE</span>
+                            <span class="service-badge" id="svc-firo-lightwallet-badge">Lightwallet: verificando…</span>
                         </div>
                         <div class="node-stats">
                             <span>Height: <span class="val" id="firo-height">—</span></span>
@@ -467,6 +404,7 @@
                         <div class="node-name">
                             <a href="https://carover0.github.io/pagina/pivx-nodo.html">PIVX</a>
                             <span class="status online" id="pivx-status">ONLINE</span>
+                            <span class="service-badge" id="svc-pivx-coldstake-badge">Cold Staking: verificando…</span>
                         </div>
                         <div class="node-stats">
                             <span>Height: <span class="val" id="pivx-height">—</span></span>
@@ -510,7 +448,6 @@
 
                 <div class="vps-status-text online" id="vps-status">ALL SYSTEMS OPERATIONAL</div>
             </div>
-
             <div class="card card-full">
                 <div class="card-title">
                     <img src="assets/tron.png" alt="Tron" style="height:30px;width:30px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(79,70,229,0.2));">
@@ -649,7 +586,7 @@
             <div class="modal-title"><span class="icon"><img src="assets/info.png" width="32"></span> ¿QUÉ ES ESTO?</div>
             <div class="modal-body">
                 <div class="layout-with-image">
-                    
+
                     <div class="layout-image" id="info-random-image-container">
                         <img id="info-random-image" src="" alt="Info">
                     </div>
@@ -689,55 +626,6 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal-services">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('services')">✕</button>
-            <div class="modal-title"><span class="icon">🛠️</span> SERVICIOS</div>
-            <div class="modal-body">
-                <div class="layout-with-image">
-
-                    <div class="layout-image" id="services-random-image-container">
-                        <img id="services-random-image" src="" alt="Servicios">
-                    </div>
-
-                    <div class="layout-text">
-                        <div class="desc">
-                            ▸ Estado de los servicios que dependen de la infraestructura operada.
-                        </div>
-
-                        <div class="desc" style="margin-top:12px;">
-                            <span class="highlight">▸ SERVICIOS MONITOREADOS</span>
-                        </div>
-
-                        <div class="service-item">
-                            <div class="service-header">
-                                <img src="assets/pivx.png" alt="PIVX" class="service-icon">
-                                <span class="service-name">PIVX Cold Staking</span>
-                                <span class="service-badge">SRRbNw7T9uAdxXMu4Gd4x5rhb8PEYvPuBA</span>
-                                <span class="service-status waiting" id="svc-pivx-coldstake-status">VERIFICANDO...</span>
-                            </div>
-                            <div class="service-detail" id="svc-pivx-coldstake-detail">—</div>
-                        </div>
-
-                        <div class="service-item">
-                            <div class="service-header">
-                                <img src="assets/firo.png" alt="Firo" class="service-icon">
-                                <span class="service-name">FIRO Lightwallet</span>
-                                <span class="service-badge">carover0.xyz:50002</span>
-                                <span class="service-status waiting" id="svc-firo-lightwallet-status">VERIFICANDO...</span>
-                            </div>
-                            <div class="service-detail" id="svc-firo-lightwallet-detail">—</div>
-                        </div>
-
-                        <div class="divider">
-                            <span style="color:#3d3830;font-size:12px;">Los estados se actualizan cada 30s junto con el resto del panel.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal-overlay" id="modal-donate">
         <div class="modal">
             <button class="modal-close" onclick="closeModal('donate')">✕</button>
@@ -751,38 +639,38 @@
                     <span class="highlight">Direcciones de donación</span>
                 </div>
 
-<div class="donate-layout">
-    <div class="donate-image-side" id="donate-random-image-container">
-        <img id="donate-random-image" src="" alt="Apoyo">
-    </div>
+                <div class="donate-layout">
+                    <div class="donate-image-side" id="donate-random-image-container">
+                        <img id="donate-random-image" src="" alt="Apoyo">
+                    </div>
 
-    <div class="donate-addresses">
-        <div class="donation-addr" onclick="copyAddress('ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f', 'PIVX')">
-            <span class="coin-icon"><img src="assets/pivx.png" alt="PIVX"></span>
-            <span class="coin-name">PIVX</span>
-            <span class="address">ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f</span>
-            <span class="copy-hint">[copiar]</span>
-        </div>
+                    <div class="donate-addresses">
+                        <div class="donation-addr" onclick="copyAddress('ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f', 'PIVX')">
+                            <span class="coin-icon"><img src="assets/pivx.png" alt="PIVX"></span>
+                            <span class="coin-name">PIVX</span>
+                            <span class="address">ps1f89uh5a6at74666gx0z3gpjyw680apgqqyxe3yduph6lrs57xtx0hgr0f35cp57c04wwgxuu96f</span>
+                            <span class="copy-hint">[copiar]</span>
+                        </div>
 
-        <div class="donation-addr" onclick="copyAddress('carover0.firo', 'FIRO')">
-            <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
-            <span class="coin-name">FIRO</span>
-            <span class="address">carover0.firo</span>
-            <span class="copy-hint">[copiar]</span>
-        </div>
+                        <div class="donation-addr" onclick="copyAddress('carover0.firo', 'FIRO')">
+                            <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
+                            <span class="coin-name">FIRO</span>
+                            <span class="address">carover0.firo</span>
+                            <span class="copy-hint">[copiar]</span>
+                        </div>
 
-        <div class="donation-addr" onclick="copyAddress('mastercarol', 'FIRO')">
-            <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
-            <span class="coin-name">FIRO</span>
-            <span class="address">mastercarol</span>
-            <span class="copy-hint">[copiar]</span>
-        </div>
+                        <div class="donation-addr" onclick="copyAddress('mastercarol', 'FIRO')">
+                            <span class="coin-icon"><img src="assets/firo.png" alt="Firo"></span>
+                            <span class="coin-name">FIRO</span>
+                            <span class="address">mastercarol</span>
+                            <span class="copy-hint">[copiar]</span>
+                        </div>
 
-        <div class="donation-note">
-            → Hace clic en cualquier dirección para copiarla.
-        </div>
-    </div>
-</div>
+                        <div class="donation-note">
+                            → Hace clic en cualquier dirección para copiarla.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -790,30 +678,23 @@
     <script>
         function openModal(type) {
             const modal = document.getElementById('modal-' + type);
-            if (modal) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
+            if (!modal) return;
 
-                if (type === 'donate') {
-                    const images = ['assets/firo2.png', 'assets/piv2.png'];
-                    const randomImage = images[Math.floor(Math.random() * images.length)];
-                    const imgElement = document.getElementById('donate-random-image');
-                    if (imgElement) imgElement.src = randomImage;
-                }
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
 
-                if (type === 'info') {
-                    const images = ['assets/firo7.png', 'assets/piv7.png'];
-                    const randomImage = images[Math.floor(Math.random() * images.length)];
-                    const imgElement = document.getElementById('info-random-image');
-                    if (imgElement) imgElement.src = randomImage;
-                }
+            if (type === 'donate') {
+                const images = ['assets/firo2.png', 'assets/piv2.png'];
+                const randomImage = images[Math.floor(Math.random() * images.length)];
+                const imgElement = document.getElementById('donate-random-image');
+                if (imgElement) imgElement.src = randomImage;
+            }
 
-                if (type === 'services') {
-                    const images = ['assets/firo7.png', 'assets/piv7.png'];
-                    const randomImage = images[Math.floor(Math.random() * images.length)];
-                    const imgElement = document.getElementById('services-random-image');
-                    if (imgElement) imgElement.src = randomImage;
-                }
+            if (type === 'info') {
+                const images = ['assets/firo7.png', 'assets/piv7.png'];
+                const randomImage = images[Math.floor(Math.random() * images.length)];
+                const imgElement = document.getElementById('info-random-image');
+                if (imgElement) imgElement.src = randomImage;
             }
         }
 
@@ -828,7 +709,7 @@
         }
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', function(e) {
+            overlay.addEventListener('click', function (e) {
                 if (e.target === this) {
                     this.classList.remove('active');
                     document.body.style.overflow = '';
@@ -905,59 +786,24 @@
             }
         }
 
-        function setServiceStatus(id, state, detailText) {
-            const statusEl = $(id + '-status');
-            const detailEl = $(id + '-detail');
-            if (statusEl) {
-                if (state === 'ok') {
-                    statusEl.textContent = 'OK';
-                    statusEl.className = 'service-status ok';
-                } else if (state === 'offline') {
-                    statusEl.textContent = 'FUERA DE LÍNEA';
-                    statusEl.className = 'service-status offline';
-                } else {
-                    statusEl.textContent = 'VERIFICANDO...';
-                    statusEl.className = 'service-status waiting';
-                }
-            }
-            if (detailEl) detailEl.innerHTML = detailText || '—';
-        }
+        function setServiceBadge(badgeId, state, text) {
+            const el = $(badgeId);
+            if (!el) return;
 
-        async function updateServices() {
-            // PIVX Cold Staking: usa el nodo PIVX como indicador
-            try {
-                const r = await fetch('https://carover0.xyz/cacaX/pivx_status_X.json');
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const d = await r.json();
-                const ok = d.networkactive !== false && d.height > 0;
-                setServiceStatus(
-                    'svc-pivx-coldstake',
-                    ok ? 'ok' : 'offline',
-                    ok
-                        ? `Altura: <span class="val">${format(d.height)}</span> · Peers: <span class="val">${d.connections ?? '—'}</span>`
-                        : 'El nodo PIVX no está respondiendo correctamente.'
-                );
-            } catch (e) {
-                console.log('PIVX cold staking error:', e);
-                setServiceStatus('svc-pivx-coldstake', 'offline', 'Sin respuesta del nodo PIVX.');
-            }
+            el.textContent = text;
 
-            // FIRO Lightwallet: usa el nodo FIRO del VPS como indicador
-            try {
-                const r = await fetch('https://carover0.xyz/firo/status.json');
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const d = await r.json();
-                const ok = d.networkactive !== false && d.height > 0;
-                setServiceStatus(
-                    'svc-firo-lightwallet',
-                    ok ? 'ok' : 'offline',
-                    ok
-                        ? `Altura: <span class="val">${format(d.height)}</span> · Peers: <span class="val">${d.connections ?? '—'}</span> · Mempool: <span class="val">${d.mempool ?? '—'}</span>`
-                        : 'El nodo FIRO del VPS no está respondiendo correctamente.'
-                );
-            } catch (e) {
-                console.log('FIRO lightwallet error:', e);
-                setServiceStatus('svc-firo-lightwallet', 'offline', 'Sin respuesta del nodo FIRO del VPS.');
+            if (state === 'ok') {
+                el.style.color = 'var(--green)';
+                el.style.borderColor = 'rgba(49,219,114,0.15)';
+                el.style.background = 'rgba(49,219,114,0.05)';
+            } else if (state === 'offline') {
+                el.style.color = 'var(--red)';
+                el.style.borderColor = 'rgba(255,117,111,0.15)';
+                el.style.background = 'rgba(255,117,111,0.05)';
+            } else {
+                el.style.color = 'var(--gold)';
+                el.style.borderColor = 'rgba(255,181,48,0.15)';
+                el.style.background = 'rgba(255,181,48,0.05)';
             }
         }
 
@@ -974,9 +820,15 @@
                     mempool: d.mempool,
                     version: d.version
                 });
+                setServiceBadge(
+                    'svc-firo-lightwallet-badge',
+                    'ok',
+                    `Lightwallet: OK`
+                );
             } catch (e) {
                 console.log('Firo error:', e);
                 offline('firo');
+                setServiceBadge('svc-firo-lightwallet-badge', 'offline', 'Lightwallet: OFFLINE');
             }
 
             try {
@@ -1018,9 +870,15 @@
                     mempool: d.mempool,
                     version: d.software_subversion
                 });
+                setServiceBadge(
+                    'svc-pivx-coldstake-badge',
+                    'ok',
+                    `Cold Staking: OK`
+                );
             } catch (e) {
                 console.log('PIVX error:', e);
                 offline('pivx');
+                setServiceBadge('svc-pivx-coldstake-badge', 'offline', 'Cold Staking: OFFLINE');
             }
 
             try {
@@ -1276,13 +1134,10 @@
         window.closeModal = closeModal;
         window.copyAddress = copyAddress;
         window.openFiroModal = openFiroModal;
-        window.updateServices = updateServices;
 
         updateStatus();
         setInterval(updateStatus, 30000);
         initReactors();
-        updateServices();
-        setInterval(updateServices, 30000);
     </script>
 
 </body>
