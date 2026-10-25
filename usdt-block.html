@@ -2,7 +2,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verificador de Blacklist USDT - Tron y Ethereum</title>
+<title>Verificador de Blacklist USDT / USDT0 - Tron, Ethereum, Polygon, Celo, Avalanche y Arbitrum</title>
 <link rel="icon" type="image/png" href="assets/frozen.png">
 <style>
   :root {
@@ -194,6 +194,18 @@
     border-bottom: 1px dashed rgba(129, 140, 248, 0.4);
   }
   .example-row a:hover { color: #c4b5fd; }
+
+  #evmChainSelect {
+    background: rgba(13, 11, 31, 0.6);
+    color: var(--text);
+    border: 1px solid rgba(129, 140, 248, 0.25);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: 'Lucida Console', 'Monaco', monospace;
+    font-size: 12px;
+    outline: none;
+  }
+  #evmChainSelect:focus { border-color: var(--violet); }
 
   .top-actions {
     position: absolute;
@@ -623,8 +635,8 @@
 
       <div class="content-col">
 
-        <h1><img src="assets/frozen.png" width="72"><br>Verificador de Blacklist USDT</h1>
-        <p class="subtitle">Consulta si una dirección está bloqueada por Tether en Tron y Ethereum</p>
+        <h1><img src="assets/frozen.png" width="72"><br>Verificador de Blacklist USDT / USDT0</h1>
+        <p class="subtitle">Consulta si una dirección está bloqueada por Tether en Tron, Ethereum, Polygon, Celo, Avalanche y Arbitrum</p>
 
         <div class="notice">
           <strong>⚠️ Antes de enviar USDT</strong>
@@ -641,6 +653,17 @@
           />
           <button type="submit">Verificar</button>
         </form>
+
+        <div class="example-row" id="evmChainRow" style="display:none;">
+          <span>Red EVM:</span>
+          <select id="evmChainSelect">
+            <option value="ethereum">Ethereum (USDT nativo)</option>
+            <option value="celo">Celo (USDT nativo)</option>
+            <option value="avalanche">Avalanche (USDT nativo)</option>
+            <option value="polygon">Polygon (USDT0 nativo)</option>
+            <option value="arbitrum">Arbitrum (USDT0)</option>
+          </select>
+        </div>
 
         <div class="example-row">
           <span>ejemplo:</span>
@@ -665,7 +688,7 @@
         <div id="result" class="result hidden"></div>
 
         <footer class="footer">
-          Consulta directa a los contratos USDT · Datos on-chain<br><br>
+          Consulta directa a los contratos USDT / USDT0 · Datos on-chain<br><br>
           <a href="https://carover0.github.io/pagina/" target="_self" rel="noopener">[INICIO]</a>
         </footer>
 
@@ -777,6 +800,7 @@
     const CHAINS = {
       tron: {
         name: 'Tron',
+        token: 'USDT',
         usdt: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
         rpc: 'https://api.trongrid.io',
         type: 'tron',
@@ -785,18 +809,64 @@
       },
       ethereum: {
         name: 'Ethereum',
+        token: 'USDT',
         usdt: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
         rpc: 'https://ethereum.publicnode.com',
         type: 'evm',
         selector: '0x59bf1abe',
         balanceSelector: '0x70a08231'
-      }
+      },
+polygon: {
+  name: 'Polygon',
+  token: 'USDT0',  // Cambiar a USDT0
+  usdt: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+  rpc: 'https://polygon.drpc.org',  
+  type: 'evm',
+  selector: '0xfbac3951',  
+  balanceSelector: '0x70a08231'
+},
+      arbitrum: {
+        name: 'Arbitrum',
+        token: 'USDT0',
+        usdt: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+        rpc: 'https://arb1.arbitrum.io/rpc',
+        type: 'evm',
+        selector: '0xfbac3951',
+        balanceSelector: '0x70a08231'
+      },
+avalanche: {
+  name: 'Avalanche',
+  token: 'USDT',
+  usdt: '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
+  rpc: 'https://api.avax.network/ext/bc/C/rpc',
+  type: 'evm',
+  selector: '0xfbac3951', 
+  balanceSelector: '0x70a08231'
+},
+celo: {
+  name: 'Celo',
+  token: 'USDT',
+  usdt: '0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e',
+  rpc: 'https://celo-json-rpc.stakely.io',
+  type: 'evm',
+  selector: '0xfbac3951', 
+  balanceSelector: '0x70a08231'
+}
+
+
     };
 
     const form = document.getElementById('form');
     const input = document.getElementById('address');
     const result = document.getElementById('result');
     const button = form.querySelector('button');
+    const evmChainRow = document.getElementById('evmChainRow');
+    const evmChainSelect = document.getElementById('evmChainSelect');
+
+    input.addEventListener('input', () => {
+      const type = detectAddressType(input.value.trim());
+      evmChainRow.style.display = (type === 'evm') ? 'flex' : 'none';
+    });
 
     const infoBtn = document.getElementById('infoBtn');
     const modalOverlay = document.getElementById('modalOverlay');
@@ -886,16 +956,22 @@
       }
     }
 
-    function buildReport(address, chainName, isBlacklisted, balance) {
+    function buildReport(address, chainName, isBlacklisted, balance, tokenLabel) {
+      tokenLabel = tokenLabel || 'USDT';
       const statusCls = isBlacklisted ? 'bad' : 'ok';
       const statusTxt = isBlacklisted ? 'BLOQUEADA' : 'NO BLOQUEADA';
       const balTxt = (balance !== undefined && balance !== null && balance !== '—')
-        ? `${balance} USDT`
+        ? `${balance} ${tokenLabel}`
         : '—';
       const headline = isBlacklisted
-        ? `🚨 Dirección bloqueada por Tether en USDT (${chainName})`
-        : `✅ Dirección no bloqueada por Tether en USDT (${chainName})`;
-      const source = chainName === 'TRON' ? 'TronGrid' : 'nodo público de Ethereum';
+        ? `🚨 Dirección bloqueada por Tether en ${tokenLabel} (${chainName})`
+        : `✅ Dirección no bloqueada por Tether en ${tokenLabel} (${chainName})`;
+      const source = chainName === 'Tron' ? 'TronGrid'
+        : chainName === 'Ethereum' ? 'nodo público de Ethereum'
+        : chainName === 'Polygon' ? 'nodo público de Polygon'
+	: chainName === 'Avalanche' ? 'nodo público de Avalanche'
+	: chainName === 'Celo' ? 'nodo público de Celo'
+        : 'nodo público de Arbitrum';
       return `
         <strong>${headline}</strong>
         <div class="report-block">
@@ -907,15 +983,15 @@
           <div class="r-v">${chainName}</div>
         </div>
         <div class="report-block">
-          <div class="r-k">Blacklist de USDT</div>
+          <div class="r-k">Blacklist de ${tokenLabel}</div>
           <div class="r-v ${statusCls}">${statusTxt}</div>
         </div>
         <div class="report-block">
-          <div class="r-k">Saldo de USDT</div>
+          <div class="r-k">Saldo de ${tokenLabel}</div>
           <div class="r-v">${balTxt}</div>
         </div>
         <div class="report-footer-note">
-          Consulta directa al contrato de USDT · Datos on-chain obtenidos mediante ${source}
+          Consulta directa al contrato de ${tokenLabel} · Datos on-chain obtenidos mediante ${source}
         </div>
       `;
     }
@@ -1072,7 +1148,7 @@
       return { blocked, raw: json, request: { to: chain.usdt, data, selector: chain.selector }, balance, balanceRaw, balanceRequest, hex20: cleanAddr };
     }
 
-    function renderChainCard(chainName, status, detail, balance) {
+    function renderChainCard(chainName, tokenLabel, status, detail, balance) {
       const cls = status === 'blocked' ? 'blocked' : status === 'clear' ? 'clear' : 'error';
       const icon = status === 'blocked' ? '🚨' : status === 'clear' ? '✅' : '⚠️';
       const label = status === 'blocked'
@@ -1081,12 +1157,12 @@
           ? 'DIRECCIÓN NO BLOQUEADA'
           : 'NO VERIFICABLE';
       const balanceLine = (balance !== undefined && balance !== null)
-        ? `<div class="balance-line"><strong>Saldo:</strong> ${balance} USDT</div>`
+        ? `<div class="balance-line"><strong>Saldo:</strong> ${balance} ${tokenLabel}</div>`
         : '';
       return `
         <div class="chain-card ${cls}">
           <div class="chain-name">
-            <span>USDT en ${chainName}:</span>
+            <span>${tokenLabel} en ${chainName}:</span>
             <span class="chain-status">${icon} ${label}</span>
           </div>
           ${balanceLine}
@@ -1136,6 +1212,7 @@
 
     async function checkAddress(address) {
       const type = detectAddressType(address);
+      evmChainRow.style.display = (type === 'evm') ? 'flex' : 'none';
 
       if (type === 'tron') {
         let response = null;
@@ -1159,7 +1236,7 @@
         const rawHtml = `
           <strong>${isBlacklisted ? '🚨 Dirección en BLACKLIST' : '✅ Dirección NO bloqueada'}</strong>
           <p>La dirección <code>${address}</code> ${isBlacklisted ? 'está bloqueada por Tether en el contrato USDT de Tron.' : 'no está en la blacklist del contrato USDT de Tether en Tron.'}</p>
-          ${renderChainCard('Tron', isBlacklisted ? 'blocked' : 'clear', '', balance)}
+          ${renderChainCard('Tron', 'USDT', isBlacklisted ? 'blocked' : 'clear', '', balance)}
           ${renderJsonBlock('Request → TronGrid (getBlackListStatus)', request, { decoded: decodedBlacklist })}
           ${renderJsonBlock('Response ← TronGrid (getBlackListStatus)', raw, {
             decoded: decodedBlacklist,
@@ -1173,21 +1250,27 @@
           ${renderAddressMatch(address, hex20)}
         `;
 
-        const reportHtml = buildReport(address, 'TRON', isBlacklisted, balance);
+        const reportHtml = buildReport(address, 'Tron', isBlacklisted, balance, 'USDT');
 
         showResult(isBlacklisted ? 'danger' : 'safe', rawHtml, reportHtml);
         return;
       }
 
       if (type === 'evm') {
+        const selectedChain = evmChainSelect.value;
+        const chainMeta = CHAINS[selectedChain];
+        const isUsdt0 = chainMeta.selector === '0xfbac3951';
+        const tokenLabel = isUsdt0 ? 'USDT0' : 'USDT';
+        const fnLabel = isUsdt0 ? 'isBlocked' : 'getBlackListStatus';
+
         let response = null;
         let error = null;
-        try { response = await checkEvm(address, 'ethereum'); }
+        try { response = await checkEvm(address, selectedChain); }
         catch (e) { error = e; }
 
         if (error) {
           showResult('error', `
-            <strong>⚠️ Error al consultar Ethereum</strong>
+            <strong>⚠️ Error al consultar ${chainMeta.name}</strong>
             <p><small>${error.message}</small></p>
           `);
           return;
@@ -1196,25 +1279,25 @@
         const { blocked: isBlacklisted, raw, request, balance, balanceRaw, balanceRequest } = response;
 
         const decodedBlacklist = isBlacklisted ? 'true (bloqueada)' : 'false (no bloqueada)';
-        const decodedBalance = balance !== '—' ? `${balance} USDT` : '—';
+        const decodedBalance = balance !== '—' ? `${balance} ${tokenLabel}` : '—';
 
         const rawHtml = `
           <strong>${isBlacklisted ? '🚨 Dirección en BLACKLIST' : '✅ Dirección NO bloqueada'}</strong>
-          <p>La dirección <code>${address}</code> ${isBlacklisted ? 'está bloqueada por Tether en el contrato USDT de Ethereum.' : 'no está en la blacklist del contrato USDT de Tether en Ethereum.'}</p>
-          ${renderChainCard('Ethereum', isBlacklisted ? 'blocked' : 'clear', '', balance)}
-          ${renderJsonBlock('Request → Nodo Ethereum (getBlackListStatus)', request, { decoded: decodedBlacklist })}
-          ${renderJsonBlock('Response ← Nodo Ethereum (getBlackListStatus)', raw, { decoded: decodedBlacklist })}
-          ${balanceRequest ? renderJsonBlock('Request → Nodo Ethereum (balanceOf)', balanceRequest, { decoded: decodedBalance }) : ''}
-          ${balanceRaw ? renderJsonBlock('Response ← Nodo Ethereum (balanceOf)', balanceRaw, { decoded: decodedBalance }) : ''}
+          <p>La dirección <code>${address}</code> ${isBlacklisted ? `está bloqueada por Tether en el contrato ${tokenLabel} de ${chainMeta.name}.` : `no está en la blacklist del contrato ${tokenLabel} de Tether en ${chainMeta.name}.`}</p>
+          ${renderChainCard(chainMeta.name, tokenLabel, isBlacklisted ? 'blocked' : 'clear', '', balance)}
+          ${renderJsonBlock(`Request → ${chainMeta.name} (${fnLabel})`, request, { decoded: decodedBlacklist })}
+          ${renderJsonBlock(`Response ← ${chainMeta.name} (${fnLabel})`, raw, { decoded: decodedBlacklist })}
+          ${balanceRequest ? renderJsonBlock(`Request → ${chainMeta.name} (balanceOf)`, balanceRequest, { decoded: decodedBalance }) : ''}
+          ${balanceRaw ? renderJsonBlock(`Response ← ${chainMeta.name} (balanceOf)`, balanceRaw, { decoded: decodedBalance }) : ''}
         `;
 
-        const reportHtml = buildReport(address, 'Ethereum', isBlacklisted, balance);
+        const reportHtml = buildReport(address, chainMeta.name, isBlacklisted, balance, tokenLabel);
 
         showResult(isBlacklisted ? 'danger' : 'safe', rawHtml, reportHtml);
         return;
       }
 
-      showResult('error', '<strong>⚠️ Dirección inválida</strong><p>No es una dirección Tron ni Ethereum válida.</p>');
+      showResult('error', '<strong>⚠️ Dirección inválida</strong><p>No es una dirección Tron ni EVM válida.</p>');
     }
 
     function useExample() {
