@@ -370,6 +370,93 @@
             line-height: 1;
             margin-right: -4px;
         }
+
+        #modal-firo2 .layout-with-image {
+            gap: 28px;
+        }
+
+        #modal-firo2 .layout-image {
+            width: 220px;
+            max-width: 220px;
+        }
+
+        #modal-firo2 .layout-image img {
+            max-height: 520px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.35));
+        }
+
+        .modal.modal-firo2 {
+            max-width: 980px;
+        }
+
+        .firo2-layout {
+            display: flex;
+            flex-direction: row;
+            gap: 32px;
+            align-items: stretch;
+        }
+
+        .firo2-image {
+            flex: 0 0 240px;
+            width: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .firo2-image img {
+            width: 100%;
+            height: auto;
+            max-height: 520px;
+            object-fit: contain;
+            opacity: 0.95;
+            filter: drop-shadow(0 0 24px rgba(79, 70, 229, 0.35));
+            transition: transform 0.3s ease;
+        }
+
+        .firo2-image img:hover {
+            transform: scale(1.03);
+        }
+
+        .firo2-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .firo2-content .firo-modal-stats {
+            grid-template-columns: 1fr;
+            gap: 0;
+            margin: 10px 0;
+        }
+
+        .firo2-content .firo-modal-stats .stat-item {
+            padding: 6px 0;
+        }
+
+        @media (max-width: 768px) {
+            .firo2-layout {
+                flex-direction: column-reverse;
+                gap: 18px;
+            }
+
+            .firo2-image {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 220px;
+                margin: 0 auto;
+            }
+
+            .firo2-image img {
+                max-height: 280px;
+            }
+
+            .firo2-content .firo-modal-stats {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -565,62 +652,72 @@
     <div class="toast" id="toast"></div>
 
     <div class="modal-overlay" id="modal-firo2">
-        <div class="modal">
+        <div class="modal modal-firo2">
             <button class="modal-close" onclick="closeModal('firo2')">✕</button>
             <div class="modal-title">
                 <span class="icon"><img src="assets/firo.png" width="32" style="filter:drop-shadow(0 0 12px rgba(79,70,229,0.3));"></span>
                 FIRO
             </div>
             <div class="modal-body">
-                <div class="desc" style="font-size:13px; color:#8a8275;">
-                    Nodo FIRO #2 operado desde casa.
-                </div>
+                <div class="firo2-layout">
 
-                <div class="divider" style="margin-top:16px;">
-                    <span class="highlight">▸ DATOS EN TIEMPO REAL</span>
-                </div>
+                    <div class="firo2-image">
+                        <img src="assets/firo9.png" alt="Firo">
+                    </div>
 
-                <div class="firo-modal-stats">
-                    <div class="stat-item">
-                        <span class="label">Altura</span>
-                        <span class="value" id="modal-firo2-height">—</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">Conexiones</span>
-                        <span class="value" id="modal-firo2-peers">—</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">Mempool</span>
-                        <span class="value" id="modal-firo2-mempool">—</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">Versión</span>
-                        <span class="value" id="modal-firo2-version">—</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">Protocolo</span>
-                        <span class="value" id="modal-firo2-protocol">—</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">Dificultad</span>
-                        <span class="value" id="modal-firo2-difficulty">—</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">Relay fee</span>
-                        <span class="value" id="modal-firo2-relayfee">—</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">Network active</span>
-                        <span class="value green" id="modal-firo2-network">—</span>
-                    </div>
-                </div>
+                    <div class="firo2-content">
+                        <div class="desc" style="font-size:13px; color:#8a8275;">
+                            Nodo FIRO #2 operado desde casa.
+                        </div>
 
-                <div class="desc" style="font-size:12px; color:#5a5348; margin-top:10px;">
-                    Datos obtenidos desde <span class="highlight">carover0.xyz/cacaX/firo_status_X.json</span>
+                        <div class="divider" style="margin-top:16px;">
+                            <span class="highlight">▸ DATOS EN TIEMPO REAL</span>
+                        </div>
+
+                        <div class="firo-modal-stats">
+                            <div class="stat-item">
+                                <span class="label">Altura</span>
+                                <span class="value" id="modal-firo2-height">—</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Conexiones</span>
+                                <span class="value" id="modal-firo2-peers">—</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Mempool</span>
+                                <span class="value" id="modal-firo2-mempool">—</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Versión</span>
+                                <span class="value" id="modal-firo2-version">—</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Protocolo</span>
+                                <span class="value" id="modal-firo2-protocol">—</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Dificultad</span>
+                                <span class="value" id="modal-firo2-difficulty">—</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Relay fee</span>
+                                <span class="value" id="modal-firo2-relayfee">—</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Network active</span>
+                                <span class="value green" id="modal-firo2-network">—</span>
+                            </div>
+                        </div>
+
+                        <div class="desc" style="font-size:12px; color:#5a5348; margin-top:10px;">
+                            Datos obtenidos desde <span class="highlight">carover0.xyz/cacaX/firo_status_X.json</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     <div class="modal-overlay" id="modal-info">
         <div class="modal">
