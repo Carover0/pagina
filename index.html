@@ -340,6 +340,36 @@
             .app { max-width: 1600px; padding: 24px 40px; }
             .card-grid { gap: 24px; }
         }
+        .node-item .node-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 12px;
+            font-size: 12px;
+            margin-top: 5px;
+            padding-left: 0;
+        }
+
+        .node-item .node-links a {
+            color: #5a5348;
+            text-decoration: none;
+            padding: 1px 0;
+            border-bottom: 1px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .node-item .node-links a:hover {
+            color: var(--violet-soft);
+            border-bottom-color: var(--violet-soft);
+        }
+        .node-item .node-links .bullet {
+            color: var(--white);
+            font-size: 12px;
+            opacity: 0.99;
+            line-height: 1;
+            margin-right: -4px;
+        }
     </style>
 </head>
 <body>
@@ -380,7 +410,12 @@
                             <span>Mempool: <span class="val" id="firo-mempool">—</span></span>
                             <span>Ver: <span class="val" id="firo-version">—</span></span>
                         </div>
-                    </div>
+                        <div class="node-links"><span class="bullet">■</span>
+                            <a href="https://carover0.github.io/pagina/firo-masternodos.html">[MASTERNODOS]</a>
+                            <a href="https://carover0.github.io/pagina/firo-nombres.html">[NAMES]</a>
+                            <a href="https://carover0.github.io/pagina/firo-explorer.html">[EXPLORADOR]</a>
+                            <a href="https://carover0.github.io/pagina/firo-consola.html">[CONSOLA]</a>
+                        </div>                    </div>
                 </div>
 
                 <div class="node-item">
@@ -413,7 +448,13 @@
                             <span>Mempool: <span class="val" id="pivx-mempool">—</span></span>
                             <span>Ver: <span class="val" id="pivx-version">—</span></span>
                         </div>
-                    </div>
+
+                        <div class="node-links"><span class="bullet">■</span>
+                            <a href="https://carover0.github.io/pagina/pivx-explorer.html">[EXPLORADOR]</a>
+                            <a href="https://carover0.github.io/pagina/pivx-consola.html">[CONSOLA]</a>
+                            <a href="https://carover0.github.io/pagina/pivx-stakers.html">[STAKING]</a>
+
+                        </div>                    </div>
                 </div>
 
             </div>
