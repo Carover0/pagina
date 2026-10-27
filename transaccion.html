@@ -1,0 +1,661 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalle de Transacción - Tron</title>
+<link rel="icon" type="image/png" href="assets/frozen.png">
+<style>
+:root {
+  --bg-deep: #04060a;
+  --bg-mid: #0a101d;
+  --stone: #1c2638;
+  --stone-light: #384861;
+  --moss: #2a3b4c;
+  --moss-soft: #7dd3fc;
+  --bone: #e2e8f0;
+  --bone-dim: #94a3b8;
+  --text-muted: #64748b;
+  --tron-red: #ff6b6b;
+  --energy-yellow: #fbbf24;
+  --burn-orange: #f97316;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Lucida Console', 'Courier New', monospace;
+  background: var(--bg-deep);
+  color: var(--bone);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+img {
+  width: 16px !important;
+  height: 16px !important;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.app {
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.top-bar .stats {
+  display: flex;
+  gap: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-wrap: wrap;
+}
+.top-bar .stats span { color: var(--moss-soft); font-weight: bold; }
+.top-bar .actions { display: flex; gap: 8px; }
+.top-bar .actions .btn {
+  background: rgba(125, 211, 252, 0.05);
+  border: 1px solid var(--stone-light);
+  color: var(--moss-soft);
+  padding: 5px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.2s;
+}
+.top-bar .actions .btn:hover { background: rgba(125, 211, 252, 0.15); color: var(--bone); }
+
+.tx-header {
+  background: var(--bg-mid);
+  border: 1px solid var(--stone-light);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+.tx-header h2 {
+  font-size: 12px;
+  color: var(--moss-soft);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.tx-hash {
+  font-size: 14px;
+  color: var(--bone);
+  word-break: break-all;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.tx-hash .icon { color: var(--tron-red); flex-shrink: 0; margin-top: 2px;}
+.tx-hash .hash-text { flex: 1; word-break: break-all; }
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--stone-light);
+  margin-top: 12px;
+}
+.tab-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.tab-btn:hover { color: var(--bone); }
+.tab-btn.active {
+  color: var(--moss-soft);
+  border-bottom-color: var(--moss-soft);
+  background: linear-gradient(to top, rgba(125,211,252,0.05), transparent);
+}
+
+.tab-content {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.tab-content.active { display: flex; flex-direction: column; gap: 16px; }
+
+.exec-card {
+  background: var(--bg-mid);
+  border: 1px solid var(--stone);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.exec-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 200px;
+}
+.exec-block.right { align-items: flex-end; text-align: right; }
+.exec-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.exec-address {
+  font-size: 12px;
+  color: var(--moss-soft);
+  word-break: break-all;
+}
+.exec-address a { color: inherit; text-decoration: none; }
+.exec-name {
+  color: var(--bone);
+  font-weight: bold;
+  font-size: 13px;
+  margin-top: 2px;
+}
+.exec-arrow {
+  color: var(--moss-soft);
+  font-size: 18px;
+  background: rgba(125, 211, 252, 0.05);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--stone);
+  flex-shrink: 0;
+}
+.tag {
+  background: rgba(125, 211, 252, 0.1);
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--moss-soft);
+  display: inline-block;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.col-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.col-scroll::-webkit-scrollbar { width: 6px; }
+.col-scroll::-webkit-scrollbar-thumb { background: rgba(125, 211, 252, 0.2); border-radius: 4px; }
+.col-scroll::-webkit-scrollbar-track { background: transparent; }
+
+.info-card {
+  background: var(--bg-mid);
+  border: 1px solid var(--stone);
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.info-card-header {
+  background: rgba(56, 72, 97, 0.2);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--stone);
+  font-size: 12px;
+  color: var(--moss-soft);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.info-card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px dashed rgba(255,255,255,0.05);
+  padding-bottom: 6px;
+  gap: 12px;
+}
+.info-row:last-child { border-bottom: none; padding-bottom: 0; }
+.info-row .key { 
+  color: var(--text-muted); 
+  font-size: 11px; 
+  flex-shrink: 0;
+}
+.info-row .val { 
+  color: var(--bone); 
+  text-align: right; 
+  word-break: break-all;
+  font-size: 12px;
+}
+.info-row .val a { color: var(--moss-soft); text-decoration: none; }
+
+.res-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.05);
+}
+.res-row:last-child { border-bottom: none; padding-bottom: 0; }
+.res-row .icon { font-size: 16px; margin-right: 6px; }
+.res-row .label { flex: 1; color: var(--bone-dim); font-size: 11px; }
+.res-row .value { font-weight: bold; font-size: 12px; color: var(--bone); text-align: right;}
+.res-row .sub { font-size: 9px; color: var(--text-muted); display: block; font-weight: normal; }
+
+.highlight-burn { color: var(--burn-orange) !important; }
+.highlight-energy { color: var(--energy-yellow) !important; }
+
+.raw-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 16px;
+}
+.raw-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--bg-mid);
+  border: 1px solid var(--stone);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.raw-header {
+  padding: 8px 16px;
+  background: rgba(56, 72, 97, 0.2);
+  border-bottom: 1px solid var(--stone);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.btn-copy-raw {
+  background: rgba(125, 211, 252, 0.1);
+  border: 1px solid var(--moss-soft);
+  color: var(--moss-soft);
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.2s;
+}
+.btn-copy-raw:hover { background: rgba(125, 211, 252, 0.2); }
+
+.code-block {
+  flex: 1;
+  min-height: 0;
+  padding: 16px;
+  font-family: 'Lucida Console', monospace;
+  font-size: 12px;
+  color: var(--bone-dim);
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-y: auto;
+}
+.code-block::-webkit-scrollbar { width: 6px; height: 6px; }
+.code-block::-webkit-scrollbar-thumb { background: rgba(125, 211, 252, 0.3); border-radius: 4px; }
+
+.loading, .error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.spinner {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2px solid rgba(226, 232, 240, 0.2); border-top-color: var(--bone);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    padding: 15px 10px;
+  }
+  .app {
+    height: auto;
+  }
+  .overview-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .col-scroll {
+    overflow-y: visible;
+  }
+  .tab-content {
+    overflow: visible;
+    flex: none;
+  }
+  .raw-container {
+    flex: none;
+    height: 500px;
+  }
+  .exec-card {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .exec-block { align-items: center; }
+  .exec-block.right { align-items: center; }
+  .exec-arrow { transform: rotate(90deg); align-self: center; }
+}
+
+@media (max-width: 600px) {
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .info-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .info-row .val {
+    text-align: left;
+  }
+}
+</style>
+</head>
+<body>
+
+  <div class="app" id="app">
+    <div class="loading"><span class="spinner"></span> Cargando transacción...</div>
+  </div>
+
+  <script>
+    const PROXY_URL = 'https://carover0.xyz/api/tron/api.php';
+    const API_TOKEN = 'tron2026';
+    const TRX_ICON = '<img src="assets/tron.png" alt="TRX" onerror="this.style.display=\'none\'">';
+    const appDiv = document.getElementById('app');
+
+    function formatDate(ts) {
+      if (!ts) return '—';
+      return new Date(ts).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'medium' });
+    }
+    function formatAmount(raw, decimals = 6) {
+      if (!raw) return '0.00';
+      return (parseInt(raw) / Math.pow(10, decimals)).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: decimals });
+    }
+    function decodeParams(dataHex) {
+      if (!dataHex || dataHex.length < 10) return null;
+      const methodId = dataHex.substring(0, 8);
+      const paramsHex = dataHex.substring(8);
+      let params = [];
+      for (let i = 0; i < paramsHex.length; i += 64) {
+        let chunk = paramsHex.substring(i, i + 64);
+        if (chunk.length === 64) params.push(BigInt('0x' + chunk).toString());
+      }
+      return { methodId: '0x' + methodId, params };
+    }
+
+    function renderError(msg) {
+      appDiv.innerHTML = `<div class="error">Error: ${msg}</div>`;
+    }
+
+    window.copyRaw = function(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => alert('Copiado al portapapeles'));
+    };
+
+    function renderTransaction(data) {
+      const hash = data.hash || (data.tx && data.tx.txID) || '—';
+      const scan = data.scan || {};
+      const tx = data.tx || {};
+      const info = data.info || {};
+      
+      const contractType = tx.raw_data?.contract?.[0]?.type || 'Unknown';
+      const contractInfo = scan.contractInfo || {};
+      const confirmations = scan.confirmations || 0;
+      const timestamp = scan.timestamp || tx.raw_data?.timestamp;
+      const block = scan.block;
+      
+      let fromAddr = scan.ownerAddress || '—';
+      let toAddr = scan.toAddress || '—';
+      let methodName = '';
+      let contractTag = '';
+      let contractName = '';
+
+      if (contractType === 'TriggerSmartContract') {
+        if (scan.trigger_info) {
+          methodName = scan.trigger_info.method;
+          toAddr = scan.trigger_info.contract_address;
+        }
+        if (contractInfo[toAddr]?.tag1) contractTag = `<span class="tag">${contractInfo[toAddr].tag1}</span>`;
+        contractName = contractInfo[toAddr]?.name || 'Smart Contract';
+      }
+
+      const energyUsage = info.receipt?.energy_usage_total || scan.cost?.energy_usage_total || 0;
+      const energyFee = info.receipt?.energy_fee || scan.cost?.energy_fee || 0;
+      const energyPenalty = info.receipt?.energy_penalty_total || scan.cost?.energy_penalty_total || 0;
+      const bwUsage = info.receipt?.net_usage || scan.cost?.net_usage || 0;
+      const bwFee = info.receipt?.net_fee || scan.cost?.net_fee || 0;
+      const totalFee = formatAmount(info.fee || 0);
+
+      let paramHtml = '';
+      const contractDataHex = tx.raw_data?.contract?.[0]?.parameter?.value?.data;
+      if (contractDataHex) {
+        const decoded = decodeParams(contractDataHex);
+        if (decoded && decoded.params.length > 0) {
+          paramHtml = `
+            <div class="info-card">
+              <div class="info-card-header">Parámetros Decodificados</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="key">Method ID</span><span class="val">${decoded.methodId}</span></div>
+                ${decoded.params.map((p, i) => `<div class="info-row"><span class="key">Param ${i}</span><span class="val" style="color: var(--moss-soft); font-weight: bold;">${p}</span></div>`).join('')}
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      const html = `
+        <div class="top-bar">
+          <div class="stats">
+            <div>ALTURA <span>${block}</span></div>
+            <div>CONFIRMACIONES <span>${confirmations}</span></div>
+            <div>ESTADO <span style="color: ${scan.confirmed ? 'var(--moss-soft)' : 'var(--tron-red)'};">${scan.confirmed ? 'CONFIRMADA' : 'PENDIENTE'}</span></div>
+          </div>
+          <div class="actions">
+            <a href="javascript:history.back()" class="btn">← Volver</a>
+            <button class="btn" onclick="navigator.clipboard.writeText('${hash}')">F8 Copiar Hash</button>
+          </div>
+        </div>
+
+        <div class="tx-header">
+          <h2>Detalle de Transacción</h2>
+          <div class="tx-hash">
+            <span class="icon">►</span> 
+            <span class="hash-text">${hash}</span>
+          </div>
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'overview')">Overview</button>
+            <button class="tab-btn" onclick="switchTab(event, 'raw')">Datos RAW</button>
+          </div>
+        </div>
+
+        <div id="tab-overview" class="tab-content active">
+          
+          <div class="exec-card">
+            <div class="exec-block">
+              <span class="exec-label">Emisor (From)</span>
+              <span class="exec-address"><a href="https://tronscan.org/#/address/${fromAddr}" target="_blank">${fromAddr}</a></span>
+            </div>
+            <div class="exec-arrow">➔</div>
+            <div class="exec-block right">
+              <span class="exec-label">Contrato (To)</span>
+              <span class="exec-address"><a href="https://tronscan.org/#/address/${toAddr}" target="_blank">${toAddr}</a></span>
+              <span class="exec-name">${contractName} ${contractTag}</span>
+            </div>
+          </div>
+
+          <div class="overview-grid">
+            
+            <div class="col-scroll">
+              <div class="info-card">
+                <div class="info-card-header">Información General</div>
+                <div class="info-card-body">
+                  <div class="info-row"><span class="key">Bloque</span><span class="val"><a href="https://tronscan.org/#/block/${block}" target="_blank">#${block}</a></span></div>
+                  <div class="info-row"><span class="key">Fecha</span><span class="val">${formatDate(timestamp)}</span></div>
+                  <div class="info-row"><span class="key">Tipo</span><span class="val">${contractType}</span></div>
+                  <div class="info-row"><span class="key">Método</span><span class="val" style="color: var(--moss-soft); font-weight: bold;">${methodName || 'Transferencia'}</span></div>
+                  <div class="info-row"><span class="key">Estado</span><span class="val" style="color: ${scan.confirmed ? 'var(--moss-soft)' : 'var(--tron-red)'};">${scan.confirmed ? 'Confirmada' : 'Fallida'}</span></div>
+                </div>
+              </div>
+              ${paramHtml}
+            </div>
+
+            <div class="col-scroll">
+              <div class="info-card">
+                <div class="info-card-header">Recursos</div>
+                <div class="info-card-body">
+                  <div class="res-row">
+                    <span class="icon">⚡</span>
+                    <div class="label">Energía</div>
+                    <div class="value highlight-energy">${energyUsage} <span class="sub">units</span></div>
+                  </div>
+                  <div class="res-row">
+                    <span class="icon">🌐</span>
+                    <div class="label">Banda</div>
+                    <div class="value">${bwUsage} <span class="sub">bytes</span></div>
+                  </div>
+                  ${energyPenalty > 0 ? `
+                  <div class="res-row">
+                    <span class="icon" style="color: var(--tron-red);">⚠️</span>
+                    <div class="label">Penalización</div>
+                    <div class="value" style="color: var(--tron-red);">${energyPenalty}</div>
+                  </div>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-header"><span class="icon">🔥</span> Comisión (Fee)</div>
+                <div class="info-card-body">
+                  <div class="res-row">
+                    <div class="label">TRX Quemado</div>
+                    <div class="value highlight-burn">${TRX_ICON}${totalFee} TRX</div>
+                  </div>
+                  <div class="res-row">
+                    <div class="label">Energía</div>
+                    <div class="value">${TRX_ICON}${formatAmount(energyFee)}</div>
+                  </div>
+                  <div class="res-row">
+                    <div class="label">Banda</div>
+                    <div class="value">${TRX_ICON}${formatAmount(bwFee)}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div id="tab-raw" class="tab-content">
+          <div class="raw-container">
+            <div class="raw-box">
+              <div class="raw-header">
+                <span style="font-size: 11px; color: var(--moss-soft); font-weight: bold;">TronGrid API</span>
+                <button class="btn-copy-raw" onclick="copyRaw('raw-tx')">Copiar JSON</button>
+              </div>
+              <div class="code-block" id="raw-tx">${JSON.stringify(tx, null, 2)}</div>
+            </div>
+
+            <div class="raw-box">
+              <div class="raw-header">
+                <span style="font-size: 11px; color: var(--moss-soft); font-weight: bold;">TronScan API</span>
+                <button class="btn-copy-raw" onclick="copyRaw('raw-scan')">Copiar JSON</button>
+              </div>
+              <div class="code-block" id="raw-scan">${JSON.stringify(scan, null, 2)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      appDiv.innerHTML = html;
+    }
+
+    window.switchTab = function(e, tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      e.target.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    async function loadTransaction() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hash = urlParams.get('hash');
+
+      if (!hash) {
+        renderError('No se especificó un hash de transacción en la URL.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${PROXY_URL}?token=${API_TOKEN}&cmd=gettransaction&hash=${hash}`);
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        if (!data.result) throw new Error('No se encontraron datos para esta transacción.');
+
+        renderTransaction(data.result);
+      } catch (err) {
+        renderError(err.message);
+      }
+    }
+
+    loadTransaction();
+  </script>
+</body>
+</html>
