@@ -155,26 +155,35 @@
         }
     </style>
 
-    <script>
-        (function () {
-            const path = window.location.pathname;
-            const explorers = [
-                { name: 'zec-explorer',    pattern: /\/zec-explorer\/(.+)$/ },
-                { name: 'pivx-explorer',   pattern: /\/pivx-explorer\/(.+)$/ },
-                { name: 'ycash-explorer',  pattern: /\/ycash-explorer\/(.+)$/ },
-                { name: 'komodo-explorer', pattern: /\/komodo-explorer\/(.+)$/ },
-                { name: 'firo-explorer',   pattern: /\/firo-explorer\/(.+)$/ },
-                { name: 'texplorer',    pattern: /\/texplorer\/(.+)$/ }
-            ];
-            for (const exp of explorers) {
-                const match = path.match(exp.pattern);
-                if (match && match[1]) {
-                    window.location.replace('/pagina/' + exp.name + '?q=' + encodeURIComponent(match[1]));
-                    return;
-                }
-            }
-        })();
-    </script>
+
+<script>
+(function () {
+  var path = window.location.pathname;
+  var explorers = [
+    { name: 'zec-explorer',    pattern: /\/zec-explorer\/(.+)$/ },
+    { name: 'pivx-explorer',   pattern: /\/pivx-explorer\/(.+)$/ },
+    { name: 'ycash-explorer',  pattern: /\/ycash-explorer\/(.+)$/ },
+    { name: 'komodo-explorer', pattern: /\/komodo-explorer\/(.+)$/ },
+    { name: 'firo-explorer',   pattern: /\/firo-explorer\/(.+)$/ },
+    { name: 'texplorer',       pattern: /\/texplorer\/(.+)$/ }
+  ];
+
+  for (var i = 0; i < explorers.length; i++) {
+    var exp = explorers[i];
+    var match = path.match(exp.pattern);
+    if (match && match[1]) {
+      var raw = match[1];
+      var decoded = raw;
+      try { decoded = decodeURIComponent(raw); } catch (e) {}
+      window.location.replace('/pagina/' + exp.name + '?q=' + encodeURIComponent(decoded));
+      return;
+    }
+  }
+
+
+})();
+</script>
+    
 </head>
 <body>
 
