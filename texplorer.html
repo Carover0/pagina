@@ -135,6 +135,45 @@ body { height:100vh; overflow:hidden; background:#ffffff; font-family:'Lucida Co
 #output .tx-item .token-badge .name { font-size:11px; color:#999; }
 #output .tx-item .token-badge .tok-logo,
 #output .tx-item .token-badge .tok-fallback { width:22px; height:22px; font-size:11px; }
+
+/* Botón info */
+.info-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:50%;
+  background:#ffffff; border:1px solid #ddd;
+  cursor:pointer; padding:0; margin-right:4px;
+  transition:background .2s, border-color .2s;
+}
+.info-btn:hover { background:#f0f0f0; border-color:#bbb; }
+.info-btn img { width:14px; height:14px; object-fit:contain; }
+
+/* Modal */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  display:none; align-items:center; justify-content:center;
+  padding:20px; z-index:1000;
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:#ffffff; border:1px solid #e5e5e5; border-radius:14px;
+  max-width:520px; width:100%; max-height:90vh; overflow-y:auto;
+  padding:28px 24px; position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-close {
+  position:absolute; top:12px; right:12px;
+  width:28px; height:28px; border-radius:50%;
+  border:1px solid #ddd; background:#ffffff;
+  color:#555; cursor:pointer; font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s;
+}
+.modal-close:hover { background:#f0f0f0; color:#000; }
+.modal h2 { font-size:16px; font-weight:400; margin-bottom:14px; color:#000; letter-spacing:.5px; }
+.modal p { font-size:13px; line-height:1.7; color:#333; margin-bottom:10px; }
+.modal p strong { color:#000; font-weight:600; }
+
+
 </style>
 </head>
 <body>
@@ -155,6 +194,9 @@ body { height:100vh; overflow:hidden; background:#ffffff; font-family:'Lucida Co
     <span class="back-btn" id="backBtn" onclick="goBack()">← volver</span>
     <a href="https://carover0.github.io/pagina/">[INICIO]</a>
     <a href="https://carover0.github.io/pagina/cementerio.html">[CEMENTERIO DE ESTABLES]</a>
+<button class="info-btn" id="infoBtn" aria-label="Info" title="Acerca de">
+  <img src="assets/info.png" alt="info" onerror="this.style.display='none'">
+</button>
   </nav>
 </header>
 
@@ -179,12 +221,17 @@ body { height:100vh; overflow:hidden; background:#ffffff; font-family:'Lucida Co
     </div>
   </div>
 
-  <footer class="footer-bar">
-    <span>API · <a href="https://carover0.xyz/api/tron/api.php" target="_blank" rel="noopener" class="api">carover0</a></span>
-    <span style="font-size:10px;color:#444;">TRON mainnet</span>
-  </footer>
+<div class="modal-overlay" id="infoOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="infoClose" aria-label="Cerrar">✕</button>
+    <h2>Acerca de este explorador</h2>
+    <p>Porque TronScan es un producto y yo quería una herramienta propia, ligera y sin dependencias innecesarias, con datos directos, caché y control sobre la experiencia, principalmente sin rastreadores ni recopiladores de datos.</p>
+    <p>No busco competir, sino <strong>ganar independencia</strong> y no depender de que TronScan cambie su diseño o sus decisiones.</p>
+    <p style="margin-top:16px; color:#888; font-size:11px;">
+      Datos on-chain vía TronGrid + TronScan API · TRON mainnet
+    </p>
+  </div>
 </div>
-<div class="toast" id="toast"></div>
 
 <script>
 const API_URL = "https://carover0.xyz/api/tron/api.php";
@@ -915,6 +962,20 @@ document.getElementById('btnLatest').addEventListener('click', async e=>{
     });
   }
 })();
+
+const infoBtn = document.getElementById('infoBtn');
+const infoOverlay = document.getElementById('infoOverlay');
+const infoClose = document.getElementById('infoClose');
+
+function openInfo(){ infoOverlay.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeInfo(){ infoOverlay.classList.remove('open'); document.body.style.overflow=''; }
+
+infoBtn.addEventListener('click', openInfo);
+infoClose.addEventListener('click', closeInfo);
+infoOverlay.addEventListener('click', (e) => { if (e.target === infoOverlay) closeInfo(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && infoOverlay.classList.contains('open')) closeInfo();
+});
 
 (async()=>{ loadStats(); setInterval(loadStats,30000); })();
 </script>
