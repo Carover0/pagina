@@ -98,10 +98,10 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
 
 .grave-card {
   background: var(--bg-deep);
-  border-radius: 40px 40px 10px 10px;
+  border-radius: 47px 47px 10px 10px;
   padding: 24px 16px 20px 16px;
   border: 1px solid var(--stone-light);
-  border-top: 3px solid var(--grave-red);
+  border-top: 4px solid var(--grave-red);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -113,9 +113,9 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
   border-top: 3px solid var(--moss-soft);
 }
 .grave-card.compact {
-  border-radius: 12px;
-  border-top: 3px solid var(--grave-red);
-  padding: 16px 14px 14px 14px;
+  border-radius: 45px 45px 12px 12px;
+  border-top: 4px solid var(--grave-red);
+  padding: 32px 14px 14px 14px;
 }
 .grave-header { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 16px; }
 .grave-address { font-size: 13px; font-weight: 600; color: var(--grave-red-soft); word-break: break-all; max-width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -254,6 +254,7 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
     const TRON_SELECTOR_BLACKLIST = '0x59bf1abe';
     const TRON_SELECTOR_BALANCE = '0x70a08231';
     const EXPLORER_BASE = 'https://carover0.github.io/pagina/texplorer/gettransaction%20';
+    const EXPLORER_QUERY = 'https://carover0.github.io/pagina/texplorer?q=';
 
     const LIMIT = 20;
     let currentPage = 0;
@@ -371,46 +372,97 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
       return { balance };
     }
 
-function renderTronList(data, total) {
-  if (!data || data.length === 0) {
-    graveList.innerHTML = '<div class="empty-state">No se encontraron direcciones congeladas en Tron para esta búsqueda.</div>';
-    listInfo.textContent = '0 resultados';
-    return;
-  }
-  let html = '', sumFrozen = 0;
-  data.forEach(item => {
-    const amount = (parseFloat(item.num) || 0) / 1000000;
-    sumFrozen += amount;
-    const date = formatDate(item.time);
-    const hash = item.transHash || '';
-    const txLink = hash
-      ? `<span><a href="${EXPLORER_BASE}${encodeURIComponent(hash)}" target="_blank" rel="noopener">Ver transacción ↗</a></span>`
-      : '';
-    const addrExplorerUrl = 'https://carover0.github.io/pagina/texplorer?q=' + encodeURIComponent('getaccount ' + item.blackAddress);
+    function renderTronList(data, total) {
+      if (!data || data.length === 0) {
+        graveList.innerHTML = '<div class="empty-state">No se encontraron direcciones congeladas en Tron para esta búsqueda.</div>';
+        listInfo.textContent = '0 resultados';
+        return;
+      }
+      let html = '', sumFrozen = 0;
+      data.forEach(item => {
+        const amount = (parseFloat(item.num) || 0) / 1000000;
+        sumFrozen += amount;
+        const date = formatDate(item.time);
+        const hash = item.transHash || '';
+        const txLink = hash
+          ? `<span><a href="${EXPLORER_BASE}${encodeURIComponent(hash)}" target="_blank" rel="noopener">Ver transacción ↗</a></span>`
+          : '';
+        const addrExplorerUrl = EXPLORER_QUERY + encodeURIComponent('getaccount ' + item.blackAddress);
 
-    html += `
-      <div class="grave-card compact">
-        <span class="network-badge badge-tron">TRON</span>
-        <div class="grave-header">
-          <a class="grave-address" href="${addrExplorerUrl}" target="_blank" rel="noopener" title="Ver en explorador: ${item.blackAddress}"><span class="tomb-icon">🪦</span>${item.blackAddress}</a>
-          <span class="grave-badge">Congelada</span>
-        </div>
-        <div class="grave-details">
-          <span><strong>Monto:</strong> ${formatNumber(amount.toFixed(2))} USDT</span>
-          <span><strong>Fecha:</strong> ${date}</span>
-          ${txLink}
-        </div>
-      </div>`;
-  });
-  graveList.innerHTML = html;
-  const startIdx = currentPage * LIMIT + 1;
-  const endIdx = Math.min((currentPage + 1) * LIMIT, total);
-  listInfo.textContent = `Mostrando ${startIdx}–${endIdx} de ${formatNumber(total)} registros`;
-  statTotal.textContent = formatNumber(total);
-  statFrozen.textContent = formatNumber(sumFrozen.toFixed(2));
-  prevBtn.disabled = currentPage === 0;
-  nextBtn.disabled = endIdx >= total;
+        html += `
+          <div class="grave-card compact">
+            <span class="network-badge badge-tron">TRON</span>
+            <div class="grave-header">
+              <a class="grave-address" href="${addrExplorerUrl}" target="_blank" rel="noopener" title="Ver en explorador: ${item.blackAddress}"><span class="tomb-icon">🪦</span>${item.blackAddress}</a>
+              <span class="grave-badge">Congelada</span>
+            </div>
+            <div class="grave-details">
+              <span><strong>Monto:</strong> ${formatNumber(amount.toFixed(2))} USDT</span>
+              <span><strong>Fecha:</strong> ${date}</span>
+              ${txLink}
+            </div>
+          </div>`;
+      });
+      graveList.innerHTML = html;
+      const startIdx = currentPage * LIMIT + 1;
+      const endIdx = Math.min((currentPage + 1) * LIMIT, total);
+      listInfo.textContent = `Mostrando ${startIdx}–${endIdx} de ${formatNumber(total)} registros`;
+      statTotal.textContent = formatNumber(total);
+      statFrozen.textContent = formatNumber(sumFrozen.toFixed(2));
+      prevBtn.disabled = currentPage === 0;
+      nextBtn.disabled = endIdx >= total;
+    }
+
+function renderIndividualResult(address, network, isBlocked, balance) {
+  const badgeClass = network === 'Tron' ? 'badge-tron' : 'badge-eth';
+  const badgeText = network === 'Tron' ? 'TRON' : 'ETH';
+  const icon = isBlocked ? '🪦' : '🍀';
+
+  let explorerUrl = null;
+  if (isBlocked) {
+    explorerUrl = network === 'Tron'
+      ? 'https://tronscan.org/#/address/' + address
+      : 'https://etherscan.io/address/' + address;
+  } else if (network === 'Tron') {
+    explorerUrl = EXPLORER_QUERY + encodeURIComponent('getaccount ' + address);
+  }
+
+  const linkHtml = explorerUrl
+    ? `<span><a href="${explorerUrl}" target="_blank" rel="noopener">Ver en Explorador ↗</a></span>`
+    : '';
+
+  const cardStyle = isBlocked
+    ? 'border-top: 5px solid var(--grave-red); border-radius: 50% 50% 12px 12px / 70px 70px 12px 12px; padding: 60px 24px 24px 24px;'
+    : 'border-top: 3px solid var(--moss-soft); border-radius: 12px; padding: 16px 14px 14px 14px;';
+
+  const badgeStyle = isBlocked
+    ? 'color: var(--grave-red-soft); border-color: rgba(147, 197, 253, 0.3);'
+    : 'color: var(--moss-soft); border-color: var(--moss-soft);';
+
+  const card = `
+    <div class="grave-card" style="${cardStyle}">
+      <span class="network-badge ${badgeClass}">${badgeText}</span>
+      <div class="grave-header">
+        <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
+        <span class="grave-badge" style="${badgeStyle}">
+          ${isBlocked ? 'BLOQUEADA' : 'LIMPIA'}
+        </span>
+      </div>
+      <div class="grave-details">
+        <span><strong>Red:</strong> ${network}</span>
+        <span><strong>Saldo:</strong> ${balance} USDT</span>
+        ${linkHtml}
+      </div>
+    </div>`;
+
+  graveList.innerHTML = card;
+  listInfo.textContent = `1 resultado (${network})`;
+  statTotal.textContent = '1';
+  statFrozen.textContent = balance;
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
 }
+
 
     async function loadPage(page = 0, filterAddress = null) {
       if (isSearching) return;
