@@ -96,7 +96,6 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
 
 .grave-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 
-/* ── Tarjeta por defecto: lápida (bloqueada) ───────────── */
 .grave-card {
   background: var(--bg-deep);
   border-radius: 40px 40px 10px 10px;
@@ -409,36 +408,50 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
       nextBtn.disabled = endIdx >= total;
     }
 
-    function renderIndividualResult(address, network, isBlocked, balance) {
-      const badgeClass = network === 'Tron' ? 'badge-tron' : 'badge-eth';
-      const badgeText = network === 'Tron' ? 'TRON' : 'ETH';
-      const icon = isBlocked ? '🪦' : '🍀';
-      const cardClass = isBlocked ? 'grave-card' : 'grave-card clean';
-      const borderColor = isBlocked ? 'var(--grave-red)' : 'var(--moss-soft)';
+function renderIndividualResult(address, network, isBlocked, balance) {
+  const badgeClass = network === 'Tron' ? 'badge-tron' : 'badge-eth';
+  const badgeText = network === 'Tron' ? 'TRON' : 'ETH';
+  const icon = isBlocked ? '🪦' : '🍀';
+  const cardClass = isBlocked ? 'grave-card' : 'grave-card clean';
+  const borderColor = isBlocked ? 'var(--grave-red)' : 'var(--moss-soft)';
 
-      const card = `
-        <div class="${cardClass}" style="border-top-color: ${borderColor};">
-          <span class="network-badge ${badgeClass}">${badgeText}</span>
-          <div class="grave-header">
-            <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
-            <span class="grave-badge" style="color: ${isBlocked ? 'var(--grave-red-soft)' : 'var(--moss-soft)'}; border-color: ${isBlocked ? 'rgba(147, 197, 253, 0.3)' : 'var(--moss-soft)'};">
-              ${isBlocked ? 'BLOQUEADA' : 'LIMPIA'}
-            </span>
-          </div>
-          <div class="grave-details">
-            <span><strong>Red:</strong> ${network}</span>
-            <span><strong>Saldo:</strong> ${balance} USDT</span>
-            <span><a href="${network === 'Tron' ? 'https://tronscan.org/#/address/' : 'https://etherscan.io/address/'}${address}" target="_blank" rel="noopener">Ver en Explorador ↗</a></span>
-          </div>
-        </div>`;
+  let explorerUrl = null;
+  if (isBlocked) {
+    explorerUrl = network === 'Tron'
+      ? 'https://tronscan.org/#/address/' + address
+      : 'https://etherscan.io/address/' + address;
+  } else if (network === 'Tron') {
+    explorerUrl = 'https://carover0.github.io/pagina/texplorer?q=' +
+                  encodeURIComponent('getaccount ' + address);
+  }
 
-      graveList.innerHTML = card;
-      listInfo.textContent = `1 resultado (${network})`;
-      statTotal.textContent = '1';
-      statFrozen.textContent = balance;
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
-    }
+  const linkHtml = explorerUrl
+    ? `<span><a href="${explorerUrl}" target="_blank" rel="noopener">Ver en Explorador ↗</a></span>`
+    : '';
+
+  const card = `
+    <div class="${cardClass}" style="border-top-color: ${borderColor};">
+      <span class="network-badge ${badgeClass}">${badgeText}</span>
+      <div class="grave-header">
+        <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
+        <span class="grave-badge" style="color: ${isBlocked ? 'var(--grave-red-soft)' : 'var(--moss-soft)'}; border-color: ${isBlocked ? 'rgba(147, 197, 253, 0.3)' : 'var(--moss-soft)'};">
+          ${isBlocked ? 'BLOQUEADA' : 'LIMPIA'}
+        </span>
+      </div>
+      <div class="grave-details">
+        <span><strong>Red:</strong> ${network}</span>
+        <span><strong>Saldo:</strong> ${balance} USDT</span>
+        ${linkHtml}
+      </div>
+    </div>`;
+
+  graveList.innerHTML = card;
+  listInfo.textContent = `1 resultado (${network})`;
+  statTotal.textContent = '1';
+  statFrozen.textContent = balance;
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+}
 
     async function loadPage(page = 0, filterAddress = null) {
       if (isSearching) return;
