@@ -95,7 +95,29 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
 .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .grave-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.grave-card { background: var(--bg-deep); border-radius: 40px 40px 10px 10px; padding: 24px 16px 20px 16px; border: 1px solid var(--stone-light); border-top: 3px solid var(--grave-red); text-align: center; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+
+/* ── Tarjeta por defecto: lápida (bloqueada) ───────────── */
+.grave-card {
+  background: var(--bg-deep);
+  border-radius: 40px 40px 10px 10px;
+  padding: 24px 16px 20px 16px;
+  border: 1px solid var(--stone-light);
+  border-top: 3px solid var(--grave-red);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.grave-card.clean {
+  border-radius: 12px;
+  border-top: 3px solid var(--moss-soft);
+}
+.grave-card.compact {
+  border-radius: 12px;
+  border-top: 3px solid var(--grave-red);
+  padding: 16px 14px 14px 14px;
+}
 .grave-header { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 16px; }
 .grave-address { font-size: 13px; font-weight: 600; color: var(--grave-red-soft); word-break: break-all; max-width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .grave-address .tomb-icon { font-size: 24px; }
@@ -364,7 +386,7 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
           : '';
 
         html += `
-          <div class="grave-card">
+          <div class="grave-card compact">
             <span class="network-badge badge-tron">TRON</span>
             <div class="grave-header">
               <span class="grave-address" title="${item.blackAddress}"><span class="tomb-icon">🪦</span>${item.blackAddress}</span>
@@ -390,12 +412,15 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
     function renderIndividualResult(address, network, isBlocked, balance) {
       const badgeClass = network === 'Tron' ? 'badge-tron' : 'badge-eth';
       const badgeText = network === 'Tron' ? 'TRON' : 'ETH';
+      const icon = isBlocked ? '🪦' : '🍀';
+      const cardClass = isBlocked ? 'grave-card' : 'grave-card clean';
+      const borderColor = isBlocked ? 'var(--grave-red)' : 'var(--moss-soft)';
 
       const card = `
-        <div class="grave-card" style="border-top-color: ${isBlocked ? 'var(--grave-red)' : 'var(--moss-soft)'};">
+        <div class="${cardClass}" style="border-top-color: ${borderColor};">
           <span class="network-badge ${badgeClass}">${badgeText}</span>
           <div class="grave-header">
-            <span class="grave-address" title="${address}"><span class="tomb-icon">🪦</span>${address}</span>
+            <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
             <span class="grave-badge" style="color: ${isBlocked ? 'var(--grave-red-soft)' : 'var(--moss-soft)'}; border-color: ${isBlocked ? 'rgba(147, 197, 253, 0.3)' : 'var(--moss-soft)'};">
               ${isBlocked ? 'BLOQUEADA' : 'LIMPIA'}
             </span>
