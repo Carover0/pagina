@@ -18,11 +18,6 @@
   --grave-red-soft: #93c5fd;
   --text: #e2e8f0;
   --text-muted: #94a3b8;
-  
-  --text-muted-tx: #64748b;
-  --tron-red: #ff6b6b;
-  --energy-yellow: #fbbf24;
-  --burn-orange: #f97316;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -77,8 +72,6 @@ body {
 .content-col { flex: 1; min-width: 0; }
 
 h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); letter-spacing: 0.5px; word-break: break-word; text-align: left; }
-h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-rotate(180deg); }
-
 .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; line-height: 1.6; text-align: left; }
 
 .search-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -139,162 +132,11 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
 .modal p { font-size: 13px; line-height: 1.7; color: var(--bone-dim); margin-bottom: 12px; }
 .modal p strong { color: var(--bone); }
 
-.tx-modal {
-  background: var(--bg-deep);
-  border: 1px solid var(--tron-red);
-  border-radius: 14px;
-  max-width: 1000px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 0 30px rgba(255, 107, 107, 0.4), inset 0 0 15px rgba(255, 107, 107, 0.1), 0 20px 80px rgba(0, 0, 0, 0.9);
-  overflow: hidden;
-  height: max-content;
-  max-height: 90vh;
-  transition: height 0.3s ease, box-shadow 0.3s ease;
-}
-.tx-modal.raw-active {
-  height: 85vh;
-}
-
-.tx-modal .modal-close {
-  background: var(--bg-mid);
-  border-color: var(--stone-light);
-}
-
-.tx-app {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  padding-top: 50px; 
-  overflow: hidden;
-}
-
-.tx-app img {
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-
-.tx-top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-  color: var(--text-muted-tx);
-  flex-wrap: wrap;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.tx-top-bar .stats { display: flex; gap: 16px; text-transform: uppercase; letter-spacing: 0.5px; flex-wrap: wrap; }
-.tx-top-bar .stats span { color: var(--moss-soft); font-weight: bold; }
-
-.tx-header {
-  background: var(--bg-mid);
-  border: 1px solid var(--stone-light);
-  border-radius: 12px;
-  padding: 16px 20px;
-  flex-shrink: 0;
-}
-.tx-header h2 { font-size: 12px; color: var(--moss-soft); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-.tx-hash { font-size: 14px; color: var(--bone); word-break: break-all; display: flex; align-items: flex-start; gap: 8px; }
-.tx-hash .icon { color: var(--tron-red); flex-shrink: 0; margin-top: 2px; }
-.tx-hash .hash-text { flex: 1; word-break: break-all; }
-
-.tx-tabs { display: flex; border-bottom: 1px solid var(--stone-light); margin-top: 12px; }
-.tx-tab-btn { padding: 8px 16px; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text-muted-tx); font-family: inherit; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; }
-.tx-tab-btn:hover { color: var(--bone); }
-.tx-tab-btn.active { color: var(--moss-soft); border-bottom-color: var(--moss-soft); background: linear-gradient(to top, rgba(125,211,252,0.05), transparent); }
-
-.tx-tab-content { display: none; flex: 1; min-height: 0; overflow: hidden; }
-.tx-tab-content.active { display: flex; flex-direction: column; gap: 16px; }
-
-.exec-card {
-  background: var(--bg-mid);
-  border: 1px solid var(--stone);
-  border-radius: 10px;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-shrink: 0;
-}
-.exec-block { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.exec-block.right { align-items: flex-end; text-align: right; }
-.exec-label { font-size: 10px; color: var(--text-muted-tx); text-transform: uppercase; letter-spacing: 0.5px; }
-.exec-address { font-size: 12px; color: var(--moss-soft); word-break: break-all; }
-.exec-address a { color: inherit; text-decoration: none; }
-.exec-name { color: var(--bone); font-weight: bold; font-size: 13px; margin-top: 2px; }
-.exec-arrow { color: var(--moss-soft); font-size: 18px; background: rgba(125, 211, 252, 0.05); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--stone); flex-shrink: 0; }
-.tag { background: rgba(125, 211, 252, 0.1); border: 1px solid rgba(125, 211, 252, 0.2); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: var(--moss-soft); display: inline-block; }
-
-.overview-grid { 
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap: 16px; 
-  flex: 1; 
-  min-height: 0; 
-}
-
-.col-scroll { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; padding-right: 4px; }
-.col-scroll::-webkit-scrollbar { width: 6px; }
-.col-scroll::-webkit-scrollbar-thumb { background: rgba(125, 211, 252, 0.2); border-radius: 4px; }
-.col-scroll::-webkit-scrollbar-track { background: transparent; }
-
-.info-card { background: var(--bg-mid); border: 1px solid var(--stone); border-radius: 10px; overflow: hidden; flex-shrink: 0; }
-.info-card-header { background: rgba(56, 72, 97, 0.2); padding: 8px 12px; border-bottom: 1px solid var(--stone); font-size: 12px; color: var(--moss-soft); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
-.info-card-header .icon { font-size: 16px; line-height: 1; }
-.info-card-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-
-.info-row { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 6px; gap: 12px; }
-.info-row:last-child { border-bottom: none; padding-bottom: 0; }
-.info-row .key { color: var(--text-muted-tx); font-size: 11px; flex-shrink: 0; }
-.info-row .val { color: var(--bone); text-align: right; word-break: break-all; font-size: 12px; }
-.info-row .val a { color: var(--moss-soft); text-decoration: none; }
-
-.res-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
-.res-row:last-child { border-bottom: none; padding-bottom: 0; }
-.res-row .icon { font-size: 16px; margin-right: 6px; }
-.res-row .label { flex: 1; color: var(--bone-dim); font-size: 11px; }
-.res-row .value { font-weight: bold; font-size: 12px; color: var(--bone); text-align: right;}
-.res-row .sub { font-size: 9px; color: var(--text-muted-tx); display: block; font-weight: normal; }
-.highlight-burn { color: var(--burn-orange) !important; }
-.highlight-energy { color: var(--energy-yellow) !important; }
-
-.raw-container { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 16px; }
-.raw-box { flex: 1; display: flex; flex-direction: column; min-height: 0; background: var(--bg-mid); border: 1px solid var(--stone); border-radius: 10px; overflow: hidden; }
-.raw-header { padding: 8px 16px; background: rgba(56, 72, 97, 0.2); border-bottom: 1px solid var(--stone); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-.btn-copy-raw { background: rgba(125, 211, 252, 0.1); border: 1px solid var(--moss-soft); color: var(--moss-soft); padding: 2px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-family: inherit; transition: 0.2s; }
-.btn-copy-raw:hover { background: rgba(125, 211, 252, 0.2); }
-.code-block { flex: 1; min-height: 0; padding: 16px; font-family: 'Lucida Console', monospace; font-size: 12px; color: var(--bone-dim); white-space: pre-wrap; word-break: break-all; overflow-y: auto; }
-.code-block::-webkit-scrollbar { width: 6px; height: 6px; }
-.code-block::-webkit-scrollbar-thumb { background: rgba(125, 211, 252, 0.3); border-radius: 4px; }
-
-.tx-loading { display: flex; justify-content: center; align-items: center; height: 100%; font-size: 14px; color: var(--text-muted-tx); }
-
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 900px) {
   .grave-list { grid-template-columns: 1fr; }
   .empty-state { grid-column: span 1; }
-  .tx-modal { height: 95vh; max-height: 95vh; padding: 10px; }
-  .tx-app { padding: 10px; padding-top: 50px; gap: 10px; }
-  .overview-grid { grid-template-columns: 1fr; height: auto; }
-  .col-scroll { overflow-y: visible; }
-  .tx-tab-content { overflow: visible; flex: none; }
-  .raw-container { flex: none; height: 400px; }
-  .exec-card { flex-direction: column; align-items: stretch; text-align: center; }
-  .exec-block { align-items: center; }
-  .exec-block.right { align-items: center; }
-  .exec-arrow { transform: rotate(90deg); align-self: center; }
 }
 
 @media (max-width: 720px) {
@@ -316,9 +158,6 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
   .top-actions { top: 10px; right: 10px; }
   .top-link { display: none; }
   .grave-address { font-size: 11px; }
-  .tx-top-bar { flex-direction: column; align-items: flex-start; }
-  .info-row { flex-direction: column; gap: 4px; }
-  .info-row .val { text-align: left; }
 }
 </style>
 </head>
@@ -364,15 +203,6 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
     </div>
   </div>
 
-  <div class="modal-overlay" id="txOverlay">
-    <div class="tx-modal" id="txModalContainer" role="dialog" aria-modal="true">
-      <button class="modal-close" id="txClose" aria-label="Cerrar">✕</button>
-      <div class="tx-app" id="txApp">
-        <div class="tx-loading"><span class="spinner"></span> Cargando transacción...</div>
-      </div>
-    </div>
-  </div>
-
   <script>
     let lastX = 0, lastY = 0;
     document.addEventListener('mousemove', (e) => {
@@ -394,16 +224,13 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
 
     const TRONSCAN_API = 'https://apilist.tronscanapi.com/api/stableCoin/blackList';
     const USDT_TRON_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
-    const API_KEY = '764809a4-16b1-4f5a-9126-95efdc67c932'; 
+    const API_KEY = '764809a4-16b1-4f5a-9126-95efdc67c932';
     const USDT_ETH_CONTRACT = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
     const ETH_RPC = 'https://ethereum.publicnode.com';
     const TRON_RPC = 'https://api.trongrid.io';
     const TRON_SELECTOR_BLACKLIST = '0x59bf1abe';
     const TRON_SELECTOR_BALANCE = '0x70a08231';
-    
-    const PROXY_URL = 'https://carover0.xyz/api/tron/api.php';
-    const API_TOKEN = 'tron2026';
-    const TRX_ICON = '<img src="assets/tron.png" alt="TRX" onerror="this.style.display=\'none\'">';
+    const EXPLORER_BASE = 'https://carover0.github.io/pagina/texplorer/gettransaction%20';
 
     const LIMIT = 20;
     let currentPage = 0;
@@ -422,48 +249,17 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
     const infoBtn = document.getElementById('infoBtn');
     const infoOverlay = document.getElementById('infoOverlay');
     const infoClose = document.getElementById('infoClose');
-    
-    const txOverlay = document.getElementById('txOverlay');
-    const txModalContainer = document.getElementById('txModalContainer');
-    const txClose = document.getElementById('txClose');
-    const txApp = document.getElementById('txApp');
 
     function openInfo() { infoOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
     function closeInfo() { infoOverlay.classList.remove('open'); document.body.style.overflow = ''; }
-    function closeTx() { txOverlay.classList.remove('open'); txModalContainer.classList.remove('raw-active'); document.body.style.overflow = ''; }
 
     infoBtn.addEventListener('click', openInfo);
     infoClose.addEventListener('click', closeInfo);
     infoOverlay.addEventListener('click', (e) => { if (e.target === infoOverlay) closeInfo(); });
-    txClose.addEventListener('click', closeTx);
-    txOverlay.addEventListener('click', (e) => { if (e.target === txOverlay) closeTx(); });
-    
-    document.addEventListener('keydown', (e) => { 
-      if (e.key === 'Escape') {
-        if (infoOverlay.classList.contains('open')) closeInfo();
-        if (txOverlay.classList.contains('open')) closeTx();
-      }
-    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && infoOverlay.classList.contains('open')) closeInfo(); });
 
     function formatNumber(num) { if (!num) return '0'; return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
     function formatDate(timestamp) { if (!timestamp) return '—'; const d = new Date(timestamp * 1000); return d.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
-    function formatDateTx(ts) { if (!ts) return '—'; return new Date(ts).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'medium' }); }
-    function formatAmount(raw, decimals = 6) { if (!raw) return '0.00'; return (parseInt(raw) / Math.pow(10, decimals)).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: decimals }); }
-    function decodeParams(dataHex) { if (!dataHex || dataHex.length < 10) return null; const methodId = dataHex.substring(0, 8); const paramsHex = dataHex.substring(8); let params = []; for (let i = 0; i < paramsHex.length; i += 64) { let chunk = paramsHex.substring(i, i + 64); if (chunk.length === 64) params.push(BigInt('0x' + chunk).toString()); } return { methodId: '0x' + methodId, params }; }
-    window.copyRaw = function(elementId) { const text = document.getElementById(elementId).innerText; navigator.clipboard.writeText(text).then(() => alert('Copiado al portapapeles')); };
-    
-    window.switchTab = function(e, tabId) { 
-      document.querySelectorAll('.tx-tab-btn').forEach(btn => btn.classList.remove('active')); 
-      document.querySelectorAll('.tx-tab-content').forEach(content => content.classList.remove('active')); 
-      e.target.classList.add('active'); 
-      document.getElementById('tx-tab-' + tabId).classList.add('active'); 
-      
-      if (tabId === 'raw') {
-        txModalContainer.classList.add('raw-active');
-      } else {
-        txModalContainer.classList.remove('raw-active');
-      }
-    }
 
     function buildTronApiUrl(start, blackAddress = null) {
       let url = `${TRONSCAN_API}?tokenAddress=${USDT_TRON_CONTRACT}&sort=2&direction=2&start=${start}&limit=${LIMIT}`;
@@ -508,7 +304,7 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
       const reqBalance = { owner_address: USDT_TRON_CONTRACT, contract_address: USDT_TRON_CONTRACT, function_selector: 'balanceOf(address)', parameter: paddedParam, visible: true };
       const resBalance = await fetch(`${TRON_RPC}/wallet/triggerconstantcontract`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBalance) });
       const jsonBalance = await resBalance.json();
-      
+
       let balance = '—';
       if (jsonBalance.constant_result && jsonBalance.constant_result[0]) {
         const raw = BigInt('0x' + jsonBalance.constant_result[0]);
@@ -520,10 +316,9 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
     }
 
     async function checkEthBlacklist(address) {
-      const selector = TRON_SELECTOR_BLACKLIST;
       const cleanAddress = address.toLowerCase().replace('0x', '');
       const paddedAddress = cleanAddress.padStart(64, '0');
-      const data = selector + paddedAddress;
+      const data = TRON_SELECTOR_BLACKLIST + paddedAddress;
       const reqBody = { jsonrpc: '2.0', method: 'eth_call', params: [{ to: USDT_ETH_CONTRACT, data: data }, 'latest'], id: 1 };
       const response = await fetch(ETH_RPC, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
       const json = await response.json();
@@ -533,15 +328,14 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
     }
 
     async function checkEthBalance(address) {
-      const selector = TRON_SELECTOR_BALANCE;
       const cleanAddress = address.toLowerCase().replace('0x', '');
       const paddedAddress = cleanAddress.padStart(64, '0');
-      const data = selector + paddedAddress;
+      const data = TRON_SELECTOR_BALANCE + paddedAddress;
       const reqBody = { jsonrpc: '2.0', method: 'eth_call', params: [{ to: USDT_ETH_CONTRACT, data: data }, 'latest'], id: 2 };
       const response = await fetch(ETH_RPC, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
       const json = await response.json();
       if (json.error) throw new Error(json.error.message);
-      
+
       let balance = '—';
       if (json.result && json.result !== '0x' + '0'.repeat(64)) {
         const raw = BigInt(json.result);
@@ -563,9 +357,11 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
       let html = '', sumFrozen = 0;
       data.forEach(item => {
         const amount = parseFloat(item.num) || 0; sumFrozen += amount;
-        const date = formatDate(item.time); const hash = item.transHash || '';
-        
-        const txLink = hash ? `<span><a onclick="openTransactionModal('${hash}')">Ver transacción ↗</a></span>` : '';
+        const date = formatDate(item.time);
+        const hash = item.transHash || '';
+        const txLink = hash
+          ? `<span><a href="${EXPLORER_BASE}${encodeURIComponent(hash)}" target="_blank" rel="noopener">Ver transacción ↗</a></span>`
+          : '';
 
         html += `
           <div class="grave-card">
@@ -594,7 +390,7 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
     function renderIndividualResult(address, network, isBlocked, balance) {
       const badgeClass = network === 'Tron' ? 'badge-tron' : 'badge-eth';
       const badgeText = network === 'Tron' ? 'TRON' : 'ETH';
-      
+
       const card = `
         <div class="grave-card" style="border-top-color: ${isBlocked ? 'var(--grave-red)' : 'var(--moss-soft)'};">
           <span class="network-badge ${badgeClass}">${badgeText}</span>
@@ -610,7 +406,7 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
             <span><a href="${network === 'Tron' ? 'https://tronscan.org/#/address/' : 'https://etherscan.io/address/'}${address}" target="_blank" rel="noopener">Ver en Explorador ↗</a></span>
           </div>
         </div>`;
-      
+
       graveList.innerHTML = card;
       listInfo.textContent = `1 resultado (${network})`;
       statTotal.textContent = '1';
@@ -650,211 +446,19 @@ h1 img { max-width: 100%; height: auto; filter: grayscale(0.5) sepia(0.2) hue-ro
       } catch (err) {
         graveList.innerHTML = `<div class="empty-state" style="color: var(--grave-red-soft);">Error: ${err.message}</div>`;
         listInfo.textContent = 'Error';
-      } finally { 
-        searchBtn.disabled = false; 
+      } finally {
+        searchBtn.disabled = false;
         isSearching = false;
       }
     }
 
     prevBtn.addEventListener('click', () => { if (currentPage > 0) loadPage(currentPage - 1); });
     nextBtn.addEventListener('click', () => { const maxPage = Math.ceil(totalRecords / LIMIT) - 1; if (currentPage < maxPage) loadPage(currentPage + 1); });
-    searchBtn.addEventListener('click', () => { 
-      const addr = searchInput.value.trim(); 
-      if (addr) { loadPage(0, addr); } else { loadPage(0); } 
+    searchBtn.addEventListener('click', () => {
+      const addr = searchInput.value.trim();
+      if (addr) { loadPage(0, addr); } else { loadPage(0); }
     });
     searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { searchBtn.click(); } });
-
-    window.openTransactionModal = async function(hash) {
-      txOverlay.classList.add('open');
-      txModalContainer.classList.remove('raw-active');
-      document.body.style.overflow = 'hidden';
-      txApp.innerHTML = '<div class="tx-loading"><span class="spinner"></span> Cargando transacción...</div>';
-      
-      try {
-        const res = await fetch(`${PROXY_URL}?token=${API_TOKEN}&cmd=gettransaction&hash=${hash}`);
-        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
-        if (!data.result) throw new Error('No se encontraron datos para esta transacción.');
-
-        renderTransactionInModal(data.result);
-      } catch (err) {
-        txApp.innerHTML = `<div class="tx-loading" style="color:var(--tron-red)">Error: ${err.message}</div>`;
-      }
-    }
-
-    function renderTransactionInModal(data) {
-      const hash = data.hash || (data.tx && data.tx.txID) || '—';
-      const scan = data.scan || {};
-      const tx = data.tx || {};
-      const info = data.info || {};
-      
-      const contractType = tx.raw_data?.contract?.[0]?.type || 'Unknown';
-      const contractInfo = scan.contractInfo || {};
-      const confirmations = scan.confirmations || 0;
-      const timestamp = scan.timestamp || tx.raw_data?.timestamp;
-      const block = scan.block;
-      
-      let fromAddr = scan.ownerAddress || '—';
-      let toAddr = scan.toAddress || '—';
-      let methodName = '';
-      let contractTag = '';
-      let contractName = '';
-
-      if (contractType === 'TriggerSmartContract') {
-        if (scan.trigger_info) {
-          methodName = scan.trigger_info.method;
-          toAddr = scan.trigger_info.contract_address;
-        }
-        if (contractInfo[toAddr]?.tag1) contractTag = `<span class="tag">${contractInfo[toAddr].tag1}</span>`;
-        contractName = contractInfo[toAddr]?.name || 'Smart Contract';
-      }
-
-      const energyUsage = info.receipt?.energy_usage_total || scan.cost?.energy_usage_total || 0;
-      const energyFee = info.receipt?.energy_fee || scan.cost?.energy_fee || 0;
-      const energyPenalty = info.receipt?.energy_penalty_total || scan.cost?.energy_penalty_total || 0;
-      const bwUsage = info.receipt?.net_usage || scan.cost?.net_usage || 0;
-      const bwFee = info.receipt?.net_fee || scan.cost?.net_fee || 0;
-      const totalFee = formatAmount(info.fee || 0);
-
-      let paramHtml = '';
-      const contractDataHex = tx.raw_data?.contract?.[0]?.parameter?.value?.data;
-      if (contractDataHex) {
-        const decoded = decodeParams(contractDataHex);
-        if (decoded && decoded.params.length > 0) {
-          paramHtml = `
-            <div class="info-card">
-              <div class="info-card-header">Parámetros Decodificados</div>
-              <div class="info-card-body">
-                <div class="info-row"><span class="key">Method ID</span><span class="val">${decoded.methodId}</span></div>
-                ${decoded.params.map((p, i) => `<div class="info-row"><span class="key">Param ${i}</span><span class="val" style="color: var(--moss-soft); font-weight: bold;">${p}</span></div>`).join('')}
-              </div>
-            </div>
-          `;
-        }
-      }
-
-      const html = `
-        <div class="tx-top-bar">
-          <div class="stats">
-            <div>ALTURA <span>${block}</span></div>
-            <div>CONFIRMACIONES <span>${confirmations}</span></div>
-            <div>ESTADO <span style="color: ${scan.confirmed ? 'var(--moss-soft)' : 'var(--tron-red)'};">${scan.confirmed ? 'CONFIRMADA' : 'PENDIENTE'}</span></div>
-          </div>
-        </div>
-
-        <div class="tx-header">
-          <h2>Detalle de Transacción</h2>
-          <div class="tx-hash">
-            <span class="icon">►</span> 
-            <span class="hash-text">${hash}</span>
-          </div>
-          <div class="tx-tabs">
-            <button class="tx-tab-btn active" onclick="switchTab(event, 'overview')">Overview</button>
-            <button class="tx-tab-btn" onclick="switchTab(event, 'raw')">Datos RAW</button>
-          </div>
-        </div>
-
-        <div id="tx-tab-overview" class="tx-tab-content active">
-          
-          <div class="exec-card">
-            <div class="exec-block">
-              <span class="exec-label">Emisor (From)</span>
-              <span class="exec-address"><a href="https://tronscan.org/#/address/${fromAddr}" target="_blank">${fromAddr}</a></span>
-            </div>
-            <div class="exec-arrow">➔</div>
-            <div class="exec-block right">
-              <span class="exec-label">Contrato (To)</span>
-              <span class="exec-address"><a href="https://tronscan.org/#/address/${toAddr}" target="_blank">${toAddr}</a></span>
-              <span class="exec-name">${contractName} ${contractTag}</span>
-            </div>
-          </div>
-
-          <div class="overview-grid">
-            
-            <div class="col-scroll">
-              <div class="info-card">
-                <div class="info-card-header">Información General</div>
-                <div class="info-card-body">
-                  <div class="info-row"><span class="key">Bloque</span><span class="val"><a href="https://tronscan.org/#/block/${block}" target="_blank">#${block}</a></span></div>
-                  <div class="info-row"><span class="key">Fecha</span><span class="val">${formatDateTx(timestamp)}</span></div>
-                  <div class="info-row"><span class="key">Tipo</span><span class="val">${contractType}</span></div>
-                  <div class="info-row"><span class="key">Método</span><span class="val" style="color: var(--moss-soft); font-weight: bold;">${methodName || 'Transferencia'}</span></div>
-                  <div class="info-row"><span class="key">Estado</span><span class="val" style="color: ${scan.confirmed ? 'var(--moss-soft)' : 'var(--tron-red)'};">${scan.confirmed ? 'Confirmada' : 'Fallida'}</span></div>
-                </div>
-              </div>
-              ${paramHtml}
-            </div>
-
-            <div class="col-scroll">
-              <div class="info-card">
-                <div class="info-card-header">Recursos</div>
-                <div class="info-card-body">
-                  <div class="res-row">
-                    <span class="icon">⚡</span>
-                    <div class="label">Energía</div>
-                    <div class="value highlight-energy">${energyUsage} units</div>
-                  </div>
-                  <div class="res-row">
-                    <span class="icon">🌐</span>
-                    <div class="label">Banda</div>
-                    <div class="value">${bwUsage} bytes</div>
-                  </div>
-                  ${energyPenalty > 0 ? `
-                  <div class="res-row">
-                    <span class="icon" style="color: var(--tron-red);">⚠️</span>
-                    <div class="label">Penalización</div>
-                    <div class="value">${energyPenalty}</div>
-                  </div>
-                  ` : ''}
-                </div>
-              </div>
-
-              <div class="info-card">
-                <div class="info-card-header"><span class="icon">🔥</span> Comisión (Fee)</div>
-                <div class="info-card-body">
-                  <div class="res-row">
-                    <div class="label">TRX Quemado</div>
-                    <div class="value">${TRX_ICON}${totalFee} TRX</div>
-                  </div>
-                  <div class="res-row">
-                    <div class="label">Energía</div>
-                    <div class="value">${TRX_ICON}${formatAmount(energyFee)}</div>
-                  </div>
-                  <div class="res-row">
-                    <div class="label">Banda</div>
-                    <div class="value">${TRX_ICON}${formatAmount(bwFee)}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-        <div id="tx-tab-raw" class="tx-tab-content">
-          <div class="raw-container">
-            <div class="raw-box">
-              <div class="raw-header">
-                <span style="font-size: 11px; color: var(--moss-soft); font-weight: bold;">TronGrid API</span>
-                <button class="btn-copy-raw" onclick="copyRaw('raw-tx')">Copiar JSON</button>
-              </div>
-              <div class="code-block" id="raw-tx">${JSON.stringify(tx, null, 2)}</div>
-            </div>
-
-            <div class="raw-box">
-              <div class="raw-header">
-                <span style="font-size: 11px; color: var(--moss-soft); font-weight: bold;">TronScan API</span>
-                <button class="btn-copy-raw" onclick="copyRaw('raw-scan')">Copiar JSON</button>
-              </div>
-              <div class="code-block" id="raw-scan">${JSON.stringify(scan, null, 2)}</div>
-            </div>
-          </div>
-        </div>
-      `;
-      txApp.innerHTML = html;
-    }
 
     loadPage(0);
   </script>
