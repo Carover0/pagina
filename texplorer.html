@@ -103,6 +103,7 @@ body {
 }
 .output-wrapper::-webkit-scrollbar { width:6px; }
 .output-wrapper::-webkit-scrollbar-thumb { background:#ccc; border-radius:10px; }
+
 #output { font-family:'Lucida Console','Courier New',monospace; font-size:13px; line-height:1.7; color:#000000; }
 #output .cmd-line { display:flex; align-items:center; gap:10px; color:#000000; font-size:14px; padding-bottom:10px; border-bottom:1px solid #eee; margin-bottom:14px; }
 #output .cmd-line .tag { background:#f0f0f0; padding:2px 14px; border-radius:16px; font-size:11px; color:#000000; border:1px solid #e5e5e5; }
@@ -111,8 +112,6 @@ body {
 #output .row .key { color:#888; font-size:12px; min-width:110px; }
 #output .row .val { color:#000000; word-break:break-all; }
 #output .row .val.gold { color:#000000; font-weight:500; }
-#output .row .val .link { color:#000000; text-decoration:none; border-bottom:1px solid #ccc; padding-bottom:1px; word-break:break-all; cursor:pointer; }
-#output .row .val .link:hover { border-bottom-color:#FF060A; }
 #output .divider { height:1px; background:#eee; margin:12px 0; }
 #output .tx-hero { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:12px 14px; background:#fafafa; border:1px solid #eee; border-radius:10px; margin-bottom:14px; font-size:15px; }
 #output .tx-hero .addr { color:#000000; cursor:pointer; border-bottom:1px solid #ccc; }
@@ -131,13 +130,30 @@ body {
 #output .tx-item .txid-link { color:#000000; text-decoration:none; font-size:13px; word-break:break-all; border-bottom:1px solid #ccc; cursor:pointer; }
 #output .tx-item .txid-link:hover { border-bottom-color:#FF060A; }
 #output .tx-item .tx-meta { display:flex; flex-wrap:wrap; gap:2px 18px; font-size:12px; color:#888; margin-top:2px; }
-#output .copy-btn { margin-top:16px; background:#ffffff; border:1px solid #ddd; color:#000000; font-family:'Lucida Console',monospace; font-size:12px; padding:7px 22px; border-radius:24px; cursor:pointer; }
-#output .copy-btn:hover { background:#f0f0f0; border-color:#bbb; }
 #output .placeholder { color:#888; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:200px; gap:10px; }
 #output .placeholder .sub { font-size:13px; color:#aaa; }
 #output .loading { display:flex; align-items:center; gap:12px; color:#888; padding:20px 0; }
 #output .loading .spinner { display:inline-block; width:18px; height:18px; border:2px solid #eee; border-top-color:#FF060A; border-radius:50%; animation:spin .6s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
+
+#output span.link,
+#output .param-table span.link,
+#output .param-table td span.link,
+#output .row .val span.link {
+  color:#000 !important;
+  text-decoration:none !important;
+  border-bottom:1px solid #ccc !important;
+  cursor:pointer !important;
+  font-weight:600 !important;
+  word-break:break-all;
+  display:inline;
+}
+#output span.link:hover,
+#output .param-table span.link:hover,
+#output .row .val span.link:hover { border-bottom-color:#FF060A !important; }
+
+#output .param-table a { color:#000; text-decoration:none; border-bottom:1px solid #ccc; }
+#output .param-table a:hover { border-bottom-color:#FF060A; }
 
 #output .token-badge { display:inline-flex; align-items:center; gap:7px; background:#ffffff; border:1px solid #000000; border-radius:20px; padding:2px 12px 2px 3px; font-size:12px; color:#000000; vertical-align:middle; max-width:100%; }
 #output .token-badge .sym { font-weight:700; letter-spacing:.4px; color:#000000; }
@@ -153,19 +169,17 @@ body {
 #output .param-table th, #output .param-table td { text-align:left; padding:6px 8px; border-bottom:1px solid #eee; vertical-align:top; word-break:break-all; }
 #output .param-table th { color:#888; font-weight:400; font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
 #output .param-table td { color:#000000; }
-#output .param-table a { color:#000000; text-decoration:none; border-bottom:1px solid #ccc; }
-#output .param-table a:hover { border-bottom-color:#FF060A; }
 #output .icon-inline { display:inline-flex; align-items:center; gap:4px; vertical-align:middle; }
 #output .icon-inline .ico { font-size:14px; line-height:1; }
-
-.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:#000000; color:#ffffff; padding:10px 28px; border-radius:40px; border:1px solid #333; font-family:'Lucida Console',monospace; font-size:12px; opacity:0; transition:all .4s cubic-bezier(0.16,1,0.3,1); pointer-events:none; z-index:999; }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
 #output .tx-item .token-badge { background:#f7f7f7; border:1px solid #e5e5e5; padding:2px 10px 2px 3px; font-size:12px; gap:6px; }
 #output .tx-item .token-badge .sym  { font-size:12px; }
 #output .tx-item .token-badge .name { font-size:11px; color:#999; }
 #output .tx-item .token-badge .tok-logo,
 #output .tx-item .token-badge .tok-fallback { width:22px; height:22px; font-size:11px; }
+
+.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:#000000; color:#ffffff; padding:10px 28px; border-radius:40px; border:1px solid #333; font-family:'Lucida Console',monospace; font-size:12px; opacity:0; transition:all .4s cubic-bezier(0.16,1,0.3,1); pointer-events:none; z-index:999; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
 .modal-overlay {
   position:fixed; inset:0; background:rgba(0,0,0,0.5);
@@ -186,11 +200,46 @@ body {
   color:#555; cursor:pointer; font-size:14px;
   display:flex; align-items:center; justify-content:center;
   transition:background .2s;
+  z-index:2;
 }
 .modal-close:hover { background:#f0f0f0; color:#000; }
 .modal h2 { font-size:16px; font-weight:400; margin-bottom:14px; color:#000; letter-spacing:.5px; }
 .modal p { font-size:13px; line-height:1.7; color:#333; margin-bottom:10px; }
 .modal p strong { color:#000; font-weight:600; }
+
+#tokenModalBody .tok-header {
+  display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  padding-top:8px;
+  padding-bottom:16px; border-bottom:1px solid #eee;
+}
+#tokenModalBody .tok-header img,
+#tokenModalBody .tok-header .tok-fallback {
+  width:48px; height:48px; border-radius:50%; object-fit:cover;
+  background:#f0f0f0; border:1px solid #ddd; flex-shrink:0;
+}
+#tokenModalBody .tok-header .tok-fallback {
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:700; color:#FF060A;
+}
+#tokenModalBody .tok-header .tok-title { display:flex; flex-direction:column; gap:4px; min-width:0; flex:1; }
+#tokenModalBody .tok-header .tok-title-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+#tokenModalBody .tok-header .tok-symbol { font-size:16px; font-weight:700; color:#000; letter-spacing:.4px; }
+#tokenModalBody .tok-header .tok-name { font-size:12px; color:#888; word-break:break-all; }
+#tokenModalBody .tok-header .tok-type {
+  font-size:10px; background:#f0f0f0; border:1px solid #e5e5e5;
+  border-radius:10px; padding:1px 8px; color:#555;
+  flex-shrink:0;
+}
+#tokenModalBody .tok-row {
+  display:flex; justify-content:space-between; align-items:baseline;
+  gap:12px; padding:6px 0; border-bottom:1px dashed #eee;
+  font-size:12px;
+}
+#tokenModalBody .tok-row:last-child { border-bottom:none; }
+#tokenModalBody .tok-row .key { color:#888; flex-shrink:0; }
+#tokenModalBody .tok-row .val { color:#000; text-align:right; word-break:break-all; }
+#tokenModalBody .tok-row .val .link { color:#000; text-decoration:none; border-bottom:1px solid #ccc; cursor:pointer; }
+#tokenModalBody .tok-row .val .link:hover { border-bottom-color:#FF060A; }
 
 @media (max-width: 720px) {
   .app { padding:6px 8px; gap:4px; }
@@ -216,7 +265,6 @@ body {
   #output .row .val { font-size:12px; }
 }
 </style>
-  
 </head>
 <body>
 <div class="app">
@@ -236,9 +284,9 @@ body {
     <span class="back-btn" id="backBtn" onclick="goBack()">← volver</span>
     <a href="https://carover0.github.io/pagina/">[INICIO]</a>
     <a href="https://carover0.github.io/pagina/cementerio.html">[CEMENTERIO DE ESTABLES]</a>
-<button class="info-btn" id="infoBtn" aria-label="Info" title="Acerca de">
-  <img src="assets/info.png" alt="info" onerror="this.style.display='none'">
-</button>
+    <button class="info-btn" id="infoBtn" aria-label="Info" title="Acerca de">
+      <img src="assets/info.png" alt="info" onerror="this.style.display='none'">
+    </button>
   </nav>
 </header>
 
@@ -247,9 +295,6 @@ body {
   <div class="search-section">
     <span class="prompt">►</span>
     <input type="text" id="searchInput" placeholder="bloque · txid · dirección TRON" autofocus spellcheck="false">
-    <div class="shortcuts">
-      <kbd>F8</kbd> copiar <kbd>F9</kbd> limpiar
-    </div>
   </div>
 </div>
 
@@ -262,6 +307,7 @@ body {
       </div>
     </div>
   </div>
+</div>
 
 <div class="modal-overlay" id="infoOverlay">
   <div class="modal" role="dialog" aria-modal="true">
@@ -274,6 +320,16 @@ body {
     </p>
   </div>
 </div>
+
+<div class="modal-overlay" id="tokenOverlay">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:600px;">
+    <button class="modal-close" id="tokenClose" aria-label="Cerrar">✕</button>
+    <div id="tokenModalBody">
+      <div class="loading"><span class="spinner"></span> consultando token…</div>
+    </div>
+  </div>
+</div>
+
 
 <script>
 const API_URL = "https://carover0.xyz/api/tron/api.php";
@@ -295,7 +351,6 @@ const TRC20 = {
 
 function escapeHtml(t){ if(!t) return ''; return String(t).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
 function makeLink(text, cls){ if(!text) return ''; return `<span class="link ${cls||''}" onclick="navigateTo('${encodeURIComponent(text)}')">${escapeHtml(text)}</span>`; }
-function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }
 
 const B58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 async function hexToTronAsync(hex40){
@@ -579,6 +634,8 @@ async function renderTx(tx, info, scan){
     tok = { name:'TRON', symbol:'TRX', decimals:6, icon:'https://static.tronscan.org/production/logo/trx.png' };
   }
 
+  const isTRC20 = tok && tok.symbol !== '?' && tok.name !== 'TRC20' && tok.name !== 'Contrato';
+
   let html = '';
   if (amountHuman !== null && tok) {
     html += `<div class="tx-hero">
@@ -591,12 +648,15 @@ async function renderTx(tx, info, scan){
   } else if (type === 'TriggerSmartContract' && (value.data || scan?.trigger_info?.method)) {
     const methodFull = scan?.trigger_info?.method || (value.data ? '0x' + value.data.slice(0, 8) : 'call');
     const methodShort = methodFull.length > 28 ? methodFull.split('(')[0] + '(...)' : methodFull;
+    const contractAction = isTRC20
+      ? `openTokenInfo('${encodeURIComponent(contractAddr||'')}')`
+      : `navigateTo('${encodeURIComponent(contractAddr||'')}')`;
     html += `<div class="tx-hero">
       <span class="addr" onclick="navigateTo('${encodeURIComponent(fromAddr||'')}')">${escapeHtml(fromAddr||'—')}</span>
       <span>llamó</span>
       <span class="amount" style="font-size:14px; font-weight:500;" title="${escapeHtml(methodFull)}">${escapeHtml(methodShort)}</span>
       <span class="arrow">en</span>
-      <span class="addr" onclick="navigateTo('${encodeURIComponent(contractAddr||'')}')">${escapeHtml(contractAddr||'—')}</span>
+      <span class="addr" onclick="${contractAction}">${escapeHtml(contractAddr||'—')}</span>
     </div>`;
   } else {
     html += `<div class="cmd-line"><span class="tag">TX</span> ${escapeHtml(contractTypeLabel(type))} <span class="op-badge ${isOk?'ok':'fail'}">${ret}</span></div>`;
@@ -612,8 +672,13 @@ async function renderTx(tx, info, scan){
   ov += `<div class="row"><span class="key">Type</span><span class="val">${escapeHtml(contractTypeLabel(type))}</span></div>`;
   if (fromAddr) ov += `<div class="row"><span class="key">Owner</span><span class="val">${makeLink(fromAddr)}</span></div>`;
   if (contractAddr) {
-    const chip = tok ? tokenChip(tok) : '';
-    ov += `<div class="row"><span class="key">Contract</span><span class="val">${chip} ${makeLink(contractAddr)}</span></div>`;
+    let cell;
+    if (isTRC20) {
+      cell = `<span class="link" onclick="openTokenInfo('${encodeURIComponent(contractAddr)}')">${tokenChip(tok)}</span>`;
+    } else {
+      cell = makeLink(contractAddr);
+    }
+    ov += `<div class="row"><span class="key">Contract</span><span class="val">${cell}</span></div>`;
   }
   html += section('Overview', ov, true);
 
@@ -696,8 +761,8 @@ async function renderTx(tx, info, scan){
 
   let rf = '';
   if (info.fee) rf += `<div class="row"><span class="key">Fee</span><span class="val">${(info.fee/1e6).toFixed(6)} TRX</span></div>`;
-  if (info.receipt?.energy_fee) rf += `<div class="row"><span class="key"><span class="icon-inline"><span class="ico">⚡</span> Energy fee</span></span><span class="val">${(info.receipt.energy_fee/1e6).toFixed(6)} TRX</span></div>`;
-  if (info.receipt?.energy_usage_total) rf += `<div class="row"><span class="key"><span class="icon-inline"><span class="ico">⚡</span> Energy</span></span><span class="val">${info.receipt.energy_usage_total}</span></div>`;
+  if (info.receipt?.energy_fee) rf += `<div class="row"><span class="key"><span class="icon-inline"><span class="ico">☢️</span> Energy fee</span></span><span class="val">${(info.receipt.energy_fee/1e6).toFixed(6)} TRX</span></div>`;
+  if (info.receipt?.energy_usage_total) rf += `<div class="row"><span class="key"><span class="icon-inline"><span class="ico">☢️</span> Energy</span></span><span class="val">${info.receipt.energy_usage_total}</span></div>`;
   if (info.receipt?.net_usage) rf += `<div class="row"><span class="key"><span class="icon-inline"><span class="ico">🌐</span> Bandwidth</span></span><span class="val">${info.receipt.net_usage}</span></div>`;
   if (info.receipt?.net_fee) rf += `<div class="row"><span class="key">Net fee</span><span class="val">${(info.receipt.net_fee/1e6).toFixed(6)} TRX</span></div>`;
   if (info.contractResult !== undefined) {
@@ -755,7 +820,6 @@ async function renderTx(tx, info, scan){
     html += section('Confirmed SRs', sr, false);
   }
 
-  html += `<button class="copy-btn" onclick="copyResult()">copiar resultado</button>`;
   renderOutput(html);
 }
 
@@ -804,7 +868,6 @@ async function renderBlock(b){
     </div>`;
   }
   if(txs.length>maxShow) html += `<div style="color:#555;font-size:12px;">… y ${txs.length-maxShow} más</div>`;
-  html += `<button class="copy-btn" onclick="copyResult()">copiar resultado</button>`;
   renderOutput(html);
 }
 
@@ -814,7 +877,6 @@ async function renderAccount(addr, acc, resources){
 
   if (!acc || Object.keys(acc).length === 0) {
     html += `<div style="color:#555;">Cuenta no activada o sin fondos.</div>`;
-    html += `<button class="copy-btn" onclick="copyResult()">copiar resultado</button>`;
     renderOutput(html);
     return;
   }
@@ -826,38 +888,38 @@ async function renderAccount(addr, acc, resources){
   if (acc.allowance) ov += `<div class="row"><span class="key">Unclaimed rewards</span><span class="val">${(acc.allowance/1e6).toFixed(6)} TRX</span></div>`;
   html += section('Overview', ov, true);
 
-const ar  = acc.account_resource || {};
-const fv2 = Array.isArray(acc.frozenV2) ? acc.frozenV2 : [];
-let r = '';
+  const ar  = acc.account_resource || {};
+  const fv2 = Array.isArray(acc.frozenV2) ? acc.frozenV2 : [];
+  let r = '';
 
-if (resources.EnergyLimit !== undefined && resources.EnergyLimit > 0) {
-  const used = resources.EnergyUsed || 0;
-  const avail = Math.max(0, resources.EnergyLimit - used);
-  r += `<div class="row"><span class="key">Energy</span><span class="val">${avail.toLocaleString()} / ${resources.EnergyLimit.toLocaleString()}</span></div>`;
-}
-if (resources.NetLimit !== undefined && resources.NetLimit > 0) {
-  const used = resources.NetUsed || 0;
-  const avail = Math.max(0, resources.NetLimit - used);
-  r += `<div class="row"><span class="key">Bandwidth</span><span class="val">${avail.toLocaleString()} / ${resources.NetLimit.toLocaleString()}</span></div>`;
-}
-if (resources.freeNetLimit !== undefined && resources.freeNetLimit > 0) {
-  const used = resources.freeNetUsed || 0;
-  const avail = Math.max(0, resources.freeNetLimit - used);
-  r += `<div class="row"><span class="key">Free Bandwidth</span><span class="val">${avail.toLocaleString()} / ${resources.freeNetLimit.toLocaleString()}</span></div>`;
-}
+  if (resources.EnergyLimit !== undefined && resources.EnergyLimit > 0) {
+    const used = resources.EnergyUsed || 0;
+    const avail = Math.max(0, resources.EnergyLimit - used);
+    r += `<div class="row"><span class="key">Energy</span><span class="val">${avail.toLocaleString()} / ${resources.EnergyLimit.toLocaleString()}</span></div>`;
+  }
+  if (resources.NetLimit !== undefined && resources.NetLimit > 0) {
+    const used = resources.NetUsed || 0;
+    const avail = Math.max(0, resources.NetLimit - used);
+    r += `<div class="row"><span class="key">Bandwidth</span><span class="val">${avail.toLocaleString()} / ${resources.NetLimit.toLocaleString()}</span></div>`;
+  }
+  if (resources.freeNetLimit !== undefined && resources.freeNetLimit > 0) {
+    const used = resources.freeNetUsed || 0;
+    const avail = Math.max(0, resources.freeNetLimit - used);
+    r += `<div class="row"><span class="key">Free Bandwidth</span><span class="val">${avail.toLocaleString()} / ${resources.freeNetLimit.toLocaleString()}</span></div>`;
+  }
 
-for (const f of fv2) {
-  const t = f.type || 'BANDWIDTH';
-  const label = t === 'ENERGY' ? 'Staked ⚡' : t === 'TRON_POWER' ? 'TRON Power' : 'Staked 🌐';
-  if (f.frozen_balance) r += `<div class="row"><span class="key">${label}</span><span class="val">${(f.frozen_balance/1e6).toFixed(6)} TRX</span></div>`;
-}
+  for (const f of fv2) {
+    const t = f.type || 'BANDWIDTH';
+    const label = t === 'ENERGY' ? 'Staked ☢️' : t === 'TRON_POWER' ? 'TRON Power' : 'Staked 🌐';
+    if (f.frozen_balance) r += `<div class="row"><span class="key">${label}</span><span class="val">${(f.frozen_balance/1e6).toFixed(6)} TRX</span></div>`;
+  }
 
-if (acc.delegated_frozenV2_balance_for_bandwidth) r += `<div class="row"><span class="key">Delegated out 🌐</span><span class="val">${(acc.delegated_frozenV2_balance_for_bandwidth/1e6).toFixed(6)} TRX</span></div>`;
-if (acc.acquired_delegated_frozenV2_balance_for_bandwidth) r += `<div class="row"><span class="key">Delegated in 🌐</span><span class="val">${(acc.acquired_delegated_frozenV2_balance_for_bandwidth/1e6).toFixed(6)} TRX</span></div>`;
-if (ar.delegated_frozenV2_balance_for_energy) r += `<div class="row"><span class="key">Delegated out ⚡</span><span class="val">${(ar.delegated_frozenV2_balance_for_energy/1e6).toFixed(6)} TRX</span></div>`;
-if (ar.acquired_delegated_frozenV2_balance_for_energy) r += `<div class="row"><span class="key">Delegated in ⚡</span><span class="val">${(ar.acquired_delegated_frozenV2_balance_for_energy/1e6).toFixed(6)} TRX</span></div>`;
+  if (acc.delegated_frozenV2_balance_for_bandwidth) r += `<div class="row"><span class="key">Delegated out 🌐</span><span class="val">${(acc.delegated_frozenV2_balance_for_bandwidth/1e6).toFixed(6)} TRX</span></div>`;
+  if (acc.acquired_delegated_frozenV2_balance_for_bandwidth) r += `<div class="row"><span class="key">Delegated in 🌐</span><span class="val">${(acc.acquired_delegated_frozenV2_balance_for_bandwidth/1e6).toFixed(6)} TRX</span></div>`;
+  if (ar.delegated_frozenV2_balance_for_energy) r += `<div class="row"><span class="key">Delegated out ☢️</span><span class="val">${(ar.delegated_frozenV2_balance_for_energy/1e6).toFixed(6)} TRX</span></div>`;
+  if (ar.acquired_delegated_frozenV2_balance_for_energy) r += `<div class="row"><span class="key">Delegated in ☢️</span><span class="val">${(ar.acquired_delegated_frozenV2_balance_for_energy/1e6).toFixed(6)} TRX</span></div>`;
 
-if (r) html += section('Resources', r, true);
+  if (r) html += section('Resources', r, true);
 
   let perms = '';
   if (acc.owner_permission) {
@@ -880,14 +942,16 @@ if (r) html += section('Resources', r, true);
 
   let tokensRows = '';
   const trxBal = (acc.balance || 0) / 1e6;
-  tokensRows += `<tr><td>${tokenChip({ symbol:'TRX', name:'TRON', icon:'https://static.tronscan.org/production/logo/trx.png' })}</td><td>${trxBal.toFixed(6)}</td></tr>`;
+
+  tokensRows += `<tr><td><span class="link" onclick="openTronInfo()">TRX</span> <span style="color:#888;font-size:11px">TRON</span></td><td>${trxBal.toFixed(6)}</td></tr>`;
 
   if (Array.isArray(acc.assetV2)) {
     for (const a of acc.assetV2) {
       if (!a.value) continue;
       const tok = await trc10Info(a.key);
       const human = a.value / Math.pow(10, tok.decimals);
-      tokensRows += `<tr><td>${tokenChip(tok)}</td><td>${human.toLocaleString(undefined,{maximumFractionDigits:tok.decimals})}</td></tr>`;
+      const t10link = `<span class="link" onclick="openTRC10Info('${encodeURIComponent(a.key)}')">${escapeHtml(tok.symbol)}</span>`;
+      tokensRows += `<tr><td>${t10link} <span style="color:#888;font-size:11px">${escapeHtml(tok.name)}</span></td><td>${human.toLocaleString(undefined,{maximumFractionDigits:tok.decimals})}</td></tr>`;
     }
   }
 
@@ -896,14 +960,16 @@ if (r) html += section('Resources', r, true);
       for (const [contract, rawBal] of Object.entries(entry)) {
         const tok = await trc20Info(contract);
         const human = Number(rawBal) / Math.pow(10, tok.decimals || 6);
-        tokensRows += `<tr><td>${tokenChip(tok)}</td><td>${human.toLocaleString(undefined,{maximumFractionDigits:tok.decimals||6})}</td></tr>`;
+        const link = `<span class="link" onclick="openTokenInfo('${encodeURIComponent(contract)}')">${escapeHtml(tok.symbol)}</span>`;
+        tokensRows += `<tr><td>${link} <span style="color:#888;font-size:11px">${escapeHtml(tok.name)}</span></td><td>${human.toLocaleString(undefined,{maximumFractionDigits:tok.decimals||6})}</td></tr>`;
       }
     }
   }
 
-  if (tokensRows) html += section('Tokens', `<table class="param-table"><thead><tr><th>Token</th><th>Balance</th></tr></thead><tbody>${tokensRows}</tbody></table>`, true);
+  if (tokensRows) {
+    html += section('Tokens', `<table class="param-table"><thead><tr><th>Token</th><th>Balance</th></tr></thead><tbody>${tokensRows}</tbody></table>`, true);
+  }
 
-  html += `<button class="copy-btn" onclick="copyResult()">copiar resultado</button>`;
   renderOutput(html);
 }
 
@@ -925,7 +991,6 @@ async function renderContract(addr){
     }
   } catch(e){}
 
-  html += `<button class="copy-btn" onclick="copyResult()">copiar resultado</button>`;
   renderOutput(html);
 }
 
@@ -966,12 +1031,9 @@ async function executeSearch(q){
 function renderError(msg){ renderOutput(`<div class="cmd-line"><span class="tag">ERROR</span></div><div style="color:#FF060A;padding:6px 0;">${escapeHtml(String(msg))}</div>`); }
 function renderPlaceholder(){ renderOutput(`<div class="placeholder"><div class="icon"><img src="${ASSET_BASE}assets/tron.png" width="48" onerror="this.style.display='none'"></div><div>explorador de bloques TRON</div><div class="sub">bloque · transacción · dirección</div></div>`); }
 
-window.copyResult=function(){ const pre=document.querySelector('#output pre:last-of-type'); const out=document.getElementById('output'); const text=pre?pre.innerText:out.textContent; if(text) navigator.clipboard.writeText(text).then(()=>showToast('copiado')); };
-
 document.getElementById('searchInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); const raw=e.target.value.trim(); if(raw){ const cmd=detectCommand(raw); pushHistory(cmd,labelFor(cmd)); updateUrlWithSearch(cmd); executeSearch(cmd); } } });
 document.getElementById('searchInput').addEventListener('paste',()=>{ setTimeout(()=>{ const v=document.getElementById('searchInput').value; const c=detectCommand(v); if(c!==v) document.getElementById('searchInput').value=c; },10); });
 document.addEventListener('keydown',e=>{
-  if(e.key==='F8'){ e.preventDefault(); window.copyResult(); }
   if(e.key==='F9'){ e.preventDefault(); document.getElementById('searchInput').value=''; renderPlaceholder(); historyStack=[]; currentIndex=-1; updateBackButton(); updateBreadcrumb(); clearUrl(); }
 });
 document.getElementById('btnLatest').addEventListener('click', async e=>{
@@ -1015,11 +1077,140 @@ function closeInfo(){ infoOverlay.classList.remove('open'); document.body.style.
 infoBtn.addEventListener('click', openInfo);
 infoClose.addEventListener('click', closeInfo);
 infoOverlay.addEventListener('click', (e) => { if (e.target === infoOverlay) closeInfo(); });
+
+const tokenOverlay = document.getElementById('tokenOverlay');
+const tokenClose = document.getElementById('tokenClose');
+const tokenModalBody = document.getElementById('tokenModalBody');
+
+function closeTokenInfo(){ tokenOverlay.classList.remove('open'); document.body.style.overflow=''; }
+tokenClose.addEventListener('click', closeTokenInfo);
+tokenOverlay.addEventListener('click', (e) => { if (e.target === tokenOverlay) closeTokenInfo(); });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && infoOverlay.classList.contains('open')) closeInfo();
+  if (e.key === 'Escape') {
+    if (infoOverlay.classList.contains('open')) closeInfo();
+    if (tokenOverlay.classList.contains('open')) closeTokenInfo();
+  }
 });
+
+window.openTronInfo = function() {
+  tokenOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  tokenModalBody.innerHTML = `
+    <div class="tok-header">
+      <img src="https://static.tronscan.org/production/logo/trx.png" alt="" onerror="this.outerHTML='<div class=&quot;tok-fallback&quot;>TR</div>'">
+      <div class="tok-title">
+        <div class="tok-title-top">
+          <span class="tok-symbol">TRX</span>
+          <span class="tok-type">NATIVE</span>
+        </div>
+        <span class="tok-name">TRON</span>
+      </div>
+    </div>
+    <div class="tok-row"><span class="key">Symbol</span><span class="val">TRX</span></div>
+    <div class="tok-row"><span class="key">Name</span><span class="val">TRON</span></div>
+    <div class="tok-row"><span class="key">Decimals</span><span class="val">6</span></div>
+    <div class="tok-row"><span class="key">Type</span><span class="val">Moneda nativa de la red TRON</span></div>
+    <div style="margin-top:16px; color:#888; font-size:11px; line-height:1.6;">
+      TRX es la moneda nativa de TRON. No es un contrato TRC20, por lo que no tiene dirección de contrato.
+    </div>
+  `;
+};
+
+window.openTRC10Info = async function(assetId) {
+  tokenOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  tokenModalBody.innerHTML = `<div class="loading"><span class="spinner"></span> consultando token…</div>`;
+  try {
+    const m = await tokenMeta(assetId);
+    const symbol = m.symbol || ('#' + assetId);
+    const name = m.name || 'TRC10';
+    const decimals = (m.decimals !== null && m.decimals !== undefined) ? Number(m.decimals) : 0;
+    const icon = m.icon || '';
+    const initial = symbol.slice(0,2).toUpperCase();
+    const iconHtml = icon
+      ? `<img src="${escapeHtml(icon)}" alt="" onerror="this.outerHTML='<div class=&quot;tok-fallback&quot;>${initial}</div>'">`
+      : `<div class="tok-fallback">${initial}</div>`;
+    tokenModalBody.innerHTML = `
+      <div class="tok-header">
+        ${iconHtml}
+        <div class="tok-title">
+          <div class="tok-title-top">
+            <span class="tok-symbol">${escapeHtml(symbol)}</span>
+            <span class="tok-type">TRC10</span>
+          </div>
+          <span class="tok-name">${escapeHtml(name)}</span>
+        </div>
+      </div>
+      <div class="tok-row"><span class="key">Token ID</span><span class="val">${escapeHtml(assetId)}</span></div>
+      <div class="tok-row"><span class="key">Name</span><span class="val">${escapeHtml(name)}</span></div>
+      <div class="tok-row"><span class="key">Symbol</span><span class="val">${escapeHtml(symbol)}</span></div>
+      <div class="tok-row"><span class="key">Decimals</span><span class="val">${decimals}</span></div>
+      <div style="margin-top:16px; color:#888; font-size:11px; line-height:1.6;">
+        TRC10 es un token nativo de TRON. Consultá más en
+        <a href="https://tronscan.org/#/token10/${escapeHtml(assetId)}" target="_blank" rel="noopener" class="link">TronScan ↗</a>.
+      </div>
+    `;
+  } catch (e) {
+    tokenModalBody.innerHTML = `<div style="color:#FF060A;padding:16px 0;">Error: ${escapeHtml(e.message)}</div>`;
+  }
+};
+
+window.openTokenInfo = async function(contractEncoded) {
+  const contract = decodeURIComponent(contractEncoded);
+  tokenOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  tokenModalBody.innerHTML = `<div class="loading"><span class="spinner"></span> consultando token…</div>`;
+
+  try {
+    const meta = await tokenMeta(contract);
+    let chain = {};
+    try {
+      const d = await php('gettrc20info', { contract });
+      const r = d?.result || {};
+      chain = {
+        name:     hexToUtf8Abi(r.name),
+        symbol:   hexToUtf8Abi(r.symbol),
+        decimals: r.decimals ? hexToInt(r.decimals) : null,
+      };
+    } catch(e){}
+
+    const symbol   = meta.symbol || chain.symbol || '?';
+    const name     = meta.name   || chain.name   || 'TRC20';
+    const decimals = (meta.decimals !== null && meta.decimals !== undefined)
+                      ? meta.decimals
+                      : (chain.decimals !== null ? chain.decimals : 6);
+    const icon     = meta.icon || '';
+    const initial  = (symbol.slice(0,2)).toUpperCase();
+
+    const iconHtml = icon
+      ? `<img src="${escapeHtml(icon)}" alt="" onerror="this.outerHTML='<div class=&quot;tok-fallback&quot;>${initial}</div>'">`
+      : `<div class="tok-fallback">${initial}</div>`;
+
+    tokenModalBody.innerHTML = `
+      <div class="tok-header">
+        ${iconHtml}
+        <div class="tok-title">
+          <div class="tok-title-top">
+            <span class="tok-symbol">${escapeHtml(symbol)}</span>
+            <span class="tok-type">TRC20</span>
+          </div>
+          <span class="tok-name">${escapeHtml(name)}</span>
+        </div>
+      </div>
+
+      <div class="tok-row"><span class="key">Contract</span><span class="val">${makeLink(contract)}</span></div>
+      <div class="tok-row"><span class="key">Name</span><span class="val">${escapeHtml(name)}</span></div>
+      <div class="tok-row"><span class="key">Symbol</span><span class="val">${escapeHtml(symbol)}</span></div>
+      <div class="tok-row"><span class="key">Decimals</span><span class="val">${decimals}</span></div>
+      ${icon ? `<div class="tok-row"><span class="key">Icon</span><span class="val"><a href="${escapeHtml(icon)}" target="_blank" rel="noopener" class="link">ver imagen ↗</a></span></div>` : ''}
+    `;
+  } catch (e) {
+    tokenModalBody.innerHTML = `<div style="color:#FF060A;padding:16px 0;">Error: ${escapeHtml(e.message)}</div>`;
+  }
+};
 
 (async()=>{ loadStats(); setInterval(loadStats,30000); })();
 </script>
+
 </body>
 </html>
