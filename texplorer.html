@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="assets/tron-favicon.ico?">
-    <link rel="icon" type="image/png" href="/assets/tron.png?">
-
+<link rel="icon" type="image/x-icon" href="assets/tron-favicon.ico?">
+<link rel="icon" type="image/png" href="/assets/tron.png?">
 <title>TRON · Explorador</title>
 
 <style>
@@ -244,6 +243,83 @@ body {
 #tokenModalBody .tok-row .val .link { color:#000; text-decoration:none; border-bottom:1px solid #ccc; cursor:pointer; }
 #tokenModalBody .tok-row .val .link:hover { border-bottom-color:#FF060A; }
 
+.info-modal { max-width: 720px; padding: 0; overflow: hidden; }
+.info-modal .modal-close { top: 14px; right: 14px; }
+
+.info-layout {
+  display: flex;
+  align-items: stretch;
+}
+
+.info-brand-col {
+  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 26px 20px;
+  background: #fafafa;
+  border-right: 1px solid #eee;
+  text-align: center;
+}
+
+.info-logo {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  max-height: 400px;
+  object-fit: contain;
+  display: block;
+}
+
+.info-brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #000;
+  line-height: 1.2;
+}
+
+.info-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 32px 32px 28px; 
+}
+
+.info-content h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  letter-spacing: .4px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.info-content p {
+  font-size: 13px;
+  line-height: 1.75;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.info-content p strong { color: #000; font-weight: 700; }
+
+.info-content .info-foot {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px dashed #eee;
+  font-size: 11px;
+  color: #999;
+  line-height: 1.6;
+}
+
+.info-content .info-brand-name {
+  margin-top: 24px;
+  text-align: right;
+}
+
 @media (max-width: 720px) {
   .app { padding:6px 8px; gap:4px; }
   .header { padding:6px 10px; gap:4px 10px; }
@@ -259,6 +335,25 @@ body {
   #output { font-size:12px; }
   #output .tx-hero { font-size:14px; padding:10px 12px; }
   #output .section > .sec-body { padding:10px 12px; }
+}
+
+@media (max-width: 520px) {
+  .info-layout { flex-direction: column; }
+  .info-brand-col {
+    flex: 0 0 auto;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding: 22px 16px 18px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 14px;
+    text-align: left;
+  }
+  .info-logo { width: 80px; max-width: 80px; max-height: 80px; }
+  .info-brand-name { font-size: 14px; }
+  .info-content { padding: 22px 20px 22px; }
+  .info-content h2 { font-size: 15px; }
+  .info-content .info-brand-name { text-align: left; margin-top: 16px; }
 }
 
 @media (max-width: 480px) {
@@ -313,14 +408,22 @@ body {
 </div>
 
 <div class="modal-overlay" id="infoOverlay">
-  <div class="modal" role="dialog" aria-modal="true">
+  <div class="modal info-modal" role="dialog" aria-modal="true">
     <button class="modal-close" id="infoClose" aria-label="Cerrar">✕</button>
-    <h2>Acerca de este explorador</h2>
-    <p>Porque TronScan es un producto y yo quería una herramienta propia, ligera y sin dependencias innecesarias, con datos directos, caché y control sobre la experiencia, principalmente sin rastreadores ni recopiladores de datos.</p>
-    <p>No busco competir, sino <strong>ganar independencia</strong> y no depender de que TronScan cambie su diseño o sus decisiones.</p>
-    <p style="margin-top:16px; color:#888; font-size:11px;">
-      Datos on-chain vía TronGrid + TronScan API · TRON mainnet
-    </p>
+    <div class="info-layout">
+      <div class="info-brand-col">
+        <img src="assets/c-contract.png" alt="cΔrovΣr0" class="info-logo" onerror="this.style.display='none'">
+      </div>
+      <div class="info-content">
+        <h2>Acerca de este explorador</h2>
+        <p>Porque TronScan es un producto y yo quería una herramienta propia, ligera y sin dependencias innecesarias, con datos directos, caché y control sobre la experiencia, principalmente sin rastreadores ni recopiladores de datos.</p>
+        <p>No busco competir, sino <strong>ganar independencia</strong> y no depender de que TronScan cambie su diseño o sus decisiones.</p>
+        <p class="info-foot">
+          API propia, PHP con datos on-chain vía TronGrid + TronScan API y 3xpl.
+        </p>
+        <div class="info-brand-name">cΔrovΣr0</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -332,7 +435,6 @@ body {
     </div>
   </div>
 </div>
-
 
 <script>
 const API_URL = "https://carover0.xyz/api/tron/api.php";
@@ -775,39 +877,39 @@ async function renderTx(tx, info, scan){
   }
   if (rf) html += section('Resources Consumed & Fee', rf, false);
 
-let srList = Array.isArray(scan.srConfirmList) ? scan.srConfirmList.slice() : [];
-
-const confirmados = [];
-for (const s of srList) {
-  const addr = await normalizeAddr(s.address || '');
-  if (typeof s.block === 'number') {
-    confirmados.push({
-      address: addr,
-      name: s.name || '',
-      url: s.url || '',
-      block: s.block,
-    });
-  }
-}
-
-confirmados.sort((a, b) => a.block - b.block);
-
-if (confirmados.length) {
-  let sr = `<div class="row"><span class="key">Comité</span><span class="val">${confirmados.length} nodo(s) validador(es) confirmaron esta tx</span></div>`;
-  sr += `<table class="param-table"><thead><tr><th>#</th><th>Nodo validador</th><th>Bloque</th></tr></thead><tbody>`;
-  for (let i = 0; i < confirmados.length; i++) {
-    const s = confirmados[i];
-    let displayName = s.name;
-    if (!displayName && s.url && /^https?:\/\//i.test(s.url)) {
-      try { displayName = new URL(s.url).hostname.replace(/^www\./, ''); }
-      catch(e){ displayName = s.url; }
+  let srList = Array.isArray(scan.srConfirmList) ? scan.srConfirmList.slice() : [];
+  const confirmados = [];
+  for (const s of srList) {
+    const addr = await normalizeAddr(s.address || '');
+    if (typeof s.block === 'number') {
+      confirmados.push({
+        address: addr,
+        name: s.name || '',
+        url: s.url || '',
+        block: s.block,
+      });
     }
-    if (!displayName) displayName = s.address;
-    sr += `<tr><td>${i}</td><td><span class="link" onclick="openNodeDetail('${encodeURIComponent(s.address||'')}')">${escapeHtml(displayName)}</span></td><td>${s.block}</td></tr>`;
   }
-  sr += `</tbody></table>`;
-  html += section('Nodos validadores', sr, false);
-}
+
+  confirmados.sort((a, b) => a.block - b.block);
+
+  if (confirmados.length) {
+    let sr = `<div class="row"><span class="key">Comité</span><span class="val">${confirmados.length} nodo(s) validador(es) confirmaron esta tx</span></div>`;
+    sr += `<table class="param-table"><thead><tr><th>#</th><th>Nodo validador</th><th>Bloque</th></tr></thead><tbody>`;
+    for (let i = 0; i < confirmados.length; i++) {
+      const s = confirmados[i];
+      let displayName = s.name;
+      if (!displayName && s.url && /^https?:\/\//i.test(s.url)) {
+        try { displayName = new URL(s.url).hostname.replace(/^www\./, ''); }
+        catch(e){ displayName = s.url; }
+      }
+      if (!displayName) displayName = s.address;
+      sr += `<tr><td>${i}</td><td><span class="link" onclick="openNodeDetail('${encodeURIComponent(s.address||'')}')">${escapeHtml(displayName)}</span></td><td>${s.block}</td></tr>`;
+    }
+    sr += `</tbody></table>`;
+    html += section('Nodos validadores', sr, false);
+  }
+
   renderOutput(html);
 }
 
