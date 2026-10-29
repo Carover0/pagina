@@ -157,7 +157,7 @@
   #output { font-family: 'Lucida Console', 'Courier New', monospace; font-size: 13px; line-height: 1.7; color: var(--text-main); }
   #output .cmd-line { display: flex; align-items: center; gap: 10px; color: var(--text-main); font-size: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-muted); margin-bottom: 14px; }
   #output .cmd-line .tag { background: var(--bg-hover); padding: 2px 14px; border-radius: 16px; font-size: 11px; color: var(--text-main); border: 1px solid var(--border); }
-  #output .cmd-line .tag.contract { border-left: 3px solid var(--accent); }
+  #output .cmd-line .tag.contract { border-left: 0px solid var(--accent); }
   #output .row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; padding: 3px 0; }
   #output .row .key { color: var(--text-muted); font-size: 12px; min-width: 110px; }
   #output .row .val { color: var(--text-main); word-break: break-all; }
@@ -209,12 +209,14 @@
   #output .param-table a { color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--border-strong); }
   #output .param-table a:hover { border-bottom-color: var(--accent); }
 
-  #output .token-badge { display: inline-flex; align-items: center; gap: 7px; background: var(--bg-input); border: 1px solid var(--text-main); border-radius: 20px; padding: 2px 12px 2px 3px; font-size: 12px; color: var(--text-main); vertical-align: middle; max-width: 100%; }
   #output .token-badge .sym { font-weight: 700; letter-spacing: .4px; color: var(--text-main); }
   #output .token-badge .name { color: var(--text-muted); font-size: 11px; }
-  #output .tok-logo { display: inline-block; width: 22px; height: 22px; border-radius: 50%; object-fit: cover; background: var(--bg-input); border: 1px solid var(--border-strong); vertical-align: middle; flex-shrink: 0; }
-  #output .tok-fallback { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--bg-hover); border: 1px solid var(--border); font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; vertical-align: middle; letter-spacing: 0; }
+  #output .tok-logo { display: inline-block; width: 22px; height: 22px; border-radius: 50%; object-fit: cover; background: var(--bg-input); vertical-align: middle; flex-shrink: 0; margin-right: 6px; }
+  #output .tok-fallback { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--bg-hover); border: 1px solid var(--border); font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; vertical-align: middle; letter-spacing: 0; margin-right: 6px; }
   #output .tx-hero .tok-logo, #output .tx-hero .tok-fallback { width: 24px; height: 24px; }
+
+  #output .tx-item .token-badge .tok-logo { background: transparent; }
+  #output .tx-item .tx-meta span { background: transparent; border: none; padding: 0; }
 
   #output .op-badge { display: inline-block; background: var(--bg-hover); color: var(--text-main); border-radius: 10px; padding: 1px 10px; font-size: 11px; letter-spacing: .3px; margin-left: 6px; }
   #output .op-badge.ok { color: #0a8f3f; }
@@ -226,11 +228,11 @@
   #output .icon-inline { display: inline-flex; align-items: center; gap: 4px; vertical-align: middle; }
   #output .icon-inline .ico { font-size: 14px; line-height: 1; }
 
-  #output .tx-item .token-badge { background: var(--bg-panel); border: 1px solid var(--border); padding: 2px 10px 2px 3px; font-size: 12px; gap: 6px; }
+  #output .tx-item .token-badge { background: transparent; border: none; padding: 0; font-size: 12px; gap: 6px; }
   #output .tx-item .token-badge .sym { font-size: 12px; }
   #output .tx-item .token-badge .name { font-size: 11px; color: var(--text-dim); }
   #output .tx-item .token-badge .tok-logo,
-  #output .tx-item .token-badge .tok-fallback { width: 22px; height: 22px; font-size: 11px; }
+  #output .tx-item .token-badge .tok-fallback { width: 22px; height: 22px; font-size: 11px; border: none; background: transparent; margin-right: 6px; }
 
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text-main); color: var(--bg); padding: 10px 28px; border-radius: 40px; border: 1px solid var(--border-strong); font-family: 'Lucida Console', monospace; font-size: 12px; opacity: 0; transition: all .4s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; z-index: 999; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -292,19 +294,9 @@
   .sr-modal { max-width: 920px; padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; }
   .sr-modal .modal-close { top: 14px; right: 14px; z-index: 20; }
   .sr-head { 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    gap: 12px; 
-    padding: 20px 24px 14px; 
-    border-bottom: 1px solid var(--border); 
-    flex-shrink: 0; 
-    position: sticky;
-    top: 0;
-    background: var(--bg-panel);
-    z-index: 10;
-    position: relative; 
-    padding-right: 56px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 24px 14px;
+    border-bottom: 1px solid var(--border); flex-shrink: 0; position: sticky; top: 0;
+    background: var(--bg-panel); z-index: 10; position: relative; padding-right: 56px;
   }
   .sr-head h2 { font-size: 15px; font-weight: 600; letter-spacing: .4px; color: var(--text-main); margin: 0; }
   .sr-head h2 small { display: block; font-size: 10px; font-weight: 400; color: var(--text-dim); letter-spacing: .8px; margin-top: 3px; }
@@ -366,36 +358,14 @@
   .sr-detail-loading { padding: 20px; text-align: center; font-size: 12px; color: var(--text-muted); }
 
   .contract-modal { 
-    max-width: 640px; 
-    padding: 0; 
-    display: flex; 
-    flex-direction: column; 
-    max-height: 90vh; 
-    overflow: hidden; 
+    max-width: 640px; padding: 0; display: flex; flex-direction: column; max-height: 90vh; overflow: hidden;
   }
-  .contract-modal .modal-close { 
-    position: absolute; 
-    top: 20px; 
-    right: 24px; 
-    z-index: 20; 
-  }
-  
-  #contractBody {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: hidden;
-  }
+  .contract-modal .modal-close { position: absolute; top: 20px; right: 24px; z-index: 20; }
+  #contractBody { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; }
 
   .contract-head { 
-    display: flex; 
-    align-items: center; 
-    gap: 14px; 
-    padding: 22px 56px 16px 24px; 
-    border-bottom: 1px solid var(--border); 
-    flex-shrink: 0; 
-    background: var(--bg-panel);
+    display: flex; align-items: center; gap: 14px; padding: 22px 56px 16px 24px;
+    border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg-panel);
   }
   .contract-head .c-logo { flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%; background: var(--bg-input); border: 1px solid var(--border-strong); object-fit: cover; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--accent); }
   .contract-head .c-title { flex: 1 1 auto; min-width: 0; }
@@ -416,14 +386,8 @@
   .c-badge.nocode { background: #fff3cd; color: #8a6d00; border: 1px solid #ffe08a; }
 
   .contract-body { 
-    padding: 16px 24px 20px; 
-    overflow-y: auto; 
-    flex: 1 1 auto; 
-    min-height: 0;
-    
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-    transition: scrollbar-color 0.3s;
+    padding: 16px 24px 20px; overflow-y: auto; flex: 1 1 auto; min-height: 0;
+    scrollbar-width: thin; scrollbar-color: transparent transparent; transition: scrollbar-color 0.3s;
   }
   .contract-body:hover { scrollbar-color: var(--scrollbar) transparent; }
   .contract-body::-webkit-scrollbar { width: 8px; }
@@ -450,13 +414,8 @@
   .c-method-row .sig { color: var(--text-main); word-break: break-all; }
 
   .contract-actions { 
-    display: flex; 
-    gap: 8px; 
-    flex-wrap: wrap; 
-    padding: 14px 24px 18px; 
-    border-top: 1px solid var(--border); 
-    background: var(--bg-hover); 
-    flex-shrink: 0; 
+    display: flex; gap: 8px; flex-wrap: wrap; padding: 14px 24px 18px;
+    border-top: 1px solid var(--border); background: var(--bg-hover); flex-shrink: 0;
   }
   .contract-actions .btn-act { flex: 1 1 auto; min-width: 110px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 14px; border-radius: 20px; font-family: 'Lucida Console', monospace; font-size: 11px; cursor: pointer; text-decoration: none; border: 1px solid var(--border-strong); background: var(--bg-input); color: var(--text-main); transition: background .15s, border-color .15s; }
   .contract-actions .btn-act:hover { background: var(--bg-hover); border-color: var(--text-muted); }
@@ -490,7 +449,6 @@
     .sr-detail-head { padding: 18px 16px 12px; }
     .sr-detail-body { padding: 12px 16px 16px; }
     .sr-detail-actions { padding: 12px 16px 14px; }
-    
     .contract-head { padding: 18px 46px 12px 16px; }
     .contract-body { padding: 12px 16px 16px; }
     .contract-actions { padding: 12px 16px 14px; }
@@ -513,7 +471,11 @@
     #output .row .key { min-width: 90px; font-size: 11px; }
     #output .row .val { font-size: 12px; }
   }
+
+#output .tx-item .token-badge { gap: 0px !important; }
+
 </style>
+
 
 </head>
 <body>
