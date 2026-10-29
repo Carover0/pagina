@@ -772,54 +772,39 @@ async function renderTx(tx, info, scan){
   }
   if (rf) html += section('Resources Consumed & Fee', rf, false);
 
-  let srList = Array.isArray(scan.srConfirmList) ? scan.srConfirmList.slice() : [];
-  try {
-    const w = await php('getwitnesses');
-    const active = Array.isArray(w?.result) ? w.result : [];
-    if (active.length) {
-      const seen = new Set();
-      for (const s of srList) {
-        const a = await normalizeAddr(s.address || '');
-        s.address = a;
-        seen.add(a.toLowerCase());
-      }
-      for (const wit of active) {
-        const a = await normalizeAddr(wit.address || '');
-        if (!seen.has(a.toLowerCase())) {
-          const isUrl = wit.url && /^https?:\/\//i.test(wit.url);
-          let displayName = wit.url || a;
-          if (isUrl) {
-            try { displayName = new URL(wit.url).hostname.replace(/^www\./, ''); }
-            catch(e){ displayName = wit.url; }
-          }
-          srList.push({ address: a, name: displayName, url: isUrl ? wit.url : '', block: '—' });
-        }
-      }
-      srList.sort((a, b) => {
-        const ba = (typeof a.block === 'number') ? a.block : Infinity;
-        const bb = (typeof b.block === 'number') ? b.block : Infinity;
-        return ba - bb;
-      });
-      if (srList.length > 19) srList = srList.slice(0, 19);
-    }
-  } catch(e){}
+let srList = Array.isArray(scan.srConfirmList) ? scan.srConfirmList.slice() : [];
 
-  if (srList.length) {
-    const produced = srList.filter(s => typeof s.block === 'number').length;
-    let sr = `<div class="row"><span class="key">Committee</span><span class="val">${srList.length} SR(s) · ${produced} produced a block since this tx</span></div>`;
-    sr += `<table class="param-table"><thead><tr><th>#</th><th>Validator</th><th>Block</th></tr></thead><tbody>`;
-    for (let i=0;i<srList.length;i++){
-      const s = srList[i] || {};
-      const name = s.name || s.address || '—';
-      const cell = s.url
-        ? `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(name)}</a>`
-        : escapeHtml(name);
-      sr += `<tr><td>${i}</td><td>${cell}</td><td>${s.block ?? '—'}</td></tr>`;
-    }
-    sr += `</tbody></table>`;
-    html += section('Confirmed SRs', sr, false);
+const confirmados = [];
+for (const s of srList) {
+  const addr = await normalizeAddr(s.address || '');
+  if (typeof s.block === 'number') {
+    confirmados.push({
+      address: addr,
+      name: s.name || '',
+      url: s.url || '',
+      block: s.block,
+    });
   }
+}
 
+confirmados.sort((a, b) => a.block - b.block);
+
+if (confirmados.length) {
+  let sr = `<div class="row"><span class="key">Comité</span><span class="val">${confirmados.length} nodo(s) validador(es) confirmaron esta tx</span></div>`;
+  sr += `<table class="param-table"><thead><tr><th>#</th><th>Nodo validador</th><th>Bloque</th></tr></thead><tbody>`;
+  for (let i = 0; i < confirmados.length; i++) {
+    const s = confirmados[i];
+    let displayName = s.name;
+    if (!displayName && s.url && /^https?:\/\//i.test(s.url)) {
+      try { displayName = new URL(s.url).hostname.replace(/^www\./, ''); }
+      catch(e){ displayName = s.url; }
+    }
+    if (!displayName) displayName = s.address;
+    sr += `<tr><td>${i}</td><td><span class="link" onclick="openNodeDetail('${encodeURIComponent(s.address||'')}')">${escapeHtml(displayName)}</span></td><td>${s.block}</td></tr>`;
+  }
+  sr += `</tbody></table>`;
+  html += section('Nodos validadores', sr, false);
+}
   renderOutput(html);
 }
 
