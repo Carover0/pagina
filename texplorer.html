@@ -829,13 +829,20 @@ function tokenIcon(info){
   return `<span class="tok-fallback">${initial}</span>`;
 }
 
-function tokenChip(info){
+function tokenChip(info, linkOnClick) {
   const rawSym = info.symbol || '?';
   const symStr = rawSym.length > 12 ? rawSym.slice(0, 10) + '…' : rawSym;
   const sym    = escapeHtml(symStr);
   const name   = escapeHtml(info.name || '');
   const tip    = escapeHtml(info.name ? `${info.symbol} · ${info.name}` : rawSym);
-  return `<span class="token-badge" title="${tip}">${tokenIcon(info)}<span class="sym">${sym}</span>${name ? `<span class="name">${name}</span>` : ''}</span>`;
+
+  let content;
+  if (linkOnClick) {
+    content = `<span class="token-badge" title="${tip}">${tokenIcon(info)}<span class="link" onclick="${linkOnClick}"><span class="sym">${sym}</span></span>${name ? `<span class="link" onclick="${linkOnClick}"><span class="name">${name}</span></span>` : ''}</span>`;
+  } else {
+    content = `<span class="token-badge" title="${tip}">${tokenIcon(info)}<span class="sym">${sym}</span>${name ? `<span class="name">${name}</span>` : ''}</span>`;
+  }
+  return content;
 }
 
 function contractTypeLabel(type){
@@ -943,7 +950,10 @@ async function renderTx(tx, info, scan){
   if (contractAddr) {
     let cell;
     if (isTRC20) {
-      cell = `<span class="link" onclick="openContractInfo('${encodeURIComponent(contractAddr)}')">${tokenChip(tok)}</span>`;
+      const sym = escapeHtml(tok.symbol || '?');
+const name = escapeHtml(tok.name || '');
+const tip = escapeHtml(tok.name ? `${tok.symbol} · ${tok.name}` : tok.symbol);
+    cell = `<span class="token-badge" title="${tip}">${tokenIcon(tok)}<span class="link" onclick="openContractInfo('${encodeURIComponent(contractAddr)}')" style="display:inline-flex; align-items:center; gap:4px;"><span class="sym">${sym}</span>${name ? `<span class="name">${name}</span>` : ''}</span></span>`;
     } else {
       cell = `<span class="link" onclick="openContractInfo('${encodeURIComponent(contractAddr)}')">${escapeHtml(contractAddr)}</span>`;
     }
