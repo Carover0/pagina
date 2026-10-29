@@ -321,6 +321,22 @@
   .sr-error { color: var(--accent); }
 
   .sr-detail-modal { max-width: 600px; padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; }
+    #srDetailBody { 
+    display: flex; 
+    flex-direction: column; 
+    flex: 1 1 auto; 
+    min-height: 0; 
+    overflow: hidden; 
+  }
+  .sr-detail-head { flex-shrink: 0; }
+  .sr-detail-actions { flex-shrink: 0; }
+  .sr-detail-body { 
+    padding: 16px 24px 20px; 
+    overflow-y: auto; 
+    flex: 1 1 auto; 
+    min-height: 0; 
+  }
+
   .sr-detail-modal .modal-close { top: 14px; right: 14px; z-index: 3; }
   .sr-detail-head { display: flex; align-items: center; gap: 14px; padding: 22px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; padding-right: 56px; }
   .sr-detail-head .sr-logo-lg { flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%; background: transparent; object-fit: cover; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--accent); }
