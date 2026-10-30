@@ -1,216 +1,132 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>404 · cΔrovΣr0</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { overflow-x: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 · cΔrovΣr0</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        :root {
-            --violet: #4f46e5;
-            --violet-soft: #818cf8;
-            --green: #31db72;
-            --red: #ff756f;
-            --text: #ece8e0;
-            --text-dim: #6a6255;
-            --text-mute: #4a443a;
-        }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #0a080c;
+    color: #ece8e0;
+    font-family: 'Lucida Console', 'Courier New', monospace;
+  }
 
-        body {
-            min-height: 100vh;
-            background: #0a080c;
-            background-image:
-                radial-gradient(ellipse at 30% 40%, rgba(79, 70, 229, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 80%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
-                linear-gradient(160deg, #0a080c 0%, #0d0b14 50%, #0a080c 100%);
-            font-family: 'Lucida Console', 'Courier New', monospace;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: clamp(12px, 3vw, 24px);
-        }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+  }
 
-        .card {
-            width: 100%;
-            max-width: 520px;
-            min-width: 0;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(79, 70, 229, 0.2);
-            border-radius: 14px;
-            padding: clamp(24px, 5vw, 40px);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
-            animation: fadeIn 0.5s ease;
-        }
+  .code {
+    font-size: 64px;
+    font-weight: 700;
+    color: #818cf8;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+  .subtitle {
+    font-size: 12px;
+    color: #6a6255;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
 
-        .head {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(79, 70, 229, 0.06);
-            margin-bottom: 24px;
-            min-width: 0;
-        }
+  .message {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #b0a897;
+    margin-bottom: 28px;
+  }
 
-        .head img {
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-            flex-shrink: 0;
-        }
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    text-decoration: none;
+    color: #c4b5fd;
+    background: rgba(79, 70, 229, 0.12);
+    border: 1px solid rgba(79, 70, 229, 0.25);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
 
-        .head .name {
-            font-size: 18px;
-            color: var(--violet-soft);
-            letter-spacing: 1.5px;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+  .btn:hover {
+    background: rgba(79, 70, 229, 0.22);
+    border-color: #818cf8;
+    color: #fff;
+  }
 
-        .code {
-            font-size: clamp(52px, 14vw, 80px);
-            font-weight: 700;
-            color: var(--violet-soft);
-            letter-spacing: 2px;
-            line-height: 1;
-            margin-bottom: 10px;
-        }
+  .footer {
+    margin-top: 28px;
+    font-size: 10px;
+    color: #4a443a;
+    letter-spacing: 0.5px;
+  }
 
-        .subtitle {
-            font-size: 12px;
-            color: var(--text-dim);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 22px;
-            word-break: break-word;
-            overflow-wrap: anywhere;
-        }
-
-        .message {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #b0a897;
-            margin-bottom: 26px;
-            word-break: break-word;
-            overflow-wrap: anywhere;
-        }
-
-        .message .highlight { color: var(--violet-soft); }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 11px 22px;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            text-decoration: none;
-            color: #c4b5fd;
-            background: rgba(79, 70, 229, 0.12);
-            border: 1px solid rgba(79, 70, 229, 0.25);
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .btn:hover {
-            background: rgba(79, 70, 229, 0.22);
-            border-color: var(--violet-soft);
-            color: #fff;
-        }
-
-        .footer {
-            margin-top: 26px;
-            padding-top: 14px;
-            border-top: 1px solid rgba(79, 70, 229, 0.06);
-            font-size: 11px;
-            color: var(--text-mute);
-            letter-spacing: 0.5px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 4px 12px;
-        }
-
-        .footer .heart { color: var(--violet-soft); }
-
-        @media (max-width: 480px) {
-            .btn { width: 100%; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .card { animation: none; }
-        }
-    </style>
-
+  .footer .heart { color: #818cf8; }
+</style>
 
 <script>
 (function () {
   var path = window.location.pathname;
   var explorers = [
-    { name: 'zec-explorer',    pattern: /\/zec-explorer\/(.+)$/ },
-    { name: 'pivx-explorer',   pattern: /\/pivx-explorer\/(.+)$/ },
-    { name: 'ycash-explorer',  pattern: /\/ycash-explorer\/(.+)$/ },
-    { name: 'cementerio', pattern: /\/cementerio\/(.+)$/ },
-    { name: 'firo-explorer',   pattern: /\/firo-explorer\/(.+)$/ },
-    { name: 'texplorer',       pattern: /\/texplorer\/(.+)$/ }
+    { name: 'zec-explorer',   pattern: /\/zec-explorer\/(.+)$/ },
+    { name: 'pivx-explorer',  pattern: /\/pivx-explorer\/(.+)$/ },
+    { name: 'ycash-explorer', pattern: /\/ycash-explorer\/(.+)$/ },
+    { name: 'cementerio',     pattern: /\/cementerio\/(.+)$/ },
+    { name: 'firo-explorer',  pattern: /\/firo-explorer\/(.+)$/ },
+    { name: 'texplorer',      pattern: /\/texplorer\/(.+)$/ }
   ];
 
-for (var i = 0; i < explorers.length; i++) {
-  var exp = explorers[i];
-  var match = path.match(exp.pattern);
-  if (match && match[1]) {
-    var raw = match[1];
-    var decoded = raw;
-    try { decoded = decodeURIComponent(raw); } catch (e) {}
-    decoded = decoded.replace(/\//g, ' ');
-    window.location.replace('/pagina/' + exp.name + '/?q=' + encodeURIComponent(decoded));
-    return;
+  for (var i = 0; i < explorers.length; i++) {
+    var exp = explorers[i];
+    var match = path.match(exp.pattern);
+    if (match && match[1]) {
+      var decoded = match[1];
+      try { decoded = decodeURIComponent(decoded); } catch (e) {}
+
+      var target;
+      if (exp.name === 'texplorer') {
+        // texplorer: hash routing (no depende del servidor)
+        var clean = decoded.replace(/\s+/g, '/');
+        target = '/pagina/texplorer/#/' + clean;
+      } else {
+        // demás exploradores: query string como siempre
+        target = '/pagina/' + exp.name + '/?q=' + encodeURIComponent(decoded);
+      }
+      window.location.replace(target);
+      return;
+    }
   }
-}
-
-
 })();
 </script>
-    
 </head>
 <body>
 
-    <div class="card">
+  <div class="card">
+    <div class="code">404</div>
+    <div class="subtitle">página no encontrada</div>
 
-        <div class="head">
-            <img src="assets/index.png" alt="cΔrovΣr0" onerror="this.style.display='none'">
-            <span class="name">cΔrovΣr0</span>
-        </div>
+    <p class="message">
+      La página que buscás no existe o fue movida.
+    </p>
 
-        <div class="code">404</div>
-        <div class="subtitle">página no encontrada</div>
+    <a href="https://carover0.github.io/pagina/" class="btn">← Volver al inicio</a>
 
-        <p class="message">
-            La página que buscás no existe o fue movida.
-            Podés volver al <span class="highlight">inicio</span> y seguir explorando desde ahí.
-        </p>
-
-        <a href="https://carover0.github.io/pagina/" class="btn">← Volver al inicio</a>
-
-        <div class="footer">
-            <span>cΔrovΣr0 · <span class="heart">♥</span> desde Argentina</span>
-            <span>404</span>
-        </div>
-
+    <div class="footer">
+      cΔrovΣr0 · <span class="heart">♥</span> desde Argentina
     </div>
+  </div>
 
 </body>
 </html>
