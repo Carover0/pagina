@@ -679,20 +679,25 @@ function detectSearchFromUrl(){
   const urlParams = new URLSearchParams(window.location.search);
   const qParam = urlParams.get('q');
   if (qParam) {
-    window.history.replaceState({}, '', window.location.origin + '/pagina/texplorer/' + qParam);
+    const clean = qParam.replace(/\s+/g, '/');
+    window.history.replaceState({}, '', window.location.origin + '/pagina/texplorer/' + clean);
     return qParam;
   }
   const path = window.location.pathname;
   const match = path.match(/\/texplorer\/(.+)$/);
-  if (match && match[1]) return decodeURIComponent(match[1]);
+  if (match && match[1]) {
+    const raw = decodeURIComponent(match[1]);
+    return raw.replace(/\//g, ' ');
+  }
   return null;
 }
 
 function updateUrlWithSearch(parametro){
-  const basePath = window.location.origin + '/pagina';
-  const newUrl = basePath + '/texplorer/' + encodeURIComponent(parametro);
-  window.history.replaceState({}, '', newUrl);
+  const basePath = window.location.origin + '/pagina/texplorer/';
+  const clean = parametro.replace(/\s+/g, '/');
+  window.history.replaceState({}, '', basePath + encodeURIComponent(clean));
 }
+  
 function clearUrl(){
   window.history.replaceState({}, '', window.location.origin + '/pagina/texplorer');
 }
