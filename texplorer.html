@@ -676,30 +676,28 @@ function hexToUtf8Abi(hex){
 function hexToInt(hex){ try { if(!hex) return 0; const c = hex.startsWith('0x')?hex.slice(2):hex; return parseInt(c,16); } catch(e){ return 0; } }
 
 function detectSearchFromUrl(){
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  if (hash) {
+    return decodeURIComponent(hash).replace(/\//g, ' ');
+  }
   const urlParams = new URLSearchParams(window.location.search);
   const qParam = urlParams.get('q');
-  if (qParam) {
-    const clean = qParam.replace(/\s+/g, '/');
-    window.history.replaceState({}, '', window.location.origin + '/pagina/texplorer/' + clean);
-    return qParam;
-  }
+  if (qParam) return qParam;
   const path = window.location.pathname;
   const match = path.match(/\/texplorer\/(.+)$/);
   if (match && match[1]) {
-    const raw = decodeURIComponent(match[1]);
-    return raw.replace(/\//g, ' ');
+    return decodeURIComponent(match[1]).replace(/\//g, ' ');
   }
   return null;
 }
 
 function updateUrlWithSearch(parametro){
-  const basePath = window.location.origin + '/pagina/texplorer/';
   const clean = parametro.replace(/\s+/g, '/');
-  window.history.replaceState({}, '', basePath + encodeURIComponent(clean));
+  window.location.hash = '#/' + clean;
 }
-  
+
 function clearUrl(){
-  window.history.replaceState({}, '', window.location.origin + '/pagina/texplorer');
+  window.history.replaceState({}, '', window.location.origin + '/pagina/texplorer/');
 }
 
 let historyStack=[], currentIndex=-1;
