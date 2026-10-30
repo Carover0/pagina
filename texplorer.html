@@ -2162,6 +2162,14 @@ function toggleTheme() {
 })();
 
 (async()=>{ loadStats(); setInterval(loadStats,30000); })();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/pagina/service-worker.js', { scope: '/pagina/' })
+      .then((reg) => console.log('SW OK:', reg.scope))
+      .catch((err) => console.warn('SW error:', err));
+  });
+}  
 </script>
 
 </body>
