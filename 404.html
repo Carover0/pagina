@@ -168,17 +168,18 @@
     { name: 'texplorer',       pattern: /\/texplorer\/(.+)$/ }
   ];
 
-  for (var i = 0; i < explorers.length; i++) {
-    var exp = explorers[i];
-    var match = path.match(exp.pattern);
-    if (match && match[1]) {
-      var raw = match[1];
-      var decoded = raw;
-      try { decoded = decodeURIComponent(raw); } catch (e) {}
-      window.location.replace('/pagina/' + exp.name + '?q=' + encodeURIComponent(decoded));
-      return;
-    }
+for (var i = 0; i < explorers.length; i++) {
+  var exp = explorers[i];
+  var match = path.match(exp.pattern);
+  if (match && match[1]) {
+    var raw = match[1];
+    var decoded = raw;
+    try { decoded = decodeURIComponent(raw); } catch (e) {}
+    decoded = decoded.replace(/\//g, ' ');
+    window.location.replace('/pagina/' + exp.name + '/?q=' + encodeURIComponent(decoded));
+    return;
   }
+}
 
 
 })();
