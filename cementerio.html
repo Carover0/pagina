@@ -222,14 +222,16 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
     <button class="modal-close" id="infoClose" aria-label="Cerrar">✕</button>
     <h2>⚠️ Sobre este cementerio</h2>
 
-    <p>Esta lista muestra direcciones que han sido incluidas en la blacklist de USDT en Tron y Ethereum.</p>
+    <p>Esta lista muestra direcciones que han sido incluidas en la blacklist de USDT en Tron y Ethereum, y direcciones con trust lines de RLUSD en XRPL.</p>
 
-    <p>En Tron, la lista se actualiza en vivo. En Ethereum, podes buscar cualquier dirección <code>0x...</code> para verificar su estado en <strong>USDT (Tether)</strong> y <strong>USDC (Circle)</strong> al mismo tiempo. Una dirección aca <strong>no puede enviar el token bloqueado</strong>.</p>
+    <p>En Tron, la lista se actualiza en vivo leyendo los eventos <code>AddedBlackList</code> del contrato. En Ethereum, podes buscar cualquier dirección <code>0x...</code> para verificar su estado en <strong>USDT (Tether)</strong> y <strong>USDC (Circle)</strong> al mismo tiempo. Una dirección aca <strong>no puede enviar el token bloqueado</strong>.</p>
+
+    <p>En XRPL, podes buscar cualquier dirección <code>r...</code> para verificar si tiene una trust line de <strong>RLUSD (Ripple)</strong> y si esa trust line está congelada por el emisor. Ripple no usa una blacklist de direcciones: el control está en la cuenta emisora <code>rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De</code>, que conserva los flags <code>noFreeze: false</code> (puede congelar trust lines individuales) y <code>allowTrustLineClawback: true</code> (puede recuperar tokens ya emitidos).</p>
 
     <p>También se consulta si USDC está <strong>pausado globalmente</strong> (función <code>paused()</code> de Circle).</p>
 
     <p style="border-top:1px solid var(--stone); padding-top:16px; margin-top:16px;">
-      <strong>Una stablecoin siempre tiene un emisor que puede congelarte.</strong> Si querés evitar esa dependencia, las monedas soberanas no tienen blacklist que consultar: <strong>PIVX</strong>, <strong>BCH</strong>, <strong>Firo</strong> y <strong>LTC</strong>.
+      <strong>Una stablecoin siempre tiene un emisor que puede congelarte.</strong> Si queres evitar esa dependencia, las monedas soberanas no tienen blacklist que consultar: <strong>PIVX</strong>, <strong>BCH</strong>, <strong>Firo</strong> y <strong>LTC</strong>.
     </p>
 
     <p style="font-size:11px; opacity:0.7; margin-bottom:0;">Esto no es asesoramiento financiero. Es solo el patrón que muestran los datos.</p>
