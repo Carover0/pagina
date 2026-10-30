@@ -91,11 +91,8 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: center;
   max-width: 330px;
 }
-.grave-card.clean { border-radius: 12px; border-top: 3px solid var(--moss-soft); }
-.grave-card.compact { border-radius: 45px 45px 12px 12px; border-top: 4px solid var(--grave-red); padding: 32px 14px 14px 14px; }
 .grave-header { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 16px; }
 .grave-address { font-size: 13px; font-weight: 600; color: var(--grave-red-soft); word-break: break-all; max-width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 a.grave-address { text-decoration: none; transition: color 0.2s; }
@@ -147,9 +144,6 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
 .load-more:hover:not(:disabled) { background: var(--bg-deep); }
 .load-more:disabled { opacity: 0.4; cursor: not-allowed; }
 @keyframes spin { to { transform: rotate(360deg); } }
-@media (max-width: 900px) {
-  .empty-state { grid-column: span 1; }
-}
 @media (max-width: 720px) {
   body { padding: 12px 10px; }
   .container { padding: 20px 16px; }
@@ -312,10 +306,6 @@ function formatDate(ts, isMillis = false) {
   const d = new Date(isMillis ? ts : ts * 1000);
   return d.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
-function shortAddr(a) {
-  if (!a) return '';
-  return a.length > 14 ? `${a.slice(0, 6)}…${a.slice(-5)}` : a;
-}
 
 async function loadVelatorio(reset = false) {
   if (isBusy) return;
@@ -468,9 +458,11 @@ function renderIndividualResult(address, network, isBlocked, balance) {
   const icon = isBlocked ? '🪦' : '🍀';
   let explorerUrl = null;
   if (isBlocked) {
-    explorerUrl = network === 'Tron' ? 'https://carover0.github.io/pagina/texplorer#' + address : 'https://etherscan.io/address/' + address;
+    explorerUrl = network === 'Tron'
+      ? 'https://carover0.github.io/pagina/texplorer#' + address
+      : 'https://etherscan.io/address/' + address;
   } else if (network === 'Tron') {
-    explorerUrl = EXPLORER_QUERY + encodeURIComponent('getaccount ' + address);
+    explorerUrl = `${EXPLORER_QUERY}getaccount/${address}`;
   }
   const linkHtml = explorerUrl ? `<span><a href="${explorerUrl}" target="_blank" rel="noopener">Ver en Explorador ↗</a></span>` : '';
   const cardStyle = isBlocked
@@ -480,7 +472,8 @@ function renderIndividualResult(address, network, isBlocked, balance) {
     ? 'color: var(--grave-red-soft); border-color: rgba(147, 197, 253, 0.3);'
     : 'color: var(--moss-soft); border-color: var(--moss-soft);';
   graveList.innerHTML = `
-    <div class="grave-header">
+    <div class="grave-card" style="${cardStyle}">
+      <div class="grave-header">
         <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
         <span class="grave-badge" style="${badgeStyle}">${isBlocked ? 'BLOQUEADA' : 'LIMPIA'}</span>
       </div>
@@ -508,7 +501,6 @@ async function renderEthAddress(address) {
   const statusBadge = (label, blocked, colorVar) => `<span class="grave-badge" style="color: ${colorVar}; border-color: ${colorVar};">${label}: ${blocked ? 'BLOQUEADO' : 'LIMPIO'}</span>`;
   graveList.innerHTML = `
     <div class="grave-card" style="${cardStyle}">
-      <span class="network-badge badge-eth">ETH</span>
       <div class="grave-header">
         <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
         <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
@@ -539,7 +531,6 @@ function renderRlusdResult(address, data) {
     : 'color: var(--moss-soft); border-color: var(--moss-soft);';
   graveList.innerHTML = `
     <div class="grave-card" style="${cardStyle}">
-      <span class="network-badge" style="background: rgba(0,150,255,0.2); color: #64b5f6; border: 1px solid rgba(0,150,255,0.3);">XRPL</span>
       <div class="grave-header">
         <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
         <span class="grave-badge" style="${badgeStyle}">${statusText}</span>
