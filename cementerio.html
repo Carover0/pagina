@@ -194,9 +194,10 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
     <div class="container-inner">
       <div class="hero-col"><img src="assets/parka1.png" alt="Parka"></div>
       <div class="content-col">
-        <h1><br>🪦 Cementerio de USDT & USDC</h1>
-          <p class="subtitle">Direcciones congeladas por Tether en Tron y por Tether/Circle en Ethereum. TUSD no figura en este cementerio: no necesita bloqueo, tenerla ya es estar muerto. USDD tampoco figura aca, no hay blacklist que consultar, tenerla es vivir en el corredor de la muerte.</p>        <div class="search-bar">
-          <input type="text" id="searchAddress" placeholder="Buscar dirección (T... o 0x...)" autocomplete="off" spellcheck="false">
+        <h1><br>🪦 Cementerio de monedas estables</h1>
+          <p class="subtitle">Direcciones congeladas por Tether en Tron, por Tether/Circle en Ethereum y trust lines de RLUSD congeladas o clawback por Ripple en XRPL. TUSD no figura en este cementerio: no necesita bloqueo, tenerla ya es estar muerto. USDD tampoco figura aca, no hay blacklist que consultar, tenerla es vivir en el corredor de la muerte.</p>
+           <div class="search-bar">
+            <input type="text" id="searchAddress" placeholder="Buscar (T... / 0x... / r...)" autocomplete="off" spellcheck="false">
           <button id="searchBtn">Buscar</button>
         </div>
         <div class="stats-row" id="statsRow">
@@ -551,7 +552,11 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
             const trx = await checkTronIndividual(filterAddress);
             renderIndividualResult(filterAddress, 'Tron', trx.isBlocked, trx.balance);
             return;
-          } else {
+          } else if (filterAddress.startsWith('r')) {
+            const rlusd = await checkRlusdTrustLine(filterAddress);
+            renderRlusdResult(filterAddress, rlusd);
+            return;
+            }else {
             throw new Error('Dirección no válida. Debe empezar con T (Tron) o 0x (Ethereum).');
           }
         }
@@ -577,6 +582,77 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
     });
     searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { searchBtn.click(); } });
 
+    const RLUSD_ISSUER = 'rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De';
+    const XRPL_RPC = 'https://xrplcluster.com/';
+
+    async function checkRlusdTrustLine(address) {
+      const body = {
+        method: 'account_lines',
+        params: [{
+          account: address,
+          peer: RLUSD_ISSUER,
+          ledger_index: 'validated'
+        }]
+      };
+      
+      const res = await fetch(XRPL_RPC, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      const json = await res.json();
+      if (json.result?.error) throw new Error(json.result.error_message || 'Error consultando XRPL');
+      
+      const lines = json.result?.lines || [];
+      const rlusdLine = lines.find(l => l.currency === '524C555344000000000000000000000000000000' && l.account === RLUSD_ISSUER);
+      
+      if (!rlusdLine) {
+        return { hasTrustLine: false, isFrozen: false, balance: '0' };
+      }
+      
+      const isFrozen = rlusdLine.freeze === true;
+      return {
+        hasTrustLine: true,
+        isFrozen,
+        balance: rlusdLine.balance || '0'
+      };
+    }
+
+    function renderRlusdResult(address, data) {
+      const isBlocked = data.isFrozen;
+      const icon = isBlocked ? '🪦' : (data.hasTrustLine ? '🍀' : '👻');
+      
+      const cardStyle = isBlocked
+        ? 'border-top: 5px solid var(--grave-red); border-radius: 50% 50% 12px 12px / 70px 70px 12px 12px; padding: 60px 24px 24px 24px;'
+        : 'border-top: 3px solid var(--moss-soft); border-radius: 12px; padding: 16px 14px 14px 14px;';
+
+      const statusText = !data.hasTrustLine ? 'SIN TRUST LINE' : (isBlocked ? 'CONGELADA' : 'LIMPIA');
+      const badgeStyle = isBlocked
+        ? 'color: var(--grave-red-soft); border-color: rgba(147, 197, 253, 0.3);'
+        : 'color: var(--moss-soft); border-color: var(--moss-soft);';
+
+      graveList.innerHTML = `
+        <div class="grave-card" style="${cardStyle}">
+          <span class="network-badge badge-xrpl" style="background: rgba(0,150,255,0.2); color: #64b5f6; border: 1px solid rgba(0,150,255,0.3);">XRPL</span>
+          <div class="grave-header">
+            <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
+            <span class="grave-badge" style="${badgeStyle}">${statusText}</span>
+          </div>
+          <div class="grave-details">
+            <span><strong>Red:</strong> XRP Ledger (RLUSD)</span>
+            <span><strong>Saldo RLUSD:</strong> ${data.balance}</span>
+            ${isBlocked ? '<span style="color:#f59e0b;"><strong>⚠️ Trust line congelada por el emisor</strong></span>' : ''}
+            <span><a href="https://xrpscan.com/account/${address}" target="_blank" rel="noopener">Ver en XRPScan ↗</a></span>
+          </div>
+        </div>`;
+
+      listInfo.textContent = `1 resultado (XRPL · RLUSD)`;
+      statTotal.textContent = '1';
+      statFrozen.textContent = data.balance;
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+    }
     loadPage(0);
   </script>
 </body>
