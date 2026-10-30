@@ -984,7 +984,26 @@ const tip = escapeHtml(tok.name ? `${tok.symbol} · ${tok.name}` : tok.symbol);
     tt += `</tbody></table>`;
     html += section('Token Transfers', tt, true);
   }
+  const memoHex = (tx.raw_data && tx.raw_data.data) ? String(tx.raw_data.data) : '';
+  if (memoHex && /^[0-9a-fA-F]+$/.test(memoHex) && memoHex.length % 2 === 0) {
+    let memoText = '';
+    try {
+      const bytes = memoHex.match(/.{1,2}/g).map(b => parseInt(b, 16));
+      memoText = new TextDecoder('utf-8', { fatal: false }).decode(new Uint8Array(bytes));
+    } catch(e) { memoText = ''; }
 
+    const isPrintable = memoText && /^[\x09\x0A\x0D\x20-\x7E\u00A0-\uFFFF]*$/.test(memoText);
+
+    let mm = `<div class="row"><span class="key">Note</span><span class="val">${
+      isPrintable
+        ? escapeHtml(memoText)
+        : `<span style="color:#888;">(binario)</span> <code>${escapeHtml(memoHex)}</code>`
+    }</span></div>`;
+    mm += `<div class="row"><span class="key">UTF-8</span><span class="val">${memoHex.length/2} bytes</span></div>`;
+    mm += `<div class="row"><span class="key">Hex</span><span class="val"><code style="word-break:break-all;">${escapeHtml(memoHex)}</code></span></div>`;
+
+    html += section('Memo (Nota)', mm, false);
+  }
   if (type === 'TriggerSmartContract' && value.data) {
     const methodFull = scan?.trigger_info?.method || ('0x' + value.data.slice(0, 8));
     let mc = `<div class="row"><span class="key">Method</span><span class="val">${escapeHtml(methodFull)}</span></div>`;
