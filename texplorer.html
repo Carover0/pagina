@@ -499,6 +499,80 @@
 
 #output .tx-item .token-badge { gap: 0px !important; }
 
+.info-modal { max-width: 760px; padding: 0; overflow: hidden; }
+.info-layout { display: flex; align-items: stretch; }
+
+.info-brand-col { 
+  flex: 0 0 220px; 
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; 
+  gap: 16px; padding: 40px 20px 20px; 
+  background: var(--bg-hover); border-right: 1px solid var(--border); text-align: center; 
+}
+.info-logo { width: 100%; max-width: 160px; height: auto; object-fit: contain; margin-bottom: 8px; }
+.info-brand-name { font-size: 16px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-main); }
+
+.info-status-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-input); border: 1px solid var(--border-strong); 
+  padding: 4px 10px; border-radius: 20px; font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .5px; margin-top: 4px;
+}
+.status-dot { 
+  display: inline-block; width: 6px; height: 6px; background: #0a8f3f; 
+  border-radius: 50%; box-shadow: 0 0 6px rgba(10,143,63,0.5); 
+}
+
+.info-links { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 10px; }
+.info-link {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 8px 12px; background: var(--bg-input); border: 1px solid var(--border-strong);
+  border-radius: 8px; color: var(--text-main); text-decoration: none;
+  font-size: 12px; font-weight: 600; transition: all .2s;
+}
+.info-link:hover { background: var(--bg-hover); border-color: var(--text-muted); transform: translateY(-1px); }
+
+.link-img {
+  width: 16px; height: 16px; object-fit: contain;
+  filter: invert(1); /* Iconos blancos pasan a negro en modo claro */
+  transition: filter 0.3s;
+}
+body[data-theme="dark"] .link-img { filter: none; }
+
+.info-content { flex: 1 1 auto; min-width: 0; padding: 36px 32px 28px; display: flex; flex-direction: column; }
+.info-content h2 { font-size: 20px; font-weight: 700; color: var(--text-main); letter-spacing: .5px; margin-bottom: 4px; border-bottom: none; padding-bottom: 0; }
+.info-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+
+.info-section-title { 
+  font-size: 10px; color: var(--text-dim); letter-spacing: 1px; 
+  text-transform: uppercase; margin-bottom: 8px; font-weight: 600;
+}
+
+.info-feature-list { list-style: none; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; padding-left: 0; }
+.info-feature-list li { 
+  font-size: 12px; line-height: 1.6; color: var(--text-muted); 
+  padding-left: 16px; position: relative;
+}
+.info-feature-list li::before {
+  content: "►"; position: absolute; left: 0; top: 0; font-size: 9px; color: var(--accent);
+}
+.info-feature-list strong { color: var(--text-main); font-weight: 600; }
+
+.info-stack { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.stack-badge { 
+  background: var(--bg-hover); border: 1px solid var(--border); 
+  padding: 4px 10px; border-radius: 6px; font-size: 10px; 
+  color: var(--text-muted); font-family: monospace; 
+}
+
+.info-content .info-foot { margin-top: auto; padding-top: 20px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-dim); line-height: 1.7; }
+
+@media (max-width: 640px) {
+  .info-layout { flex-direction: column; }
+  .info-brand-col { flex: 0 0 auto; border-right: none; border-bottom: 1px solid var(--border); padding: 30px 20px 20px; }
+  .info-content { padding: 24px 20px; }
+  .info-logo { max-width: 100px; }
+}
+
 </style>
 
 
@@ -554,17 +628,48 @@
   <div class="modal info-modal" role="dialog" aria-modal="true">
     <button class="modal-close" id="infoClose" aria-label="Cerrar">✕</button>
     <div class="info-layout">
+      
       <div class="info-brand-col">
         <img src="assets/c-contract.png" alt="cΔrovΣr0" class="info-logo" onerror="this.style.display='none'">
-      </div>
-      <div class="info-content">
-        <h2>Acerca de este explorador</h2>
-        <p>Porque TronScan es un producto y yo quería una herramienta propia, ligera y sin dependencias innecesarias, con datos directos, caché y control sobre la experiencia, principalmente sin rastreadores ni recopiladores de datos.</p>
-        <p>No busco competir, sino <strong>ganar independencia</strong> y no depender de que TronScan cambie su diseño o sus decisiones.</p>
-        <p class="info-foot">
-          API propia, PHP con datos on-chain vía TronGrid + TronScan API y 3xpl.
-        </p>
         <div class="info-brand-name">cΔrovΣr0</div>
+        
+        <div class="info-status-badge">
+          <span class="status-dot"></span> PWA Instalable
+        </div>
+        
+        <div class="info-links">
+          <a href="https://x.com/carover0" target="_blank" rel="noopener" class="info-link">
+            <img src="assets/x.png" alt="X" class="link-img"> X (Twitter)
+          </a>
+          <a href="https://github.com/Carover0" target="_blank" rel="noopener" class="info-link">
+            <img src="assets/g.png" alt="GitHub" class="link-img"> GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="info-content">
+        <h2>TRON · Explorador</h2>
+        <p class="info-subtitle">Una alternativa ligera y descentralizada a TronScan.</p>
+        
+        <div class="info-section-title">Características</div>
+        <ul class="info-feature-list">
+          <li><strong>Sin rastreadores:</strong> Cero analytics, scripts de seguimiento o recopilación de datos.</li>
+          <li><strong>Instalable (PWA):</strong> Funciona como app nativa en Android e iOS con soporte offline.</li>
+          <li><strong>Datos directos:</strong> Consultas directas a la red TRON sin intermediarios.</li>
+        </ul>
+
+        <div class="info-section-title">Stack Técnico</div>
+        <div class="info-stack">
+          <span class="stack-badge">Vanilla JS</span>
+          <span class="stack-badge">PHP Backend</span>
+          <span class="stack-badge">TronGrid API</span>
+          <span class="stack-badge">TronScan API</span>
+          <span class="stack-badge">3xpl</span>
+        </div>
+
+        <p class="info-foot">
+          Desarrollado con independencia. Sin publicidad, sin rastreo, sin depender de que TronScan cambie su diseño o sus decisiones. Un proyecto personal, sin más vueltas.
+        </p>
       </div>
     </div>
   </div>
