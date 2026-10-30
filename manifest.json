@@ -2,8 +2,8 @@
   "name": "TRON · Explorador",
   "short_name": "TRON Expo",
   "description": "Explorador de bloques, transacciones y direcciones TRON.",
-  "start_url": "/pagina/texplorer",
-  "scope": "/pagina/texplorer",
+  "start_url": "/pagina/texplorer.html",
+  "scope": "/pagina/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#0d1117",
@@ -12,7 +12,7 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "/pagina/assets/icon-512.png",
+      "src": "assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
