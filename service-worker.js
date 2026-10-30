@@ -1,4 +1,4 @@
-const CACHE = 'tron-expo-final';
+const CACHE = 'txeplorer v2';
 const PRECACHE = [
   './texplorer.html',
   './manifest.json',
