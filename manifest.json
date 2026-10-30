@@ -1,0 +1,21 @@
+{
+  "name": "TRON · Explorador",
+  "short_name": "TRON Expo",
+  "description": "Explorador de bloques, transacciones y direcciones TRON.",
+  "start_url": "/pagina/texplorer/",
+  "scope": "/pagina/texplorer/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d1117",
+  "theme_color": "#FF060A",
+  "lang": "es",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
