@@ -337,6 +337,10 @@
     min-height: 0; 
   }
 
+  #output .param-table td .sym { font-weight: 700; margin-left: 2px; }
+  #output .param-table td .tok-logo,
+  #output .param-table td .tok-fallback { width: 16px; height: 16px; font-size: 9px; margin-right: 4px; }
+  
   .sr-detail-modal .modal-close { top: 14px; right: 14px; z-index: 3; }
   .sr-detail-head { display: flex; align-items: center; gap: 14px; padding: 22px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; padding-right: 56px; }
   .sr-detail-head .sr-logo-lg { flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%; background: transparent; object-fit: cover; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--accent); }
@@ -1272,9 +1276,125 @@ async function renderAccount(addr, acc, resources){
     html += section('Tokens', `<table class="param-table"><thead><tr><th>Token</th><th>Balance</th></tr></thead><tbody>${tokensRows}</tbody></table>`, true);
   }
 
+  const historySectionId = 'history-' + addr.replace(/[^a-zA-Z0-9]/g, '');
+  html += `
+    <div class="section" id="${historySectionId}">
+      <div class="sec-head" onclick="this.parentNode.classList.toggle('open'); loadAccountHistory('${addr}', '${historySectionId}');">
+        <span class="caret">▶</span> Últimos movimientos
+      </div>
+      <div class="sec-body">
+        <div class="loading"><span class="spinner"></span> cargando…</div>
+      </div>
+    </div>
+  `;  
   renderOutput(html);
 }
 
+async function loadAccountHistory(addr, sectionId) {
+  const sec = document.getElementById(sectionId);
+  if (!sec) return;
+  const body = sec.querySelector('.sec-body');
+  if (body.dataset.loaded === '1') return;
+
+  try {
+    const d = await php('getaccounthistory', { addr, limit: 20 });
+    const rows = d?.result?.native;
+    if (!Array.isArray(rows) || rows.length === 0) {
+      body.innerHTML = `<div class="row"><span class="key">Sin movimientos</span><span class="val">—</span></div>`;
+      body.dataset.loaded = '1';
+      return;
+    }
+
+    // Normalizamos la dirección del titular una sola vez
+    const ownerNorm = addr.toLowerCase();
+
+    // Preparamos filas (await por token meta)
+    const trs = [];
+    for (const tx of rows.slice(0, 20)) {
+      const txid = tx.txID || tx.hash || '—';
+      const ret  = tx.ret?.[0]?.contractRet || '—';
+      const c    = tx.raw_data?.contract?.[0];
+      const type = c?.type || '—';
+      const v    = c?.parameter?.value || {};
+
+      const fromRaw = v.owner_address || '';
+      const toRaw   = v.to_address || v.receiver_address || v.contract_address || '';
+      const from    = await normalizeAddr(fromRaw);
+      const to      = await normalizeAddr(toRaw);
+
+      let direction = '—';
+      if (from && to) {
+        if (from.toLowerCase() === ownerNorm && to.toLowerCase() === ownerNorm) direction = 'self';
+        else if (from.toLowerCase() === ownerNorm) direction = 'out';
+        else if (to.toLowerCase()   === ownerNorm) direction = 'in';
+      }
+
+      let amount = 0, sym = '', dec = 0, icon = '';
+      if (type === 'TransferContract' && v.amount !== undefined) {
+        amount = Number(v.amount) / 1e6;
+        sym = 'TRX'; dec = 6;
+        icon = 'https://static.tronscan.org/production/logo/trx.png';
+      } else if (type === 'TransferAssetContract' && v.asset_name) {
+        let assetId = String(v.asset_name);
+        if (/^[0-9a-fA-F]+$/.test(assetId) && assetId.length % 2 === 0 && assetId.length > 8) {
+          try { assetId = hexToString(assetId); } catch(e){}
+        }
+        const info = await trc10Info(assetId);
+        dec = info.decimals;
+        amount = Number(v.amount || 0) / Math.pow(10, dec);
+        sym = info.symbol;
+        icon = info.icon;
+      } else if (type === 'TriggerSmartContract' && v.contract_address) {
+        const info = await trc20Info(v.contract_address);
+        dec = info.decimals || 6;
+        sym = info.symbol;
+        icon = info.icon;
+        if (v.data && v.data.startsWith('a9059cbb')) {
+          const amountHex = v.data.slice(72, 136);
+          try { amount = Number(BigInt('0x' + amountHex)) / Math.pow(10, dec); } catch(e){}
+        }
+      }
+
+      trs.push({ txid, ret, type, from, to, direction, amount, sym, dec, icon });
+    }
+
+    const dirLabel = { in: '↓ IN', out: '↑ OUT', self: '↔ SELF', '—': '—' };
+    const dirCls   = { in: 'ok',  out: 'fail', self: '', '—': '' };
+    const fmtAmount = (n, d) => n.toLocaleString(undefined, { maximumFractionDigits: d || 6 });
+
+    let table = `<table class="param-table">
+      <thead><tr>
+        <th>Hash</th>
+        <th>Tipo</th>
+        <th>Sentido</th>
+        <th>Cantidad</th>
+        <th>Resultado</th>
+      </tr></thead><tbody>`;
+
+    for (const t of trs) {
+      const shortTx = t.txid.length > 20 ? t.txid.slice(0, 18) + '…' : t.txid;
+      const dirHtml = `<span class="op-badge ${dirCls[t.direction]}">${dirLabel[t.direction]}</span>`;
+      const amtHtml = t.sym
+        ? `${tokenIcon({ symbol: t.sym, icon: t.icon })} ${fmtAmount(t.amount, t.dec)} <span class="sym">${escapeHtml(t.sym)}</span>`
+        : '—';
+      const retHtml = `<span class="op-badge ${t.ret === 'SUCCESS' ? 'ok' : 'fail'}">${escapeHtml(t.ret)}</span>`;
+
+      table += `<tr>
+        <td>${makeLink(t.txid)}</td>
+        <td>${escapeHtml(contractTypeLabel(t.type))}</td>
+        <td>${dirHtml}</td>
+        <td>${amtHtml}</td>
+        <td>${retHtml}</td>
+      </tr>`;
+    }
+    table += `</tbody></table>`;
+    body.innerHTML = table;
+    body.dataset.loaded = '1';
+  } catch (e) {
+    body.innerHTML = `<div class="row"><span class="key">Error</span><span class="val" style="color:#FF060A;">${escapeHtml(e.message)}</span></div>`;
+  }
+}
+  
 async function renderAddressOrContract(addr){
   const isContract = await isContractAddress(addr);
   if (isContract) {
