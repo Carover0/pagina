@@ -246,8 +246,8 @@ const USDT_ETH_SELECTOR_BLACKLIST = '0x59bf1abe';
 const USDC_SELECTOR_BLACKLIST = '0xfe575a87';
 const USDC_SELECTOR_PAUSED = '0x5c975abb';
 const TRON_SELECTOR_BALANCE = '0x70a08231';
-const EXPLORER_BASE = 'https://carover0.github.io/pagina/texplorer/gettransaction%20';
-const EXPLORER_QUERY = 'https://carover0.github.io/pagina/texplorer?q=';
+const EXPLORER_BASE  = 'https://carover0.github.io/pagina/texplorer#/';
+const EXPLORER_QUERY = 'https://carover0.github.io/pagina/texplorer#/';
 const RLUSD_ISSUER = 'rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De';
 const XRPL_RPC = 'https://xrplcluster.com/';
 const LIMIT_VELATORIO = 20;
@@ -360,8 +360,8 @@ async function loadVelatorio(reset = false) {
     const rows = await Promise.all(velatorioLoaded.map(async (ev) => {
       const b58 = await hexToBase58Tron(ev.result._user);
       const date = formatDate(ev.block_timestamp, true);
-      const txLink = `${EXPLORER_BASE}${encodeURIComponent(ev.transaction_id)}`;
-      const addrLink = EXPLORER_QUERY + encodeURIComponent('getaccount ' + b58);
+      const txLink = `${EXPLORER_BASE}gettransaction/${ev.transaction_id}`;
+      const addrLink = `${EXPLORER_QUERY}getaccount/${b58}`;
       return `
         <div class="event-row">
           <span class="candle">🕯️</span>
