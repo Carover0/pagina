@@ -19,10 +19,8 @@
   --text: #e2e8f0;
   --text-muted: #94a3b8;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { overflow-x: hidden; }
-
 body {
   font-family: 'Lucida Console', 'Monaco', monospace;
   background: var(--bg-deep);
@@ -36,7 +34,6 @@ body {
   position: relative;
   cursor: none;
 }
-
 .smoke-particle {
   position: fixed;
   pointer-events: none;
@@ -51,7 +48,6 @@ body {
   0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(2.5) translateY(-30px); }
 }
-
 .container {
   background: var(--bg-mid);
   border: 1px solid var(--stone-light);
@@ -65,15 +61,12 @@ body {
   min-width: 0;
   z-index: 1;
 }
-
 .container-inner { display: flex; gap: clamp(16px, 3vw, 32px); align-items: flex-start; }
 .hero-col { flex-shrink: 0; width: clamp(120px, 16vw, 200px); display: flex; justify-content: center; align-items: flex-start; padding-top: 4px; }
 .hero-col img { width: 100%; height: auto; max-height: 540px; object-fit: contain; opacity: 0.9; }
 .content-col { flex: 1; min-width: 0; }
-
 h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); letter-spacing: 0.5px; word-break: break-word; text-align: left; }
 .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; line-height: 1.6; text-align: left; }
-
 .search-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
 #searchAddress { flex: 1; min-width: 240px; padding: 14px 16px; border-radius: 8px; border: 1px solid var(--stone-light); background: var(--bg-deep); color: var(--bone); font-size: 14px; font-family: 'Lucida Console', 'Monaco', monospace; outline: none; transition: border 0.2s; max-width: 100%; }
 #searchAddress::placeholder { color: var(--stone-light); }
@@ -81,21 +74,13 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
 .search-bar button { padding: 14px 28px; border-radius: 8px; border: 1px solid var(--moss-soft); background: var(--moss); color: var(--bone); font-size: 13px; font-weight: 600; font-family: 'Lucida Console', 'Monaco', monospace; cursor: pointer; transition: transform 0.1s, background 0.2s; white-space: nowrap; flex-shrink: 0; }
 .search-bar button:hover:not(:disabled) { transform: translateY(-1px); background: var(--stone); }
 .search-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .stats-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding: 16px; background: var(--bg-deep); border-radius: 10px; border: 1px solid var(--stone); }
 .stat-item { flex: 1; min-width: 130px; text-align: center; }
 .stat-value { font-size: 22px; font-weight: 700; color: var(--moss-soft); display: block; line-height: 1.2; }
 .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-
 .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 4px; flex-wrap: wrap; gap: 12px; }
 .list-header span { font-size: 13px; color: var(--text-muted); }
-.pagination { display: flex; gap: 8px; }
-.pagination button { background: var(--stone); border: 1px solid var(--stone-light); color: var(--bone); border-radius: 6px; padding: 8px 16px; font-family: 'Lucida Console', monospace; font-size: 12px; cursor: pointer; transition: background 0.2s; }
-.pagination button:hover:not(:disabled) { background: var(--bg-deep); }
-.pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
-
-.grave-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-
+.grave-list { display: flex; flex-direction: column; gap: 16px; }
 .grave-card {
   background: var(--bg-deep);
   border-radius: 47px 47px 10px 10px;
@@ -106,62 +91,68 @@ h1 { font-size: clamp(18px, 4vw, 24px); margin-bottom: 8px; color: var(--bone); 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
+  position: center;
+  max-width: 330px;
 }
-.grave-card.clean {
-  border-radius: 12px;
-  border-top: 3px solid var(--moss-soft);
-}
-.grave-card.compact {
-  border-radius: 45px 45px 12px 12px;
-  border-top: 4px solid var(--grave-red);
-  padding: 32px 14px 14px 14px;
-}
+.grave-card.clean { border-radius: 12px; border-top: 3px solid var(--moss-soft); }
+.grave-card.compact { border-radius: 45px 45px 12px 12px; border-top: 4px solid var(--grave-red); padding: 32px 14px 14px 14px; }
 .grave-header { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 16px; }
 .grave-address { font-size: 13px; font-weight: 600; color: var(--grave-red-soft); word-break: break-all; max-width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 a.grave-address { text-decoration: none; transition: color 0.2s; }
 a.grave-address:hover { color: var(--bone); text-decoration: underline; }
 .grave-address .tomb-icon { font-size: 24px; }
-
 .network-badge { position: absolute; top: 12px; right: 35px; font-size: 9px; font-weight: bold; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px; opacity: 0.8; }
 .badge-tron { background: rgba(255, 0, 0, 0.2); color: #ff6b6b; border: 1px solid rgba(255, 0, 0, 0.3); }
 .badge-eth { background: rgba(100, 150, 255, 0.2); color: #80b3ff; border: 1px solid rgba(100, 150, 255, 0.3); }
-
 .grave-badge { font-size: 10px; background: rgba(30, 58, 95, 0.4); border: 1px solid rgba(147, 197, 253, 0.3); border-radius: 4px; padding: 4px 10px; color: var(--grave-red-soft); text-transform: uppercase; letter-spacing: 0.5px; }
 .grave-details { display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--stone); padding-top: 16px; }
 .grave-details strong { color: var(--bone); font-weight: 500; }
 .grave-details a { color: var(--moss-soft); text-decoration: none; border-bottom: 1px dashed var(--moss-soft); align-self: center; margin-top: 4px; padding-bottom: 2px; transition: color 0.2s; cursor: pointer; }
 .grave-details a:hover { color: var(--bone); border-color: var(--bone); }
-
-.empty-state { grid-column: span 2; text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px; background: var(--bg-deep); border-radius: 10px; border: 1px dashed var(--stone); }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px; background: var(--bg-deep); border-radius: 10px; border: 1px dashed var(--stone); }
 .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(226, 232, 240, 0.2); border-top-color: var(--bone); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
 .footer { margin-top: 32px; text-align: center; font-size: 11px; color: var(--text-muted); line-height: 1.8; }
 .footer a { color: var(--moss-soft); text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
-
 .top-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 10px; z-index: 10; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
 .top-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--stone); border: 1px solid var(--moss-soft); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--bone); font-size: 18px; flex-shrink: 0; transition: transform 0.2s; }
 .top-btn:hover { transform: scale(1.1); }
 .top-link { color: var(--text-muted); text-decoration: none; font-size: 13px; margin-right: 6px; transition: color 0.2s; }
 .top-link:hover { color: var(--moss-soft); }
-
 .modal-overlay { position: fixed; inset: 0; background: rgba(4, 6, 10, 0.85); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
 .modal-overlay.open { display: flex; }
 .modal-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--stone-light); background: var(--bg-deep); color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: 0.2s; }
 .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--bone); }
-
 .modal { background: var(--bg-mid); border: 1px solid var(--stone-light); border-top: 3px solid var(--grave-red); border-radius: 14px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; padding: clamp(20px, 4vw, 32px); position: relative; }
 .modal h2 { font-size: clamp(16px, 4vw, 18px); margin-bottom: 16px; color: var(--moss-soft); padding-right: 40px; }
 .modal p { font-size: 13px; line-height: 1.7; color: var(--bone-dim); margin-bottom: 12px; }
 .modal p strong { color: var(--bone); }
-
+.event-list { display: flex; flex-direction: column; gap: 8px; }
+.event-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: var(--bg-deep); border: 1px solid var(--stone);
+  border-left: 3px solid var(--grave-red); border-radius: 8px;
+  padding: 12px 14px; font-size: 12px;
+}
+.event-row .candle { font-size: 18px; flex-shrink: 0; }
+.event-row .ev-addr { color: var(--grave-red-soft); font-weight: 600; word-break: break-all; }
+.event-row .ev-addr a { color: inherit; text-decoration: none; }
+.event-row .ev-addr a:hover { color: var(--bone); text-decoration: underline; }
+.event-row .ev-meta { color: var(--text-muted); margin-left: auto; text-align: right; white-space: nowrap; }
+.event-row .ev-meta a { color: var(--moss-soft); text-decoration: none; border-bottom: 1px dashed var(--moss-soft); }
+.event-row .ev-meta a:hover { color: var(--bone); }
+.load-more {
+  display: block; margin: 16px auto 0; padding: 10px 24px;
+  background: var(--stone); border: 1px solid var(--stone-light);
+  color: var(--bone); border-radius: 8px; font-family: 'Lucida Console', monospace;
+  font-size: 12px; cursor: pointer;
+}
+.load-more:hover:not(:disabled) { background: var(--bg-deep); }
+.load-more:disabled { opacity: 0.4; cursor: not-allowed; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 @media (max-width: 900px) {
-  .grave-list { grid-template-columns: 1fr; }
   .empty-state { grid-column: span 1; }
 }
-
 @media (max-width: 720px) {
   body { padding: 12px 10px; }
   .container { padding: 20px 16px; }
@@ -174,9 +165,7 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
   .search-bar button { width: 100%; }
   .stats-row { flex-direction: column; gap: 12px; padding: 16px 10px; }
   .list-header { flex-direction: column; align-items: stretch; text-align: center; }
-  .pagination { justify-content: center; }
 }
-
 @media (max-width: 600px) {
   .top-actions { top: 10px; right: 10px; }
   .top-link { display: none; }
@@ -201,18 +190,13 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
           <button id="searchBtn">Buscar</button>
         </div>
         <div class="stats-row" id="statsRow">
-          <div class="stat-item"><span class="stat-value" id="statTotal">—</span><span class="stat-label">Total eventos</span></div>
-          <div class="stat-item"><span class="stat-value" id="statFrozen">—</span><span class="stat-label">Congelados (USDT)</span></div>
+          <div class="stat-item"><span class="stat-value" id="statTotal">—</span><span class="stat-label">Eventos cargados</span></div>
         </div>
         <div class="list-header">
           <span id="listInfo">Cargando...</span>
-          <div class="pagination">
-            <button id="prevBtn" disabled>← Anterior</button>
-            <button id="nextBtn" disabled>Siguiente →</button>
-          </div>
         </div>
         <div class="grave-list" id="graveList"><div class="empty-state">Cargando datos del cementerio...</div></div>
-        <footer class="footer">Consulta directa a Tronscan API y Ethereum RPC · Datos on-chain<br><br><a href="https://carover0.github.io/pagina/" target="_self" rel="noopener">[INICIO]</a></footer>
+        <footer class="footer">Consulta directa a TronGrid (eventos en vivo) y Ethereum RPC · Datos on-chain<br><br><a href="https://carover0.github.io/pagina/" target="_self" rel="noopener">[INICIO]</a></footer>
       </div>
     </div>
   </main>
@@ -221,19 +205,13 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
   <div class="modal" role="dialog" aria-modal="true">
     <button class="modal-close" id="infoClose" aria-label="Cerrar">✕</button>
     <h2>⚠️ Sobre este cementerio</h2>
-
-    <p>Esta lista muestra direcciones que han sido incluidas en la blacklist de USDT en Tron y Ethereum, y direcciones con trust lines de RLUSD en XRPL.</p>
-
-    <p>En Tron, la lista se actualiza en vivo leyendo los eventos <code>AddedBlackList</code> del contrato. En Ethereum, podes buscar cualquier dirección <code>0x...</code> para verificar su estado en <strong>USDT (Tether)</strong> y <strong>USDC (Circle)</strong> al mismo tiempo. Una dirección aca <strong>no puede enviar el token bloqueado</strong>.</p>
-
+    <p>Esta lista muestra direcciones que han sido incluidas en la blacklist de USDT en Tron, leídas en vivo desde TronGrid a través de los eventos <code>AddedBlackList</code> del contrato. No se muestra el monto congelado: el evento no lo incluye y se prioriza la latencia en tiempo real sobre el dato consolidado.</p>
+    <p>En Ethereum, podes buscar cualquier dirección <code>0x...</code> para verificar su estado en <strong>USDT (Tether)</strong> y <strong>USDC (Circle)</strong> al mismo tiempo. Una dirección aca <strong>no puede enviar el token bloqueado</strong>.</p>
     <p>En XRPL, podes buscar cualquier dirección <code>r...</code> para verificar si tiene una trust line de <strong>RLUSD (Ripple)</strong> y si esa trust line está congelada por el emisor. Ripple no usa una blacklist de direcciones: el control está en la cuenta emisora <code>rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De</code>, que conserva los flags <code>noFreeze: false</code> (puede congelar trust lines individuales) y <code>allowTrustLineClawback: true</code> (puede recuperar tokens ya emitidos).</p>
-
     <p>También se consulta si USDC está <strong>pausado globalmente</strong> (función <code>paused()</code> de Circle).</p>
-
     <p style="border-top:1px solid var(--stone); padding-top:16px; margin-top:16px;">
       <strong>Una stablecoin siempre tiene un emisor que puede congelarte.</strong> Si queres evitar esa dependencia, las monedas soberanas no tienen blacklist que consultar: <strong>PIVX</strong>, <strong>BCH</strong>, <strong>Firo</strong> y <strong>LTC</strong>.
     </p>
-
     <p style="font-size:11px; opacity:0.7; margin-bottom:0;">Esto no es asesoramiento financiero. Es solo el patrón que muestran los datos.</p>
   </div>
 </div>
@@ -257,405 +235,367 @@ a.grave-address:hover { color: var(--bone); text-decoration: underline; }
       }
     });
 
-    const TRONSCAN_API = 'https://apilist.tronscanapi.com/api/stableCoin/blackList';
-    const USDT_TRON_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
-    const API_KEY = '764809a4-16b1-4f5a-9126-95efdc67c932';
-    const USDT_ETH_CONTRACT = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-    const USDC_ETH_CONTRACT = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
-    const ETH_RPC = 'https://ethereum.publicnode.com';
-    const TRON_RPC = 'https://api.trongrid.io';
-    const TRON_SELECTOR_BLACKLIST = '0x59bf1abe'; 
-    const USDT_ETH_SELECTOR_BLACKLIST = '0x59bf1abe'; 
-    const USDC_SELECTOR_BLACKLIST = '0xfe575a87'; 
-    const USDC_SELECTOR_PAUSED = '0x5c975abb'; 
-    const TRON_SELECTOR_BALANCE = '0x70a08231'; 
-    const EXPLORER_BASE = 'https://carover0.github.io/pagina/texplorer/gettransaction%20';
-    const EXPLORER_QUERY = 'https://carover0.github.io/pagina/texplorer?q=';
+const TRONGRID_EVENTS = 'https://api.trongrid.io/v1/contracts/TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t/events';
+const USDT_TRON_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+const TRONGRID_KEY = 'a9d4c385-3529-46a5-94b4-1d3adbc45978';
+const USDT_ETH_CONTRACT = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+const USDC_ETH_CONTRACT = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const ETH_RPC = 'https://ethereum.publicnode.com';
+const TRON_RPC = 'https://api.trongrid.io';
+const USDT_ETH_SELECTOR_BLACKLIST = '0x59bf1abe';
+const USDC_SELECTOR_BLACKLIST = '0xfe575a87';
+const USDC_SELECTOR_PAUSED = '0x5c975abb';
+const TRON_SELECTOR_BALANCE = '0x70a08231';
+const EXPLORER_BASE = 'https://carover0.github.io/pagina/texplorer/gettransaction%20';
+const EXPLORER_QUERY = 'https://carover0.github.io/pagina/texplorer?q=';
+const RLUSD_ISSUER = 'rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De';
+const XRPL_RPC = 'https://xrplcluster.com/';
+const LIMIT_VELATORIO = 20;
 
-    const LIMIT = 20;
-    let currentPage = 0;
-    let totalRecords = 0;
-    let isSearching = false;
+let velatorioFingerprint = null;
+let velatorioLoaded = [];
+let isBusy = false;
 
-    const searchInput = document.getElementById('searchAddress');
-    const searchBtn = document.getElementById('searchBtn');
-    const graveList = document.getElementById('graveList');
-    const listInfo = document.getElementById('listInfo');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const statTotal = document.getElementById('statTotal');
-    const statFrozen = document.getElementById('statFrozen');
+const searchInput = document.getElementById('searchAddress');
+const searchBtn = document.getElementById('searchBtn');
+const graveList = document.getElementById('graveList');
+const listInfo = document.getElementById('listInfo');
+const statTotal = document.getElementById('statTotal');
 
-    const infoBtn = document.getElementById('infoBtn');
-    const infoOverlay = document.getElementById('infoOverlay');
-    const infoClose = document.getElementById('infoClose');
+const infoBtn = document.getElementById('infoBtn');
+const infoOverlay = document.getElementById('infoOverlay');
+const infoClose = document.getElementById('infoClose');
 
-    function openInfo() { infoOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
-    function closeInfo() { infoOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+function openInfo() { infoOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeInfo() { infoOverlay.classList.remove('open'); document.body.style.overflow = ''; }
 
-    infoBtn.addEventListener('click', openInfo);
-    infoClose.addEventListener('click', closeInfo);
-    infoOverlay.addEventListener('click', (e) => { if (e.target === infoOverlay) closeInfo(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && infoOverlay.classList.contains('open')) closeInfo(); });
+infoBtn.addEventListener('click', openInfo);
+infoClose.addEventListener('click', closeInfo);
+infoOverlay.addEventListener('click', (e) => { if (e.target === infoOverlay) closeInfo(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && infoOverlay.classList.contains('open')) closeInfo(); });
 
-    function formatNumber(num) { if (!num) return '0'; return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
-    function formatDate(timestamp) { if (!timestamp) return '—'; const d = new Date(timestamp * 1000); return d.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
-
-    function buildTronApiUrl(start, blackAddress = null) {
-      let url = `${TRONSCAN_API}?tokenAddress=${USDT_TRON_CONTRACT}&sort=2&direction=2&start=${start}&limit=${LIMIT}`;
-      if (blackAddress) { url += `&blackAddress=${encodeURIComponent(blackAddress)}`; }
-      return url;
+const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+function bytesToBase58(bytes) {
+  const digits = [0];
+  for (const byte of bytes) {
+    let carry = byte;
+    for (let i = 0; i < digits.length; i++) {
+      carry += digits[i] << 8;
+      digits[i] = carry % 58;
+      carry = (carry / 58) | 0;
     }
+    while (carry > 0) { digits.push(carry % 58); carry = (carry / 58) | 0; }
+  }
+  let out = '';
+  for (let i = 0; i < bytes.length && bytes[i] === 0; i++) out += '1';
+  for (let i = digits.length - 1; i >= 0; i--) out += B58[digits[i]];
+  return out;
+}
+async function sha256(data) {
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return new Uint8Array(buf);
+}
+async function hexToBase58Tron(hex) {
+  const clean = hex.replace(/^0x/, '');
+  const bytes = new Uint8Array(21);
+  bytes[0] = 0x41;
+  for (let i = 0; i < 20; i++) bytes[i + 1] = parseInt(clean.substr(i * 2, 2), 16);
+  const h1 = await sha256(bytes);
+  const h2 = await sha256(h1);
+  const checksum = h2.slice(0, 4);
+  const full = new Uint8Array(25);
+  full.set(bytes, 0);
+  full.set(checksum, 21);
+  return bytesToBase58(full);
+}
 
-    async function fetchTronBlacklist(start, blackAddress = null) {
-      const url = buildTronApiUrl(start, blackAddress);
-      const headers = { 'Accept': 'application/json' };
-      if (API_KEY) { headers['TRON-PRO-API-KEY'] = API_KEY; }
-      const res = await fetch(url, { headers });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
-    }
+function formatNumber(num) { if (!num) return '0'; return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function formatDate(ts, isMillis = false) {
+  if (!ts) return '—';
+  const d = new Date(isMillis ? ts : ts * 1000);
+  return d.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function shortAddr(a) {
+  if (!a) return '';
+  return a.length > 14 ? `${a.slice(0, 6)}…${a.slice(-5)}` : a;
+}
 
-    async function checkTronIndividual(address) {
-      const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-      function base58ToBytes(str) {
-        const bytes = [0];
-        for (let i = 0; i < str.length; i++) {
-          const value = BASE58_ALPHABET.indexOf(str[i]);
-          let carry = value;
-          for (let j = 0; j < bytes.length; j++) {
-            carry += bytes[j] * 58; bytes[j] = carry & 0xff; carry >>= 8;
-          }
-          while (carry > 0) { bytes.push(carry & 0xff); carry >>= 8; }
-        }
-        for (let i = 0; i < str.length && str[i] === '1'; i++) bytes.push(0);
-        return bytes.reverse();
-      }
-      const bytes = base58ToBytes(address);
-      const hex20 = bytes.slice(1, 21).map(b => b.toString(16).padStart(2, '0')).join('');
-      const paddedParam = '000000000000000000000000' + hex20;
-
-      const reqBlacklist = { owner_address: USDT_TRON_CONTRACT, contract_address: USDT_TRON_CONTRACT, function_selector: 'isBlackListed(address)', parameter: paddedParam, visible: true };
-      const resBlacklist = await fetch(`${TRON_RPC}/wallet/triggerconstantcontract`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBlacklist) });
-      const jsonBlacklist = await resBlacklist.json();
-      if (!jsonBlacklist.constant_result || !jsonBlacklist.constant_result[0]) throw new Error('Respuesta inválida de TronGrid');
-      const isBlocked = jsonBlacklist.constant_result[0] !== '0'.repeat(64);
-
-      const reqBalance = { owner_address: USDT_TRON_CONTRACT, contract_address: USDT_TRON_CONTRACT, function_selector: 'balanceOf(address)', parameter: paddedParam, visible: true };
-      const resBalance = await fetch(`${TRON_RPC}/wallet/triggerconstantcontract`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBalance) });
-      const jsonBalance = await resBalance.json();
-
-      let balance = '—';
-      if (jsonBalance.constant_result && jsonBalance.constant_result[0]) {
-        const raw = BigInt('0x' + jsonBalance.constant_result[0]);
-        const integerPart = raw / BigInt(1000000);
-        const decimalPart = raw % BigInt(1000000);
-        balance = integerPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + decimalPart.toString().padStart(6, '0');
-      }
-      return { isBlocked, balance };
-    }
-
-    async function ethCall(to, data, id = 1) {
-      const reqBody = { jsonrpc: '2.0', method: 'eth_call', params: [{ to, data }, 'latest'], id };
-      const response = await fetch(ETH_RPC, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
-      const json = await response.json();
-      if (json.error) throw new Error(json.error.message);
-      return json.result;
-    }
-
-    function isNonZeroHex(result) {
-      return !!result && result !== '0x' + '0'.repeat(64);
-    }
-
-    async function checkEthBlacklist(address) {
-      const padded = address.toLowerCase().replace('0x', '').padStart(64, '0');
-      const r = await ethCall(USDT_ETH_CONTRACT, USDT_ETH_SELECTOR_BLACKLIST + padded, 1);
-      return { isBlocked: isNonZeroHex(r) };
-    }
-
-    async function checkUsdcBlacklist(address) {
-      const padded = address.toLowerCase().replace('0x', '').padStart(64, '0');
-      const r = await ethCall(USDC_ETH_CONTRACT, USDC_SELECTOR_BLACKLIST + padded, 2);
-      return { isBlocked: isNonZeroHex(r) };
-    }
-
-    async function checkUsdcPaused() {
-      const r = await ethCall(USDC_ETH_CONTRACT, USDC_SELECTOR_PAUSED, 3);
-      return { paused: isNonZeroHex(r) };
-    }
-
-    async function checkEthBalanceGeneric(contract, address, id = 4) {
-      const padded = address.toLowerCase().replace('0x', '').padStart(64, '0');
-      const r = await ethCall(contract, TRON_SELECTOR_BALANCE + padded, id);
-      let balance = '0.00';
-      if (isNonZeroHex(r)) {
-        const raw = BigInt(r);
-        const integerPart = raw / BigInt(1000000);
-        const decimalPart = raw % BigInt(1000000);
-        balance = integerPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + decimalPart.toString().padStart(6, '0');
-      }
-      return { balance };
-    }
-
-    function renderTronList(data, total) {
-      if (!data || data.length === 0) {
-        graveList.innerHTML = '<div class="empty-state">No se encontraron direcciones congeladas en Tron para esta búsqueda.</div>';
-        listInfo.textContent = '0 resultados';
-        return;
-      }
-      let html = '', sumFrozen = 0;
-      data.forEach(item => {
-        const amount = (parseFloat(item.num) || 0) / 1000000;
-        sumFrozen += amount;
-        const date = formatDate(item.time);
-        const hash = item.transHash || '';
-        const txLink = hash
-          ? `<span><a href="${EXPLORER_BASE}${encodeURIComponent(hash)}" target="_blank" rel="noopener">Ver transacción ↗</a></span>`
-          : '';
-        const addrExplorerUrl = EXPLORER_QUERY + encodeURIComponent('getaccount ' + item.blackAddress);
-
-        html += `
-          <div class="grave-card compact">
-            <span class="network-badge badge-tron">TRON</span>
-            <div class="grave-header">
-              <a class="grave-address" href="${addrExplorerUrl}" target="_blank" rel="noopener" title="Ver en explorador: ${item.blackAddress}"><span class="tomb-icon">🪦</span>${item.blackAddress}</a>
-              <span class="grave-badge">Congelada</span>
-            </div>
-            <div class="grave-details">
-              <span><strong>Monto:</strong> ${formatNumber(amount.toFixed(2))} USDT</span>
-              <span><strong>Fecha:</strong> ${date}</span>
-              ${txLink}
-            </div>
-          </div>`;
-      });
-      graveList.innerHTML = html;
-      const startIdx = currentPage * LIMIT + 1;
-      const endIdx = Math.min((currentPage + 1) * LIMIT, total);
-      listInfo.textContent = `Mostrando ${startIdx}–${endIdx} de ${formatNumber(total)} registros`;
-      statTotal.textContent = formatNumber(total);
-      statFrozen.textContent = formatNumber(sumFrozen.toFixed(2));
-      prevBtn.disabled = currentPage === 0;
-      nextBtn.disabled = endIdx >= total;
-    }
-
-    function renderIndividualResult(address, network, isBlocked, balance) {
-      const badgeClass = network === 'Tron' ? 'badge-tron' : 'badge-eth';
-      const badgeText = network === 'Tron' ? 'TRON' : 'ETH';
-      const icon = isBlocked ? '🪦' : '🍀';
-
-      let explorerUrl = null;
-      if (isBlocked) {
-        explorerUrl = network === 'Tron'
-          ? 'https://tronscan.org/#/address/' + address
-          : 'https://etherscan.io/address/' + address;
-      } else if (network === 'Tron') {
-        explorerUrl = EXPLORER_QUERY + encodeURIComponent('getaccount ' + address);
-      }
-
-      const linkHtml = explorerUrl
-        ? `<span><a href="${explorerUrl}" target="_blank" rel="noopener">Ver en Explorador ↗</a></span>`
-        : '';
-
-      const cardStyle = isBlocked
-        ? 'border-top: 5px solid var(--grave-red); border-radius: 50% 50% 12px 12px / 70px 70px 12px 12px; padding: 60px 24px 24px 24px;'
-        : 'border-top: 3px solid var(--moss-soft); border-radius: 12px; padding: 16px 14px 14px 14px;';
-
-      const badgeStyle = isBlocked
-        ? 'color: var(--grave-red-soft); border-color: rgba(147, 197, 253, 0.3);'
-        : 'color: var(--moss-soft); border-color: var(--moss-soft);';
-
-      const card = `
-        <div class="grave-card" style="${cardStyle}">
-          <span class="network-badge ${badgeClass}">${badgeText}</span>
-          <div class="grave-header">
-            <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
-            <span class="grave-badge" style="${badgeStyle}">
-              ${isBlocked ? 'BLOQUEADA' : 'LIMPIA'}
-            </span>
-          </div>
-          <div class="grave-details">
-            <span><strong>Red:</strong> ${network}</span>
-            <span><strong>Saldo:</strong> ${balance} USDT</span>
-            ${linkHtml}
-          </div>
-        </div>`;
-
-      graveList.innerHTML = card;
-      listInfo.textContent = `1 resultado (${network})`;
-      statTotal.textContent = '1';
-      statFrozen.textContent = balance;
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
-    }
-
-    async function renderEthAddress(address) {
-      graveList.innerHTML = '<div class="empty-state"><span class="spinner"></span> Consultando USDT y USDC...</div>';
-
-      const [usdtBl, usdtBal, usdcBl, usdcBal, usdcPaused] = await Promise.all([
-        checkEthBlacklist(address),
-        checkEthBalanceGeneric(USDT_ETH_CONTRACT, address, 4),
-        checkUsdcBlacklist(address),
-        checkEthBalanceGeneric(USDC_ETH_CONTRACT, address, 5),
-        checkUsdcPaused()
-      ]);
-
-      const anyBlocked = usdtBl.isBlocked || usdcBl.isBlocked;
-      const icon = anyBlocked ? '🪦' : '🍀';
-
-      const cardStyle = anyBlocked
-        ? 'border-top: 5px solid var(--grave-red); border-radius: 50% 50% 12px 12px / 70px 70px 12px 12px; padding: 60px 24px 24px 24px;'
-        : 'border-top: 3px solid var(--moss-soft); border-radius: 12px; padding: 16px 14px 14px 14px;';
-
-      const statusBadge = (label, blocked, colorVar) => `
-        <span class="grave-badge" style="color: ${colorVar}; border-color: ${colorVar};">
-          ${label}: ${blocked ? 'BLOQUEADO' : 'LIMPIO'}
-        </span>`;
-
-      graveList.innerHTML = `
-        <div class="grave-card" style="${cardStyle}">
-          <span class="network-badge badge-eth">ETH</span>
-          <div class="grave-header">
-            <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
-              ${statusBadge('USDT', usdtBl.isBlocked, 'var(--grave-red-soft)')}
-              ${statusBadge('USDC', usdcBl.isBlocked, 'var(--moss-soft)')}
-            </div>
-          </div>
-          <div class="grave-details">
-            <span><strong>USDT:</strong> ${usdtBal.balance} USDT ${usdtBl.isBlocked ? '🔒' : ''}</span>
-            <span><strong>USDC:</strong> ${usdcBal.balance} USDC ${usdcBl.isBlocked ? '🔒' : ''}</span>
-            ${usdcPaused.paused ? '<span style="color:#f59e0b;"><strong>⚠️ USDC pausado globalmente</strong></span>' : ''}
-            <span><a href="https://etherscan.io/address/${address}" target="_blank" rel="noopener">Ver en Etherscan ↗</a></span>
-          </div>
-        </div>`;
-
-      listInfo.textContent = `1 resultado (Ethereum · USDT + USDC)`;
-      statTotal.textContent = '1';
-      const totalBal = Number(usdtBal.balance.replace(/,/g, '')) + Number(usdcBal.balance.replace(/,/g, ''));
-      statFrozen.textContent = formatNumber(totalBal.toFixed(2));
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
-    }
-
-    async function loadPage(page = 0, filterAddress = null) {
-      if (isSearching) return;
-      currentPage = page;
-      const start = page * LIMIT;
-      graveList.innerHTML = '<div class="empty-state"><span class="spinner"></span> Consultando...</div>';
-      searchBtn.disabled = true;
-      isSearching = true;
-
-      try {
-        if (filterAddress) {
-          if (filterAddress.startsWith('0x')) {
-            await renderEthAddress(filterAddress);
-            return;
-          } else if (filterAddress.startsWith('T')) {
-            const trx = await checkTronIndividual(filterAddress);
-            renderIndividualResult(filterAddress, 'Tron', trx.isBlocked, trx.balance);
-            return;
-          } else if (filterAddress.startsWith('r')) {
-            const rlusd = await checkRlusdTrustLine(filterAddress);
-            renderRlusdResult(filterAddress, rlusd);
-            return;
-            }else {
-            throw new Error('Dirección no válida. Debe empezar con T (Tron) o 0x (Ethereum).');
-          }
-        }
-
-        const result = await fetchTronBlacklist(start, null);
-        totalRecords = result.total || 0;
-        renderTronList(result.data, totalRecords);
-
-      } catch (err) {
-        graveList.innerHTML = `<div class="empty-state" style="color: var(--grave-red-soft);">Error: ${err.message}</div>`;
-        listInfo.textContent = 'Error';
-      } finally {
-        searchBtn.disabled = false;
-        isSearching = false;
-      }
-    }
-
-    prevBtn.addEventListener('click', () => { if (currentPage > 0) loadPage(currentPage - 1); });
-    nextBtn.addEventListener('click', () => { const maxPage = Math.ceil(totalRecords / LIMIT) - 1; if (currentPage < maxPage) loadPage(currentPage + 1); });
-    searchBtn.addEventListener('click', () => {
-      const addr = searchInput.value.trim();
-      if (addr) { loadPage(0, addr); } else { loadPage(0); }
+async function loadVelatorio(reset = false) {
+  if (isBusy) return;
+  isBusy = true;
+  searchBtn.disabled = true;
+  if (reset) {
+    graveList.innerHTML = '<div class="empty-state"><span class="spinner"></span> Consultando eventos AddedBlackList…</div>';
+    listInfo.textContent = 'Cargando velatorio…';
+  } else {
+    const btn = document.getElementById('loadMoreBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Cargando…'; }
+  }
+  try {
+    let url = `${TRONGRID_EVENTS}?event_name=AddedBlackList&limit=${LIMIT_VELATORIO}&order_by=block_timestamp,desc`;
+    if (velatorioFingerprint && !reset) url += `&fingerprint=${encodeURIComponent(velatorioFingerprint)}`;
+    const res = await fetch(url, {
+      headers: { 'TRON-PRO-API-KEY': TRONGRID_KEY, 'Accept': 'application/json' }
     });
-    searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { searchBtn.click(); } });
-
-    const RLUSD_ISSUER = 'rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De';
-    const XRPL_RPC = 'https://xrplcluster.com/';
-
-    async function checkRlusdTrustLine(address) {
-      const body = {
-        method: 'account_lines',
-        params: [{
-          account: address,
-          peer: RLUSD_ISSUER,
-          ledger_index: 'validated'
-        }]
-      };
-      
-      const res = await fetch(XRPL_RPC, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      
-      const json = await res.json();
-      if (json.result?.error) throw new Error(json.result.error_message || 'Error consultando XRPL');
-      
-      const lines = json.result?.lines || [];
-      const rlusdLine = lines.find(l => l.currency === '524C555344000000000000000000000000000000' && l.account === RLUSD_ISSUER);
-      
-      if (!rlusdLine) {
-        return { hasTrustLine: false, isFrozen: false, balance: '0' };
-      }
-      
-      const isFrozen = rlusdLine.freeze === true;
-      return {
-        hasTrustLine: true,
-        isFrozen,
-        balance: rlusdLine.balance || '0'
-      };
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const events = json.data || [];
+    if (reset) velatorioLoaded = [];
+    const seen = new Set(velatorioLoaded.map(e => e.transaction_id + '|' + e.result._user));
+    const fresh = [];
+    for (const ev of events) {
+      const key = ev.transaction_id + '|' + ev.result._user;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      fresh.push(ev);
     }
-
-    function renderRlusdResult(address, data) {
-      const isBlocked = data.isFrozen;
-      const icon = isBlocked ? '🪦' : (data.hasTrustLine ? '🍀' : '👻');
-      
-      const cardStyle = isBlocked
-        ? 'border-top: 5px solid var(--grave-red); border-radius: 50% 50% 12px 12px / 70px 70px 12px 12px; padding: 60px 24px 24px 24px;'
-        : 'border-top: 3px solid var(--moss-soft); border-radius: 12px; padding: 16px 14px 14px 14px;';
-
-      const statusText = !data.hasTrustLine ? 'SIN TRUST LINE' : (isBlocked ? 'CONGELADA' : 'LIMPIA');
-      const badgeStyle = isBlocked
-        ? 'color: var(--grave-red-soft); border-color: rgba(147, 197, 253, 0.3);'
-        : 'color: var(--moss-soft); border-color: var(--moss-soft);';
-
-      graveList.innerHTML = `
-        <div class="grave-card" style="${cardStyle}">
-          <span class="network-badge badge-xrpl" style="background: rgba(0,150,255,0.2); color: #64b5f6; border: 1px solid rgba(0,150,255,0.3);">XRPL</span>
-          <div class="grave-header">
-            <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
-            <span class="grave-badge" style="${badgeStyle}">${statusText}</span>
-          </div>
-          <div class="grave-details">
-            <span><strong>Red:</strong> XRP Ledger (RLUSD)</span>
-            <span><strong>Saldo RLUSD:</strong> ${data.balance}</span>
-            ${isBlocked ? '<span style="color:#f59e0b;"><strong>⚠️ Trust line congelada por el emisor</strong></span>' : ''}
-            <span><a href="https://xrpscan.com/account/${address}" target="_blank" rel="noopener">Ver en XRPScan ↗</a></span>
-          </div>
+    velatorioLoaded = velatorioLoaded.concat(fresh);
+    const nextLink = json.meta?.links?.next;
+    if (nextLink) {
+      const m = nextLink.match(/fingerprint=([^&]+)/);
+      velatorioFingerprint = m ? decodeURIComponent(m[1]) : null;
+    } else {
+      velatorioFingerprint = null;
+    }
+    const rows = await Promise.all(velatorioLoaded.map(async (ev) => {
+      const b58 = await hexToBase58Tron(ev.result._user);
+      const date = formatDate(ev.block_timestamp, true);
+      const txLink = `${EXPLORER_BASE}${encodeURIComponent(ev.transaction_id)}`;
+      const addrLink = EXPLORER_QUERY + encodeURIComponent('getaccount ' + b58);
+      return `
+        <div class="event-row">
+          <span class="candle">🕯️</span>
+          <span class="ev-addr"><a href="${addrLink}" target="_blank" rel="noopener" title="${b58}">${b58}</a></span>
+          <span class="ev-meta">${date} · <a href="${txLink}" target="_blank" rel="noopener">tx ↗</a></span>
         </div>`;
+    }));
+    const moreBtn = velatorioFingerprint
+      ? '<button class="load-more" id="loadMoreBtn">Cargar más eventos</button>'
+      : '<button class="load-more" id="loadMoreBtn" disabled>No hay más eventos</button>';
+    graveList.innerHTML = `<div class="event-list">${rows.join('')}</div>${moreBtn}`;
+    const btn = document.getElementById('loadMoreBtn');
+    if (btn) btn.addEventListener('click', () => loadVelatorio(false));
+    listInfo.textContent = `${velatorioLoaded.length} eventos cargados (TronGrid en vivo)`;
+    statTotal.textContent = formatNumber(velatorioLoaded.length);
+  } catch (err) {
+    graveList.innerHTML = `<div class="empty-state" style="color: var(--grave-red-soft);">Error: ${err.message}</div>`;
+    listInfo.textContent = 'Error';
+  } finally {
+    searchBtn.disabled = false;
+    isBusy = false;
+  }
+}
 
-      listInfo.textContent = `1 resultado (XRPL · RLUSD)`;
-      statTotal.textContent = '1';
-      statFrozen.textContent = data.balance;
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
+async function checkTronIndividual(address) {
+  const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  function base58ToBytes(str) {
+    const bytes = [0];
+    for (let i = 0; i < str.length; i++) {
+      const value = BASE58_ALPHABET.indexOf(str[i]);
+      let carry = value;
+      for (let j = 0; j < bytes.length; j++) { carry += bytes[j] * 58; bytes[j] = carry & 0xff; carry >>= 8; }
+      while (carry > 0) { bytes.push(carry & 0xff); carry >>= 8; }
     }
-    loadPage(0);
-  </script>
+    for (let i = 0; i < str.length && str[i] === '1'; i++) bytes.push(0);
+    return bytes.reverse();
+  }
+  const bytes = base58ToBytes(address);
+  const hex20 = bytes.slice(1, 21).map(b => b.toString(16).padStart(2, '0')).join('');
+  const paddedParam = '000000000000000000000000' + hex20;
+  const reqBlacklist = { owner_address: USDT_TRON_CONTRACT, contract_address: USDT_TRON_CONTRACT, function_selector: 'isBlackListed(address)', parameter: paddedParam, visible: true };
+  const resBlacklist = await fetch(`${TRON_RPC}/wallet/triggerconstantcontract`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBlacklist) });
+  const jsonBlacklist = await resBlacklist.json();
+  if (!jsonBlacklist.constant_result || !jsonBlacklist.constant_result[0]) throw new Error('Respuesta inválida de TronGrid');
+  const isBlocked = jsonBlacklist.constant_result[0] !== '0'.repeat(64);
+  const reqBalance = { owner_address: USDT_TRON_CONTRACT, contract_address: USDT_TRON_CONTRACT, function_selector: 'balanceOf(address)', parameter: paddedParam, visible: true };
+  const resBalance = await fetch(`${TRON_RPC}/wallet/triggerconstantcontract`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBalance) });
+  const jsonBalance = await resBalance.json();
+  let balance = '—';
+  if (jsonBalance.constant_result && jsonBalance.constant_result[0]) {
+    const raw = BigInt('0x' + jsonBalance.constant_result[0]);
+    const integerPart = raw / BigInt(1000000);
+    const decimalPart = raw % BigInt(1000000);
+    balance = integerPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + decimalPart.toString().padStart(6, '0');
+  }
+  return { isBlocked, balance };
+}
+
+async function ethCall(to, data, id = 1) {
+  const reqBody = { jsonrpc: '2.0', method: 'eth_call', params: [{ to, data }, 'latest'], id };
+  const response = await fetch(ETH_RPC, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
+  const json = await response.json();
+  if (json.error) throw new Error(json.error.message);
+  return json.result;
+}
+function isNonZeroHex(result) { return !!result && result !== '0x' + '0'.repeat(64); }
+async function checkEthBlacklist(address) {
+  const padded = address.toLowerCase().replace('0x', '').padStart(64, '0');
+  const r = await ethCall(USDT_ETH_CONTRACT, USDT_ETH_SELECTOR_BLACKLIST + padded, 1);
+  return { isBlocked: isNonZeroHex(r) };
+}
+async function checkUsdcBlacklist(address) {
+  const padded = address.toLowerCase().replace('0x', '').padStart(64, '0');
+  const r = await ethCall(USDC_ETH_CONTRACT, USDC_SELECTOR_BLACKLIST + padded, 2);
+  return { isBlocked: isNonZeroHex(r) };
+}
+async function checkUsdcPaused() {
+  const r = await ethCall(USDC_ETH_CONTRACT, USDC_SELECTOR_PAUSED, 3);
+  return { paused: isNonZeroHex(r) };
+}
+
+async function checkEthBalanceGeneric(contract, address, id = 4) {
+  const padded = address.toLowerCase().replace('0x', '').padStart(64, '0');
+  const r = await ethCall(contract, TRON_SELECTOR_BALANCE + padded, id);
+  let balance = '0.00';
+  if (isNonZeroHex(r)) {
+    const raw = BigInt(r);
+    const integerPart = raw / BigInt(1000000);
+    const decimalPart = raw % BigInt(1000000);
+    balance = integerPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + decimalPart.toString().padStart(6, '0');
+  }
+  return { balance };
+}
+
+async function checkRlusdTrustLine(address) {
+  const body = { method: 'account_lines', params: [{ account: address, peer: RLUSD_ISSUER, ledger_index: 'validated' }] };
+  const res = await fetch(XRPL_RPC, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const json = await res.json();
+  if (json.result?.error) throw new Error(json.result.error_message || 'Error consultando XRPL');
+  const lines = json.result?.lines || [];
+  const rlusdLine = lines.find(l => l.currency === '524C555344000000000000000000000000000000' && l.account === RLUSD_ISSUER);
+  if (!rlusdLine) return { hasTrustLine: false, isFrozen: false, balance: '0' };
+  return { hasTrustLine: true, isFrozen: rlusdLine.freeze === true, balance: rlusdLine.balance || '0' };
+}
+
+function renderIndividualResult(address, network, isBlocked, balance) {
+  const badgeClass = network === 'Tron' ? 'badge-tron' : 'badge-eth';
+  const badgeText = network === 'Tron' ? 'TRON' : 'ETH';
+  const icon = isBlocked ? '🪦' : '🍀';
+  let explorerUrl = null;
+  if (isBlocked) {
+    explorerUrl = network === 'Tron' ? 'https://tronscan.org/#/address/' + address : 'https://etherscan.io/address/' + address;
+  } else if (network === 'Tron') {
+    explorerUrl = EXPLORER_QUERY + encodeURIComponent('getaccount ' + address);
+  }
+  const linkHtml = explorerUrl ? `<span><a href="${explorerUrl}" target="_blank" rel="noopener">Ver en Explorador ↗</a></span>` : '';
+  const cardStyle = isBlocked
+    ? 'border-top: 5px solid var(--grave-red); border-radius: 50% 50% 12px 12px / 70px 70px 12px 12px; padding: 60px 24px 24px 24px;'
+    : 'border-top: 3px solid var(--moss-soft); border-radius: 12px; padding: 16px 14px 14px 14px;';
+  const badgeStyle = isBlocked
+    ? 'color: var(--grave-red-soft); border-color: rgba(147, 197, 253, 0.3);'
+    : 'color: var(--moss-soft); border-color: var(--moss-soft);';
+  graveList.innerHTML = `
+    <div class="grave-card" style="${cardStyle}">
+      <span class="network-badge ${badgeClass}">${badgeText}</span>
+      <div class="grave-header">
+        <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
+        <span class="grave-badge" style="${badgeStyle}">${isBlocked ? 'BLOQUEADA' : 'LIMPIA'}</span>
+      </div>
+      <div class="grave-details">
+        <span><strong>Red:</strong> ${network}</span>
+        <span><strong>Saldo:</strong> ${balance} USDT</span>
+        ${linkHtml}
+      </div>
+    </div>`;
+  listInfo.textContent = `1 resultado (${network})`;
+  statTotal.textContent = '1';
+}
+
+async function renderEthAddress(address) {
+  graveList.innerHTML = '<div class="empty-state"><span class="spinner"></span> Consultando USDT y USDC...</div>';
+  const [usdtBl, usdtBal, usdcBl, usdcBal, usdcPaused] = await Promise.all([
+    checkEthBlacklist(address), checkEthBalanceGeneric(USDT_ETH_CONTRACT, address, 4),
+    checkUsdcBlacklist(address), checkEthBalanceGeneric(USDC_ETH_CONTRACT, address, 5), checkUsdcPaused()
+  ]);
+  const anyBlocked = usdtBl.isBlocked || usdcBl.isBlocked;
+  const icon = anyBlocked ? '🪦' : '🍀';
+  const cardStyle = anyBlocked
+    ? 'border-top: 5px solid var(--grave-red); border-radius: 50% 50% 12px 12px / 70px 70px 12px 12px; padding: 60px 24px 24px 24px;'
+    : 'border-top: 3px solid var(--moss-soft); border-radius: 12px; padding: 16px 14px 14px 14px;';
+  const statusBadge = (label, blocked, colorVar) => `<span class="grave-badge" style="color: ${colorVar}; border-color: ${colorVar};">${label}: ${blocked ? 'BLOQUEADO' : 'LIMPIO'}</span>`;
+  graveList.innerHTML = `
+    <div class="grave-card" style="${cardStyle}">
+      <span class="network-badge badge-eth">ETH</span>
+      <div class="grave-header">
+        <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+          ${statusBadge('USDT', usdtBl.isBlocked, 'var(--grave-red-soft)')}
+          ${statusBadge('USDC', usdcBl.isBlocked, 'var(--moss-soft)')}
+        </div>
+      </div>
+      <div class="grave-details">
+        <span><strong>USDT:</strong> ${usdtBal.balance} USDT ${usdtBl.isBlocked ? '🔒' : ''}</span>
+        <span><strong>USDC:</strong> ${usdcBal.balance} USDC ${usdcBl.isBlocked ? '🔒' : ''}</span>
+        ${usdcPaused.paused ? '<span style="color:#f59e0b;"><strong>⚠️ USDC pausado globalmente</strong></span>' : ''}
+        <span><a href="https://etherscan.io/address/${address}" target="_blank" rel="noopener">Ver en Etherscan ↗</a></span>
+      </div>
+    </div>`;
+  listInfo.textContent = `1 resultado (Ethereum · USDT + USDC)`;
+  statTotal.textContent = '1';
+}
+
+function renderRlusdResult(address, data) {
+  const isBlocked = data.isFrozen;
+  const icon = isBlocked ? '🪦' : (data.hasTrustLine ? '🍀' : '👻');
+  const cardStyle = isBlocked
+    ? 'border-top: 5px solid var(--grave-red); border-radius: 50% 50% 12px 12px / 70px 70px 12px 12px; padding: 60px 24px 24px 24px;'
+    : 'border-top: 3px solid var(--moss-soft); border-radius: 12px; padding: 16px 14px 14px 14px;';
+  const statusText = !data.hasTrustLine ? 'SIN TRUST LINE' : (isBlocked ? 'CONGELADA' : 'LIMPIA');
+  const badgeStyle = isBlocked
+    ? 'color: var(--grave-red-soft); border-color: rgba(147, 197, 253, 0.3);'
+    : 'color: var(--moss-soft); border-color: var(--moss-soft);';
+  graveList.innerHTML = `
+    <div class="grave-card" style="${cardStyle}">
+      <span class="network-badge" style="background: rgba(0,150,255,0.2); color: #64b5f6; border: 1px solid rgba(0,150,255,0.3);">XRPL</span>
+      <div class="grave-header">
+        <span class="grave-address" title="${address}"><span class="tomb-icon">${icon}</span>${address}</span>
+        <span class="grave-badge" style="${badgeStyle}">${statusText}</span>
+      </div>
+      <div class="grave-details">
+        <span><strong>Red:</strong> XRP Ledger (RLUSD)</span>
+        <span><strong>Saldo RLUSD:</strong> ${data.balance}</span>
+        ${isBlocked ? '<span style="color:#f59e0b;"><strong>⚠️ Trust line congelada por el emisor</strong></span>' : ''}
+        <span><a href="https://xrpscan.com/account/${address}" target="_blank" rel="noopener">Ver en XRPScan ↗</a></span>
+      </div>
+    </div>`;
+  listInfo.textContent = `1 resultado (XRPL · RLUSD)`;
+  statTotal.textContent = '1';
+}
+
+async function runSearch(addr) {
+  if (isBusy) return;
+  isBusy = true;
+  searchBtn.disabled = true;
+  try {
+    if (addr.startsWith('0x')) {
+      await renderEthAddress(addr);
+    } else if (addr.startsWith('T')) {
+      const trx = await checkTronIndividual(addr);
+      renderIndividualResult(addr, 'Tron', trx.isBlocked, trx.balance);
+    } else if (addr.startsWith('r')) {
+      const rlusd = await checkRlusdTrustLine(addr);
+      renderRlusdResult(addr, rlusd);
+    } else {
+      throw new Error('Dirección no válida. Debe empezar con T (Tron), 0x (Ethereum) o r (XRPL).');
+    }
+  } catch (err) {
+    graveList.innerHTML = `<div class="empty-state" style="color: var(--grave-red-soft);">Error: ${err.message}</div>`;
+    listInfo.textContent = 'Error';
+  } finally {
+    searchBtn.disabled = false;
+    isBusy = false;
+  }
+}
+
+searchBtn.addEventListener('click', () => {
+  const addr = searchInput.value.trim();
+  if (addr) runSearch(addr);
+  else loadVelatorio(true);
+});
+searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') searchBtn.click(); });
+
+loadVelatorio(true);
+
+</script>
 </body>
 </html>
