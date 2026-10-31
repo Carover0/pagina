@@ -1425,7 +1425,13 @@ async function renderAccount(addr, acc, resources){
 
   if (Array.isArray(acc.votes) && acc.votes.length) {
     let vt = `<table class="param-table"><thead><tr><th>SR</th><th>Votes</th></tr></thead><tbody>`;
-    for (const v of acc.votes) vt += `<tr><td>${makeLink(v.vote_address || '—')}</td><td>${v.vote_count || 0}</td></tr>`;
+    for (const v of acc.votes) {
+      const srAddr = v.vote_address || '';
+      const cell = srAddr
+        ? `<span class="link" onclick="openSrDetail('${encodeURIComponent(srAddr)}')">${escapeHtml(srAddr)}</span>`
+        : '—';
+      vt += `<tr><td>${cell}</td><td>${v.vote_count || 0}</td></tr>`;
+    }
     vt += `</tbody></table>`;
     html += section(`Votes (${acc.votes.length})`, vt, false);
   }
@@ -1491,10 +1497,8 @@ async function loadAccountHistory(addr, sectionId) {
       return;
     }
 
-    // Normalizamos la dirección del titular una sola vez
     const ownerNorm = addr.toLowerCase();
 
-    // Preparamos filas (await por token meta)
     const trs = [];
     for (const tx of rows.slice(0, 20)) {
       const txid = tx.txID || tx.hash || '—';
