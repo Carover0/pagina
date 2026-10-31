@@ -1861,7 +1861,7 @@ function renderSrCards(rows) {
   const html = rows.map(row => {
     const name = escapeHtml(row.name || '—');
     const addr = escapeHtml(row.address || '');
-    const votesTrx = fmtTrx(row.votes_trx);
+    const votesTrx = fmtTrx(row.votes);
     const pct = row.votesPercentage != null ? Number(row.votesPercentage).toFixed(2) + '%' : '—';
     const com = row.brokerage != null ? Number(row.brokerage).toFixed(0) + '%' : '—';
     const apr = row.annualizedRate != null ? escapeHtml(String(row.annualizedRate)) + '%' : '—';
@@ -1974,10 +1974,10 @@ function renderSrDetail(row) {
     ? `<a href="${url}" target="_blank" rel="noopener">${url.replace(/^https?:\/\//,'')} ↗</a>`
     : '<span style="color:#ccc;">—</span>';
 
-  const votesTrx     = fmtTrx(row.votes_trx);
-  const rtVotesTrx   = fmtTrx(row.realTimeVotes_trx);
+  const votesTrx     = fmtTrx(row.votes);
+  const rtVotesTrx   = fmtTrx(row.realTimeVotes);
   const changeVotes  = row.changeVotes != null
-    ? (Number(row.changeVotes) >= 0 ? '+' : '') + fmtTrx(Number(row.changeVotes) / 1e6) + ' TRX'
+    ? (Number(row.changeVotes) >= 0 ? '+' : '') + fmtTrx(Number(row.changeVotes)) + ' TRX'
     : '—';
   const changeCls    = row.changeVotes != null && Number(row.changeVotes) < 0 ? 'fail' : 'ok';
   const pct          = row.votesPercentage != null ? Number(row.votesPercentage).toFixed(2) + '%' : '—';
