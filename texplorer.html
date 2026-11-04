@@ -651,8 +651,8 @@ body:not([data-theme="dark"]) .info-modal .info-content p {
 <div class="app">
 <header class="header">
   <div class="brand">
-    <img src="assets/tron.png" alt="TRON" onerror="this.style.display='none'">
-    <h1>TRON <small>explorador</small></h1>
+    <img src="assets/tron.png" alt="TRON" style="cursor:pointer;" onclick="clearSearch()" onerror="this.style.display='none'">
+    <h1 style="cursor:pointer;" onclick="clearSearch()">TRON <small>explorador</small></h1>
   </div>
 
   <div class="header-stats">
@@ -2325,6 +2325,17 @@ function toggleTheme() {
   document.getElementById('themeIcon').textContent = isDark ? '💡' : '💡';
   localStorage.setItem('tron-theme', newTheme);
 }
+
+function clearSearch(){
+  document.getElementById('searchInput').value = '';
+  historyStack = [];
+  currentIndex = -1;
+  updateBackButton();
+  updateBreadcrumb();
+  clearUrl();
+  renderPlaceholder();
+  document.getElementById('searchInput').focus();
+}  
 
 (function() {
   const saved = localStorage.getItem('tron-theme');
