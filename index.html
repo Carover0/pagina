@@ -721,52 +721,52 @@
     </div>
 
 
-    <div class="modal-overlay" id="modal-info">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('info')">✕</button>
-            <div class="modal-title"><span class="icon"><img src="assets/info.png" width="32"></span> ¿QUÉ ES ESTO?</div>
-            <div class="modal-body">
-                <div class="layout-with-image">
+<div class="modal-overlay" id="modal-info">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('info')">✕</button>
+        <div class="modal-title"><span class="icon"><img src="assets/info.png" width="32"></span> ¿QUE ES ESTO?</div>
+        <div class="modal-body">
+            <div class="layout-with-image">
 
-                    <div class="layout-image" id="info-random-image-container">
-                        <img id="info-random-image" src="" alt="Info">
+                <div class="layout-image" id="info-random-image-container">
+                    <img id="info-random-image" src="" alt="Info">
+                </div>
+
+                <div class="layout-text">
+                    <div class="desc">
+                        ▸ Es un hub de monitoreo para los nodos <span class="highlight">Firo y PIVX</span> que corro, el VPS que los hospeda y dos direcciones Tron que delegan recursos. Todo lo que ves sale de mi infraestructura: endpoints JSON propios y publicos. El cliente solo renderiza; no hay logica de negocio ni scripts de terceros en el navegador.
                     </div>
 
-                    <div class="layout-text">
-                        <div class="desc">
-                            ▸ Esta página reúne un conjunto de herramientas para explorar, monitorear e interactuar con las redes <span class="highlight">Firo y PIVX</span> desde una interfaz simple, liviana y enfocada en la privacidad.
-                        </div>
+                    <div class="desc" style="font-size:13px; color:#5a5348;">
+                        Sin CDNs, sin trackers, sin capa intermedia. Si el dato esta, es porque el nodo lo devolvio.
+                    </div>
 
-                        <div class="desc" style="font-size:13px; color:#5a5348;">
-                            Toda la información se procesa a nivel de servidor. El navegador únicamente muestra los datos obtenidos, sin ejecutar scripts de terceros ni depender de servicios externos para el procesamiento.
-                        </div>
+                    <div class="desc" style="margin-top:12px;">
+                        <span class="highlight">▸ QUE HAY ADENTRO</span>
+                    </div>
 
-                        <div class="desc" style="margin-top:12px;">
-                            <span class="highlight">▸ ¿QUÉ OFRECE?</span>
-                        </div>
+                    <ul class="feature-list">
+                        <li><span class="check">◈</span> <span class="highlight">Nodos full</span> → altura, peers, mempool y bloques, todo en tiempo real. <span class="chain">(Firo ×2, PIVX)</span></li>
+                        <li><span class="check">◈</span> <span class="highlight">VPS</span> → CPU, RAM y disco con umbrales de color, uptime y timestamp del ultimo poll. <span class="chain">(health.json)</span></li>
+                        <li><span class="check">◈</span> <span class="highlight">Tron</span> → energia bruta, disponible y delegada, mas bandwidth (net) de dos direcciones. Desglose de delegaciones por destino y explorador de bloques propio. <span class="chain">(R1, R2)</span></li>
+                        <li><span class="check">◈</span> <span class="highlight">Exploradores y consola RPC</span> → bloques, transacciones, direcciones y ejecucion de comandos contra el nodo. <span class="chain">(Firo, PIVX)</span></li>
+                        <li><span class="check">◈</span> <span class="highlight">Red</span> → masternodos, nombres registrados, staking, lightwalletd y cold staking. <span class="chain">(Firo, PIVX)</span></li>
+                        <li><span class="check">◈</span> <span class="highlight">Mapas</span> → comercios que aceptan PIVX y Firo, mas un registro de stablecoins discontinuadas. <span class="chain">(PIVX MAP, FIRO MAP)</span></li>
+                    </ul>
 
-                        <ul class="feature-list">
-                            <li><span class="check">◈</span> <span class="highlight">Nodos</span> → Estado en tiempo real de la red: bloques, conexiones, mempool y sincronización. <span class="chain">(Firo, PIVX)</span></li>
-                            <li><span class="check">◈</span> <span class="highlight">Exploradores</span> → Consulta de bloques, transacciones y direcciones. <span class="chain">(Firo, PIVX)</span></li>
-                            <li><span class="check">◈</span> <span class="highlight">Consola RPC</span> → Ejecución de comandos directamente sobre el nodo. <span class="chain">(Firo, PIVX)</span></li>
-                            <li><span class="check">◈</span> <span class="highlight">Estadísticas</span> → Información sobre suministro, pools de valor, halvings y actualizaciones de protocolo.</li>
-                            <li><span class="check">◈</span> <span class="highlight">Servidores</span> → Estado y disponibilidad de servidores <span class="highlight">lightwalletd</span> para billeteras ligeras. <span class="chain">(Firo)</span></li>
-                        </ul>
+                    <div class="desc" style="margin-top:10px;">
+                        <span class="highlight">▸ POR QUE</span><br>
+                        Porque los datos de una red publica deberian poder consultarse sin depender de un explorador centralizado que decida que mostrar. Todo esto lo opero yo, asi que la latencia, el uptime y los errores son mios.
+                    </div>
 
-                        <div class="desc" style="margin-top:10px;">
-                            <span class="highlight">▸ ¿POR QUÉ?</span><br>
-                            Porque la información de una red pública debe ser accesible sin depender de plataformas centralizadas. Toda la infraestructura que alimenta esta página es operada por mí, con el objetivo de ofrecer datos transparentes, verificables y sin filtros.
-                        </div>
-
-                        <div class="divider">
-                            <span style="color:#3d3830;font-size:12px;"><span class="highlight">♥</span> Hecho con ♥ desde Argentina · <span class="highlight">cΔrovΣr0</span></span>
-                        </div>
+                    <div class="divider">
+                        <span style="color:#3d3830;font-size:12px;"><span class="highlight">♥</span> Hecho con ♥ desde Argentina · <span class="highlight">cΔrovΣr0</span></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+</div>
     <div class="modal-overlay" id="modal-donate">
         <div class="modal">
             <button class="modal-close" onclick="closeModal('donate')">✕</button>
