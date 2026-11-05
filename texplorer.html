@@ -1062,6 +1062,20 @@ function section(title, bodyHtml, open){
   </div>`;
 }
 
+const _txtokentxCache = {};
+async function getTxTokenTransfers(hash) {
+  if (_txtokentxCache[hash]) return _txtokentxCache[hash];
+  try {
+    const d = await php('gettxtokentransfers', { hash });
+    const r = d?.result || { trc20: [], events: [], trc10: [], counts: {} };
+    _txtokentxCache[hash] = r;
+    return r;
+  } catch (e) {
+    _txtokentxCache[hash] = { trc20: [], events: [], trc10: [], counts: {} };
+    return _txtokentxCache[hash];
+  }
+}
+
 async function renderTx(tx, info, scan){
   info = info || {};
   scan = scan || {};
@@ -1150,9 +1164,9 @@ async function renderTx(tx, info, scan){
     let cell;
     if (isTRC20) {
       const sym = escapeHtml(tok.symbol || '?');
-const name = escapeHtml(tok.name || '');
-const tip = escapeHtml(tok.name ? `${tok.symbol} · ${tok.name}` : tok.symbol);
-    cell = `<span class="token-badge" title="${tip}">${tokenIcon(tok)}<span class="link" onclick="openContractInfo('${encodeURIComponent(contractAddr)}')" style="display:inline-flex; align-items:center; gap:4px;"><span class="sym">${sym}</span>${name ? `<span class="name">${name}</span>` : ''}</span></span>`;
+      const name = escapeHtml(tok.name || '');
+      const tip = escapeHtml(tok.name ? `${tok.symbol} · ${tok.name}` : tok.symbol);
+      cell = `<span class="token-badge" title="${tip}">${tokenIcon(tok)}<span class="link" onclick="openContractInfo('${encodeURIComponent(contractAddr)}')" style="display:inline-flex; align-items:center; gap:4px;"><span class="sym">${sym}</span>${name ? `<span class="name">${name}</span>` : ''}</span></span>`;
     } else {
       cell = `<span class="link" onclick="openContractInfo('${encodeURIComponent(contractAddr)}')">${escapeHtml(contractAddr)}</span>`;
     }
@@ -1160,13 +1174,77 @@ const tip = escapeHtml(tok.name ? `${tok.symbol} · ${tok.name}` : tok.symbol);
   }
   html += section('Overview', ov, true);
 
+  let tokenTransfersHtml = '';
+
   if (tok && amountHuman !== null) {
-    let tt = `<div class="row"><span class="key">Token</span><span class="val">${tokenChip(tok)}</span></div>`;
-    tt += `<table class="param-table"><thead><tr><th>From</th><th>To</th><th>Amount</th></tr></thead><tbody>`;
-    tt += `<tr><td>${makeLink(fromAddr)}</td><td>${makeLink(toAddr)}</td><td>${tokenIcon(tok)} ${amountHuman.toLocaleString(undefined,{maximumFractionDigits:6})} ${escapeHtml(tok.symbol)}</td></tr>`;
-    tt += `</tbody></table>`;
-    html += section('Token Transfers', tt, true);
+    tokenTransfersHtml += `<div class="row"><span class="key">Token</span><span class="val">${tokenChip(tok)}</span></div>`;
+    tokenTransfersHtml += `<table class="param-table"><thead><tr><th>From</th><th>To</th><th>Amount</th></tr></thead><tbody>`;
+    tokenTransfersHtml += `<tr><td>${makeLink(fromAddr)}</td><td>${makeLink(toAddr)}</td><td>${tokenIcon(tok)} ${amountHuman.toLocaleString(undefined,{maximumFractionDigits:6})} ${escapeHtml(tok.symbol)}</td></tr>`;
+    tokenTransfersHtml += `</tbody></table>`;
   }
+
+  try {
+    const tt = await getTxTokenTransfers(tx.txID);
+    const list  = (tt.trc20 && tt.trc20.length) ? tt.trc20 : (tt.events || []);
+    const trc10 = tt.trc10 || [];
+
+    if (list.length || trc10.length) {
+      if (tokenTransfersHtml) tokenTransfersHtml += `<div class="divider"></div>`;
+      tokenTransfersHtml += `<div class="row"><span class="key">Total</span><span class="val">${list.length + trc10.length} transfer(s)</span></div>`;
+
+      if (list.length) {
+        tokenTransfersHtml += `<table class="param-table"><thead><tr><th>#</th><th>Token</th><th>From</th><th>To</th><th>Amount</th></tr></thead><tbody>`;
+        list.forEach((t, i) => {
+          const dec = (t.decimals !== null && t.decimals !== undefined) ? Number(t.decimals) : 6;
+          const rawAmt = t.amount_raw || '0';
+          let human;
+          try {
+            human = Number(BigInt(rawAmt)) / Math.pow(10, dec);
+          } catch(e) {
+            human = Number(rawAmt) / Math.pow(10, dec);
+          }
+          const sym  = t.symbol || '?';
+          const name = t.name || '';
+          const iconInfo = { symbol: sym, icon: t.icon_url || '' };
+          const tokenCell = `<span class="token-badge" title="${escapeHtml(name ? sym + ' · ' + name : sym)}">${tokenIcon(iconInfo)}<span class="sym">${escapeHtml(sym)}</span>${name ? `<span class="name">${escapeHtml(name)}</span>` : ''}</span>`;
+          const toDisplay = t.to || '—';
+          const isBurn = toDisplay === 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'
+                      || toDisplay === '0x0000000000000000000000000000000000000000';
+          tokenTransfersHtml += `<tr>
+            <td>${i}</td>
+            <td>${tokenCell}</td>
+            <td>${makeLink(t.from || '—')}</td>
+            <td>${makeLink(toDisplay)}${isBurn ? ' <span class="op-badge fail">BURN</span>' : ''}</td>
+            <td>${tokenIcon(iconInfo)} ${human.toLocaleString(undefined,{maximumFractionDigits:dec})} ${escapeHtml(sym)}</td>
+          </tr>`;
+        });
+        tokenTransfersHtml += `</tbody></table>`;
+      }
+
+      if (trc10.length) {
+        tokenTransfersHtml += `<div class="divider"></div><div class="row"><span class="key">TRC-10</span><span class="val">${trc10.length}</span></div>`;
+        tokenTransfersHtml += `<table class="param-table"><thead><tr><th>#</th><th>Token</th><th>From</th><th>To</th><th>Amount</th></tr></thead><tbody>`;
+        trc10.forEach((t, i) => {
+          const dec = Number(t.decimals || 0);
+          const human = Number(t.amount || 0) / Math.pow(10, dec);
+          const sym = t.token_name || ('#' + t.token_id);
+          tokenTransfersHtml += `<tr>
+            <td>${i}</td>
+            <td>${escapeHtml(sym)}</td>
+            <td>${makeLink(t.from || '—')}</td>
+            <td>${makeLink(t.to || '—')}</td>
+            <td>${human.toLocaleString(undefined,{maximumFractionDigits:dec})} ${escapeHtml(sym)}</td>
+          </tr>`;
+        });
+        tokenTransfersHtml += `</tbody></table>`;
+      }
+    }
+  } catch(e) {
+
+  }
+
+  if (tokenTransfersHtml) html += section('Token Transfers', tokenTransfersHtml, true);
+
   const memoHex = (tx.raw_data && tx.raw_data.data) ? String(tx.raw_data.data) : '';
   if (memoHex && /^[0-9a-fA-F]+$/.test(memoHex) && memoHex.length % 2 === 0) {
     let memoText = '';
