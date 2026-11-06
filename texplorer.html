@@ -117,8 +117,6 @@ body {
 .nav-links { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; font-size: 11px; }
 .nav-links a { color: var(--text-muted); text-decoration: none; transition: color .2s; padding: 2px 0; }
 .nav-links a:hover { color: var(--text-main); }
-.back-btn { color: var(--text-main); cursor: pointer; padding: 2px 10px; border: 1px solid var(--border-strong); border-radius: 20px; font-size: 10px; background: var(--bg-input); display: none; align-items: center; gap: 4px; }
-.back-btn.show { display: inline-flex; }
 
 .info-btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -694,7 +692,6 @@ body:not([data-theme="dark"]) .info-modal .info-content p {
   </div>
 
   <nav class="nav-links">
-    <span class="back-btn" id="backBtn" onclick="goBack()">← volver</span>
     <a href="https://carover0.github.io/pagina/">[INICIO]</a>
     <a href="https://carover0.github.io/pagina/cementerio.html">[CEMENTERIO DE ESTABLES]</a>
   <button class="info-btn" id="themeBtn" aria-label="Cambiar Tema" title="Cambiar Tema" onclick="toggleTheme()">
@@ -910,10 +907,10 @@ function clearUrl(){
 let historyStack=[], currentIndex=-1;
 function pushHistory(q,label){ historyStack=historyStack.slice(0,currentIndex+1); historyStack.push({query:q,label:label||q}); currentIndex=historyStack.length-1; updateBackButton(); updateBreadcrumb(); }
 function goBack(){ if(currentIndex>0){ currentIndex--; const e=historyStack[currentIndex]; document.getElementById('searchInput').value=e.query; updateUrlWithSearch(e.query); executeSearch(e.query); updateBackButton(); updateBreadcrumb(); } }
-function updateBackButton(){ document.getElementById('backBtn').classList.toggle('show', currentIndex>0); }
 function updateBreadcrumb(){ const c=document.getElementById('breadcrumb'); if(!historyStack.length){ c.innerHTML=''; return; } let html=''; const start=Math.max(0,historyStack.length-4); const entries=historyStack.slice(start); if(start>0) html+=`<span class="crumb" onclick="goToHistory(0)">⏪</span><span class="sep">·</span>`; entries.forEach((e,i)=>{ const idx=start+i; const cur=idx===currentIndex; const label=e.label.length>30?e.label.slice(0,28)+'…':e.label; html+=cur?`<span class="crumb current">${escapeHtml(label)}</span>`:`<span class="crumb" onclick="goToHistory(${idx})">${escapeHtml(label)}</span>`; if(i<entries.length-1) html+=`<span class="sep">›</span>`; }); c.innerHTML=html; }
 function goToHistory(i){ if(i>=0&&i<historyStack.length&&i!==currentIndex){ currentIndex=i; const e=historyStack[i]; document.getElementById('searchInput').value=e.query; updateUrlWithSearch(e.query); executeSearch(e.query); updateBackButton(); updateBreadcrumb(); } }
 function navigateTo(q){ const d=decodeURIComponent(q); const input=document.getElementById('searchInput'); input.value=d; const cmd=detectCommand(d); pushHistory(cmd, labelFor(cmd)); updateUrlWithSearch(cmd); executeSearch(cmd); }
+function updateBackButton(){ /* botón volver eliminado */ }
 
 function detectCommand(input){
   input=input.trim();
