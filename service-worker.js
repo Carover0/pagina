@@ -1,4 +1,4 @@
-const CACHE = 'txeplorer v10';
+const CACHE = 'txeplorer v10.1';
 const PRECACHE = [
   './texplorer.html',
   './manifest.json',
