@@ -631,6 +631,36 @@ body[data-theme="dark"] .link-img { filter: none; }
   .info-link { padding: 6px 8px; font-size: 10px; }
 }
 
+#stat-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 44px;
+  font-variant-numeric: tabular-nums;
+  transition: color .2s ease, opacity .2s ease;
+}
+#stat-refresh.state-warn   { color: var(--accent); }
+#stat-refresh.state-load   { color: var(--text-muted); opacity: .6; }
+#stat-refresh.state-error  { color: var(--accent); }
+#stat-refresh.state-error::after {
+  content: "●";
+  font-size: 7px;
+  margin-left: 4px;
+  vertical-align: middle;
+  opacity: .8;
+}
+#stat-refresh.flash {
+  animation: refreshFlash 420ms ease-out;
+}
+@keyframes refreshFlash {
+  0%   { background: var(--accent); color: #fff; border-radius: 4px; }
+  100% { background: transparent;    color: inherit; border-radius: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #stat-refresh.flash { animation: none; }
+}
+
+
 #output .tx-item .token-badge { gap: 4px !important; }
 
 body:not([data-theme="dark"]) .info-modal .info-content h2,
@@ -656,6 +686,7 @@ body:not([data-theme="dark"]) .info-modal .info-content p {
   </div>
 
   <div class="header-stats">
+    <span class="stat"><span class="label">REFRESCO</span> <span class="value" id="stat-refresh">↻ 15s</span></span>    
     <span class="stat"><span class="label">ALTURA</span> <span class="value" id="stat-height">—</span></span>
     <span class="stat"><span class="label">ÚLTIMO BLOQUE</span> <span class="value" id="stat-last">—</span></span>
     <a href="#" class="btn-blocks" id="btnLatest">Bloque más reciente <span class="pulse"></span></a>
@@ -933,8 +964,12 @@ async function loadStats(){
     if (d && d.block !== undefined) {
       document.getElementById('stat-height').textContent = Number(d.block).toLocaleString();
       document.getElementById('stat-last').textContent = new Date().toLocaleTimeString();
+      return true;
     }
-  } catch(e){}
+    return false;
+  } catch(e){
+    return false;
+  }
 }
 
 function renderOutput(html){ document.getElementById('output').innerHTML=html; }
@@ -1707,19 +1742,27 @@ document.getElementById('searchInput').addEventListener('paste',()=>{ setTimeout
 document.addEventListener('keydown',e=>{
   if(e.key==='F9'){ e.preventDefault(); document.getElementById('searchInput').value=''; renderPlaceholder(); historyStack=[]; currentIndex=-1; updateBackButton(); updateBreadcrumb(); clearUrl(); }
 });
-document.getElementById('btnLatest').addEventListener('click', async e=>{
+
+document.getElementById('btnLatest').addEventListener('click', async e => {
   e.preventDefault();
   try {
     const d = await php('ping');
     const n = d?.block;
-    if (n) {
-      const cmd = `getblockbynum ${n}`;
-      pushHistory(cmd, 'Bloque '+n);
-      updateUrlWithSearch(cmd);
-      executeSearch(cmd);
-    }
-  } catch(err){ renderError(err.message); }
+    if (!n) return;
+
+    // resetea el ciclo del contador para que no dispare otro refresh en 1s
+    nextRefreshAt = Date.now() + REFRESH_MS;
+    paintRefresh('idle', REFRESH_MS);
+
+    const cmd = `getblockbynum ${n}`;
+    pushHistory(cmd, 'Bloque ' + n);
+    updateUrlWithSearch(cmd);
+    executeSearch(cmd);
+  } catch(err) {
+    renderError(err.message);
+  }
 });
+
 
 (function(){
   const searchParam = detectSearchFromUrl();
@@ -2425,7 +2468,79 @@ function clearSearch(){
   }
 })();
 
-(async()=>{ loadStats(); setInterval(loadStats,30000); })();
+const REFRESH_MS = 15000;
+const TICK_MS    = 1000;
+
+let nextRefreshAt = Date.now() + REFRESH_MS;
+let refreshLoading = false;
+let refreshErrors  = 0;
+
+const _refreshEl = document.getElementById('stat-refresh');
+
+function paintRefresh(state, remainingMs) {
+  if (!_refreshEl) return;
+  _refreshEl.classList.remove('state-warn', 'state-load', 'state-error');
+  if (state === 'loading') {
+    _refreshEl.classList.add('state-load');
+    _refreshEl.textContent = '↻ …';
+    return;
+  }
+  if (state === 'error') _refreshEl.classList.add('state-error');
+  else if (state === 'warn') _refreshEl.classList.add('state-warn');
+
+  const s = Math.max(0, Math.ceil(remainingMs / 1000));
+  _refreshEl.textContent = '↻ ' + s + 's';
+  _refreshEl.title = state === 'error'
+    ? `Última actualización falló · reintento en ${s}s`
+    : `Auto-refresh cada ${REFRESH_MS / 1000}s · próximo en ${s}s`;
+}
+
+async function doRefresh() {
+  if (refreshLoading) return;
+  refreshLoading = true;
+  paintRefresh('loading');
+
+  const ok = await loadStats(); // devuelve bool tras refactor (Bloque 4)
+
+  refreshLoading = false;
+  nextRefreshAt = Date.now() + REFRESH_MS;
+
+  if (ok) {
+    refreshErrors = 0;
+    _refreshEl.classList.remove('flash');
+    void _refreshEl.offsetWidth; // reinicia la animación
+    _refreshEl.classList.add('flash');
+    paintRefresh('idle', REFRESH_MS);
+  } else {
+    refreshErrors++;
+    paintRefresh('error', REFRESH_MS);
+  }
+}
+
+function refreshTick() {
+  if (refreshLoading) return;
+
+  const remaining = nextRefreshAt - Date.now();
+
+  if (remaining <= 0) {
+    doRefresh();
+    return;
+  }
+
+  if (refreshErrors > 0)        paintRefresh('error', remaining);
+  else if (remaining <= 3000)   paintRefresh('warn', remaining);
+  else                          paintRefresh('idle', remaining);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') refreshTick();
+});
+
+(async () => {
+  nextRefreshAt = Date.now() + REFRESH_MS;
+  doRefresh();
+  setInterval(refreshTick, TICK_MS);
+})();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
