@@ -457,6 +457,18 @@
                 grid-template-columns: 1fr;
             }
         }
+
+#modal-about .modal,
+#modal-firo2 .modal,
+#modal-info .modal,
+#modal-donate .modal {
+    border: 3px solid rgba(129, 140, 248, 0.35);
+    box-shadow:
+        0 0 22px rgba(79, 70, 229, 0.25),
+        0 0 42px rgba(79, 70, 229, 0.12),
+        inset 0 0 28px rgba(79, 70, 229, 0.05);
+}
+
     </style>
 </head>
 <body>
@@ -471,7 +483,7 @@
             <nav class="nav-links">
                 <a href="https://carover0.github.io/pagina/pivx-merchants.html">[PIVX MAP]</a>
                 <a href="https://carover0.github.io/pagina/firo-merchants.html">[FIRO MAP]</a>
-                <a href="https://carover0.github.io/pagina/cementerio">[CEMENTERIO DE ESTABLES]</a>
+                <a href="https://carover0.github.io/pagina/usdt-block.html">[USDT-BLOCK]</a>
                 <a onclick="openModal('info')">[ACERCA]</a>
                 <a onclick="openModal('donate')">[APOYAR]</a>
             </nav>
@@ -547,7 +559,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">ESTADO DEL VPS</div>
+                <div class="card-title">INFRAESTRUCTURA VPS</div>
 
                 <div class="vps-item">
                     <span class="label">CPU</span>
@@ -577,15 +589,16 @@
 
                 <div class="vps-status-text online" id="vps-status">ALL SYSTEMS OPERATIONAL</div>
             </div>
-			<div class="card card-full">
-  				<div class="card-title">
-    				<img src="assets/tron.png" alt="Tron" style="height:30px;width:30px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(79,70,229,0.2));">
-    					ENERGIA TRON
-    				<nav class="nav-links">
-      					<a href="https://carover0.github.io/pagina/texplorer">[EXPLORADOR DE BLOQUES]</a>
-    				</nav>
-    				<span class="count" id="global-status" style="color:var(--green);font-size:12px;">INICIALIZANDO...</span>
-  				</div>
+<div class="card card-full">
+  <div class="card-title">
+    <img src="assets/tron.png" alt="Tron" style="height:30px;width:30px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(79,70,229,0.2));">
+    ENERGIA TRON
+    <nav class="nav-links">
+      <a href="https://carover0.github.io/pagina/texplorer">[EXPLORADOR DE BLOQUES]</a>
+    </nav>
+    <span class="count" id="global-status" style="color:var(--green);font-size:12px;">INICIALIZANDO...</span>
+  </div>
+
                 <div class="reactor-grid">
                     <div class="reactor-item">
                         <div class="reactor-title">
@@ -644,6 +657,7 @@
         <footer class="footer">
             <span>cΔrovΣr0 · <span class="heart">♥</span> desde Argentina</span>
             <span>
+                <a onclick="openModal('about')">Quién soy</a> ·
                 <a onclick="openModal('info')">Acerca</a> ·
                 <a onclick="openModal('donate')">Apoyar</a>
             </span>
@@ -767,6 +781,7 @@
         </div>
     </div>
 </div>
+
     <div class="modal-overlay" id="modal-donate">
         <div class="modal">
             <button class="modal-close" onclick="closeModal('donate')">✕</button>
@@ -816,6 +831,61 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="modal-about">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('about')">✕</button>
+        <div class="modal-title">
+            <span class="icon">❤️</span> QUIÉN SOY
+        </div>
+        <div class="modal-body">
+            <div class="layout-with-image">
+
+            <div class="layout-image" style="width: 300px;">
+                <img id="about-image" src="assets/yo.png" alt="Quién soy"
+                    style="width: 100%; height: auto; max-height: 540px; object-fit: contain; border-radius: 12px; border: 1px solid rgba(79,70,229,0.15);">
+            </div>
+
+                <div class="layout-text">
+                    <div class="desc">
+                        Soy <span class="highlight">Caro</span>... desarrolladora independiente, enfocada en tecnología blockchain, infraestructura y herramientas de código abierto.
+                    </div>
+
+                    <div class="desc">
+                        Trabajo principalmente con <span class="highlight">Python, JavaScript, PHP y tecnologías web</span>.
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="desc">
+                        <span class="highlight">▸ ENFOQUE</span>
+                    </div>
+
+                    <ul class="feature-list">
+                        <li><span class="check">•</span> Sistemas <span class="highlight">UTXO</span>, privacidad financiera y descentralización.</li>
+                        <li><span class="check">•</span> Herramientas propias para consulta, monitorización y análisis de datos <span class="highlight">on-chain</span>.</li>
+                        <li><span class="check">•</span> Administración de nodos y servicios independientes, priorizando la <span class="highlight">conexión directa</span> con las redes.</li>
+                        <li><span class="check">•</span> Comprensión de la arquitectura de cada sistema, sus dependencias y sus mecanismos.</li>
+                        <li><span class="check">•</span> Autocustodia, transparencia técnica y <span class="highlight">reducción de intermediarios</span>.</li>
+                    </ul>
+
+                    <div class="desc" style="margin-top:10px;">
+                        <span class="highlight">▸ PROYECTOS</span><br>
+                        Trabajo con proyectos vinculados a <span class="highlight">Bitcoin, Bitcoin Cash, Litecoin, Firo, Tron y PIVX</span>. Mis desarrollos son proyectos personales, orientados a la utilidad, la simplicidad y la independencia tecnológica.
+                    </div>
+
+                    <div class="desc" style="margin-top:10px;">
+                        Creo en <span class="highlight">construir, experimentar y verificar</span> antes que depender de soluciones de terceros.
+                    </div>
+                    <div><br></div>
+                    <div class="desc" style="margin-top:8px;">
+                        <a href="https://medium.com/@SchoolOnChain/entrevista-con-c%CE%B4rov%CF%83r0-d06b24b7251d" target="_blank" rel="noopener" style="color:var(--violet-soft);text-decoration:none;border-bottom:1px solid rgba(79,70,229,0.25);padding-bottom:2px;">→ Leer la entrevista que me realizo TRONSCHOOL</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script>
         function openModal(type) {
             const modal = document.getElementById('modal-' + type);
@@ -835,6 +905,12 @@
                 const images = ['assets/firo7.png', 'assets/piv7.png'];
                 const randomImage = images[Math.floor(Math.random() * images.length)];
                 const imgElement = document.getElementById('info-random-image');
+                if (imgElement) imgElement.src = randomImage;
+            }
+            if (type === 'about') {
+                const images = ['assets/firo7.png', 'assets/piv7.png'];
+                const randomImage = images[Math.floor(Math.random() * images.length)];
+                const imgElement = document.getElementById('about-random-image');
                 if (imgElement) imgElement.src = randomImage;
             }
         }
@@ -1219,6 +1295,16 @@
             const timerElement = document.getElementById('update-timer');
             if (timerElement) timerElement.textContent = countdown + 's';
         }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const open = document.querySelector('.modal-overlay.active');
+                if (open) {
+                    open.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
 
         function startCountdown() {
             countdown = UPDATE_INTERVAL / 1000;
