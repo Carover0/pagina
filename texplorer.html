@@ -882,6 +882,35 @@ function hexToInt(hex){ try { if(!hex) return 0; const c = hex.startsWith('0x')?
 function detectSearchFromUrl(){
   const hash = window.location.hash.replace(/^#\/?/, '');
   if (hash) {
+    const decodedHash = decodeURIComponent(hash).replace(/\//g, ' ');
+    
+    // NUEVO: Si la URL es #/contract/ADDRESS, abrimos el modal directamente
+    if (decodedHash.startsWith('contract ')) {
+      const contractAddr = decodedHash.replace('contract ', '').trim();
+      window.addEventListener('load', () => {
+        setTimeout(() => openContractInfo(contractAddr), 300);
+      });
+      return null; // Devolvemos null para que no busque en la barra
+    }
+    
+    return decodedHash;
+  }
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const qParam = urlParams.get('q');
+  if (qParam) return qParam;
+  
+  const path = window.location.pathname;
+  const match = path.match(/\/texplorer\/(.+)$/);
+  if (match && match[1]) {
+    return decodeURIComponent(match[1]).replace(/\//g, ' ');
+  }
+  return null;
+}
+  
+function XdetectSearchFromUrl(){
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  if (hash) {
     return decodeURIComponent(hash).replace(/\//g, ' ');
   }
   const urlParams = new URLSearchParams(window.location.search);
