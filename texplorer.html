@@ -926,14 +926,14 @@ function goBack(){ if(currentIndex>0){ currentIndex--; const e=historyStack[curr
 function updateBreadcrumb(){ const c=document.getElementById('breadcrumb'); if(!historyStack.length){ c.innerHTML=''; return; } let html=''; const start=Math.max(0,historyStack.length-4); const entries=historyStack.slice(start); if(start>0) html+=`<span class="crumb" onclick="goToHistory(0)">⏪</span><span class="sep">·</span>`; entries.forEach((e,i)=>{ const idx=start+i; const cur=idx===currentIndex; const label=e.label.length>30?e.label.slice(0,28)+'…':e.label; html+=cur?`<span class="crumb current">${escapeHtml(label)}</span>`:`<span class="crumb" onclick="goToHistory(${idx})">${escapeHtml(label)}</span>`; if(i<entries.length-1) html+=`<span class="sep">›</span>`; }); c.innerHTML=html; }
 function goToHistory(i){ if(i>=0&&i<historyStack.length&&i!==currentIndex){ currentIndex=i; const e=historyStack[i]; document.getElementById('searchInput').value=e.query; updateUrlWithSearch(e.query); executeSearch(e.query); updateBackButton(); updateBreadcrumb(); } }
 function navigateTo(q){ const d=decodeURIComponent(q); const input=document.getElementById('searchInput'); input.value=d; const cmd=detectCommand(d); pushHistory(cmd, labelFor(cmd)); updateUrlWithSearch(cmd); executeSearch(cmd); }
-function updateBackButton(){ /* botón volver eliminado */ }
+function updateBackButton(){ /* bot volver eliminado */ }
 
 function detectCommand(input){
   input=input.trim();
   if(/^getblockbyhash [a-fA-F0-9]{64}$/.test(input)) return input;
   if(/^\d+$/.test(input)) return `getblockbynum ${input}`;
   if(/^[a-fA-F0-9]{64}$/.test(input)) return `gettransaction ${input}`;
-  if(/^T[a-km-zA-HJ-NP-Z1-9]{33}$/.test(input)) return `getaccount ${input}`;
+  if(/^T[a-km-zA-HJ-NP-Z1-9]{33}$/.test(input)) return input; 
   return input;
 }
 
@@ -1055,10 +1055,13 @@ const _contractCache = {};
 async function isContractAddress(addr){
   if (TRC20[addr]) return true;
   if (_contractCache[addr] !== undefined) return _contractCache[addr];
+  
   try {
     const d = await php('getaccountv2', { addr });
     const acc = d?.result || {};
-    const has = !!acc.code_hash;
+    
+    const has = acc.type === 'Contract' || !!acc.code_hash;
+    
     _contractCache[addr] = has;
     return has;
   } catch(e){}
@@ -1705,11 +1708,16 @@ async function loadAccountHistory(addr, sectionId) {
 }
   
 async function renderAddressOrContract(addr){
+  renderLoading(); // Muestra el "buscando..."
+  
   const isContract = await isContractAddress(addr);
+  
   if (isContract) {
+    renderPlaceholder(); 
     openContractInfo(encodeURIComponent(addr));
     return;
   }
+  
   try {
     const [accV2, accV1] = await Promise.all([
       getAccountV2Full(addr).catch(() => null),
@@ -1738,10 +1746,16 @@ async function executeSearch(q){
       const { tx, info, scan } = await getTxFull(q.split(' ')[1]);
       return renderTx(tx, info, scan);
     }
+    
     if (q.startsWith('getaccount ')) {
       const addr = q.split(' ')[1];
-      return await renderAddressOrContract(addr);
+      return await renderAddressOrContract(addr); 
     }
+    
+    if (/^T[a-km-zA-HJ-NP-Z1-9]{33}$/.test(q)) {
+      return await renderAddressOrContract(q);
+    }
+    
     const { tx, info, scan } = await getTxFull(q);
     return renderTx(tx, info, scan);
   } catch (e) { renderError(e.message); }
@@ -1750,7 +1764,25 @@ async function executeSearch(q){
 function renderError(msg){ renderOutput(`<div class="cmd-line"><span class="tag">ERROR</span></div><div style="color:#FF060A;padding:6px 0;">${escapeHtml(String(msg))}</div>`); }
 function renderPlaceholder(){ renderOutput(`<div class="placeholder"><div class="icon"><img src="${ASSET_BASE}assets/tron.png" width="48" onerror="this.style.display='none'"></div><div>explorador de bloques TRON</div><div class="sub">bloque · transacción · dirección</div></div>`); }
 
-document.getElementById('searchInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); const raw=e.target.value.trim(); if(raw){ const cmd=detectCommand(raw); pushHistory(cmd,labelFor(cmd)); updateUrlWithSearch(cmd); executeSearch(cmd); } } });
+document.getElementById('searchInput').addEventListener('keydown', async (e) => { 
+    if (e.key === 'Enter') { 
+        e.preventDefault(); 
+        const raw = e.target.value.trim(); 
+        if (raw) { 
+            if (/^T[a-km-zA-HJ-NP-Z1-9]{33}$/.test(raw)) {
+                pushHistory(raw, labelFor(raw)); 
+                updateUrlWithSearch(raw); 
+                await renderAddressOrContract(raw); 
+            } else {
+                const cmd = detectCommand(raw); 
+                pushHistory(cmd, labelFor(cmd)); 
+                updateUrlWithSearch(cmd); 
+                executeSearch(cmd); 
+            }
+        } 
+    } 
+});
+
 document.getElementById('searchInput').addEventListener('paste',()=>{ setTimeout(()=>{ const v=document.getElementById('searchInput').value; const c=detectCommand(v); if(c!==v) document.getElementById('searchInput').value=c; },10); });
 document.addEventListener('keydown',e=>{
   if(e.key==='F9'){ e.preventDefault(); document.getElementById('searchInput').value=''; renderPlaceholder(); historyStack=[]; currentIndex=-1; updateBackButton(); updateBreadcrumb(); clearUrl(); }
@@ -1781,12 +1813,23 @@ document.getElementById('btnLatest').addEventListener('click', async e => {
   const searchParam = detectSearchFromUrl();
   if (searchParam) {
     window.addEventListener('load', function(){
-      setTimeout(()=>{
-        const input = document.getElementById('searchInput');
-        if (input) {
-          const cmd = detectCommand(searchParam);
-          input.value = cmd;
+      setTimeout(async () => {
+        // Limpiamos el texto de la URL
+        let query = searchParam.replace('contract ', '').replace(/\//g, ' ').trim();
+        
+        if (/^T[a-km-zA-HJ-NP-Z1-9]{33}$/.test(query)) {
+          const input = document.getElementById('searchInput');
+          if (input) input.value = query;
+          pushHistory(query, labelFor(query));
+          updateUrlWithSearch(query);
+          
+          await renderAddressOrContract(query);
+        } else {
+          const cmd = detectCommand(query);
+          const input = document.getElementById('searchInput');
+          if (input) input.value = cmd;
           pushHistory(cmd, labelFor(cmd));
+          updateUrlWithSearch(cmd);
           executeSearch(cmd);
         }
       }, 400);
@@ -2513,7 +2556,7 @@ async function doRefresh() {
   refreshLoading = true;
   paintRefresh('loading');
 
-  const ok = await loadStats(); // devuelve bool tras refactor (Bloque 4)
+  const ok = await loadStats(); 
 
   refreshLoading = false;
   nextRefreshAt = Date.now() + REFRESH_MS;
@@ -2521,7 +2564,7 @@ async function doRefresh() {
   if (ok) {
     refreshErrors = 0;
     _refreshEl.classList.remove('flash');
-    void _refreshEl.offsetWidth; // reinicia la animación
+    void _refreshEl.offsetWidth;
     _refreshEl.classList.add('flash');
     paintRefresh('idle', REFRESH_MS);
   } else {
