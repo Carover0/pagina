@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TxGhost v1.05 — Sistema independiente de monitoreo On-Chain</title>
+<style>
+  :root {
+    --indigo: #4f46e5;
+    --indigo-soft: #818cf8;
+    --green: #27A17C;
+    --panel: rgba(0,0,0,.88);
+    --line: rgba(79,70,229,.5);
+    --ink: #e8e8ff;
+    --muted: #9aa0c8;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #05050a;
+    color: var(--ink);
+    font-family: 'Consolas', 'DejaVu Sans Mono', 'Courier New', monospace;
+    line-height: 1.55;
+    scroll-behavior: smooth;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(79,70,229,.16), transparent 60%),
+      radial-gradient(900px 500px at 110% 15%, rgba(39,161,124,.10), transparent 60%),
+      repeating-linear-gradient(0deg,
+        rgba(255,255,255,.02) 0px, rgba(255,255,255,.02) 1px,
+        transparent 1px, transparent 3px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 18px 80px;
+  }
+
+  nav.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4px 24px;
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  nav.top .brand {
+    display: flex; align-items: center; gap: 10px;
+    color: #fff; font-weight: 700; letter-spacing: 1px;
+  }
+  nav.top .brand img { height: 28px; }
+  nav.top .brand small {
+    color: var(--muted); font-weight: 400; letter-spacing: .5px; margin-left: 6px;
+  }
+  nav.top .links {
+    display: flex; flex-wrap: wrap; gap: 12px;
+  }
+  nav.top .links a {
+    color: var(--muted); text-decoration: none; transition: color .15s;
+  }
+  nav.top .links a:hover { color: var(--green); }
+
+  header.hero {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    flex-wrap: wrap;
+    padding: 30px 26px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--panel);
+    box-shadow: 0 0 0 1px rgba(79,70,229,.15) inset, 0 20px 60px rgba(0,0,0,.6);
+  }
+
+  .logos { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .logos img { height: 80px; width: auto; }
+  .logos img.trx { height: 58px; }
+
+  .hero-txt { flex: 1 1 320px; }
+  .hero-txt .kicker {
+    font-size: 11px; letter-spacing: 2.5px; color: var(--green);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .hero-txt h1 {
+    margin: 0; font-size: 32px; letter-spacing: .5px; color: #fff; line-height: 1.15;
+  }
+  .hero-txt h1 span { color: var(--indigo-soft); }
+  .hero-txt .claim {
+    margin-top: 14px; font-size: 15px; color: #dfe1ff;
+    border-left: 3px solid var(--green); padding-left: 14px;
+  }
+  .hero-txt .sub {
+    margin-top: 12px; color: var(--muted); font-size: 13.5px; max-width: 560px;
+  }
+  .hero-txt .sub a.link {
+    color: var(--green);
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 1px dashed var(--green);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .hero-txt .sub a.link:hover {
+    color: var(--indigo-soft);
+    border-bottom-color: var(--indigo-soft);
+  }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px;
+  }
+  .meta {
+    font-size: 12px; padding: 4px 10px; border-radius: 6px;
+    border: 1px solid rgba(79,70,229,.4);
+    background: rgba(79,70,229,.08); color: #c9ccff;
+  }
+  .meta.green { border-color: var(--green); color: var(--green); background: rgba(39,161,124,.08); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin-top: 22px;
+  }
+  .stat {
+    border: 1px solid rgba(79,70,229,.35);
+    border-radius: 12px;
+    background: rgba(10,10,22,.9);
+    padding: 16px;
+  }
+  .stat .num { font-size: 24px; color: var(--green); font-weight: 700; }
+  .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; letter-spacing: .5px; }
+
+  section {
+    margin-top: 26px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+  }
+  section h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: var(--indigo-soft);
+    border-left: 3px solid var(--green);
+    padding-left: 10px;
+    letter-spacing: .5px;
+  }
+  section .num-idx {
+    color: var(--green); font-size: 12px; letter-spacing: 1px; margin-left: 13px;
+  }
+  section > p.intro { margin: 10px 0 4px; color: #cfd2f5; font-size: 14px; }
+  section h3 {
+    margin: 20px 0 8px;
+    font-size: 14px;
+    color: #c9ccff;
+    letter-spacing: .3px;
+  }
+  p { color: #cfd2f5; font-size: 14px; }
+
+  code, .mono {
+    font-family: inherit;
+    background: rgba(79,70,229,.14);
+    border: 1px solid rgba(79,70,229,.3);
+    padding: 1px 6px;
+    border-radius: 5px;
+    color: #dfe1ff;
+    font-size: .92em;
+  }
+
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .stage {
+    border: 1px solid rgba(79,70,229,.35);
+    border-radius: 12px;
+    background: rgba(10,10,22,.9);
+    padding: 18px;
+    position: relative;
+  }
+  .stage .stg-num {
+    font-size: 11px; letter-spacing: 2px; color: var(--green); font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .stage h4 {
+    margin: 0 0 8px; font-size: 15px; color: #fff;
+  }
+  .stage p { margin: 0; font-size: 13px; color: var(--muted); }
+  .stage ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+  .stage ul li { margin-bottom: 3px; }
+  .stage ul li code { font-size: 12px; }
+
+  .caps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 12px;
+  }
+  .cap {
+    border: 1px solid rgba(79,70,229,.35);
+    border-radius: 10px;
+    background: rgba(10,10,22,.9);
+    padding: 16px 18px;
+    transition: border-color .18s;
+  }
+  .cap:hover { border-color: var(--green); }
+  .cap .cap-title {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--green); font-weight: 700; font-size: 14px; margin-bottom: 6px;
+  }
+  .cap .cap-title .n { color: var(--indigo-soft); font-size: 12px; letter-spacing: 1px; }
+  .cap p { margin: 0; font-size: 13px; color: var(--muted); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .card {
+    border: 1px solid rgba(79,70,229,.35);
+    border-radius: 10px;
+    background: rgba(10,10,22,.9);
+    padding: 14px 16px;
+    transition: border-color .18s;
+  }
+  .card:hover { border-color: var(--green); }
+  .card .cmd {
+    display: inline-block; color: var(--green);
+    font-weight: 700; font-size: 14px; margin-bottom: 4px;
+  }
+  .card p { margin: 0; font-size: 13px; color: var(--muted); }
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+  th, td {
+    text-align: left;
+    padding: 9px 10px;
+    border-bottom: 1px solid rgba(79,70,229,.25);
+    vertical-align: top;
+  }
+  th {
+    color: var(--indigo-soft);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+  }
+  td .mono { font-size: 12px; word-break: break-all; }
+
+  .note {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--green);
+    background: rgba(39,161,124,.06);
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: #cfd2f5;
+  }
+  .note strong { color: var(--green); }
+
+  .flow-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24px 0;
+    font-family: inherit;
+  }
+  .flow-box {
+    border: 1px solid rgba(79,70,229,.4);
+    background: rgba(10,10,22,.9);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    text-align: center;
+    color: #dfe1ff;
+    position: relative;
+    z-index: 2;
+  }
+  .flow-box.highlight {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(39,161,124,.08);
+  }
+  .flow-arrow {
+    color: var(--indigo-soft);
+    font-size: 18px;
+    line-height: 1;
+    margin: 6px 0;
+    z-index: 1;
+  }
+  .flow-split {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .flow-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 130px;
+  }
+  .flow-branch .flow-box {
+    width: 100%;
+    font-size: 12px;
+    padding: 8px;
+  }
+  .flow-branch .subtext {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  footer {
+    margin-top: 34px;
+    text-align: center;
+    color: #6c7293;
+    font-size: 12px;
+    border-top: 1px solid rgba(79,70,229,.25);
+    padding-top: 18px;
+  }
+  footer a { color: var(--indigo-soft); text-decoration: none; }
+  footer a:hover { color: var(--green); }
+  footer .sig {
+    margin-top: 14px; font-size: 13px; color: #aab0e0;
+    font-style: italic;
+  }
+  footer .sig b { color: var(--green); font-style: normal; }
+
+  @media (max-width: 768px) {
+    header.hero {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px;
+    }
+    .logos img { height: 60px; }
+    .logos img.trx { height: 44px; }
+    .hero-txt h1 { font-size: 26px; }
+    nav.top { flex-direction: column; align-items: flex-start; }
+    nav.top .links { margin-top: 10px; gap: 10px; }
+    nav.top .links a { margin-left: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .logos img { height: 48px; }
+    .logos img.trx { height: 36px; }
+    .hero-txt h1 { font-size: 22px; }
+    section { padding: 16px; }
+    .stats { grid-template-columns: 1fr; }
+    .flow-split { flex-direction: column; align-items: center; gap: 20px; }
+    .flow-branch { width: 100%; max-width: 250px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="top">
+    <div class="brand"></div>
+    <div class="links">
+      <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+      <a href="#capacidades">[Capacidades]</a>
+      <a href="#arquitectura">[Arquitectura]</a>
+      <a href="#sunswap">[SunSwap V4]</a>
+      <a href="#fees">[Fees]</a>
+      <a href="#comandos">[Comandos]</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="logos">
+      <img class="bot" src="assets/botlogo.png" alt="TxGhost bot" />
+      <img src="assets/brutus-brst.png" alt="BRST" />
+      <img class="trx" src="assets/tron.png" alt="TRON" />
+    </div>
+    <div class="hero-txt">
+      <div class="kicker">Monitor TRC-20 · TRON</div>
+      <h1>TxGhost <span>v1.05</span></h1>
+      <p class="claim">
+        No mira solamente transferencias.<br/>
+        Interpreta lo que sucede detrás de ellas.
+      </p>
+      <p class="sub">
+        Herramienta propia en Python diseñada para observar, clasificar y analizar actividad
+        TRC-20 del token <a href="https://carover0.github.io/pagina/texplorer#/TF8YgHqnJdWzCbUyouje3RYrdDKJYpGfB3" class="link">BRST</a>
+        en la red TRON. Identifica contratos ejecutados, reconstruye el contexto
+        de las operaciones e interpreta interacciones con protocolos como SunSwap V4.
+        Los resultados se convierten en notificaciones enriquecidas y representaciones
+        visuales generadas dinámicamente.
+      </p>
+
+      <div class="meta-row">
+        <span class="meta green">● OPERATIVO · MONITOREO 24/7</span>
+        <span class="meta">Python · TeleBot · Pillow</span>
+        <span class="meta">Tronscan · TronGrid</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="num">7</div><div class="lbl">Categorías de evento</div></div>
+    <div class="stat"><div class="num">8</div><div class="lbl">Redes con estimación de costos</div></div>
+    <div class="stat"><div class="num">7</div><div class="lbl">Fuentes externas integradas</div></div>
+    <div class="stat"><div class="num">24/7</div><div class="lbl">Monitoreo continuo</div></div>
+  </div>
+
+  <section id="presentacion">
+    <h2>Presentación <span class="num-idx">/ 01</span></h2>
+    <p class="intro">
+      TxGhost es un sistema de monitoreo on-chain desarrollado de forma independiente.
+      Consulta periódicamente los eventos TRC-20 de un contrato observado, reconstruye
+      el contexto de cada transacción a partir de múltiples fuentes y clasifica la
+      operación según el contrato ejecutado y las direcciones involucradas.
+    </p>
+    <p>
+      El objetivo no es solo notificar movimientos, sino <b>interpretar</b> qué ocurrió:
+      si fue una compra o venta a través de un router, un aporte o retiro de liquidez,
+      una quema, un swap genérico o una transferencia P2P. Cada evento se enriquece con
+      datos on-chain (supply, precio, holders) y se presenta con una interfaz visual
+      generada en tiempo de ejecución.
+    </p>
+    <div class="note">
+      <strong>Alcance.</strong> El mecanismo principal es <b>consulta periódica</b> a
+      Tronscan, no una suscripción nativa a eventos. La clasificación combina reglas
+      determinísticas y heurísticas; no todas las operaciones se identifican con la
+      misma certeza. El monitoreo es continuo y la notificación ocurre en el siguiente
+      ciclo de consulta.
+    </div>
+  </section>
+
+  <section id="capacidades">
+    <h2>Capacidades <span class="num-idx">/ 02</span></h2>
+    <p class="intro">
+      Seis módulos funcionales, cada uno resolviendo un problema concreto sobre datos
+      on-chain.
+    </p>
+    <div class="caps">
+      <div class="cap">
+        <div class="cap-title"><span class="n">C1</span> Monitoreo de actividad BRST</div>
+        <p>Consulta periódica del contrato observado, con caché de transacciones procesadas para evitar duplicados entre ciclos de monitoreo.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-title"><span class="n">C2</span> Clasificación SunSwap V4</div>
+        <p>Distingue compra, venta, aporte y retiro de liquidez, burn y swap genérico según el contrato ejecutado.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-title"><span class="n">C3</span> Exploración de transacciones</div>
+        <p>Detalle de bloque, fecha, estado, recursos (bandwidth/energy) y eventos paginados de cada hash.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-title"><span class="n">C4</span> Análisis de holders</div>
+        <p>Top 10 holders y posición individual en el ranking, con balance y porcentaje de participación.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-title"><span class="n">C5</span> Información de mercado</div>
+        <p>Precios on-chain (<code>RATE()</code>) y de mercado (CoinGecko, Binance) con tarjetas visuales generadas con PIL.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-title"><span class="n">C6</span> Estimación comparativa de fees</div>
+        <p>Ocho redes, cuatro mecanismos de estimación distintos y fórmulas documentadas por red.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="arquitectura">
+    <h2>Arquitectura <span class="num-idx">/ 03</span></h2>
+    <p class="intro">
+      El núcleo del sistema es una cascada de tres etapas: captura, interpretación y
+      clasificación. Cada etapa cumple una función específica en el procesamiento de los
+      datos on-chain.
+    </p>
+
+    <div class="pipeline">
+      <div class="stage">
+        <div class="stg-num">01 — CAPTURA</div>
+        <h4>Eventos TRC-20</h4>
+        <p>
+          Tronscan entrega las transferencias del contrato observado. TxGhost mantiene
+          una caché de transacciones procesadas (<code>TX_SEEN</code>) para evitar
+          notificaciones duplicadas entre ciclos.
+        </p>
+      </div>
+      <div class="stage">
+        <div class="stg-num">02 — INTERPRETACIÓN</div>
+        <h4>Contrato ejecutado</h4>
+        <p>
+          Se consulta el detalle de la transacción y se busca el contrato ejecutado
+          mediante fallbacks en cascada:
+        </p>
+        <ul>
+          <li><code>trigger_info.contract_address</code></li>
+          <li><code>contractData.contract_address</code></li>
+          <li><code>raw_data.contract[0].parameter</code></li>
+          <li><code>toAddress</code> <span class="mono">(último recurso, menor confianza: destino reportado por la API, no necesariamente el contrato ejecutado)</span></li>
+          <li>Normalización hex → Base58</li>
+        </ul>
+      </div>
+      <div class="stage">
+        <div class="stg-num">03 — CLASIFICACIÓN</div>
+        <h4>Tipo de operación</h4>
+        <p>
+          Se contrasta el contrato ejecutado, las direcciones involucradas y la
+          heurística de método (<code>es_swap</code>) para identificar la operación.
+        </p>
+      </div>
+    </div>
+
+    <h3>Por qué los fallbacks</h3>
+    <p>
+      La respuesta de <code>transaction-info</code> de Tronscan no es consistente:
+      <code>toAddress</code> puede venir vacío, el contrato puede aparecer en
+      <code>contractData</code> o en <code>raw_data</code> según la versión del
+      endpoint, y en algunos casos se devuelve en hexadecimal en lugar de Base58.
+      La cascada no es defensiva por gusto: es el resultado de trabajar contra
+      respuestas reales de la API.
+    </p>
+
+    <div class="flow-container">
+      <div class="flow-box highlight">Tronscan</div>
+      <div class="flow-arrow">▼</div>
+      <div class="flow-box">get_trc20_events()</div>
+      <div class="flow-arrow">▼</div>
+      <div class="flow-box">TX_SEEN (dedupe)</div>
+      <div class="flow-arrow">▼</div>
+      <div class="flow-box">obtener_detalle_transaccion()</div>
+      <div class="flow-arrow">▼</div>
+      <div class="flow-box highlight">contrato_llamado ← fallbacks en cascada</div>
+      
+      <div class="flow-arrow">▼</div>
+      
+      <div class="flow-split">
+        <div class="flow-branch">
+          <div class="flow-box">Router SunSwap</div>
+          <div class="flow-arrow">▼</div>
+          <div class="subtext">compra / venta</div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-box">PoolManager</div>
+          <div class="flow-arrow">▼</div>
+          <div class="subtext">liquidez / retiro</div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-box">PositionManager</div>
+          <div class="flow-arrow">▼</div>
+          <div class="subtext">burn / swap</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow" style="margin-top: 12px;">▼</div>
+      <div class="flow-box">notificar() ──▶ Telegram</div>
+    </div>
+
+    <h3>Categorías de evento</h3>
+    <div class="table-responsive">
+      <table>
+        <thead><tr><th>Condición</th><th>Tipo detectado</th></tr></thead>
+        <tbody>
+          <tr><td><code>to == SUN_POOL_MANAGER</code> y router ejecutado</td><td>🔄 VENTA / COMPRA BRST</td></tr>
+          <tr><td><code>to == SUN_POOL_MANAGER</code> sin router</td><td>🌞 APORTE LIQUIDEZ</td></tr>
+          <tr><td><code>from == SUN_POOL_MANAGER</code></td><td>💰 RETIRO LIQUIDEZ</td></tr>
+          <tr><td><code>from/to == SUN_POSITION_MANAGER</code></td><td>🔄 SWAP / 🔥 BURN</td></tr>
+          <tr><td><code>from == Q55_WALLET</code> + destino y contrato ejecutado</td><td>🤑 NUEVA COMPRA / 🔥 BURN (según condiciones adicionales)</td></tr>
+          <tr><td><code>es_swap(txID) == true</code></td><td>SWAP genérico</td></tr>
+          <tr><td>Sin coincidencia</td><td>🤝 TRANSFERENCIA P2P</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="intro">La clasificación se basa en origen, destino, contrato ejecutado y condiciones específicas de cada operación. El orden de evaluación de reglas evita falsos positivos cuando coinciden varias condiciones.</p>
+  </section>
+
+  <section id="sunswap">
+    <h2>Integración SunSwap V4 <span class="num-idx">/ 04</span></h2>
+    <p class="intro">
+      SunSwap V4 distribuye la lógica entre tres contratos con roles distintos. La
+      clasificación depende de identificar cuál fue ejecutado y cuál es el destino
+      de la transferencia.
+    </p>
+    <div class="table-responsive">
+      <table>
+        <thead><tr><th>Contrato</th><th>Rol</th><th>Dirección</th></tr></thead>
+        <tbody>
+          <tr><td>Universal Router</td><td>Punto de entrada de swaps</td><td><span class="mono">TSJEtPuqHpvSaVnSwvCsngaeBxrGUzp95Q</span></td></tr>
+          <tr><td>Pool Manager</td><td>Gestión de pools de liquidez</td><td><span class="mono">TVjuTE3V5bMVdpfNhid8kD2v35T2k1u1Br</span></td></tr>
+          <tr><td>Position Manager</td><td>Gestión de posiciones LP</td><td><span class="mono">TC8xQzPHfn5KceZV6s6GmZkBCFWWUoPXs1</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <strong>Lectura clave.</strong> Un swap no se detecta por el monto ni por el
+      emisor, sino por la combinación <code>(contrato ejecutado, from, to)</code>.
+      Una misma transferencia puede adquirir significados distintos según el contrato
+      ejecutado, el origen, el destino y el contexto de la operación.
+    </div>
+  </section>
+
+  <section id="fees">
+    <h2>Cross-chain Fee Estimator <span class="num-idx">/ 05</span></h2>
+    <p class="intro">
+      Módulo independiente que estima el costo de una transferencia en ocho redes.
+      Cada red usa un mecanismo distinto según lo que expone su infraestructura.
+    </p>
+    <div class="table-responsive">
+      <table>
+        <thead><tr><th>Red</th><th>Mecanismo</th><th>Fuente</th></tr></thead>
+        <tbody>
+          <tr><td>Ethereum</td><td>Gas price + precio del token</td><td>Blocknative + Binance</td></tr>
+          <tr><td>Arbitrum</td><td>Gas price + precio del token</td><td>Blocknative + Binance</td></tr>
+          <tr><td>Avalanche</td><td>Gas price + precio del token</td><td>Blocknative + Binance</td></tr>
+          <tr><td>Polygon</td><td>Gas price + precio del token</td><td>Blocknative + Binance</td></tr>
+          <tr><td>BNB Chain</td><td>Gas price + precio del token</td><td>Blocknative + Binance</td></tr>
+          <tr><td>TRON</td><td>Simulación <code>triggerconstantcontract</code></td><td>TronGrid</td></tr>
+          <tr><td>Solana</td><td>Estimación por lamports</td><td>Binance (precio SOL)</td></tr>
+          <tr><td>BitTorrent Chain</td><td><code>eth_gasPrice</code> por RPC</td><td>RPC BTTC + Binance</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <strong>Supuestos.</strong> Las estimaciones son aproximaciones, no simulaciones
+      exactas de ejecución. Se asume un consumo típico de recursos para transferencias
+      (<code>transfer(address,uint256)</code>) y un costo de referencia por red. El
+      consumo de referencia no contempla todas las variaciones posibles del estado del
+      contrato receptor ni condiciones particulares de ejecución. Los valores reales
+      dependen del estado de la red al momento de la ejecución. En TRON se habla de
+      costos de transacción (Energy y Bandwidth), no de gas.
+    </div>
+  </section>
+
+  <section id="interfaz">
+    <h2>Interfaz y resultados <span class="num-idx">/ 06</span></h2>
+    <p class="intro">
+      Las notificaciones no son texto plano. Cada tipo de evento tiene una tarjeta
+      visual generada en tiempo de ejecución con Pillow, y los comandos de consulta
+      producen imágenes con datos on-chain actualizados.
+    </p>
+    <div class="caps">
+      <div class="cap">
+        <div class="cap-title">Notificación de swap</div>
+        <p>Monto, equivalente en TRX, supply, precio on-chain y holders en un solo mensaje.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-title">Ranking de holders</div>
+        <p>Posición, balance y porcentaje de participación con barra de progreso renderizada.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-title">Tarjeta de precio</div>
+        <p>Precio, market cap, volumen 24h y ranking, con ícono del token.</p>
+      </div>
+      <div class="cap">
+        <div class="cap-title">Ficha de SR</div>
+        <p>Votos y posición en el ranking global de Super Representantes.</p>
+      </div>
+    </div>
+    <div class="note">
+      <strong>Capturas.</strong> Esta sección está pensada para incluir capturas reales
+      de Telegram y de las imágenes generadas por el bot. Las imágenes deben ser propias
+      del proyecto, no referencias externas.
+    </div>
+  </section>
+
+  <section id="comandos">
+    <h2>Command interface <span class="num-idx">/ 07</span></h2>
+    <p class="intro">
+      Acceso controlado por clave temporal. Los chats autorizados se persisten en
+      <code>chat_ids.json</code>.
+    </p>
+    <div class="grid">
+      <div class="card"><span class="cmd">/start &lt;clave&gt;</span><p>Autoriza el chat. Clave de 10 caracteres, válida 5 minutos.</p></div>
+      <div class="card"><span class="cmd">/generar</span><p>Genera clave temporal (solo por privado).</p></div>
+      <div class="card"><span class="cmd">/ghostinfo</span><p>Ficha ASCII del proyecto y datos del autor.</p></div>
+      <div class="card"><span class="cmd">/txid &lt;hash&gt;</span><p>Detalle completo: bloque, fecha, estado, recursos y eventos paginados.</p></div>
+      <div class="card"><span class="cmd">/mipuesto &lt;dir&gt;</span><p>Ranking del holder en BRST + imagen con posición, balance y % de participación.</p></div>
+      <div class="card"><span class="cmd">/ghostlink</span><p>Precios del ecosistema TRON y accesos rápidos.</p></div>
+      <div class="card"><span class="cmd">/pr &lt;ticker&gt;</span><p>Tarjeta de precio. <code>/pr brst</code> usa el <code>RATE()</code> on-chain.</p></div>
+      <div class="card"><span class="cmd">/sr</span><p>Super Representante de Brutus: votos y posición.</p></div>
+    </div>
+
+    <h3>Callbacks inline</h3>
+    <div class="grid">
+      <div class="card"><span class="cmd">holders:&lt;contrato&gt;</span><p>Top 10 holders con balance formateado.</p></div>
+      <div class="card"><span class="cmd">ver_evt_&lt;id&gt;</span><p>Navegación paginada de eventos (10 por página).</p></div>
+      <div class="card"><span class="cmd">gas_trk</span><p>Costos de transacción en USDT en 8 redes.</p></div>
+      <div class="card"><span class="cmd">descargo / formulas</span><p>Validación del cálculo EVM con transacción real y fórmulas por red.</p></div>
+      <div class="card"><span class="cmd">cerrar_qr</span><p>Cierra el mensaje asociado al callback.</p></div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <h2>Stack y dependencias <span class="num-idx">/ 08</span></h2>
+    <div class="table-responsive">
+      <table>
+        <thead><tr><th>Capa</th><th>Tecnología</th></tr></thead>
+        <tbody>
+          <tr><td>Runtime</td><td>Python</td></tr>
+          <tr><td>Interfaz</td><td>pyTelegramBotAPI (TeleBot)</td></tr>
+          <tr><td>Imágenes</td><td>Pillow (PIL)</td></tr>
+          <tr><td>HTTP</td><td>requests</td></tr>
+          <tr><td>Blockchain (TRON)</td><td>Tronscan API, TronGrid, SunSwap V4</td></tr>
+          <tr><td>Blockchain (EVM)</td><td>Blocknative, RPC BTTC</td></tr>
+          <tr><td>Mercado</td><td>Binance, CoinGecko, 3xpl</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="identidad">
+    <h2>Identidad y autoría <span class="num-idx">/ 09</span></h2>
+    <p class="intro">
+      Proyecto desarrollado de forma independiente. Sin infraestructura corporativa,
+      sin protocolo propio. Un sistema independiente de interpretación de actividad on-chain,
+      con monitoreo, clasificación, enriquecimiento de datos y una interfaz de consulta,
+      construido sobre servicios existentes para resolver problemas concretos del ecosistema de Brutus.
+    </p>
+  </section>
+
+  <footer>
+      <a href="https://carover0.github.io/pagina/">[INICIO]</a>
+  </footer>
+</div>
+</body>
+</html>
