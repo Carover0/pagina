@@ -1236,8 +1236,24 @@ async function renderTx(tx, info, scan){
 
   try {
     const tt = await getTxTokenTransfers(tx.txID);
-    const list  = (tt.trc20 && tt.trc20.length) ? tt.trc20 : (tt.events || []);
+    let list  = (tt.trc20 && tt.trc20.length) ? tt.trc20 : (tt.events || []);
     const trc10 = tt.trc10 || [];
+
+    // Enriquecer eventos sin metadata (fallback cuando TronScan rate-limita)
+    list = await Promise.all(list.map(async (t) => {
+      const hasMeta = t.symbol && t.decimals !== null && t.decimals !== undefined;
+      if (hasMeta) return t;
+      const ca = t.contract_address || t.token_address;
+      if (!ca) return t;
+      const meta = await trc20Info(ca);
+      return {
+        ...t,
+        symbol:   t.symbol   || meta.symbol,
+        name:     t.name     || meta.name,
+        decimals: (t.decimals !== null && t.decimals !== undefined) ? t.decimals : meta.decimals,
+        icon_url: t.icon_url || meta.icon,
+      };
+    }));
 
     if (list.length || trc10.length) {
       if (tokenTransfersHtml) tokenTransfersHtml += `<div class="divider"></div>`;
@@ -1254,7 +1270,7 @@ async function renderTx(tx, info, scan){
           } catch(e) {
             human = Number(rawAmt) / Math.pow(10, dec);
           }
-          const sym  = t.symbol || '?';
+          const sym  = t.symbol || (t.contract_address ? t.contract_address.slice(0,6)+'…' : '?');
           const name = t.name || '';
           const iconInfo = { symbol: sym, icon: t.icon_url || '' };
           const tokenCell = `<span class="token-badge" title="${escapeHtml(name ? sym + ' · ' + name : sym)}">${tokenIcon(iconInfo)}<span class="sym">${escapeHtml(sym)}</span>${name ? `<span class="name">${escapeHtml(name)}</span>` : ''}</span>`;
