@@ -79,37 +79,28 @@
 <script>
 (function () {
   var path = window.location.pathname;
-  var explorers = [
-    { name: 'zec-explorer',   pattern: /\/zec-explorer\/(.+)$/ },
-    { name: 'pivx-explorer',  pattern: /\/pivx-explorer\/(.+)$/ },
-    { name: 'ycash-explorer', pattern: /\/ycash-explorer\/(.+)$/ },
-    { name: 'cementerio',     pattern: /\/cementerio\/(.+)$/ },
-    { name: 'firo-explorer',  pattern: /\/firo-explorer\/(.+)$/ },
-    { name: 'texplorer',      pattern: /\/texplorer\/(.+)$/ }
-  ];
+  var match = path.match(/\/pagina\/(pivx-explorer|firo-explorer|zec-explorer|ycash-explorer|cementerio)\/(.+)$/);
 
-  for (var i = 0; i < explorers.length; i++) {
-    var exp = explorers[i];
-    var match = path.match(exp.pattern);
-    if (match && match[1]) {
-      var decoded = match[1];
-      try { decoded = decodeURIComponent(decoded); } catch (e) {}
+  if (match && match[2]) {
+    var explorer = match[1]; 
+    var hash = match[2];     
 
-      var target;
-      if (exp.name === 'texplorer') {
-        // texplorer: hash routing (no depende del servidor)
-        var clean = decoded.replace(/\s+/g, '/');
-        target = '/pagina/texplorer/#/' + clean;
-      } else {
-        // demás exploradores: query string como siempre
-        target = '/pagina/' + exp.name + '/?q=' + encodeURIComponent(decoded);
-      }
-      window.location.replace(target);
-      return;
-    }
+    
+    window.location.replace('/pagina/' + explorer + '/?q=' + encodeURIComponent(hash));
+    return;
+  }
+
+  
+  var texMatch = path.match(/\/pagina\/texplorer\/(.+)$/);
+  if (texMatch && texMatch[1]) {
+    var clean = decodeURIComponent(texMatch[1]).replace(/\s+/g, '/');
+    window.location.replace('/pagina/texplorer/#/' + clean);
+    return;
   }
 })();
 </script>
+ 
+ 
 </head>
 <body>
 
