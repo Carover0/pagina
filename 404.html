@@ -79,27 +79,31 @@
 <script>
 (function () {
   var path = window.location.pathname;
-  var match = path.match(/\/pagina\/(pivx-explorer|firo-explorer|zec-explorer|ycash-explorer|cementerio)\/(.+)$/);
+  var match = path.match(/\/pagina\/(pivx-explorer|firo-explorer|zec-explorer|ycash-explorer)\/(.+)$/);
 
   if (match && match[2]) {
     var explorer = match[1]; 
     var hash = match[2];     
 
-    
-    window.location.replace('/pagina/' + explorer + '/?q=' + encodeURIComponent(hash));
+    window.location.replace('/pagina/' + explorer + '.html?q=' + encodeURIComponent(hash));
     return;
   }
 
-  
+  var cemMatch = path.match(/\/pagina\/cementerio\/(.+)$/);
+  if (cemMatch && cemMatch[1]) {
+    window.location.replace('/pagina/cementerio.html?q=' + encodeURIComponent(cemMatch[1]));
+    return;
+  }
+
+
   var texMatch = path.match(/\/pagina\/texplorer\/(.+)$/);
   if (texMatch && texMatch[1]) {
     var clean = decodeURIComponent(texMatch[1]).replace(/\s+/g, '/');
-    window.location.replace('/pagina/texplorer/#/' + clean);
+    window.location.replace('/pagina/texplorer.html#/' + clean);
     return;
   }
 })();
-</script>
- 
+</script> 
  
 </head>
 <body>
